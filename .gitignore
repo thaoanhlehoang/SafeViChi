@@ -1,0 +1,57 @@
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+venv/
+env/
+.venv/
+.Python
+build/
+dist/
+
+# ==== Jupyter ====
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ==== Dữ liệu (không commit dữ liệu thật) ====
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/variants/*
+!data/variants/.gitkeep
+*.csv
+*.tsv
+*.parquet
+
+# ==== Model checkpoints (quá nặng cho git, dùng Git LFS hoặc lưu ngoài nếu cần) ====
+models/*
+!models/.gitkeep
+*.bin
+*.pt
+*.pth
+*.onnx
+*.safetensors
+
+# ==== Node / web demo ====
+node_modules/
+demo/dist/
+package-lock.json
+
+# ==== Biến môi trường & secrets ====
+.env
+.env.local
+*.key
+
+# ==== IDE / OS ====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ==== Log & báo cáo tạm ====
+*.log
+wandb/
+runs/
