@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>SafeViChi — Demo phát hiện nội dung độc hại tiếng Việt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+    textarea { width: 100%; min-height: 80px; font-size: 16px; padding: 8px; }
+    button { margin-top: 12px; padding: 8px 16px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 20px; padding: 12px; border-radius: 8px; background: #f5f5f5; white-space: pre-wrap; }
+    .flag { background: #fde2e2; padding: 0 2px; border-radius: 3px; }
+    .note { color: #666; font-size: 14px; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <h1>SafeViChi — Demo</h1>
+  <p>Gõ một câu tiếng Việt (kể cả bỏ dấu, teencode, chèn ký tự...) và bấm Kiểm tra.
+     Toàn bộ xử lý diễn ra ngay trong trình duyệt này — mở tab Network trong DevTools
+     để tự kiểm chứng không có request nào được gửi đi.</p>
+
+  <textarea id="input" placeholder="Nhập văn bản tại đây..."></textarea>
+  <br />
+  <button id="checkBtn">Kiểm tra</button>
+
+  <div id="result" style="display:none;"></div>
+
+  <p class="note">
+    TODO: tích hợp onnxruntime-web + model đã export (xem README.md trong thư mục này)
+    và port logic src/normalization/normalizer.py sang JavaScript.
+    Bản này hiện chỉ là khung giao diện minh họa với logic giả (mock).
+  </p>
+
+  <script>
+    // TODO: thay bằng lớp chuẩn hóa + gọi model ONNX thật
+    function mockNormalize(text) {
+      return text.toLowerCase();
+    }
+    function mockPredict(text) {
+      const badWords = ["ngu", "óc", "chó"];
+      const hit = badWords.some((w) => text.includes(w));
+      return { label: hit ? "offensive" : "clean", confidence: hit ? 0.87 : 0.95, flagged: hit ? badWords.filter(w => text.includes(w)) : [] };
+    }
+
+    document.getElementById("checkBtn").addEventListener("click", () => {
+      const raw = document.getElementById("input").value;
+      const normalized = mockNormalize(raw);
+      const { label, confidence, flagged } = mockPredict(normalized);
+
+      let highlighted = normalized;
+      flagged.forEach((w) => {
+        highlighted = highlighted.replaceAll(w, `<span class="flag">${w}</span>`);
+      });
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML =
+        `<b>Sau chuẩn hóa:</b> ${highlighted}<br/>` +
+        `<b>Nhãn:</b> ${label} (${(confidence * 100).toFixed(0)}%)`;
+    });
+  </script>
+</body>
+</html>
