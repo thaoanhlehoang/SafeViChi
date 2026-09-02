@@ -18,7 +18,9 @@ Văn bản đầu vào
     → Đầu ra: nhãn rủi ro + cụm từ gây cảnh báo
 ```
 
-Bộ sinh biến thể né lọc (6 nhóm, dùng cho benchmark và huấn luyện đối kháng) nằm ở `src/variant_generator/`.
+Bộ sinh biến thể phi chuẩn có kiểm soát (11 hiện tượng cơ sở + chế độ mixed,
+dùng cho benchmark và huấn luyện chống nhiễu) nằm ở `src/variant_generator/`.
+Pipeline dựng corpus 75.048 mẫu nằm ở `src/dataset_builder/`.
 
 ## Cấu trúc thư mục
 
@@ -30,7 +32,8 @@ safevichi/
 │   └── variants/       # Dữ liệu biến thể sinh ra từ variant_generator
 ├── src/
 │   ├── normalization/      # Lớp chuẩn hóa rule-based (Mục 3.4 trong plan)
-│   ├── variant_generator/  # 6 nhóm biến thể né lọc (Mục 3.3)
+│   ├── variant_generator/  # 11 hiện tượng phi chuẩn + mixed, có edit trace
+│   ├── dataset_builder/     # lấy mẫu, map nhãn, dedup/split, augmentation, QA
 │   ├── classifier/         # Fine-tune ViSoBERT + huấn luyện đối kháng (Mục 3.5)
 │   ├── explainer/          # Module giải thích occlusion-based (Mục 3.6)
 │   └── pipeline.py         # Ghép toàn bộ pipeline một đường thẳng
@@ -49,13 +52,44 @@ source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Dữ liệu
+## Dữ liệu phi chuẩn 75K
 
 - **ViHSD**: https://huggingface.co/datasets/uitnlp/vihsd — nguồn train/eval chính cho bộ phân loại
+- **VOZ-HSD**: https://huggingface.co/datasets/tarudesu/VOZ-HSD — nguồn nhãn yếu chỉ dùng ở train
 - **ViHOS**: https://huggingface.co/datasets/htdung167/ViHOS — đối chiếu, đánh giá module giải thích
 - **ViLexNorm**: nguồn tham khảo để xây từ điển teencode/chuẩn hóa (xem `docs/plan.md` Mục 3 phần làm rõ)
 
-Tải dữ liệu về `data/raw/` (không commit dữ liệu thô lên GitHub, xem `.gitignore`).
+ViHSD yêu cầu đăng nhập và chấp thuận điều kiện truy cập trên trang dataset.
+Sau đó tải đúng revision đã pin:
+
+```powershell
+hf auth login
+./scripts/download_dataset_sources.ps1
+```
+
+Dựng corpus (VOZ-HSD được stream từ bốn shard Parquet đã pin, không tải file
+CSV 8,1 GB):
+
+```powershell
+python -m src.dataset_builder.build
+```
+
+Kết quả mặc định nằm trong `data/processed/vietnamese_nonstandard_v1/`, gồm
+JSONL/Parquet theo split, `manifest.json`, `qa_report.json`, quarantine chỉ chứa
+hash, dataset card và worksheet kiểm tra thủ công 250 mẫu. Chạy kiểm thử bằng:
+
+```powershell
+python -m pytest -q --basetemp .pytest_tmp
+```
+
+Chi tiết schema, chính sách label preservation, duplicate/leakage và quy trình
+QA: [`docs/dataset_pipeline.md`](docs/dataset_pipeline.md).
+
+> **Lưu ý nhãn VOZ-HSD:** nhãn của nguồn này do ViSoBERT-HSD tự gán. Dataset
+> card của tác giả ghi chúng phục vụ phân tích, không phải nhãn vàng để fine-tune
+> downstream. Pipeline đánh dấu `annotation_type=weak_ai`, chỉ cho vào train và
+> yêu cầu rà soát quyền sử dụng/tái gán nhãn thủ công trước khi phát hành hoặc
+> dùng huấn luyện chính thức.
 
 ## Baseline
 

@@ -2,6 +2,8 @@
 torch>=2.1.0
 transformers>=4.40.0
 datasets>=2.19.0
+pyarrow>=16.0.0
+fsspec[http]>=2024.5.0
 scikit-learn>=1.4.0
 sentencepiece>=0.2.0
 
@@ -24,3 +26,6 @@ optimum>=1.19.0
 
 # --- Notebook ---
 jupyter>=1.0.0
+
+# --- Kiểm thử ---
+pytest>=8.0.0

@@ -1,0 +1,88 @@
+{
+  "annotation_split_counts": {
+    "human": {
+      "test": 2416,
+      "train": 19055,
+      "validation": 2330
+    },
+    "weak_ai": {
+      "train": 51247
+    }
+  },
+  "automatic_scope_note": "Automatic checks cover structural invariants, trace replay, label-source separation, leakage, and surface similarity. Semantic/label preservation and naturalness still require the generated human-review worksheet.",
+  "changed_row_count": 75048,
+  "error_count": 0,
+  "errors": [],
+  "exact_perturbed_duplicate_rows": 7,
+  "label_counts": {
+    "CLEAN": 39886,
+    "HATE": 35162
+  },
+  "missing_perturbation_types": [],
+  "perturbation_mode_counts": {
+    "mixed": 47962,
+    "single": 27086
+  },
+  "perturbation_type_counts": {
+    "abbreviation_clipping": 4929,
+    "boundary_variation": 18610,
+    "context_dependent": 432,
+    "diacritic_variation": 18977,
+    "dialectal_writing": 5851,
+    "expressive_lengthening": 35989,
+    "intentional_spelling": 8427,
+    "phonetic_spelling": 4679,
+    "slang_lexical": 996,
+    "surface_obfuscation": 19778,
+    "typographical_noise": 23098
+  },
+  "perturbed_duplicate_grouping": {
+    "duplicate_group_count": 105,
+    "exact_union_edges": 7,
+    "group_count": 74831,
+    "jaccard_threshold": 0.9,
+    "largest_group_size": 17,
+    "max_hamming_distance": 8,
+    "min_near_length": 12,
+    "near_union_edges": 103,
+    "record_count": 75048,
+    "records_in_duplicate_groups": 322,
+    "symbolic_repetition_union_edges": 107
+  },
+  "perturbed_near_duplicate_groups_crossing_splits": 0,
+  "replayable_trace_count": 75048,
+  "row_count": 75048,
+  "source_label_counts": {
+    "tarudesu/VOZ-HSD": {
+      "CLEAN": 20127,
+      "HATE": 31120
+    },
+    "uitnlp/vihsd": {
+      "CLEAN": 19759,
+      "HATE": 4042
+    }
+  },
+  "split_label_counts": {
+    "test": {
+      "CLEAN": 2030,
+      "HATE": 386
+    },
+    "train": {
+      "CLEAN": 35946,
+      "HATE": 34356
+    },
+    "validation": {
+      "CLEAN": 1910,
+      "HATE": 420
+    }
+  },
+  "status": "passed",
+  "surface_similarity": {
+    "max": 1.0,
+    "median": 0.978261,
+    "min": 0.222222,
+    "p05": 0.883117,
+    "p95": 1.0
+  },
+  "weak_rows_in_evaluation": 0
+}

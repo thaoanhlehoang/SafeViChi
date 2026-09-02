@@ -1,0 +1,139 @@
+{
+  "build_parameters": {
+    "near_duplicate_hamming": 8,
+    "near_duplicate_min_length": 12,
+    "near_duplicate_threshold": 0.9,
+    "oversample_factor": 1.25,
+    "vihsd_csv": "data/raw/vihsd/train.csv",
+    "voz_max_rows": null,
+    "voz_min_confidence": 0.9,
+    "voz_parquet": [],
+    "voz_selection_jsonl": "data/processed/vietnamese_nonstandard_v1/train.jsonl"
+  },
+  "dataset_fingerprint": "01ad565f43f6479d970cef41a412f533925f3db2b3776ff235c878bd79e2141a",
+  "dataset_name": "safevichi-vietnamese-nonstandard",
+  "dataset_version": "1.0.0",
+  "distribution_status": "rights_and_weak_label_review_required_before_release",
+  "duplicate_grouping": {
+    "duplicate_group_count": 1437,
+    "exact_union_edges": 1399,
+    "group_count": 73278,
+    "jaccard_threshold": 0.9,
+    "largest_group_size": 103,
+    "max_hamming_distance": 8,
+    "min_near_length": 12,
+    "near_union_edges": 305,
+    "record_count": 75048,
+    "records_in_duplicate_groups": 3207,
+    "symbolic_repetition_union_edges": 66
+  },
+  "final_counts": {
+    "by_label": {
+      "CLEAN": 39886,
+      "HATE": 35162
+    },
+    "by_source": {
+      "tarudesu/VOZ-HSD": 51247,
+      "uitnlp/vihsd": 23801
+    },
+    "by_split": {
+      "test": 2416,
+      "train": 70302,
+      "validation": 2330
+    },
+    "total": 75048
+  },
+  "generated_at_utc": "2026-09-02T17:01:08.788242+00:00",
+  "generator_version": "1.0.0",
+  "human_review_required": true,
+  "label_mapping": {
+    "VOZ-HSD": {
+      "0": "CLEAN",
+      "1": "HATE"
+    },
+    "ViHSD": {
+      "CLEAN": "CLEAN",
+      "HATE": "HATE",
+      "OFFENSIVE": "HATE"
+    }
+  },
+  "perturbed_duplicate_grouping": {
+    "duplicate_group_count": 105,
+    "exact_union_edges": 7,
+    "group_count": 74831,
+    "jaccard_threshold": 0.9,
+    "largest_group_size": 17,
+    "max_hamming_distance": 8,
+    "min_near_length": 12,
+    "near_union_edges": 103,
+    "record_count": 75048,
+    "records_in_duplicate_groups": 322,
+    "symbolic_repetition_union_edges": 107
+  },
+  "quality_gate_status": "passed",
+  "random_seed": 20260902,
+  "requested_target_counts": {
+    "CLEAN": 39886,
+    "HATE": 35162
+  },
+  "sources": {
+    "tarudesu/VOZ-HSD": {
+      "annotation_type": "weak_ai",
+      "artifact_revision": "2518cc1fd5287975fbc6f842fb29625880c012f4",
+      "evaluation_eligible": false,
+      "requested_label_counts_after_vihsd_quarantine": {
+        "CLEAN": 20127,
+        "HATE": 31120
+      },
+      "revision": "923915f5f633c503babf2c6dcf7003593318b04f",
+      "sampling": {
+        "min_confidence": 0.9,
+        "minimum_selected_confidence": 0.9000058770179749,
+        "sampling_method": "stratified_deterministic_priority_reservoir_recovered_from_jsonl",
+        "scan_complete": null,
+        "selected_by_label": {
+          "CLEAN": 20127,
+          "HATE": 31120
+        },
+        "selection_jsonl": "data/processed/vietnamese_nonstandard_v1/train.jsonl"
+      },
+      "schema": [
+        "texts",
+        "labels",
+        "probs"
+      ],
+      "source_split": "train",
+      "usage_notice": "Research-only source; authors describe model-generated labels as analysis labels, not downstream fine-tuning labels."
+    },
+    "uitnlp/vihsd": {
+      "accepted_label_counts": {
+        "CLEAN": 19759,
+        "HATE": 4042
+      },
+      "annotation_type": "human",
+      "conflict_policy": "quarantine",
+      "mapped_label_counts": {
+        "CLEAN": 19886,
+        "HATE": 4162
+      },
+      "quarantined_count": 247,
+      "raw_label_counts": {
+        "CLEAN": 19886,
+        "HATE": 2556,
+        "OFFENSIVE": 1606
+      },
+      "revision": "88e81b36ca376867640dad9df295e0f7d499ab80",
+      "schema": [
+        "free_text",
+        "label_id"
+      ],
+      "source_split": "train"
+    }
+  },
+  "split_policy": {
+    "human_test_ratio": 0.1,
+    "human_validation_ratio": 0.1,
+    "method": "duplicate-group atomic deterministic hashing",
+    "weak_ai_rows": "train_only"
+  }
+}
