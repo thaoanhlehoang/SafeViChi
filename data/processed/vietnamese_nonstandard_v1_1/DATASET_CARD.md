@@ -8,14 +8,23 @@ pretty_name: SafeViChi Vietnamese Non-standard / Perturbed Text Dataset
 
 # SafeViChi Vietnamese Non-standard / Perturbed Text Dataset
 
-Version: `1.0.0`
-Fingerprint: `01ad565f43f6479d970cef41a412f533925f3db2b3776ff235c878bd79e2141a`
+Version: `1.1.0`
+Fingerprint: `2874b1228a2ea6c51eaff00178c3d90d8d37a5336adbe10d24934d0ac62b5268`
 
 This build contains 75,048 controlled surface variants for
 binary `HATE`/`CLEAN` classification. Every accepted row contains its original
 text, perturbed text, source/revision/row provenance, mapped and original label,
 sequential edit trace, per-row random seed, duplicate group, and generator
 version.
+
+The `teencode_lexical` transform was applied to
+34,569/69,133 eligible rows
+(50.00%), using the validated
+`teencode_dict` resource at SHA-256 `23fcc07f33100fc61ca915e9f64dfb69d72387f01a41b61dc192f73c83160de3`.
+The compiler accepted 589 of
+625 source pairs; exclusion counts are
+recorded in `manifest.json` and pair-level details in
+`teencode_lexicon_audit.json`.
 
 ## Sources and label provenance
 
@@ -48,4 +57,10 @@ training. Validation and test contain human-labelled ViHSD rows only.
 `text`, `original_text`, `label`, `label_original`, `annotation_type`,
 `source_dataset`, `source_revision`, `source_row_id`, `target_split`,
 `perturbation_types`, `perturbation_edits`, `perturbation_count`, `random_seed`,
-`generator_version`, `duplicate_group_id`, and `quality_flags`.
+`generator_version`, `teencode_eligible`, `teencode_targeted`,
+`teencode_applied`, `duplicate_group_id`, and `quality_flags`.
+
+## Compact CSV exports
+
+`train.csv`, `validation.csv`, and `test.csv` mirror their corresponding
+Parquet splits while retaining only `text`, `original_text`, and `label`.

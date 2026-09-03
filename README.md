@@ -18,7 +18,7 @@ Văn bản đầu vào
     → Đầu ra: nhãn rủi ro + cụm từ gây cảnh báo
 ```
 
-Bộ sinh biến thể phi chuẩn có kiểm soát (11 hiện tượng cơ sở + chế độ mixed,
+Bộ sinh biến thể phi chuẩn có kiểm soát (12 hiện tượng cơ sở + chế độ mixed,
 dùng cho benchmark và huấn luyện chống nhiễu) nằm ở `src/variant_generator/`.
 Pipeline dựng corpus 75.048 mẫu nằm ở `src/dataset_builder/`.
 
@@ -32,7 +32,7 @@ safevichi/
 │   └── variants/       # Dữ liệu biến thể sinh ra từ variant_generator
 ├── src/
 │   ├── normalization/      # Lớp chuẩn hóa rule-based (Mục 3.4 trong plan)
-│   ├── variant_generator/  # 11 hiện tượng phi chuẩn + mixed, có edit trace
+│   ├── variant_generator/  # 12 hiện tượng phi chuẩn + mixed, có edit trace
 │   ├── dataset_builder/     # lấy mẫu, map nhãn, dedup/split, augmentation, QA
 │   ├── classifier/         # Fine-tune ViSoBERT + huấn luyện đối kháng (Mục 3.5)
 │   ├── explainer/          # Module giải thích occlusion-based (Mục 3.6)
@@ -74,9 +74,12 @@ CSV 8,1 GB):
 python -m src.dataset_builder.build
 ```
 
-Kết quả mặc định nằm trong `data/processed/vietnamese_nonstandard_v1/`, gồm
-JSONL/Parquet theo split, `manifest.json`, `qa_report.json`, quarantine chỉ chứa
-hash, dataset card và worksheet kiểm tra thủ công 250 mẫu. Chạy kiểm thử bằng:
+Mặc định, `teencode_dict.json` được biên dịch thành luật sinh ngược và áp dụng
+cho khoảng 50% mẫu đủ điều kiện, phân tầng theo nguồn/nhãn/split. Kết quả nằm
+trong `data/processed/vietnamese_nonstandard_v1_1/`, gồm JSONL/Parquet đầy đủ,
+CSV rút gọn (`text`, `original_text`, `label`) theo split, `manifest.json`,
+`qa_report.json`, quarantine chỉ chứa hash, `teencode_lexicon_audit.json`,
+dataset card và worksheet kiểm tra thủ công 250 mẫu. Chạy kiểm thử bằng:
 
 ```powershell
 python -m pytest -q --basetemp .pytest_tmp

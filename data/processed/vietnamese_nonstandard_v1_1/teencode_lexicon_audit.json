@@ -1,0 +1,201 @@
+{
+  "excluded_pairs": [
+    {
+      "reason": "curated_conflict",
+      "standard": "vô",
+      "variant": "dzô"
+    },
+    {
+      "reason": "curated_conflict",
+      "standard": "nước",
+      "variant": "nc"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "biết",
+      "variant": "bt"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "biết",
+      "variant": "bít"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "cũng",
+      "variant": "cx"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "về",
+      "variant": "dìa"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "không",
+      "variant": "hông"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "hiểu",
+      "variant": "hỉu"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "không",
+      "variant": "hổng"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "yêu",
+      "variant": "iu"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "gì",
+      "variant": "j"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "không",
+      "variant": "k"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "không",
+      "variant": "ko"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "mình",
+      "variant": "mk"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "người",
+      "variant": "ng"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "nhiều",
+      "variant": "nhìu"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "quá",
+      "variant": "qá"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "rồi",
+      "variant": "rùi"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "thôi",
+      "variant": "thui"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "với",
+      "variant": "vs"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "vậy",
+      "variant": "zậy"
+    },
+    {
+      "reason": "curated_duplicate",
+      "standard": "được",
+      "variant": "đc"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "trai",
+      "variant": "dai"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "đâu",
+      "variant": "dou"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "trai",
+      "variant": "giai"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "nghĩ",
+      "variant": "ngĩ"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "bay",
+      "variant": "pay"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "quỷ",
+      "variant": "quy"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "si",
+      "variant": "see"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "qua",
+      "variant": "wua"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "trai",
+      "variant": "zai"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "trai",
+      "variant": "zaiiii"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "đâu",
+      "variant": "âu"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "đê",
+      "variant": "đia"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "đâu",
+      "variant": "đou"
+    },
+    {
+      "reason": "normalization_chain",
+      "standard": "đâu",
+      "variant": "đôu"
+    }
+  ],
+  "summary": {
+    "accepted_pair_count": 589,
+    "compiled_direction": "standard_to_teencode_variants",
+    "dictionary_direction": "teencode_to_standard",
+    "excluded_pair_count": 36,
+    "excluded_reason_counts": {
+      "curated_conflict": 2,
+      "curated_duplicate": 20,
+      "normalization_chain": 14
+    },
+    "input_pair_count": 625,
+    "resource_name": "teencode_dict",
+    "resource_version": "1.0.0",
+    "source_path": "D:\\SafeViChi\\src\\normalization\\teencode_dict.json",
+    "source_sha256": "23fcc07f33100fc61ca915e9f64dfb69d72387f01a41b61dc192f73c83160de3",
+    "standard_form_count": 271
+  }
+}

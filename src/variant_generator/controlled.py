@@ -10,13 +10,21 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
 from difflib import SequenceMatcher
+from functools import lru_cache
+from pathlib import Path
 import random
 import re
 import unicodedata
 from typing import Callable, Iterable, Mapping, Sequence
 
+from .teencode import (
+    DEFAULT_TEENCODE_DICT_PATH,
+    TeencodeLexicon,
+    compile_teencode_lexicon,
+)
 
-GENERATOR_VERSION = "1.0.0"
+
+GENERATOR_VERSION = "1.1.0"
 
 ABBREVIATIONS: Mapping[str, Sequence[str]] = {
     "không": ("ko", "k"),
@@ -75,6 +83,31 @@ CONTEXT_VARIANTS: Mapping[str, Sequence[str]] = {
     "anh em": ("ae",),
 }
 
+_CURATED_LEXICAL_MAPPINGS = (
+    ABBREVIATIONS,
+    INTENTIONAL_SPELLINGS,
+    PHONETIC_SPELLINGS,
+    DIALECTAL_VARIANTS,
+    SLANG_VARIANTS,
+    CONTEXT_VARIANTS,
+)
+
+
+@lru_cache(maxsize=8)
+def _load_teencode_lexicon_cached(path: str) -> TeencodeLexicon:
+    return compile_teencode_lexicon(
+        path,
+        curated_mappings=_CURATED_LEXICAL_MAPPINGS,
+    )
+
+
+def load_teencode_lexicon(
+    path: str | Path = DEFAULT_TEENCODE_DICT_PATH,
+) -> TeencodeLexicon:
+    """Compile and cache a dictionary with the generator's curated rules."""
+
+    return _load_teencode_lexicon_cached(str(Path(path).resolve()))
+
 BASE_PERTURBATION_TYPES = (
     "abbreviation_clipping",
     "intentional_spelling",
@@ -87,6 +120,7 @@ BASE_PERTURBATION_TYPES = (
     "boundary_variation",
     "context_dependent",
     "typographical_noise",
+    "teencode_lexical",
 )
 
 WORD_RE = re.compile(r"[^\W\d_]+(?:['’][^\W\d_]+)?", re.UNICODE)
@@ -155,9 +189,17 @@ class Edit:
     after_end: int
     before: str
     after: str
+    resource_name: str | None = None
+    resource_version: str | None = None
+    resource_sha256: str | None = None
+    canonical_form: str | None = None
+    selected_variant: str | None = None
+    candidate_count: int | None = None
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        return {
+            key: value for key, value in asdict(self).items() if value is not None
+        }
 
 
 @dataclass(frozen=True)
@@ -247,12 +289,7 @@ def _substitute_from_map(
     mapping: Mapping[str, Sequence[str]],
     perturbation_type: str,
 ) -> tuple[str, Edit] | None:
-    matches: list[tuple[re.Match[str], str, Sequence[str]]] = []
-    protected = [(match.start(), match.end()) for match in PROTECTED_RE.finditer(text)]
-    for source, variants in mapping.items():
-        for match in _phrase_pattern(source).finditer(text):
-            if not _overlaps_protected(match.start(), match.end(), protected):
-                matches.append((match, source, variants))
+    matches = _substitution_matches(text, mapping)
     if not matches:
         return None
     match, source, variants = rng.choice(matches)
@@ -265,6 +302,70 @@ def _substitute_from_map(
         perturbation_type,
         f"{perturbation_type}:{source}",
     )
+
+
+def _substitution_matches(
+    text: str,
+    mapping: Mapping[str, Sequence[str]],
+) -> list[tuple[re.Match[str], str, Sequence[str]]]:
+    matches: list[tuple[re.Match[str], str, Sequence[str]]] = []
+    protected = [(match.start(), match.end()) for match in PROTECTED_RE.finditer(text)]
+    for source, variants in sorted(mapping.items(), key=lambda item: item[0].casefold()):
+        for match in _phrase_pattern(source).finditer(text):
+            if not _overlaps_protected(match.start(), match.end(), protected):
+                matches.append((match, source, variants))
+    return matches
+
+
+@lru_cache(maxsize=8)
+def _compiled_teencode_pattern(standard_forms: tuple[str, ...]) -> re.Pattern[str]:
+    alternatives = []
+    for standard in sorted(standard_forms, key=lambda value: (-len(value), value.casefold())):
+        pieces = [re.escape(piece) for piece in standard.split()]
+        alternatives.append(r"\s+".join(pieces))
+    body = "|".join(alternatives)
+    return re.compile(rf"(?<!\w)(?:{body})(?!\w)", re.IGNORECASE | re.UNICODE)
+
+
+def _teencode_substitution_matches(
+    text: str,
+    lexicon: TeencodeLexicon,
+) -> list[tuple[re.Match[str], str, Sequence[str]]]:
+    standard_lookup = {
+        re.sub(r"\s+", " ", standard).casefold(): standard
+        for standard in lexicon.variants_by_standard
+    }
+    matches: list[tuple[re.Match[str], str, Sequence[str]]] = []
+    for match in _word_spans(text):
+        standard = standard_lookup.get(match.group().casefold())
+        if standard is not None:
+            matches.append((match, standard, lexicon.variants_by_standard[standard]))
+
+    phrase_forms = tuple(
+        standard for standard in lexicon.variants_by_standard if " " in standard
+    )
+    if phrase_forms:
+        pattern = _compiled_teencode_pattern(tuple(sorted(phrase_forms)))
+        protected = [
+            (match.start(), match.end()) for match in PROTECTED_RE.finditer(text)
+        ]
+        for match in pattern.finditer(text):
+            if _overlaps_protected(match.start(), match.end(), protected):
+                continue
+            lookup = re.sub(r"\s+", " ", match.group()).casefold()
+            standard = standard_lookup[lookup]
+            matches.append((match, standard, lexicon.variants_by_standard[standard]))
+    matches.sort(key=lambda item: (item[0].start(), -(item[0].end() - item[0].start())))
+    non_overlapping: list[tuple[re.Match[str], str, Sequence[str]]] = []
+    for candidate in matches:
+        span = candidate[0]
+        if any(
+            span.start() < kept[0].end() and span.end() > kept[0].start()
+            for kept in non_overlapping
+        ):
+            continue
+        non_overlapping.append(candidate)
+    return non_overlapping
 
 
 def _remove_marks(value: str) -> str:
@@ -299,6 +400,128 @@ def _slang(text: str, rng: random.Random) -> tuple[str, Edit] | None:
 
 def _context_dependent(text: str, rng: random.Random) -> tuple[str, Edit] | None:
     return _substitute_from_map(text, rng, CONTEXT_VARIANTS, "context_dependent")
+
+
+def _iter_safe_teencode_matches(
+    text: str,
+    label: str,
+    lexicon: TeencodeLexicon,
+) -> Iterable[tuple[re.Match[str], str, tuple[tuple[str, str, Edit], ...]]]:
+    for match, standard, variants in _teencode_substitution_matches(text, lexicon):
+        safe_variants: list[tuple[str, str, Edit]] = []
+        for variant in variants:
+            candidate, edit = _make_teencode_candidate(
+                text, match, standard, variant, len(variants), lexicon
+            )
+            if _passes_teencode_candidate_guard(text, candidate, edit, label):
+                safe_variants.append((variant, candidate, edit))
+        if safe_variants:
+            yield match, standard, tuple(safe_variants)
+
+
+def _safe_teencode_matches(
+    text: str,
+    label: str,
+    lexicon: TeencodeLexicon,
+) -> list[tuple[re.Match[str], str, tuple[tuple[str, str, Edit], ...]]]:
+    return list(_iter_safe_teencode_matches(text, label, lexicon))
+
+
+def _has_safe_teencode_match(
+    text: str,
+    label: str,
+    lexicon: TeencodeLexicon,
+) -> bool:
+    for match, standard, variants in _teencode_substitution_matches(text, lexicon):
+        for variant in variants:
+            candidate, edit = _make_teencode_candidate(
+                text, match, standard, variant, len(variants), lexicon
+            )
+            if _passes_teencode_candidate_guard(text, candidate, edit, label):
+                return True
+    return False
+
+
+def _make_teencode_candidate(
+    text: str,
+    match: re.Match[str],
+    standard: str,
+    variant: str,
+    candidate_count: int,
+    lexicon: TeencodeLexicon,
+) -> tuple[str, Edit]:
+    candidate, edit = _make_edit(
+        text,
+        match.start(),
+        match.end(),
+        variant,
+        "teencode_lexical",
+        lexicon.rule_id(standard, variant),
+    )
+    return candidate, replace(
+        edit,
+        resource_name="teencode_dict",
+        resource_version=lexicon.version,
+        resource_sha256=lexicon.source_sha256,
+        canonical_form=edit.before,
+        selected_variant=edit.after,
+        candidate_count=candidate_count,
+    )
+
+
+def _teencode_lexical(
+    text: str,
+    rng: random.Random,
+    label: str,
+    lexicon: TeencodeLexicon,
+) -> tuple[str, Edit] | None:
+    matches = _safe_teencode_matches(text, label, lexicon)
+    if not matches:
+        return None
+    _, _, variants = rng.choice(matches)
+    _, candidate, edit = rng.choice(variants)
+    return candidate, edit
+
+
+def _passes_teencode_candidate_guard(
+    original: str,
+    candidate: str,
+    edit: Edit,
+    label: str,
+) -> bool:
+    """Fast equivalent of the general guard for a single lexical replacement."""
+
+    if not candidate.strip() or candidate == original:
+        return False
+    original_form = _similarity_form(original)
+    candidate_form = _similarity_form(candidate)
+    if not original_form or not candidate_form:
+        return passes_label_preservation_guard(original, candidate, label)
+    length_ratio = len(candidate_form) / len(original_form)
+    maximum_ratio = (
+        8.0 if len(original_form) <= 2 else 3.0 if len(original_form) <= 4 else 1.8
+    )
+    if not 0.55 <= length_ratio <= maximum_ratio:
+        return False
+    if label.upper() == "CLEAN" and (_risk_tokens(candidate) - _risk_tokens(original)):
+        return False
+
+    minimum_similarity = (
+        0.20
+        if len(original_form) <= 2
+        else 0.45
+        if len(original_form) <= 4
+        else 0.55
+    )
+    unchanged_length = max(
+        0, len(original_form) - len(_similarity_form(edit.before))
+    )
+    conservative_similarity = (
+        2 * unchanged_length / (len(original_form) + len(candidate_form))
+    )
+    if conservative_similarity >= minimum_similarity:
+        return True
+    return passes_label_preservation_guard(original, candidate, label)
 
 
 def _expressive_lengthening(text: str, rng: random.Random) -> tuple[str, Edit] | None:
@@ -568,8 +791,21 @@ def replay_edits(original_text: str, edits: Iterable[Edit]) -> str:
 class ControlledPerturber:
     """Create stochastic, context-aware, reproducible surface variants."""
 
-    def __init__(self, *, generator_version: str = GENERATOR_VERSION) -> None:
+    def __init__(
+        self,
+        *,
+        generator_version: str = GENERATOR_VERSION,
+        teencode_lexicon: TeencodeLexicon | None = None,
+    ) -> None:
         self.generator_version = generator_version
+        self.teencode_lexicon = teencode_lexicon or load_teencode_lexicon()
+
+    def is_teencode_eligible(self, text: str, label: str) -> bool:
+        """Return whether at least one safe dictionary substitution exists."""
+
+        if label.upper() not in {"HATE", "CLEAN"}:
+            raise ValueError(f"Unsupported target label: {label!r}")
+        return _has_safe_teencode_match(text, label, self.teencode_lexicon)
 
     def perturb(
         self,
@@ -580,6 +816,7 @@ class ControlledPerturber:
         required_type: str | None = None,
         min_operations: int = 1,
         max_operations: int = 3,
+        disabled_types: Iterable[str] = (),
     ) -> PerturbationResult:
         if label.upper() not in {"HATE", "CLEAN"}:
             raise ValueError(f"Unsupported target label: {label!r}")
@@ -590,6 +827,13 @@ class ControlledPerturber:
         if min_operations < 1 or max_operations < min_operations:
             raise ValueError("Expected 1 <= min_operations <= max_operations")
 
+        disabled = set(disabled_types)
+        unknown_disabled = disabled - set(BASE_PERTURBATION_TYPES)
+        if unknown_disabled:
+            raise ValueError(f"Unknown disabled perturbation types: {unknown_disabled}")
+        if required_type in disabled:
+            raise ValueError("A required perturbation type cannot also be disabled")
+
         rng = random.Random(seed)
         word_count = len(_word_spans(text))
         safe_max = 1 if word_count <= 2 else 2 if word_count <= 7 else max_operations
@@ -598,7 +842,13 @@ class ControlledPerturber:
         if required_type == "mixed":
             desired_count = max(2, desired_count)
 
-        order = list(BASE_PERTURBATION_TYPES)
+        order = [
+            perturbation_type
+            for perturbation_type in BASE_PERTURBATION_TYPES
+            if perturbation_type not in disabled
+        ]
+        if not order:
+            raise PerturbationError("All perturbation types are disabled")
         rng.shuffle(order)
         if required_type and required_type != "mixed":
             order.remove(required_type)
@@ -610,14 +860,19 @@ class ControlledPerturber:
         # A second shuffled pass lets a failed required dictionary rule fall
         # back to a universally applicable character-level transformation.
         candidates = order + random.Random(seed ^ 0x9E3779B97F4A7C15).sample(
-            list(BASE_PERTURBATION_TYPES), len(BASE_PERTURBATION_TYPES)
+            order, len(order)
         )
         for perturbation_type in candidates:
             if len(edits) >= desired_count:
                 break
             if perturbation_type in used_types:
                 continue
-            transformed = TRANSFORMS[perturbation_type](current, rng)
+            if perturbation_type == "teencode_lexical":
+                transformed = _teencode_lexical(
+                    current, rng, label, self.teencode_lexicon
+                )
+            else:
+                transformed = TRANSFORMS[perturbation_type](current, rng)
             if transformed is None:
                 continue
             candidate, edit = transformed
@@ -662,6 +917,7 @@ __all__ = [
     "GENERATOR_VERSION",
     "PerturbationError",
     "PerturbationResult",
+    "load_teencode_lexicon",
     "passes_label_preservation_guard",
     "replay_edits",
 ]

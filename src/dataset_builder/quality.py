@@ -14,8 +14,10 @@ from typing import Mapping, Sequence
 from src.variant_generator.controlled import (
     BASE_PERTURBATION_TYPES,
     Edit,
+    load_teencode_lexicon,
     replay_edits,
 )
+from src.variant_generator.teencode import TeencodeLexicon
 
 from .sources import canonical_text
 
@@ -50,10 +52,15 @@ def run_automated_qa(
     *,
     target_label_counts: Mapping[str, int],
     require_full_type_coverage: bool = True,
+    teencode_lexicon: TeencodeLexicon | None = None,
+    teencode_target_rate: float | None = None,
 ) -> dict[str, object]:
     """Validate hard invariants and return aggregate audit evidence."""
 
     errors: list[str] = []
+    lexicon = teencode_lexicon or load_teencode_lexicon()
+    if teencode_target_rate is not None and not 0.0 <= teencode_target_rate <= 1.0:
+        raise ValueError("teencode_target_rate must be between 0 and 1")
     labels = Counter(str(row.get("label")) for row in rows)
     expected_total = sum(target_label_counts.values())
     if len(rows) != expected_total:
@@ -73,6 +80,12 @@ def run_automated_qa(
     similarities: list[float] = []
     type_counts: Counter[str] = Counter()
     mode_counts: Counter[str] = Counter()
+    teencode_eligible_by_stratum: Counter[tuple[str, str, str]] = Counter()
+    teencode_targeted_by_stratum: Counter[tuple[str, str, str]] = Counter()
+    teencode_applied_by_stratum: Counter[tuple[str, str, str]] = Counter()
+    teencode_canonical_forms: Counter[str] = Counter()
+    teencode_variants: Counter[str] = Counter()
+    teencode_edit_count = 0
 
     for index, row in enumerate(rows):
         sample_id = str(row.get("sample_id", f"row-{index}"))
@@ -93,11 +106,44 @@ def run_automated_qa(
                 edits = [Edit(**edit) for edit in edit_dicts]
                 if replay_edits(original, edits) != perturbed:
                     raise ValueError("replayed output differs")
+                for edit in edits:
+                    if edit.perturbation_type != "teencode_lexical":
+                        continue
+                    teencode_edit_count += 1
+                    if edit.resource_name != "teencode_dict":
+                        errors.append(
+                            f"{sample_id}: teencode edit has invalid resource_name"
+                        )
+                    if edit.resource_version != lexicon.version:
+                        errors.append(
+                            f"{sample_id}: teencode edit has a resource version mismatch"
+                        )
+                    if edit.resource_sha256 != lexicon.source_sha256:
+                        errors.append(
+                            f"{sample_id}: teencode edit has a resource hash mismatch"
+                        )
+                    canonical = edit.canonical_form or edit.before
+                    variant = edit.selected_variant or edit.after
+                    if not lexicon.normalizes_pair(variant, canonical):
+                        errors.append(
+                            f"{sample_id}: teencode edit does not round-trip through the lexicon"
+                        )
+                    if edit.rule_id != lexicon.rule_id(canonical, variant):
+                        errors.append(
+                            f"{sample_id}: teencode edit rule_id is inconsistent"
+                        )
+                    if not edit.candidate_count or edit.candidate_count < 1:
+                        errors.append(
+                            f"{sample_id}: teencode edit is missing candidate_count"
+                        )
+                    teencode_canonical_forms[canonical.casefold()] += 1
+                    teencode_variants[variant.casefold()] += 1
                 replayable_rows += 1
             except (TypeError, ValueError) as error:
                 errors.append(f"{sample_id}: invalid edit trace ({error})")
 
         types = row.get("perturbation_types")
+        type_values = [str(item) for item in types] if isinstance(types, list) else []
         if not isinstance(types, list) or not types:
             errors.append(f"{sample_id}: perturbation_types is empty")
         else:
@@ -115,6 +161,24 @@ def run_automated_qa(
             errors.append(f"{sample_id}: unexpected binary label {row.get('label')!r}")
 
         split = str(row.get("target_split"))
+        stratum = (str(row.get("source_dataset")), str(row.get("label")), split)
+        teencode_eligible = bool(row.get("teencode_eligible", False))
+        teencode_targeted = bool(row.get("teencode_targeted", False))
+        teencode_applied = bool(row.get("teencode_applied", False))
+        if teencode_eligible:
+            teencode_eligible_by_stratum[stratum] += 1
+        if teencode_targeted:
+            teencode_targeted_by_stratum[stratum] += 1
+        if teencode_applied:
+            teencode_applied_by_stratum[stratum] += 1
+        type_reports_applied = "teencode_lexical" in type_values
+        if teencode_applied != type_reports_applied:
+            errors.append(f"{sample_id}: teencode_applied disagrees with edit types")
+        if teencode_targeted and not teencode_eligible:
+            errors.append(f"{sample_id}: ineligible row was targeted for teencode")
+        if teencode_applied != teencode_targeted:
+            errors.append(f"{sample_id}: teencode target was not fulfilled exactly")
+
         group_id = str(row.get("duplicate_group_id"))
         previous_split = group_splits.setdefault(group_id, split)
         if previous_split != split:
@@ -131,13 +195,60 @@ def run_automated_qa(
 
         similarities.append(_similarity(original, perturbed))
 
-    missing_types = sorted(set(BASE_PERTURBATION_TYPES) - set(type_counts))
+    expected_types = set(BASE_PERTURBATION_TYPES)
+    if teencode_target_rate == 0.0:
+        expected_types.discard("teencode_lexical")
+    missing_types = sorted(expected_types - set(type_counts))
     if require_full_type_coverage and missing_types:
         errors.append(f"missing perturbation types: {missing_types}")
     if require_full_type_coverage and not mode_counts.get("mixed"):
         errors.append("no mixed perturbation samples were generated")
     if weak_eval_rows:
         errors.append(f"{weak_eval_rows} weak-label rows are present in validation/test")
+
+    all_teencode_strata = sorted(
+        set(teencode_eligible_by_stratum)
+        | set(teencode_targeted_by_stratum)
+        | set(teencode_applied_by_stratum)
+    )
+    teencode_strata: list[dict[str, object]] = []
+    for source, label, split in all_teencode_strata:
+        key = (source, label, split)
+        eligible_count = teencode_eligible_by_stratum[key]
+        targeted_count = teencode_targeted_by_stratum[key]
+        applied_count = teencode_applied_by_stratum[key]
+        expected_target = (
+            int(eligible_count * teencode_target_rate + 0.5)
+            if teencode_target_rate is not None
+            else None
+        )
+        if expected_target is not None and targeted_count != expected_target:
+            errors.append(
+                "teencode quota mismatch for "
+                f"{source}/{label}/{split}: targeted={targeted_count}, "
+                f"expected={expected_target}"
+            )
+        if applied_count != targeted_count:
+            errors.append(
+                "teencode application mismatch for "
+                f"{source}/{label}/{split}: applied={applied_count}, "
+                f"targeted={targeted_count}"
+            )
+        teencode_strata.append(
+            {
+                "source_dataset": source,
+                "label": label,
+                "target_split": split,
+                "eligible_count": eligible_count,
+                "targeted_count": targeted_count,
+                "applied_count": applied_count,
+                "expected_target_count": expected_target,
+            }
+        )
+
+    teencode_eligible_count = sum(teencode_eligible_by_stratum.values())
+    teencode_targeted_count = sum(teencode_targeted_by_stratum.values())
+    teencode_applied_count = sum(teencode_applied_by_stratum.values())
 
     similarities_sorted = sorted(similarities)
 
@@ -160,6 +271,26 @@ def run_automated_qa(
         "annotation_split_counts": _nested_counts(rows, "annotation_type", "target_split"),
         "perturbation_type_counts": dict(type_counts),
         "perturbation_mode_counts": dict(mode_counts),
+        "teencode_lexical": {
+            "requested_target_rate": teencode_target_rate,
+            "eligible_count": teencode_eligible_count,
+            "targeted_count": teencode_targeted_count,
+            "applied_count": teencode_applied_count,
+            "applied_among_eligible_rate": round(
+                teencode_applied_count / teencode_eligible_count, 6
+            )
+            if teencode_eligible_count
+            else 0.0,
+            "applied_among_all_rows_rate": round(
+                teencode_applied_count / len(rows), 6
+            )
+            if rows
+            else 0.0,
+            "edit_count": teencode_edit_count,
+            "distinct_canonical_forms": len(teencode_canonical_forms),
+            "distinct_variants": len(teencode_variants),
+            "by_stratum": teencode_strata,
+        },
         "missing_perturbation_types": missing_types,
         "weak_rows_in_evaluation": weak_eval_rows,
         "exact_perturbed_duplicate_rows": output_duplicates,
@@ -218,6 +349,20 @@ def select_human_review_rows(
         add_first(
             lambda row, value=perturbation_type: value in row["perturbation_types"]
         )
+    add_first(
+        lambda row: any(
+            edit.get("perturbation_type") == "teencode_lexical"
+            and len(str(edit.get("selected_variant", edit.get("after", "")))) <= 2
+            for edit in row.get("perturbation_edits", [])
+        )
+    )
+    add_first(
+        lambda row: any(
+            edit.get("perturbation_type") == "teencode_lexical"
+            and int(edit.get("candidate_count", 0)) >= 10
+            for edit in row.get("perturbation_edits", [])
+        )
+    )
     add_first(lambda row: row["perturbation_mode"] == "mixed")
 
     for row in ordered:

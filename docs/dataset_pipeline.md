@@ -80,7 +80,7 @@ manifest ghi rõ đây là lượt recovery.
 ## Augmentation và label preservation
 
 Mỗi dòng có từ một đến ba edit cục bộ. Không có paraphrase tự do và không chèn
-nội dung độc hại mới. Mười một loại cơ sở gồm:
+nội dung độc hại mới. Mười hai loại cơ sở gồm:
 
 1. `abbreviation_clipping`;
 2. `intentional_spelling`;
@@ -92,7 +92,23 @@ nội dung độc hại mới. Mười một loại cơ sở gồm:
 8. `surface_obfuscation`;
 9. `boundary_variation`;
 10. `context_dependent`;
-11. `typographical_noise`.
+11. `typographical_noise`;
+12. `teencode_lexical`.
+
+`src/normalization/teencode_dict.json` có chiều `teencode → dạng chuẩn`. Trước
+khi sinh dữ liệu, compiler chuẩn hóa NFC, phát hiện xung đột/chain, loại các cặp
+trùng với luật curated rồi tạo index ổn định `dạng chuẩn → các biến thể
+teencode`. Với dictionary hiện tại, 589/625 cặp được chấp nhận; 36 cặp bị loại
+có lý do cụ thể (20 trùng curated, 2 xung đột curated, 14 normalization chain).
+`teencode_lexicon_audit.json` ghi summary và toàn bộ cặp bị loại để có thể rà
+soát thủ công mà không âm thầm bỏ qua xung đột.
+
+Mặc định `teencode_lexical` được bắt buộc trên quota làm tròn 50% số mẫu đủ điều
+kiện trong từng nhóm `(source_dataset, label, target_split)`. Mẫu được chọn bằng
+hash ổn định từ master seed và provenance nguồn. Mẫu không thuộc quota bị tắt
+riêng loại này, vì vậy số áp dụng không bị tăng ngoài kế hoạch do thứ tự random
+của các transform. Trong mỗi edit, generator chọn span chuẩn trước rồi mới chọn
+biến thể; standard có nhiều biến thể không được ưu tiên chỉ vì bucket lớn.
 
 `perturbation_mode=mixed` có ít nhất hai loại edit thực tế. Các phép thay từ/cụm
 từ chỉ dùng bảng tương đương đã duyệt và khớp trọn token/cụm; URL, email,
@@ -113,6 +129,11 @@ Mỗi phần tử `perturbation_edits` chứa:
 - `before_start`, `before_end`: offset trong trạng thái text trước bước đó;
 - `after_start`, `after_end`: offset sau thay thế;
 - `before`, `after`.
+
+Edit `teencode_lexical` còn có `resource_name`, `resource_version`,
+`resource_sha256`, `canonical_form`, `selected_variant` và `candidate_count`.
+`rule_id` là hash ổn định của cặp, và QA bắt buộc cặp sinh ra ánh xạ trực tiếp
+trở lại `canonical_form` trong đúng dictionary đã ghi hash.
 
 Áp lần lượt trace lên `original_text` phải thu được chính xác `text`. Các trường
 chính khác gồm:
@@ -152,7 +173,9 @@ Build chỉ hoàn tất khi các invariant sau qua hết:
 
 - đúng tổng và quota nhãn;
 - 100% mẫu có thay đổi, không rỗng và có trace replay được;
-- đủ 11 loại perturbation và có mẫu mixed;
+- đủ 12 loại perturbation và có mẫu mixed;
+- quota `teencode_lexical` đúng theo từng nguồn/nhãn/split, mọi target đều được
+  áp dụng và mọi edit đều round-trip qua dictionary;
 - không group nào đi qua nhiều split;
 - không exact hoặc near-duplicate group nào của cả source lẫn perturbed output
   xuất hiện ở hai split;
@@ -183,6 +206,14 @@ python -m src.dataset_builder.build
 python -m pytest -q --basetemp .pytest_tmp
 ```
 
+Hai tham số liên quan đến teencode:
+
+```powershell
+python -m src.dataset_builder.build `
+  --teencode-dict src/normalization/teencode_dict.json `
+  --teencode-rate 0.50
+```
+
 Ví dụ dùng Parquet VOZ đã tải và đổi seed:
 
 ```powershell
@@ -196,3 +227,7 @@ python -m src.dataset_builder.build `
 
 Không dùng `--overwrite` nếu cần giữ artifact cũ. Khi dùng, pipeline chỉ thay
 thế các tên artifact đã biết trong output directory, không xóa cả thư mục.
+
+Artifact phát hành `v1_1` còn có `train.csv`, `validation.csv` và `test.csv`
+được xuất một lần từ các file Parquet tương ứng. Ba file chỉ giữ đúng các cột
+`text`, `original_text`, `label`; chúng không phải output mặc định của build CLI.

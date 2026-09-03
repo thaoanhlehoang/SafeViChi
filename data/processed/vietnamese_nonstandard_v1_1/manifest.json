@@ -4,15 +4,17 @@
     "near_duplicate_min_length": 12,
     "near_duplicate_threshold": 0.9,
     "oversample_factor": 1.25,
+    "teencode_dict": "src/normalization/teencode_dict.json",
+    "teencode_rate": 0.5,
     "vihsd_csv": "data/raw/vihsd/train.csv",
     "voz_max_rows": null,
     "voz_min_confidence": 0.9,
     "voz_parquet": [],
     "voz_selection_jsonl": "data/processed/vietnamese_nonstandard_v1/train.jsonl"
   },
-  "dataset_fingerprint": "01ad565f43f6479d970cef41a412f533925f3db2b3776ff235c878bd79e2141a",
+  "dataset_fingerprint": "2874b1228a2ea6c51eaff00178c3d90d8d37a5336adbe10d24934d0ac62b5268",
   "dataset_name": "safevichi-vietnamese-nonstandard",
-  "dataset_version": "1.0.0",
+  "dataset_version": "1.1.0",
   "distribution_status": "rights_and_weak_label_review_required_before_release",
   "duplicate_grouping": {
     "duplicate_group_count": 1437,
@@ -43,8 +45,8 @@
     },
     "total": 75048
   },
-  "generated_at_utc": "2026-09-02T17:01:08.788242+00:00",
-  "generator_version": "1.0.0",
+  "generated_at_utc": "2026-09-03T16:11:13.900917+00:00",
+  "generator_version": "1.1.0",
   "human_review_required": true,
   "label_mapping": {
     "VOZ-HSD": {
@@ -57,17 +59,36 @@
       "OFFENSIVE": "HATE"
     }
   },
+  "perturbation_resources": {
+    "teencode_dict": {
+      "accepted_pair_count": 589,
+      "compiled_direction": "standard_to_teencode_variants",
+      "dictionary_direction": "teencode_to_standard",
+      "excluded_pair_count": 36,
+      "excluded_reason_counts": {
+        "curated_conflict": 2,
+        "curated_duplicate": 20,
+        "normalization_chain": 14
+      },
+      "input_pair_count": 625,
+      "resource_name": "teencode_dict",
+      "resource_version": "1.0.0",
+      "source_path": "D:\\SafeViChi\\src\\normalization\\teencode_dict.json",
+      "source_sha256": "23fcc07f33100fc61ca915e9f64dfb69d72387f01a41b61dc192f73c83160de3",
+      "standard_form_count": 271
+    }
+  },
   "perturbed_duplicate_grouping": {
-    "duplicate_group_count": 105,
-    "exact_union_edges": 7,
-    "group_count": 74831,
+    "duplicate_group_count": 120,
+    "exact_union_edges": 12,
+    "group_count": 74815,
     "jaccard_threshold": 0.9,
     "largest_group_size": 17,
     "max_hamming_distance": 8,
     "min_near_length": 12,
-    "near_union_edges": 103,
+    "near_union_edges": 114,
     "record_count": 75048,
-    "records_in_duplicate_groups": 322,
+    "records_in_duplicate_groups": 353,
     "symbolic_repetition_union_edges": 107
   },
   "quality_gate_status": "passed",
@@ -135,5 +156,90 @@
     "human_validation_ratio": 0.1,
     "method": "duplicate-group atomic deterministic hashing",
     "weak_ai_rows": "train_only"
+  },
+  "teencode_augmentation": {
+    "applied_among_all_rows_rate": 0.460625,
+    "applied_among_eligible_rate": 0.500036,
+    "applied_count": 34569,
+    "by_stratum": [
+      {
+        "applied_count": 9598,
+        "eligible_count": 19196,
+        "expected_target_count": 9598,
+        "label": "CLEAN",
+        "source_dataset": "tarudesu/VOZ-HSD",
+        "target_split": "train",
+        "targeted_count": 9598
+      },
+      {
+        "applied_count": 14972,
+        "eligible_count": 29943,
+        "expected_target_count": 14972,
+        "label": "HATE",
+        "source_dataset": "tarudesu/VOZ-HSD",
+        "target_split": "train",
+        "targeted_count": 14972
+      },
+      {
+        "applied_count": 845,
+        "eligible_count": 1690,
+        "expected_target_count": 845,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "test",
+        "targeted_count": 845
+      },
+      {
+        "applied_count": 6550,
+        "eligible_count": 13100,
+        "expected_target_count": 6550,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "train",
+        "targeted_count": 6550
+      },
+      {
+        "applied_count": 810,
+        "eligible_count": 1619,
+        "expected_target_count": 810,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "validation",
+        "targeted_count": 810
+      },
+      {
+        "applied_count": 176,
+        "eligible_count": 351,
+        "expected_target_count": 176,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "test",
+        "targeted_count": 176
+      },
+      {
+        "applied_count": 1427,
+        "eligible_count": 2853,
+        "expected_target_count": 1427,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "train",
+        "targeted_count": 1427
+      },
+      {
+        "applied_count": 191,
+        "eligible_count": 381,
+        "expected_target_count": 191,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "validation",
+        "targeted_count": 191
+      }
+    ],
+    "distinct_canonical_forms": 267,
+    "distinct_variants": 584,
+    "edit_count": 34569,
+    "eligible_count": 69133,
+    "requested_target_rate": 0.5,
+    "targeted_count": 34569
   }
 }

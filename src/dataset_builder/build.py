@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
@@ -18,7 +18,9 @@ from src.variant_generator.controlled import (
     ControlledPerturber,
     GENERATOR_VERSION,
     PerturbationError,
+    load_teencode_lexicon,
 )
+from src.variant_generator.teencode import TeencodeLexicon
 
 from .constants import (
     DATASET_VERSION,
@@ -62,6 +64,7 @@ KNOWN_OUTPUT_NAMES = {
     "manifest.json",
     "qa_report.json",
     "human_review_sample.csv",
+    "teencode_lexicon_audit.json",
     "DATASET_CARD.md",
 }
 
@@ -84,13 +87,65 @@ def _sample_id(record: SourceRecord) -> str:
     return "sv_" + hashlib.sha256(material.encode("utf-8")).hexdigest()[:24]
 
 
-def _preferred_type(master_seed: int, record: SourceRecord) -> str:
-    options = (*BASE_PERTURBATION_TYPES, "mixed")
+def _preferred_type(
+    master_seed: int,
+    record: SourceRecord,
+    *,
+    options: Sequence[str] | None = None,
+) -> str:
+    options = tuple(options or (*BASE_PERTURBATION_TYPES, "mixed"))
     material = f"{master_seed}\0primary\0{record.source_dataset}\0{record.source_row_id}"
     value = int.from_bytes(
         hashlib.blake2b(material.encode("utf-8"), digest_size=8).digest(), "big"
     )
     return options[value % len(options)]
+
+
+def _teencode_rank(master_seed: int, record: SourceRecord) -> bytes:
+    material = (
+        f"{master_seed}\0teencode-quota\0{record.source_dataset}\0"
+        f"{record.source_artifact_revision}\0{record.source_row_id}\0"
+        f"{sha256_text(record.text)}"
+    )
+    return hashlib.blake2b(material.encode("utf-8"), digest_size=16).digest()
+
+
+def _plan_teencode_quota(
+    records: Sequence[SourceRecord],
+    target_splits: Sequence[str],
+    *,
+    perturber: ControlledPerturber,
+    master_seed: int,
+    target_rate: float,
+) -> tuple[tuple[bool, ...], tuple[bool, ...]]:
+    """Select an exact rounded quota within every source/label/split stratum."""
+
+    if len(records) != len(target_splits):
+        raise ValueError("records and target_splits must have equal length")
+    if not 0.0 <= target_rate <= 1.0:
+        raise ValueError("teencode target rate must be between 0 and 1")
+
+    eligible = tuple(
+        perturber.is_teencode_eligible(record.text, record.label)
+        for record in records
+    )
+    strata: dict[tuple[str, str, str], list[int]] = defaultdict(list)
+    for index, (record, split, is_eligible) in enumerate(
+        zip(records, target_splits, eligible)
+    ):
+        if is_eligible:
+            strata[(record.source_dataset, record.label, split)].append(index)
+
+    targeted = [False] * len(records)
+    for indices in strata.values():
+        target_count = int(len(indices) * target_rate + 0.5)
+        ordered = sorted(
+            indices,
+            key=lambda index: (_teencode_rank(master_seed, records[index]), index),
+        )
+        for index in ordered[:target_count]:
+            targeted[index] = True
+    return eligible, tuple(targeted)
 
 
 def _load_cached_voz_selection(
@@ -158,26 +213,57 @@ def augment_records(
     *,
     master_seed: int,
     max_attempts: int = 36,
+    teencode_lexicon: TeencodeLexicon | None = None,
+    teencode_rate: float = 0.50,
 ) -> list[dict[str, object]]:
     """Generate one distinct, traceable variant for every accepted source row."""
 
     if not (len(records) == len(group_ids) == len(target_splits)):
         raise ValueError("records, group_ids, and target_splits must have equal length")
-    perturber = ControlledPerturber()
+    if not 0.0 <= teencode_rate <= 1.0:
+        raise ValueError("teencode_rate must be between 0 and 1")
+    lexicon = teencode_lexicon or load_teencode_lexicon()
+    perturber = ControlledPerturber(teencode_lexicon=lexicon)
+    teencode_eligible, teencode_targeted = _plan_teencode_quota(
+        records,
+        target_splits,
+        perturber=perturber,
+        master_seed=master_seed,
+        target_rate=teencode_rate,
+    )
     group_sizes = Counter(group_ids)
     output_owners: dict[str, tuple[str, str]] = {}
     rows: list[dict[str, object]] = []
-    options = (*BASE_PERTURBATION_TYPES, "mixed")
+    non_teencode_options = tuple(
+        perturbation_type
+        for perturbation_type in BASE_PERTURBATION_TYPES
+        if perturbation_type != "teencode_lexical"
+    ) + ("mixed",)
 
     for index, (record, group_id, target_split) in enumerate(
         zip(records, group_ids, target_splits)
     ):
-        preferred = _preferred_type(master_seed, record)
-        preferred_index = options.index(preferred)
+        is_teencode_target = teencode_targeted[index]
+        preferred = (
+            "teencode_lexical"
+            if is_teencode_target
+            else _preferred_type(
+                master_seed, record, options=non_teencode_options
+            )
+        )
+        preferred_index = (
+            0 if is_teencode_target else non_teencode_options.index(preferred)
+        )
         result = None
         duplicate_fallback = None
         for attempt in range(max_attempts):
-            required_type = options[(preferred_index + attempt) % len(options)]
+            required_type = (
+                "teencode_lexical"
+                if is_teencode_target
+                else non_teencode_options[
+                    (preferred_index + attempt) % len(non_teencode_options)
+                ]
+            )
             seed = _derive_seed(master_seed, record, attempt)
             try:
                 candidate = perturber.perturb(
@@ -187,6 +273,9 @@ def augment_records(
                     required_type=required_type,
                     min_operations=2 if required_type == "mixed" else 1,
                     max_operations=3,
+                    disabled_types=(
+                        () if is_teencode_target else ("teencode_lexical",)
+                    ),
                 )
             except PerturbationError:
                 continue
@@ -209,6 +298,12 @@ def augment_records(
                 "Could not create a distinct safe variant after "
                 f"{max_attempts} attempts for {record.source_dataset} row "
                 f"{record.source_row_id}."
+            )
+
+        teencode_applied = "teencode_lexical" in result.perturbation_types
+        if teencode_applied != is_teencode_target:
+            raise AssertionError(
+                "Internal error: teencode application differs from its quota plan"
             )
 
         flags: list[str] = []
@@ -245,6 +340,9 @@ def augment_records(
             "original_text_sha256": sha256_text(record.text),
             "perturbed_text_sha256": sha256_text(result.perturbed_text),
             "perturbation_primary_requested": preferred,
+            "teencode_eligible": teencode_eligible[index],
+            "teencode_targeted": is_teencode_target,
+            "teencode_applied": teencode_applied,
             "dataset_version": DATASET_VERSION,
             "quality_flags": flags,
             **metadata,
@@ -342,6 +440,8 @@ def _dataset_fingerprint(rows: Sequence[Mapping[str, object]]) -> str:
 
 def _dataset_card(manifest: Mapping[str, object]) -> str:
     final_counts = manifest["final_counts"]
+    teencode = manifest["teencode_augmentation"]
+    teencode_resource = manifest["perturbation_resources"]["teencode_dict"]
     return f"""---
 language:
 - vi
@@ -360,6 +460,15 @@ binary `HATE`/`CLEAN` classification. Every accepted row contains its original
 text, perturbed text, source/revision/row provenance, mapped and original label,
 sequential edit trace, per-row random seed, duplicate group, and generator
 version.
+
+The `teencode_lexical` transform was applied to
+{teencode['applied_count']:,}/{teencode['eligible_count']:,} eligible rows
+({teencode['applied_among_eligible_rate']:.2%}), using the validated
+`teencode_dict` resource at SHA-256 `{teencode_resource['source_sha256']}`.
+The compiler accepted {teencode_resource['accepted_pair_count']:,} of
+{teencode_resource['input_pair_count']:,} source pairs; exclusion counts are
+recorded in `manifest.json` and pair-level details in
+`teencode_lexicon_audit.json`.
 
 ## Sources and label provenance
 
@@ -392,7 +501,8 @@ training. Validation and test contain human-labelled ViHSD rows only.
 `text`, `original_text`, `label`, `label_original`, `annotation_type`,
 `source_dataset`, `source_revision`, `source_row_id`, `target_split`,
 `perturbation_types`, `perturbation_edits`, `perturbation_count`, `random_seed`,
-`generator_version`, `duplicate_group_id`, and `quality_flags`.
+`generator_version`, `teencode_eligible`, `teencode_targeted`,
+`teencode_applied`, `duplicate_group_id`, and `quality_flags`.
 """
 
 
@@ -412,6 +522,7 @@ def write_artifacts(
     rejected: Sequence[RejectedRecord],
     manifest: dict[str, object],
     qa_report: Mapping[str, object],
+    teencode_lexicon: TeencodeLexicon,
     *,
     review_size: int,
     seed: int,
@@ -429,6 +540,15 @@ def write_artifacts(
     )
     _atomic_write_json(output_dir / "qa_report.json", qa_report)
     _atomic_write_json(output_dir / "manifest.json", manifest)
+    _atomic_write_json(
+        output_dir / "teencode_lexicon_audit.json",
+        {
+            "summary": teencode_lexicon.to_manifest(),
+            "excluded_pairs": [
+                pair.to_dict() for pair in teencode_lexicon.excluded_pairs
+            ],
+        },
+    )
     _atomic_write_text(output_dir / "DATASET_CARD.md", _dataset_card(manifest))
 
     review_rows = select_human_review_rows(rows, size=review_size, seed=seed)
@@ -454,6 +574,10 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         raise SourceDataError("--voz-max-rows cannot be negative")
     if args.human_review_size < 0:
         raise SourceDataError("--human-review-size cannot be negative")
+    if not 0.0 <= args.teencode_rate <= 1.0:
+        raise SourceDataError("--teencode-rate must be between 0 and 1")
+
+    teencode_lexicon = load_teencode_lexicon(args.teencode_dict)
 
     vihsd = load_vihsd_train(args.vihsd_csv, conflict_policy=args.conflict_policy)
     print(
@@ -551,8 +675,15 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         duplicate_groups.group_ids,
         target_splits,
         master_seed=args.seed,
+        teencode_lexicon=teencode_lexicon,
+        teencode_rate=args.teencode_rate,
     )
-    qa_report = run_automated_qa(rows, target_label_counts=target_counts)
+    qa_report = run_automated_qa(
+        rows,
+        target_label_counts=target_counts,
+        teencode_lexicon=teencode_lexicon,
+        teencode_target_rate=args.teencode_rate,
+    )
     perturbed_records = tuple(
         replace(record, text=str(row["text"])) for record, row in zip(records, rows)
     )
@@ -617,6 +748,10 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
             "ViHSD": {"HATE": "HATE", "OFFENSIVE": "HATE", "CLEAN": "CLEAN"},
             "VOZ-HSD": {"1": "HATE", "0": "CLEAN"},
         },
+        "perturbation_resources": {
+            "teencode_dict": teencode_lexicon.to_manifest(),
+        },
+        "teencode_augmentation": qa_report["teencode_lexical"],
         "split_policy": {
             "method": "duplicate-group atomic deterministic hashing",
             "human_validation_ratio": args.validation_ratio,
@@ -638,6 +773,8 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
             "near_duplicate_threshold": args.near_duplicate_threshold,
             "near_duplicate_hamming": args.near_duplicate_hamming,
             "near_duplicate_min_length": args.near_duplicate_min_length,
+            "teencode_dict": str(args.teencode_dict),
+            "teencode_rate": args.teencode_rate,
         },
     }
     write_artifacts(
@@ -646,6 +783,7 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         vihsd.rejected,
         manifest,
         qa_report,
+        teencode_lexicon,
         review_size=args.human_review_size,
         seed=args.seed,
         jsonl_only=args.jsonl_only,
@@ -676,7 +814,7 @@ def build_argparser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--output-dir", default="data/processed/vietnamese_nonstandard_v1"
+        "--output-dir", default="data/processed/vietnamese_nonstandard_v1_1"
     )
     parser.add_argument("--seed", type=int, default=20260902)
     parser.add_argument("--target-hate", type=int, default=TARGET_LABEL_COUNTS["HATE"])
@@ -693,6 +831,17 @@ def build_argparser() -> argparse.ArgumentParser:
     parser.add_argument("--near-duplicate-hamming", type=int, default=8)
     parser.add_argument("--near-duplicate-min-length", type=int, default=12)
     parser.add_argument("--human-review-size", type=int, default=250)
+    parser.add_argument(
+        "--teencode-dict",
+        default="src/normalization/teencode_dict.json",
+        help="Normalization dictionary compiled into generation rules",
+    )
+    parser.add_argument(
+        "--teencode-rate",
+        type=float,
+        default=0.50,
+        help="Rounded per-stratum share of eligible rows requiring teencode_lexical",
+    )
     parser.add_argument("--jsonl-only", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
     return parser

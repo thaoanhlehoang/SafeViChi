@@ -1,0 +1,174 @@
+{
+  "annotation_split_counts": {
+    "human": {
+      "test": 2416,
+      "train": 19055,
+      "validation": 2330
+    },
+    "weak_ai": {
+      "train": 51247
+    }
+  },
+  "automatic_scope_note": "Automatic checks cover structural invariants, trace replay, label-source separation, leakage, and surface similarity. Semantic/label preservation and naturalness still require the generated human-review worksheet.",
+  "changed_row_count": 75048,
+  "error_count": 0,
+  "errors": [],
+  "exact_perturbed_duplicate_rows": 12,
+  "label_counts": {
+    "CLEAN": 39886,
+    "HATE": 35162
+  },
+  "missing_perturbation_types": [],
+  "perturbation_mode_counts": {
+    "mixed": 46718,
+    "single": 28330
+  },
+  "perturbation_type_counts": {
+    "abbreviation_clipping": 3792,
+    "boundary_variation": 14658,
+    "context_dependent": 327,
+    "diacritic_variation": 14882,
+    "dialectal_writing": 4103,
+    "expressive_lengthening": 25051,
+    "intentional_spelling": 6132,
+    "phonetic_spelling": 3391,
+    "slang_lexical": 700,
+    "surface_obfuscation": 15637,
+    "teencode_lexical": 34569,
+    "typographical_noise": 17005
+  },
+  "perturbed_duplicate_grouping": {
+    "duplicate_group_count": 120,
+    "exact_union_edges": 12,
+    "group_count": 74815,
+    "jaccard_threshold": 0.9,
+    "largest_group_size": 17,
+    "max_hamming_distance": 8,
+    "min_near_length": 12,
+    "near_union_edges": 114,
+    "record_count": 75048,
+    "records_in_duplicate_groups": 353,
+    "symbolic_repetition_union_edges": 107
+  },
+  "perturbed_near_duplicate_groups_crossing_splits": 0,
+  "replayable_trace_count": 75048,
+  "row_count": 75048,
+  "source_label_counts": {
+    "tarudesu/VOZ-HSD": {
+      "CLEAN": 20127,
+      "HATE": 31120
+    },
+    "uitnlp/vihsd": {
+      "CLEAN": 19759,
+      "HATE": 4042
+    }
+  },
+  "split_label_counts": {
+    "test": {
+      "CLEAN": 2030,
+      "HATE": 386
+    },
+    "train": {
+      "CLEAN": 35946,
+      "HATE": 34356
+    },
+    "validation": {
+      "CLEAN": 1910,
+      "HATE": 420
+    }
+  },
+  "status": "passed",
+  "surface_similarity": {
+    "max": 1.0,
+    "median": 0.976744,
+    "min": 0.222222,
+    "p05": 0.875,
+    "p95": 1.0
+  },
+  "teencode_lexical": {
+    "applied_among_all_rows_rate": 0.460625,
+    "applied_among_eligible_rate": 0.500036,
+    "applied_count": 34569,
+    "by_stratum": [
+      {
+        "applied_count": 9598,
+        "eligible_count": 19196,
+        "expected_target_count": 9598,
+        "label": "CLEAN",
+        "source_dataset": "tarudesu/VOZ-HSD",
+        "target_split": "train",
+        "targeted_count": 9598
+      },
+      {
+        "applied_count": 14972,
+        "eligible_count": 29943,
+        "expected_target_count": 14972,
+        "label": "HATE",
+        "source_dataset": "tarudesu/VOZ-HSD",
+        "target_split": "train",
+        "targeted_count": 14972
+      },
+      {
+        "applied_count": 845,
+        "eligible_count": 1690,
+        "expected_target_count": 845,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "test",
+        "targeted_count": 845
+      },
+      {
+        "applied_count": 6550,
+        "eligible_count": 13100,
+        "expected_target_count": 6550,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "train",
+        "targeted_count": 6550
+      },
+      {
+        "applied_count": 810,
+        "eligible_count": 1619,
+        "expected_target_count": 810,
+        "label": "CLEAN",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "validation",
+        "targeted_count": 810
+      },
+      {
+        "applied_count": 176,
+        "eligible_count": 351,
+        "expected_target_count": 176,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "test",
+        "targeted_count": 176
+      },
+      {
+        "applied_count": 1427,
+        "eligible_count": 2853,
+        "expected_target_count": 1427,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "train",
+        "targeted_count": 1427
+      },
+      {
+        "applied_count": 191,
+        "eligible_count": 381,
+        "expected_target_count": 191,
+        "label": "HATE",
+        "source_dataset": "uitnlp/vihsd",
+        "target_split": "validation",
+        "targeted_count": 191
+      }
+    ],
+    "distinct_canonical_forms": 267,
+    "distinct_variants": 584,
+    "edit_count": 34569,
+    "eligible_count": 69133,
+    "requested_target_rate": 0.5,
+    "targeted_count": 34569
+  },
+  "weak_rows_in_evaluation": 0
+}
