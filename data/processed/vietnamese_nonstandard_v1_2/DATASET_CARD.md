@@ -9,7 +9,7 @@ pretty_name: SafeViChi Vietnamese Non-standard / Perturbed Text Dataset
 # SafeViChi Vietnamese Non-standard / Perturbed Text Dataset
 
 Version: `1.2.0`
-Fingerprint: `e74c6dd2bde880bf37a422b9a4fdc613d85e6ba62b806850ac04f1a9ff792859`
+Fingerprint: `28e79016328d233b8bb0df7539fe554958f26fca5f8504969e41f5939be6823d`
 
 This build contains 75,048 controlled surface variants for
 binary `HATE`/`CLEAN` classification. Every accepted row contains its original
@@ -21,9 +21,9 @@ The `teencode_lexical` transform was applied to
 69,136/69,136 eligible rows
 (100.00%), using the validated
 `teencode_dict` resource at SHA-256 `23fcc07f33100fc61ca915e9f64dfb69d72387f01a41b61dc192f73c83160de3`.
-It replaced 548,095 of
+It replaced 650,273 of
 650,273 valid spans in targeted rows
-(84.29%). Rows without a valid dictionary span
+(100.00%). Rows without a valid dictionary span
 are retained and explicitly marked ineligible rather than receiving fabricated
 content.
 The compiler accepted 589 of

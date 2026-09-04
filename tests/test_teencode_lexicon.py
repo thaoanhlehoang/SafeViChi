@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 
 from src.dataset_builder.build import augment_records
 from src.dataset_builder.constants import VIHSD_MAIN_REVISION, VIHSD_REPO_ID
@@ -8,6 +9,7 @@ from src.dataset_builder.quality import run_automated_qa
 from src.dataset_builder.schema import SourceRecord
 from src.variant_generator.controlled import (
     ControlledPerturber,
+    DEFAULT_TEENCODE_SPAN_RATE,
     load_teencode_lexicon,
     replay_edits,
 )
@@ -58,7 +60,11 @@ def test_teencode_edit_has_replayable_resource_provenance() -> None:
         max_operations=1,
     )
 
-    assert result.perturbation_types == ("teencode_lexical",)
+    assert set(result.perturbation_types) == {"teencode_lexical"}
+    assert result.teencode_valid_span_count >= 2
+    assert result.teencode_applied_span_count == math.ceil(
+        result.teencode_valid_span_count * result.teencode_span_target_rate
+    )
     assert replay_edits(result.original_text, result.edits) == result.perturbed_text
     edit = result.edits[0]
     assert edit.resource_name == "teencode_dict"
@@ -75,7 +81,7 @@ def test_teencode_matching_respects_protected_social_spans() -> None:
     assert not perturber.is_teencode_eligible("https://example.test/không", "CLEAN")
 
 
-def test_augmentation_targets_half_of_each_eligible_stratum() -> None:
+def test_augmentation_targets_every_eligible_sample_and_all_valid_spans() -> None:
     records = tuple(
         SourceRecord(
             source_dataset=VIHSD_REPO_ID,
@@ -99,22 +105,28 @@ def test_augmentation_targets_half_of_each_eligible_stratum() -> None:
         groups,
         splits,
         master_seed=20260903,
-        teencode_rate=0.50,
     )
 
     assert sum(bool(row["teencode_eligible"]) for row in rows) == 20
-    assert sum(bool(row["teencode_targeted"]) for row in rows) == 10
-    assert sum(bool(row["teencode_applied"]) for row in rows) == 10
+    assert sum(bool(row["teencode_targeted"]) for row in rows) == 20
+    assert sum(bool(row["teencode_applied"]) for row in rows) == 20
     assert all(
         bool(row["teencode_targeted"])
         == ("teencode_lexical" in row["perturbation_types"])
         for row in rows
     )
+    assert all(
+        int(row["teencode_applied_span_count"])
+        == int(row["teencode_valid_span_count"])
+        for row in rows
+    )
     report = run_automated_qa(
         rows,
         target_label_counts={"CLEAN": len(rows)},
-        teencode_target_rate=0.50,
+        teencode_target_rate=1.0,
+        teencode_span_target_rate=DEFAULT_TEENCODE_SPAN_RATE,
         require_full_type_coverage=False,
     )
     assert report["teencode_lexical"]["eligible_count"] == 20
-    assert report["teencode_lexical"]["applied_count"] == 10
+    assert report["teencode_lexical"]["applied_count"] == 20
+    assert report["teencode_lexical"]["span_application_rate"] == 1.0

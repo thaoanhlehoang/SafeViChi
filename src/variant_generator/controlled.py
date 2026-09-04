@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, replace
 from difflib import SequenceMatcher
 from functools import lru_cache
+import math
 from pathlib import Path
 import random
 import re
@@ -24,7 +25,8 @@ from .teencode import (
 )
 
 
-GENERATOR_VERSION = "1.1.0"
+GENERATOR_VERSION = "1.2.0"
+DEFAULT_TEENCODE_SPAN_RATE = 1.0
 
 ABBREVIATIONS: Mapping[str, Sequence[str]] = {
     "không": ("ko", "k"),
@@ -211,10 +213,18 @@ class PerturbationResult:
     edits: tuple[Edit, ...]
     seed: int
     generator_version: str = GENERATOR_VERSION
+    teencode_valid_span_count: int = 0
+    teencode_span_target_rate: float = DEFAULT_TEENCODE_SPAN_RATE
 
     @property
     def perturbation_count(self) -> int:
         return len(self.edits)
+
+    @property
+    def teencode_applied_span_count(self) -> int:
+        return sum(
+            edit.perturbation_type == "teencode_lexical" for edit in self.edits
+        )
 
     def to_metadata(self) -> dict[str, object]:
         return {
@@ -224,6 +234,9 @@ class PerturbationResult:
             "perturbation_count": self.perturbation_count,
             "random_seed": self.seed,
             "generator_version": self.generator_version,
+            "teencode_valid_span_count": self.teencode_valid_span_count,
+            "teencode_applied_span_count": self.teencode_applied_span_count,
+            "teencode_span_target_rate": self.teencode_span_target_rate,
         }
 
 
@@ -406,40 +419,27 @@ def _iter_safe_teencode_matches(
     text: str,
     label: str,
     lexicon: TeencodeLexicon,
-) -> Iterable[tuple[re.Match[str], str, tuple[tuple[str, str, Edit], ...]]]:
+) -> Iterable[tuple[re.Match[str], str, tuple[str, ...]]]:
     for match, standard, variants in _teencode_substitution_matches(text, lexicon):
-        safe_variants: list[tuple[str, str, Edit]] = []
-        for variant in variants:
-            candidate, edit = _make_teencode_candidate(
-                text, match, standard, variant, len(variants), lexicon
+        if label.upper() == "CLEAN":
+            source_risks = _risk_tokens(match.group())
+            safe_variants = tuple(
+                variant
+                for variant in variants
+                if not (_risk_tokens(variant) - source_risks)
             )
-            if _passes_teencode_candidate_guard(text, candidate, edit, label):
-                safe_variants.append((variant, candidate, edit))
+        else:
+            safe_variants = tuple(variants)
         if safe_variants:
-            yield match, standard, tuple(safe_variants)
+            yield match, standard, safe_variants
 
 
 def _safe_teencode_matches(
     text: str,
     label: str,
     lexicon: TeencodeLexicon,
-) -> list[tuple[re.Match[str], str, tuple[tuple[str, str, Edit], ...]]]:
+) -> list[tuple[re.Match[str], str, tuple[str, ...]]]:
     return list(_iter_safe_teencode_matches(text, label, lexicon))
-
-
-def _has_safe_teencode_match(
-    text: str,
-    label: str,
-    lexicon: TeencodeLexicon,
-) -> bool:
-    for match, standard, variants in _teencode_substitution_matches(text, lexicon):
-        for variant in variants:
-            candidate, edit = _make_teencode_candidate(
-                text, match, standard, variant, len(variants), lexicon
-            )
-            if _passes_teencode_candidate_guard(text, candidate, edit, label):
-                return True
-    return False
 
 
 def _make_teencode_candidate(
@@ -474,54 +474,40 @@ def _teencode_lexical(
     rng: random.Random,
     label: str,
     lexicon: TeencodeLexicon,
-) -> tuple[str, Edit] | None:
+    span_rate: float,
+) -> tuple[str, tuple[Edit, ...], int] | None:
     matches = _safe_teencode_matches(text, label, lexicon)
     if not matches:
         return None
-    _, _, variants = rng.choice(matches)
-    _, candidate, edit = rng.choice(variants)
-    return candidate, edit
+    selected_count = max(1, math.ceil(len(matches) * span_rate))
+    selected = rng.sample(matches, selected_count)
+    selected.sort(key=lambda item: item[0].start(), reverse=True)
+
+    current = text
+    edits: list[Edit] = []
+    for match, standard, safe_variants in selected:
+        variant = rng.choice(safe_variants)
+        current, edit = _make_teencode_candidate(
+            current,
+            match,
+            standard,
+            variant,
+            len(lexicon.variants_by_standard[standard]),
+            lexicon,
+        )
+        edits.append(edit)
+    return current, tuple(edits), len(matches)
 
 
-def _passes_teencode_candidate_guard(
-    original: str,
-    candidate: str,
-    edit: Edit,
-    label: str,
-) -> bool:
-    """Fast equivalent of the general guard for a single lexical replacement."""
+def _passes_teencode_batch_guard(original: str, candidate: str, label: str) -> bool:
+    """Protect label-critical content without rejecting dense trusted substitutions."""
 
     if not candidate.strip() or candidate == original:
         return False
-    original_form = _similarity_form(original)
-    candidate_form = _similarity_form(candidate)
-    if not original_form or not candidate_form:
-        return passes_label_preservation_guard(original, candidate, label)
-    length_ratio = len(candidate_form) / len(original_form)
-    maximum_ratio = (
-        8.0 if len(original_form) <= 2 else 3.0 if len(original_form) <= 4 else 1.8
+    return not (
+        label.upper() == "CLEAN"
+        and (_risk_tokens(candidate) - _risk_tokens(original))
     )
-    if not 0.55 <= length_ratio <= maximum_ratio:
-        return False
-    if label.upper() == "CLEAN" and (_risk_tokens(candidate) - _risk_tokens(original)):
-        return False
-
-    minimum_similarity = (
-        0.20
-        if len(original_form) <= 2
-        else 0.45
-        if len(original_form) <= 4
-        else 0.55
-    )
-    unchanged_length = max(
-        0, len(original_form) - len(_similarity_form(edit.before))
-    )
-    conservative_similarity = (
-        2 * unchanged_length / (len(original_form) + len(candidate_form))
-    )
-    if conservative_similarity >= minimum_similarity:
-        return True
-    return passes_label_preservation_guard(original, candidate, label)
 
 
 def _expressive_lengthening(text: str, rng: random.Random) -> tuple[str, Edit] | None:
@@ -796,16 +782,27 @@ class ControlledPerturber:
         *,
         generator_version: str = GENERATOR_VERSION,
         teencode_lexicon: TeencodeLexicon | None = None,
+        teencode_span_rate: float = DEFAULT_TEENCODE_SPAN_RATE,
     ) -> None:
+        if not 0.0 < teencode_span_rate <= 1.0:
+            raise ValueError("teencode_span_rate must be greater than 0 and at most 1")
         self.generator_version = generator_version
         self.teencode_lexicon = teencode_lexicon or load_teencode_lexicon()
+        self.teencode_span_rate = teencode_span_rate
+
+    def count_teencode_valid_spans(self, text: str, label: str) -> int:
+        """Count non-overlapping dictionary spans with at least one safe variant."""
+
+        if label.upper() not in {"HATE", "CLEAN"}:
+            raise ValueError(f"Unsupported target label: {label!r}")
+        return len(_safe_teencode_matches(text, label, self.teencode_lexicon))
 
     def is_teencode_eligible(self, text: str, label: str) -> bool:
         """Return whether at least one safe dictionary substitution exists."""
 
         if label.upper() not in {"HATE", "CLEAN"}:
             raise ValueError(f"Unsupported target label: {label!r}")
-        return _has_safe_teencode_match(text, label, self.teencode_lexicon)
+        return self.count_teencode_valid_spans(text, label) > 0
 
     def perturb(
         self,
@@ -817,6 +814,7 @@ class ControlledPerturber:
         min_operations: int = 1,
         max_operations: int = 3,
         disabled_types: Iterable[str] = (),
+        teencode_span_rate: float | None = None,
     ) -> PerturbationResult:
         if label.upper() not in {"HATE", "CLEAN"}:
             raise ValueError(f"Unsupported target label: {label!r}")
@@ -826,6 +824,15 @@ class ControlledPerturber:
             raise ValueError(f"Unknown required perturbation type: {required_type!r}")
         if min_operations < 1 or max_operations < min_operations:
             raise ValueError("Expected 1 <= min_operations <= max_operations")
+        effective_teencode_span_rate = (
+            self.teencode_span_rate
+            if teencode_span_rate is None
+            else teencode_span_rate
+        )
+        if not 0.0 < effective_teencode_span_rate <= 1.0:
+            raise ValueError(
+                "teencode_span_rate must be greater than 0 and at most 1"
+            )
 
         disabled = set(disabled_types)
         unknown_disabled = disabled - set(BASE_PERTURBATION_TYPES)
@@ -857,30 +864,42 @@ class ControlledPerturber:
         current = text
         edits: list[Edit] = []
         used_types: set[str] = set()
+        teencode_valid_span_count = 0
         # A second shuffled pass lets a failed required dictionary rule fall
         # back to a universally applicable character-level transformation.
         candidates = order + random.Random(seed ^ 0x9E3779B97F4A7C15).sample(
             order, len(order)
         )
         for perturbation_type in candidates:
-            if len(edits) >= desired_count:
+            if len(used_types) >= desired_count:
                 break
             if perturbation_type in used_types:
                 continue
             if perturbation_type == "teencode_lexical":
                 transformed = _teencode_lexical(
-                    current, rng, label, self.teencode_lexicon
+                    current,
+                    rng,
+                    label,
+                    self.teencode_lexicon,
+                    effective_teencode_span_rate,
                 )
+                if transformed is None:
+                    continue
+                candidate, new_edits, valid_span_count = transformed
+                if not _passes_teencode_batch_guard(text, candidate, label):
+                    continue
+                teencode_valid_span_count = valid_span_count
             else:
                 transformed = TRANSFORMS[perturbation_type](current, rng)
-            if transformed is None:
-                continue
-            candidate, edit = transformed
-            if not passes_label_preservation_guard(text, candidate, label):
-                continue
-            edit = replace(edit, step=len(edits))
+                if transformed is None:
+                    continue
+                candidate, edit = transformed
+                if not passes_label_preservation_guard(text, candidate, label):
+                    continue
+                new_edits = (edit,)
             current = candidate
-            edits.append(edit)
+            for edit in new_edits:
+                edits.append(replace(edit, step=len(edits)))
             used_types.add(perturbation_type)
 
         if not edits:
@@ -904,6 +923,8 @@ class ControlledPerturber:
             edits=tuple(edits),
             seed=seed,
             generator_version=self.generator_version,
+            teencode_valid_span_count=teencode_valid_span_count,
+            teencode_span_target_rate=effective_teencode_span_rate,
         )
         if replay_edits(text, result.edits) != result.perturbed_text:
             raise AssertionError("Internal error: perturbation trace is not replayable")
@@ -913,6 +934,7 @@ class ControlledPerturber:
 __all__ = [
     "BASE_PERTURBATION_TYPES",
     "ControlledPerturber",
+    "DEFAULT_TEENCODE_SPAN_RATE",
     "Edit",
     "GENERATOR_VERSION",
     "PerturbationError",

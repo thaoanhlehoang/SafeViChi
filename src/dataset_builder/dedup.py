@@ -79,6 +79,57 @@ class DuplicateGroups:
     stats: Mapping[str, object]
 
 
+def merge_duplicate_groupings(
+    *groupings: Sequence[str],
+) -> DuplicateGroups:
+    """Return the transitive union of multiple duplicate partitions."""
+
+    if not groupings:
+        return DuplicateGroups((), {"record_count": 0, "group_count": 0})
+    size = len(groupings[0])
+    if any(len(grouping) != size for grouping in groupings):
+        raise ValueError("all duplicate groupings must have equal length")
+
+    union_find = _UnionFind(size)
+    union_edges = 0
+    for grouping in groupings:
+        representative_by_group: dict[str, int] = {}
+        for index, group_id in enumerate(grouping):
+            representative = representative_by_group.setdefault(group_id, index)
+            union_edges += int(union_find.union(representative, index))
+
+    members: dict[int, list[int]] = defaultdict(list)
+    for index in range(size):
+        members[union_find.find(index)].append(index)
+
+    root_to_id: dict[int, str] = {}
+    for root, indices in members.items():
+        source_ids = sorted(
+            f"{layer}:{groupings[layer][index]}"
+            for layer in range(len(groupings))
+            for index in indices
+        )
+        digest = hashlib.sha256("\0".join(source_ids).encode("utf-8")).hexdigest()[:20]
+        root_to_id[root] = f"grp_{digest}"
+
+    group_ids = tuple(root_to_id[union_find.find(index)] for index in range(size))
+    sizes = Counter(group_ids)
+    return DuplicateGroups(
+        group_ids=group_ids,
+        stats={
+            "record_count": size,
+            "group_count": len(sizes),
+            "input_grouping_count": len(groupings),
+            "union_edges": union_edges,
+            "duplicate_group_count": sum(value > 1 for value in sizes.values()),
+            "records_in_duplicate_groups": sum(
+                value for value in sizes.values() if value > 1
+            ),
+            "largest_group_size": max(sizes.values(), default=0),
+        },
+    )
+
+
 def group_near_duplicates(
     records: Sequence[SourceRecord],
     *,
@@ -257,4 +308,5 @@ __all__ = [
     "assert_no_group_leakage",
     "assign_leakage_safe_splits",
     "group_near_duplicates",
+    "merge_duplicate_groupings",
 ]

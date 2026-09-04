@@ -8,6 +8,7 @@ from dataclasses import replace
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import tempfile
@@ -16,6 +17,7 @@ from typing import Iterable, Iterator, Mapping, Sequence
 from src.variant_generator.controlled import (
     BASE_PERTURBATION_TYPES,
     ControlledPerturber,
+    DEFAULT_TEENCODE_SPAN_RATE,
     GENERATOR_VERSION,
     PerturbationError,
     load_teencode_lexicon,
@@ -36,6 +38,7 @@ from .dedup import (
     assert_no_group_leakage,
     assign_leakage_safe_splits,
     group_near_duplicates,
+    merge_duplicate_groupings,
 )
 from .quality import (
     run_automated_qa,
@@ -117,7 +120,7 @@ def _plan_teencode_quota(
     perturber: ControlledPerturber,
     master_seed: int,
     target_rate: float,
-) -> tuple[tuple[bool, ...], tuple[bool, ...]]:
+) -> tuple[tuple[int, ...], tuple[bool, ...]]:
     """Select an exact rounded quota within every source/label/split stratum."""
 
     if len(records) != len(target_splits):
@@ -125,15 +128,15 @@ def _plan_teencode_quota(
     if not 0.0 <= target_rate <= 1.0:
         raise ValueError("teencode target rate must be between 0 and 1")
 
-    eligible = tuple(
-        perturber.is_teencode_eligible(record.text, record.label)
+    valid_span_counts = tuple(
+        perturber.count_teencode_valid_spans(record.text, record.label)
         for record in records
     )
     strata: dict[tuple[str, str, str], list[int]] = defaultdict(list)
-    for index, (record, split, is_eligible) in enumerate(
-        zip(records, target_splits, eligible)
+    for index, (record, split, valid_span_count) in enumerate(
+        zip(records, target_splits, valid_span_counts)
     ):
-        if is_eligible:
+        if valid_span_count:
             strata[(record.source_dataset, record.label, split)].append(index)
 
     targeted = [False] * len(records)
@@ -145,7 +148,7 @@ def _plan_teencode_quota(
         )
         for index in ordered[:target_count]:
             targeted[index] = True
-    return eligible, tuple(targeted)
+    return valid_span_counts, tuple(targeted)
 
 
 def _load_cached_voz_selection(
@@ -214,7 +217,8 @@ def augment_records(
     master_seed: int,
     max_attempts: int = 36,
     teencode_lexicon: TeencodeLexicon | None = None,
-    teencode_rate: float = 0.50,
+    teencode_rate: float = 1.0,
+    teencode_span_rate: float = DEFAULT_TEENCODE_SPAN_RATE,
 ) -> list[dict[str, object]]:
     """Generate one distinct, traceable variant for every accepted source row."""
 
@@ -222,9 +226,14 @@ def augment_records(
         raise ValueError("records, group_ids, and target_splits must have equal length")
     if not 0.0 <= teencode_rate <= 1.0:
         raise ValueError("teencode_rate must be between 0 and 1")
+    if not 0.0 < teencode_span_rate <= 1.0:
+        raise ValueError("teencode_span_rate must be greater than 0 and at most 1")
     lexicon = teencode_lexicon or load_teencode_lexicon()
-    perturber = ControlledPerturber(teencode_lexicon=lexicon)
-    teencode_eligible, teencode_targeted = _plan_teencode_quota(
+    perturber = ControlledPerturber(
+        teencode_lexicon=lexicon,
+        teencode_span_rate=teencode_span_rate,
+    )
+    teencode_valid_span_counts, teencode_targeted = _plan_teencode_quota(
         records,
         target_splits,
         perturber=perturber,
@@ -276,6 +285,7 @@ def augment_records(
                     disabled_types=(
                         () if is_teencode_target else ("teencode_lexical",)
                     ),
+                    teencode_span_rate=teencode_span_rate,
                 )
             except PerturbationError:
                 continue
@@ -301,9 +311,23 @@ def augment_records(
             )
 
         teencode_applied = "teencode_lexical" in result.perturbation_types
+        teencode_applied_span_count = sum(
+            perturbation_type == "teencode_lexical"
+            for perturbation_type in result.perturbation_types
+        )
+        valid_span_count = teencode_valid_span_counts[index]
+        expected_teencode_span_count = (
+            max(1, math.ceil(valid_span_count * teencode_span_rate))
+            if is_teencode_target
+            else 0
+        )
         if teencode_applied != is_teencode_target:
             raise AssertionError(
                 "Internal error: teencode application differs from its quota plan"
+            )
+        if teencode_applied_span_count != expected_teencode_span_count:
+            raise AssertionError(
+                "Internal error: teencode span application differs from its target"
             )
 
         flags: list[str] = []
@@ -340,12 +364,15 @@ def augment_records(
             "original_text_sha256": sha256_text(record.text),
             "perturbed_text_sha256": sha256_text(result.perturbed_text),
             "perturbation_primary_requested": preferred,
-            "teencode_eligible": teencode_eligible[index],
+            **metadata,
+            "teencode_eligible": valid_span_count > 0,
             "teencode_targeted": is_teencode_target,
             "teencode_applied": teencode_applied,
+            "teencode_valid_span_count": valid_span_count,
+            "teencode_applied_span_count": teencode_applied_span_count,
+            "teencode_span_target_rate": teencode_span_rate,
             "dataset_version": DATASET_VERSION,
             "quality_flags": flags,
-            **metadata,
         }
         rows.append(row)
         if (index + 1) % 10_000 == 0:
@@ -465,6 +492,11 @@ The `teencode_lexical` transform was applied to
 {teencode['applied_count']:,}/{teencode['eligible_count']:,} eligible rows
 ({teencode['applied_among_eligible_rate']:.2%}), using the validated
 `teencode_dict` resource at SHA-256 `{teencode_resource['source_sha256']}`.
+It replaced {teencode['applied_span_count']:,} of
+{teencode['valid_span_count_in_targeted_rows']:,} valid spans in targeted rows
+({teencode['span_application_rate']:.2%}). Rows without a valid dictionary span
+are retained and explicitly marked ineligible rather than receiving fabricated
+content.
 The compiler accepted {teencode_resource['accepted_pair_count']:,} of
 {teencode_resource['input_pair_count']:,} source pairs; exclusion counts are
 recorded in `manifest.json` and pair-level details in
@@ -502,7 +534,9 @@ training. Validation and test contain human-labelled ViHSD rows only.
 `source_dataset`, `source_revision`, `source_row_id`, `target_split`,
 `perturbation_types`, `perturbation_edits`, `perturbation_count`, `random_seed`,
 `generator_version`, `teencode_eligible`, `teencode_targeted`,
-`teencode_applied`, `duplicate_group_id`, and `quality_flags`.
+`teencode_applied`, `teencode_valid_span_count`,
+`teencode_applied_span_count`, `teencode_span_target_rate`,
+`duplicate_group_id`, and `quality_flags`.
 """
 
 
@@ -576,6 +610,10 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         raise SourceDataError("--human-review-size cannot be negative")
     if not 0.0 <= args.teencode_rate <= 1.0:
         raise SourceDataError("--teencode-rate must be between 0 and 1")
+    if not 0.0 < args.teencode_span_rate <= 1.0:
+        raise SourceDataError(
+            "--teencode-span-rate must be greater than 0 and at most 1"
+        )
 
     teencode_lexicon = load_teencode_lexicon(args.teencode_dict)
 
@@ -677,12 +715,7 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         master_seed=args.seed,
         teencode_lexicon=teencode_lexicon,
         teencode_rate=args.teencode_rate,
-    )
-    qa_report = run_automated_qa(
-        rows,
-        target_label_counts=target_counts,
-        teencode_lexicon=teencode_lexicon,
-        teencode_target_rate=args.teencode_rate,
+        teencode_span_rate=args.teencode_span_rate,
     )
     perturbed_records = tuple(
         replace(record, text=str(row["text"])) for record, row in zip(records, rows)
@@ -693,11 +726,46 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         max_hamming_distance=args.near_duplicate_hamming,
         min_near_length=args.near_duplicate_min_length,
     )
+    combined_duplicate_groups = merge_duplicate_groupings(
+        duplicate_groups.group_ids,
+        perturbed_duplicate_groups.group_ids,
+    )
+    target_splits = assign_leakage_safe_splits(
+        records,
+        combined_duplicate_groups.group_ids,
+        seed=args.seed,
+        human_validation_ratio=args.validation_ratio,
+        human_test_ratio=args.test_ratio,
+    )
+    combined_group_sizes = Counter(combined_duplicate_groups.group_ids)
+    for row, group_id, target_split in zip(
+        rows,
+        combined_duplicate_groups.group_ids,
+        target_splits,
+    ):
+        row["duplicate_group_id"] = group_id
+        row["duplicate_group_size"] = combined_group_sizes[group_id]
+        row["target_split"] = target_split
+
+    assert_no_group_leakage(duplicate_groups.group_ids, target_splits)
     assert_no_group_leakage(perturbed_duplicate_groups.group_ids, target_splits)
+    assert_no_group_leakage(combined_duplicate_groups.group_ids, target_splits)
+    qa_report = run_automated_qa(
+        rows,
+        target_label_counts=target_counts,
+        teencode_lexicon=teencode_lexicon,
+        teencode_target_rate=args.teencode_rate,
+        teencode_span_target_rate=args.teencode_span_rate,
+    )
     qa_report["perturbed_duplicate_grouping"] = dict(
         perturbed_duplicate_groups.stats
     )
+    qa_report["combined_duplicate_grouping"] = dict(
+        combined_duplicate_groups.stats
+    )
+    qa_report["source_near_duplicate_groups_crossing_splits"] = 0
     qa_report["perturbed_near_duplicate_groups_crossing_splits"] = 0
+    qa_report["combined_near_duplicate_groups_crossing_splits"] = 0
 
     final_by_source = Counter(record.source_dataset for record in records)
     final_by_label = Counter(record.label for record in records)
@@ -753,13 +821,17 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
         },
         "teencode_augmentation": qa_report["teencode_lexical"],
         "split_policy": {
-            "method": "duplicate-group atomic deterministic hashing",
+            "method": (
+                "transitive source-and-perturbed duplicate-group atomic "
+                "deterministic hashing"
+            ),
             "human_validation_ratio": args.validation_ratio,
             "human_test_ratio": args.test_ratio,
             "weak_ai_rows": "train_only",
         },
         "duplicate_grouping": dict(duplicate_groups.stats),
         "perturbed_duplicate_grouping": dict(perturbed_duplicate_groups.stats),
+        "combined_duplicate_grouping": dict(combined_duplicate_groups.stats),
         "quality_gate_status": qa_report["status"],
         "human_review_required": True,
         "distribution_status": "rights_and_weak_label_review_required_before_release",
@@ -775,6 +847,7 @@ def build_dataset(args: argparse.Namespace) -> dict[str, object]:
             "near_duplicate_min_length": args.near_duplicate_min_length,
             "teencode_dict": str(args.teencode_dict),
             "teencode_rate": args.teencode_rate,
+            "teencode_span_rate": args.teencode_span_rate,
         },
     }
     write_artifacts(
@@ -814,7 +887,7 @@ def build_argparser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--output-dir", default="data/processed/vietnamese_nonstandard_v1_1"
+        "--output-dir", default="data/processed/vietnamese_nonstandard_v1_2"
     )
     parser.add_argument("--seed", type=int, default=20260902)
     parser.add_argument("--target-hate", type=int, default=TARGET_LABEL_COUNTS["HATE"])
@@ -839,8 +912,14 @@ def build_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--teencode-rate",
         type=float,
-        default=0.50,
+        default=1.0,
         help="Rounded per-stratum share of eligible rows requiring teencode_lexical",
+    )
+    parser.add_argument(
+        "--teencode-span-rate",
+        type=float,
+        default=DEFAULT_TEENCODE_SPAN_RATE,
+        help="Minimum per-sample share of valid dictionary spans to replace",
     )
     parser.add_argument("--jsonl-only", action="store_true")
     parser.add_argument("--overwrite", action="store_true")

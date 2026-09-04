@@ -7,6 +7,7 @@ import csv
 from difflib import SequenceMatcher
 import hashlib
 import json
+import math
 from pathlib import Path
 import unicodedata
 from typing import Mapping, Sequence
@@ -54,6 +55,7 @@ def run_automated_qa(
     require_full_type_coverage: bool = True,
     teencode_lexicon: TeencodeLexicon | None = None,
     teencode_target_rate: float | None = None,
+    teencode_span_target_rate: float | None = None,
 ) -> dict[str, object]:
     """Validate hard invariants and return aggregate audit evidence."""
 
@@ -61,6 +63,12 @@ def run_automated_qa(
     lexicon = teencode_lexicon or load_teencode_lexicon()
     if teencode_target_rate is not None and not 0.0 <= teencode_target_rate <= 1.0:
         raise ValueError("teencode_target_rate must be between 0 and 1")
+    if teencode_span_target_rate is not None and not (
+        0.0 < teencode_span_target_rate <= 1.0
+    ):
+        raise ValueError(
+            "teencode_span_target_rate must be greater than 0 and at most 1"
+        )
     labels = Counter(str(row.get("label")) for row in rows)
     expected_total = sum(target_label_counts.values())
     if len(rows) != expected_total:
@@ -83,6 +91,8 @@ def run_automated_qa(
     teencode_eligible_by_stratum: Counter[tuple[str, str, str]] = Counter()
     teencode_targeted_by_stratum: Counter[tuple[str, str, str]] = Counter()
     teencode_applied_by_stratum: Counter[tuple[str, str, str]] = Counter()
+    teencode_valid_spans_by_stratum: Counter[tuple[str, str, str]] = Counter()
+    teencode_applied_spans_by_stratum: Counter[tuple[str, str, str]] = Counter()
     teencode_canonical_forms: Counter[str] = Counter()
     teencode_variants: Counter[str] = Counter()
     teencode_edit_count = 0
@@ -98,6 +108,7 @@ def run_automated_qa(
         if not perturbed.strip():
             errors.append(f"{sample_id}: perturbed text is empty")
 
+        row_teencode_edit_count = 0
         edit_dicts = row.get("perturbation_edits")
         if not isinstance(edit_dicts, list) or not edit_dicts:
             errors.append(f"{sample_id}: missing perturbation edit trace")
@@ -110,6 +121,7 @@ def run_automated_qa(
                     if edit.perturbation_type != "teencode_lexical":
                         continue
                     teencode_edit_count += 1
+                    row_teencode_edit_count += 1
                     if edit.resource_name != "teencode_dict":
                         errors.append(
                             f"{sample_id}: teencode edit has invalid resource_name"
@@ -165,12 +177,52 @@ def run_automated_qa(
         teencode_eligible = bool(row.get("teencode_eligible", False))
         teencode_targeted = bool(row.get("teencode_targeted", False))
         teencode_applied = bool(row.get("teencode_applied", False))
+        teencode_valid_span_count = int(row.get("teencode_valid_span_count", 0))
+        teencode_applied_span_count = int(
+            row.get("teencode_applied_span_count", 0)
+        )
+        if teencode_eligible != (teencode_valid_span_count > 0):
+            errors.append(
+                f"{sample_id}: teencode eligibility disagrees with valid span count"
+            )
+        if teencode_applied != (teencode_applied_span_count > 0):
+            errors.append(
+                f"{sample_id}: teencode application disagrees with span count"
+            )
+        if teencode_applied_span_count != row_teencode_edit_count:
+            errors.append(
+                f"{sample_id}: teencode applied span count disagrees with edit trace"
+            )
+        if teencode_targeted:
+            expected_span_count = (
+                max(
+                    1,
+                    math.ceil(
+                        teencode_valid_span_count * teencode_span_target_rate
+                    ),
+                )
+                if teencode_span_target_rate is not None
+                else None
+            )
+            if (
+                expected_span_count is not None
+                and teencode_applied_span_count != expected_span_count
+            ):
+                errors.append(
+                    f"{sample_id}: applied {teencode_applied_span_count} teencode "
+                    f"spans but expected {expected_span_count}"
+                )
+        elif teencode_applied_span_count:
+            errors.append(f"{sample_id}: non-targeted row has teencode span edits")
         if teencode_eligible:
             teencode_eligible_by_stratum[stratum] += 1
         if teencode_targeted:
             teencode_targeted_by_stratum[stratum] += 1
         if teencode_applied:
             teencode_applied_by_stratum[stratum] += 1
+        if teencode_targeted:
+            teencode_valid_spans_by_stratum[stratum] += teencode_valid_span_count
+        teencode_applied_spans_by_stratum[stratum] += teencode_applied_span_count
         type_reports_applied = "teencode_lexical" in type_values
         if teencode_applied != type_reports_applied:
             errors.append(f"{sample_id}: teencode_applied disagrees with edit types")
@@ -199,8 +251,13 @@ def run_automated_qa(
     if teencode_target_rate == 0.0:
         expected_types.discard("teencode_lexical")
     missing_types = sorted(expected_types - set(type_counts))
-    if require_full_type_coverage and missing_types:
-        errors.append(f"missing perturbation types: {missing_types}")
+    saturated_teencode = (
+        teencode_target_rate == 1.0 and teencode_span_target_rate == 1.0
+    )
+    coverage_exempt_types = missing_types if saturated_teencode else []
+    blocking_missing_types = sorted(set(missing_types) - set(coverage_exempt_types))
+    if require_full_type_coverage and blocking_missing_types:
+        errors.append(f"missing perturbation types: {blocking_missing_types}")
     if require_full_type_coverage and not mode_counts.get("mixed"):
         errors.append("no mixed perturbation samples were generated")
     if weak_eval_rows:
@@ -210,6 +267,8 @@ def run_automated_qa(
         set(teencode_eligible_by_stratum)
         | set(teencode_targeted_by_stratum)
         | set(teencode_applied_by_stratum)
+        | set(teencode_valid_spans_by_stratum)
+        | set(teencode_applied_spans_by_stratum)
     )
     teencode_strata: list[dict[str, object]] = []
     for source, label, split in all_teencode_strata:
@@ -217,6 +276,8 @@ def run_automated_qa(
         eligible_count = teencode_eligible_by_stratum[key]
         targeted_count = teencode_targeted_by_stratum[key]
         applied_count = teencode_applied_by_stratum[key]
+        valid_span_count = teencode_valid_spans_by_stratum[key]
+        applied_span_count = teencode_applied_spans_by_stratum[key]
         expected_target = (
             int(eligible_count * teencode_target_rate + 0.5)
             if teencode_target_rate is not None
@@ -243,12 +304,21 @@ def run_automated_qa(
                 "targeted_count": targeted_count,
                 "applied_count": applied_count,
                 "expected_target_count": expected_target,
+                "valid_span_count_in_targeted_rows": valid_span_count,
+                "applied_span_count": applied_span_count,
+                "span_application_rate": round(
+                    applied_span_count / valid_span_count, 6
+                )
+                if valid_span_count
+                else 0.0,
             }
         )
 
     teencode_eligible_count = sum(teencode_eligible_by_stratum.values())
     teencode_targeted_count = sum(teencode_targeted_by_stratum.values())
     teencode_applied_count = sum(teencode_applied_by_stratum.values())
+    teencode_valid_span_count = sum(teencode_valid_spans_by_stratum.values())
+    teencode_applied_span_count = sum(teencode_applied_spans_by_stratum.values())
 
     similarities_sorted = sorted(similarities)
 
@@ -271,9 +341,19 @@ def run_automated_qa(
         "annotation_split_counts": _nested_counts(rows, "annotation_type", "target_split"),
         "perturbation_type_counts": dict(type_counts),
         "perturbation_mode_counts": dict(mode_counts),
+        "coverage_exempt_types": coverage_exempt_types,
+        "coverage_exemption_reason": (
+            "Required teencode at 100% sample and span coverage consumes canonical "
+            "spans before overlapping lexical transforms can use them; generator-level "
+            "tests retain coverage of every supported transform."
+            if coverage_exempt_types
+            else None
+        ),
         "teencode_lexical": {
             "requested_target_rate": teencode_target_rate,
+            "requested_span_target_rate": teencode_span_target_rate,
             "eligible_count": teencode_eligible_count,
+            "ineligible_count": len(rows) - teencode_eligible_count,
             "targeted_count": teencode_targeted_count,
             "applied_count": teencode_applied_count,
             "applied_among_eligible_rate": round(
@@ -287,11 +367,18 @@ def run_automated_qa(
             if rows
             else 0.0,
             "edit_count": teencode_edit_count,
+            "valid_span_count_in_targeted_rows": teencode_valid_span_count,
+            "applied_span_count": teencode_applied_span_count,
+            "span_application_rate": round(
+                teencode_applied_span_count / teencode_valid_span_count, 6
+            )
+            if teencode_valid_span_count
+            else 0.0,
             "distinct_canonical_forms": len(teencode_canonical_forms),
             "distinct_variants": len(teencode_variants),
             "by_stratum": teencode_strata,
         },
-        "missing_perturbation_types": missing_types,
+        "missing_perturbation_types": blocking_missing_types,
         "weak_rows_in_evaluation": weak_eval_rows,
         "exact_perturbed_duplicate_rows": output_duplicates,
         "surface_similarity": {

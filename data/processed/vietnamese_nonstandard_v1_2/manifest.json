@@ -6,12 +6,12 @@
     "oversample_factor": 1.25,
     "teencode_dict": "src/normalization/teencode_dict.json",
     "teencode_rate": 1.0,
-    "teencode_span_rate": 0.8,
+    "teencode_span_rate": 1.0,
     "vihsd_csv": "data/raw/vihsd/train.csv",
     "voz_max_rows": null,
     "voz_min_confidence": 0.9,
     "voz_parquet": [],
-    "voz_selection_jsonl": "data/processed/vietnamese_nonstandard_v1_1/train.jsonl"
+    "voz_selection_jsonl": "data/processed/.voz_selection_cache_v1_2.jsonl"
   },
   "combined_duplicate_grouping": {
     "duplicate_group_count": 1439,
@@ -22,7 +22,7 @@
     "records_in_duplicate_groups": 3212,
     "union_edges": 1773
   },
-  "dataset_fingerprint": "e74c6dd2bde880bf37a422b9a4fdc613d85e6ba62b806850ac04f1a9ff792859",
+  "dataset_fingerprint": "28e79016328d233b8bb0df7539fe554958f26fca5f8504969e41f5939be6823d",
   "dataset_name": "safevichi-vietnamese-nonstandard",
   "dataset_version": "1.2.0",
   "distribution_status": "rights_and_weak_label_review_required_before_release",
@@ -49,13 +49,13 @@
       "uitnlp/vihsd": 23801
     },
     "by_split": {
-      "test": 2335,
-      "train": 70174,
-      "validation": 2539
+      "test": 2376,
+      "train": 70166,
+      "validation": 2506
     },
     "total": 75048
   },
-  "generated_at_utc": "2026-09-04T11:25:39.563545+00:00",
+  "generated_at_utc": "2026-09-04T14:48:43.083133+00:00",
   "generator_version": "1.2.0",
   "human_review_required": true,
   "label_mapping": {
@@ -89,16 +89,16 @@
     }
   },
   "perturbed_duplicate_grouping": {
-    "duplicate_group_count": 172,
+    "duplicate_group_count": 175,
     "exact_union_edges": 21,
-    "group_count": 74753,
+    "group_count": 74750,
     "jaccard_threshold": 0.9,
     "largest_group_size": 17,
     "max_hamming_distance": 8,
     "min_near_length": 12,
-    "near_union_edges": 167,
+    "near_union_edges": 170,
     "record_count": 75048,
-    "records_in_duplicate_groups": 467,
+    "records_in_duplicate_groups": 473,
     "symbolic_repetition_union_edges": 107
   },
   "quality_gate_status": "passed",
@@ -126,7 +126,7 @@
           "CLEAN": 20127,
           "HATE": 31120
         },
-        "selection_jsonl": "data/processed/vietnamese_nonstandard_v1_1/train.jsonl"
+        "selection_jsonl": "data/processed/.voz_selection_cache_v1_2.jsonl"
       },
       "schema": [
         "texts",
@@ -171,113 +171,113 @@
     "applied_among_all_rows_rate": 0.921224,
     "applied_among_eligible_rate": 1.0,
     "applied_count": 69136,
-    "applied_span_count": 548095,
+    "applied_span_count": 650273,
     "by_stratum": [
       {
         "applied_count": 19196,
-        "applied_span_count": 169182,
+        "applied_span_count": 201787,
         "eligible_count": 19196,
         "expected_target_count": 19196,
         "label": "CLEAN",
         "source_dataset": "tarudesu/VOZ-HSD",
-        "span_application_rate": 0.838419,
+        "span_application_rate": 1.0,
         "target_split": "train",
         "targeted_count": 19196,
         "valid_span_count_in_targeted_rows": 201787
       },
       {
         "applied_count": 29943,
-        "applied_span_count": 294420,
+        "applied_span_count": 352964,
         "eligible_count": 29943,
         "expected_target_count": 29943,
         "label": "HATE",
         "source_dataset": "tarudesu/VOZ-HSD",
-        "span_application_rate": 0.834136,
+        "span_application_rate": 1.0,
         "target_split": "train",
         "targeted_count": 29943,
         "valid_span_count_in_targeted_rows": 352964
       },
       {
-        "applied_count": 1592,
-        "applied_span_count": 6511,
-        "eligible_count": 1592,
-        "expected_target_count": 1592,
+        "applied_count": 1607,
+        "applied_span_count": 6990,
+        "eligible_count": 1607,
+        "expected_target_count": 1607,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.892162,
+        "span_application_rate": 1.0,
         "target_split": "test",
-        "targeted_count": 1592,
-        "valid_span_count_in_targeted_rows": 7298
+        "targeted_count": 1607,
+        "valid_span_count_in_targeted_rows": 6990
       },
       {
-        "applied_count": 13127,
-        "applied_span_count": 50992,
-        "eligible_count": 13127,
-        "expected_target_count": 13127,
+        "applied_count": 13139,
+        "applied_span_count": 57506,
+        "eligible_count": 13139,
+        "expected_target_count": 13139,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.89189,
+        "span_application_rate": 1.0,
         "target_split": "train",
-        "targeted_count": 13127,
-        "valid_span_count_in_targeted_rows": 57173
+        "targeted_count": 13139,
+        "valid_span_count_in_targeted_rows": 57506
       },
       {
-        "applied_count": 1693,
-        "applied_span_count": 6349,
-        "eligible_count": 1693,
-        "expected_target_count": 1693,
+        "applied_count": 1666,
+        "applied_span_count": 7047,
+        "eligible_count": 1666,
+        "expected_target_count": 1666,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.897766,
+        "span_application_rate": 1.0,
         "target_split": "validation",
-        "targeted_count": 1693,
-        "valid_span_count_in_targeted_rows": 7072
+        "targeted_count": 1666,
+        "valid_span_count_in_targeted_rows": 7047
       },
       {
-        "applied_count": 366,
-        "applied_span_count": 2167,
-        "eligible_count": 366,
-        "expected_target_count": 366,
+        "applied_count": 392,
+        "applied_span_count": 2666,
+        "eligible_count": 392,
+        "expected_target_count": 392,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.857539,
+        "span_application_rate": 1.0,
         "target_split": "test",
-        "targeted_count": 366,
-        "valid_span_count_in_targeted_rows": 2527
+        "targeted_count": 392,
+        "valid_span_count_in_targeted_rows": 2666
       },
       {
-        "applied_count": 2832,
-        "applied_span_count": 16368,
-        "eligible_count": 2832,
-        "expected_target_count": 2832,
+        "applied_count": 2812,
+        "applied_span_count": 18764,
+        "eligible_count": 2812,
+        "expected_target_count": 2812,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.860342,
+        "span_application_rate": 1.0,
         "target_split": "train",
-        "targeted_count": 2832,
-        "valid_span_count_in_targeted_rows": 19025
+        "targeted_count": 2812,
+        "valid_span_count_in_targeted_rows": 18764
       },
       {
-        "applied_count": 387,
-        "applied_span_count": 2106,
-        "eligible_count": 387,
-        "expected_target_count": 387,
+        "applied_count": 381,
+        "applied_span_count": 2549,
+        "eligible_count": 381,
+        "expected_target_count": 381,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
-        "span_application_rate": 0.867738,
+        "span_application_rate": 1.0,
         "target_split": "validation",
-        "targeted_count": 387,
-        "valid_span_count_in_targeted_rows": 2427
+        "targeted_count": 381,
+        "valid_span_count_in_targeted_rows": 2549
       }
     ],
     "distinct_canonical_forms": 271,
     "distinct_variants": 589,
-    "edit_count": 548095,
+    "edit_count": 650273,
     "eligible_count": 69136,
     "ineligible_count": 5912,
-    "requested_span_target_rate": 0.8,
+    "requested_span_target_rate": 1.0,
     "requested_target_rate": 1.0,
-    "span_application_rate": 0.842869,
+    "span_application_rate": 1.0,
     "targeted_count": 69136,
     "valid_span_count_in_targeted_rows": 650273
   }

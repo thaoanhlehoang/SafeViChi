@@ -3,6 +3,7 @@
 from .controlled import (
     BASE_PERTURBATION_TYPES,
     ControlledPerturber,
+    DEFAULT_TEENCODE_SPAN_RATE,
     Edit,
     GENERATOR_VERSION,
     PerturbationError,
@@ -23,6 +24,7 @@ from .teencode import (
 __all__ = [
     "BASE_PERTURBATION_TYPES",
     "ControlledPerturber",
+    "DEFAULT_TEENCODE_SPAN_RATE",
     "Edit",
     "GENERATOR_VERSION",
     "PerturbationError",

@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from src.dataset_builder.constants import VIHSD_MAIN_REVISION, VIHSD_REPO_ID, VOZ_MAIN_REVISION, VOZ_PARQUET_REVISION, VOZ_REPO_ID
-from src.dataset_builder.dedup import assign_leakage_safe_splits, group_near_duplicates
+from src.dataset_builder.dedup import (
+    assign_leakage_safe_splits,
+    group_near_duplicates,
+    merge_duplicate_groupings,
+)
 from src.dataset_builder.schema import SourceRecord
 
 
@@ -38,3 +42,15 @@ def test_near_duplicate_group_is_atomic_and_weak_group_is_train_only() -> None:
 
     assert groups.group_ids[0] == groups.group_ids[1]
     assert splits[0] == splits[1] == "train"
+
+
+def test_merge_duplicate_groupings_builds_transitive_union() -> None:
+    merged = merge_duplicate_groupings(
+        ("source-a", "source-a", "source-b", "source-c"),
+        ("output-x", "output-y", "output-y", "output-z"),
+    )
+
+    assert merged.group_ids[0] == merged.group_ids[1] == merged.group_ids[2]
+    assert merged.group_ids[3] != merged.group_ids[0]
+    assert merged.stats["group_count"] == 2
+    assert merged.stats["largest_group_size"] == 3
