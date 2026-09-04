@@ -5,16 +5,26 @@
     "near_duplicate_threshold": 0.9,
     "oversample_factor": 1.25,
     "teencode_dict": "src/normalization/teencode_dict.json",
-    "teencode_rate": 0.5,
+    "teencode_rate": 1.0,
+    "teencode_span_rate": 0.8,
     "vihsd_csv": "data/raw/vihsd/train.csv",
     "voz_max_rows": null,
     "voz_min_confidence": 0.9,
     "voz_parquet": [],
-    "voz_selection_jsonl": "data/processed/vietnamese_nonstandard_v1/train.jsonl"
+    "voz_selection_jsonl": "data/processed/vietnamese_nonstandard_v1_1/train.jsonl"
   },
-  "dataset_fingerprint": "2874b1228a2ea6c51eaff00178c3d90d8d37a5336adbe10d24934d0ac62b5268",
+  "combined_duplicate_grouping": {
+    "duplicate_group_count": 1439,
+    "group_count": 73275,
+    "input_grouping_count": 2,
+    "largest_group_size": 103,
+    "record_count": 75048,
+    "records_in_duplicate_groups": 3212,
+    "union_edges": 1773
+  },
+  "dataset_fingerprint": "e74c6dd2bde880bf37a422b9a4fdc613d85e6ba62b806850ac04f1a9ff792859",
   "dataset_name": "safevichi-vietnamese-nonstandard",
-  "dataset_version": "1.1.0",
+  "dataset_version": "1.2.0",
   "distribution_status": "rights_and_weak_label_review_required_before_release",
   "duplicate_grouping": {
     "duplicate_group_count": 1437,
@@ -39,14 +49,14 @@
       "uitnlp/vihsd": 23801
     },
     "by_split": {
-      "test": 2416,
-      "train": 70302,
-      "validation": 2330
+      "test": 2335,
+      "train": 70174,
+      "validation": 2539
     },
     "total": 75048
   },
-  "generated_at_utc": "2026-09-03T16:11:13.900917+00:00",
-  "generator_version": "1.1.0",
+  "generated_at_utc": "2026-09-04T11:25:39.563545+00:00",
+  "generator_version": "1.2.0",
   "human_review_required": true,
   "label_mapping": {
     "VOZ-HSD": {
@@ -79,16 +89,16 @@
     }
   },
   "perturbed_duplicate_grouping": {
-    "duplicate_group_count": 120,
-    "exact_union_edges": 12,
-    "group_count": 74815,
+    "duplicate_group_count": 172,
+    "exact_union_edges": 21,
+    "group_count": 74753,
     "jaccard_threshold": 0.9,
     "largest_group_size": 17,
     "max_hamming_distance": 8,
     "min_near_length": 12,
-    "near_union_edges": 114,
+    "near_union_edges": 167,
     "record_count": 75048,
-    "records_in_duplicate_groups": 353,
+    "records_in_duplicate_groups": 467,
     "symbolic_repetition_union_edges": 107
   },
   "quality_gate_status": "passed",
@@ -116,7 +126,7 @@
           "CLEAN": 20127,
           "HATE": 31120
         },
-        "selection_jsonl": "data/processed/vietnamese_nonstandard_v1/train.jsonl"
+        "selection_jsonl": "data/processed/vietnamese_nonstandard_v1_1/train.jsonl"
       },
       "schema": [
         "texts",
@@ -154,92 +164,121 @@
   "split_policy": {
     "human_test_ratio": 0.1,
     "human_validation_ratio": 0.1,
-    "method": "duplicate-group atomic deterministic hashing",
+    "method": "transitive source-and-perturbed duplicate-group atomic deterministic hashing",
     "weak_ai_rows": "train_only"
   },
   "teencode_augmentation": {
-    "applied_among_all_rows_rate": 0.460625,
-    "applied_among_eligible_rate": 0.500036,
-    "applied_count": 34569,
+    "applied_among_all_rows_rate": 0.921224,
+    "applied_among_eligible_rate": 1.0,
+    "applied_count": 69136,
+    "applied_span_count": 548095,
     "by_stratum": [
       {
-        "applied_count": 9598,
+        "applied_count": 19196,
+        "applied_span_count": 169182,
         "eligible_count": 19196,
-        "expected_target_count": 9598,
+        "expected_target_count": 19196,
         "label": "CLEAN",
         "source_dataset": "tarudesu/VOZ-HSD",
+        "span_application_rate": 0.838419,
         "target_split": "train",
-        "targeted_count": 9598
+        "targeted_count": 19196,
+        "valid_span_count_in_targeted_rows": 201787
       },
       {
-        "applied_count": 14972,
+        "applied_count": 29943,
+        "applied_span_count": 294420,
         "eligible_count": 29943,
-        "expected_target_count": 14972,
+        "expected_target_count": 29943,
         "label": "HATE",
         "source_dataset": "tarudesu/VOZ-HSD",
+        "span_application_rate": 0.834136,
         "target_split": "train",
-        "targeted_count": 14972
+        "targeted_count": 29943,
+        "valid_span_count_in_targeted_rows": 352964
       },
       {
-        "applied_count": 845,
-        "eligible_count": 1690,
-        "expected_target_count": 845,
+        "applied_count": 1592,
+        "applied_span_count": 6511,
+        "eligible_count": 1592,
+        "expected_target_count": 1592,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.892162,
         "target_split": "test",
-        "targeted_count": 845
+        "targeted_count": 1592,
+        "valid_span_count_in_targeted_rows": 7298
       },
       {
-        "applied_count": 6550,
-        "eligible_count": 13100,
-        "expected_target_count": 6550,
+        "applied_count": 13127,
+        "applied_span_count": 50992,
+        "eligible_count": 13127,
+        "expected_target_count": 13127,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.89189,
         "target_split": "train",
-        "targeted_count": 6550
+        "targeted_count": 13127,
+        "valid_span_count_in_targeted_rows": 57173
       },
       {
-        "applied_count": 810,
-        "eligible_count": 1619,
-        "expected_target_count": 810,
+        "applied_count": 1693,
+        "applied_span_count": 6349,
+        "eligible_count": 1693,
+        "expected_target_count": 1693,
         "label": "CLEAN",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.897766,
         "target_split": "validation",
-        "targeted_count": 810
+        "targeted_count": 1693,
+        "valid_span_count_in_targeted_rows": 7072
       },
       {
-        "applied_count": 176,
-        "eligible_count": 351,
-        "expected_target_count": 176,
+        "applied_count": 366,
+        "applied_span_count": 2167,
+        "eligible_count": 366,
+        "expected_target_count": 366,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.857539,
         "target_split": "test",
-        "targeted_count": 176
+        "targeted_count": 366,
+        "valid_span_count_in_targeted_rows": 2527
       },
       {
-        "applied_count": 1427,
-        "eligible_count": 2853,
-        "expected_target_count": 1427,
+        "applied_count": 2832,
+        "applied_span_count": 16368,
+        "eligible_count": 2832,
+        "expected_target_count": 2832,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.860342,
         "target_split": "train",
-        "targeted_count": 1427
+        "targeted_count": 2832,
+        "valid_span_count_in_targeted_rows": 19025
       },
       {
-        "applied_count": 191,
-        "eligible_count": 381,
-        "expected_target_count": 191,
+        "applied_count": 387,
+        "applied_span_count": 2106,
+        "eligible_count": 387,
+        "expected_target_count": 387,
         "label": "HATE",
         "source_dataset": "uitnlp/vihsd",
+        "span_application_rate": 0.867738,
         "target_split": "validation",
-        "targeted_count": 191
+        "targeted_count": 387,
+        "valid_span_count_in_targeted_rows": 2427
       }
     ],
-    "distinct_canonical_forms": 267,
-    "distinct_variants": 584,
-    "edit_count": 34569,
-    "eligible_count": 69133,
-    "requested_target_rate": 0.5,
-    "targeted_count": 34569
+    "distinct_canonical_forms": 271,
+    "distinct_variants": 589,
+    "edit_count": 548095,
+    "eligible_count": 69136,
+    "ineligible_count": 5912,
+    "requested_span_target_rate": 0.8,
+    "requested_target_rate": 1.0,
+    "span_application_rate": 0.842869,
+    "targeted_count": 69136,
+    "valid_span_count_in_targeted_rows": 650273
   }
 }
