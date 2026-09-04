@@ -78,12 +78,18 @@ _TOKEN_RE = re.compile(r"\S+")
 def _map_lookalike_token(token: str) -> str:
     """
     Chuyển lookalike trong 1 token.
-    Majority rule: chỉ chuyển khi số chữ cái > số digit có thể chuyển.
+    Hai guard:
+    1. Token bắt đầu bằng số → đây là số đo (40km, 40km/h, 1TB) → giữ nguyên.
+    2. Majority rule: chỉ chuyển khi num_alpha > num_convertible.
     """
+    # Guard 1: số đo (40km, 40km/h, 1TB...) — token bắt đầu bằng digit
+    if token and token[0].isdigit():
+        return token
+
     num_alpha = sum(1 for c in token if c.isalpha())
     num_convertible = sum(1 for c in token if c in LOOKALIKE_MAP)
 
-    # Không có gì để chuyển, hoặc token chủ yếu là số (hoặc hòa) → bỏ qua
+    # Guard 2: không có gì chuyển, hoặc token chủ yếu là số (hoặc hòa) → bỏ qua
     if num_convertible == 0 or num_alpha <= num_convertible:
         return token
 
@@ -107,10 +113,9 @@ def map_lookalike_chars(text: str) -> str:
 # VD: "n.g.u" → "ngu" ✓ , "3.14" → giữ nguyên ✓
 # ============================================================
 
-# (?<=\p{L}) — lookbehind: ký tự Unicode chữ cái
-# [.\-_]     — separator
-# (?=\p{L})  — lookahead: ký tự Unicode chữ cái
-SEPARATOR_PATTERN = re.compile(r"(?<=[a-zA-ZÀ-ỹ])[.\-_](?=[a-zA-ZÀ-ỹ])")
+# Chỉ xóa khi các ký tự [.\-_·~] bị kẹp giữa 2 chữ cái tiếng Việt.
+# VD: "n.g.u" -> "ngu", "c_h_ử_i" -> "chửi", "a~b" -> "ab"
+SEPARATOR_PATTERN = re.compile(r"(?<=[a-zA-ZÀ-ỹ])[.\-_·~](?=[a-zA-ZÀ-ỹ])")
 
 
 def remove_inserted_separators(text: str) -> str:
