@@ -22,6 +22,13 @@ data/processed/*
 !data/processed/.gitkeep
 data/variants/*
 !data/variants/.gitkeep
+data/data_final/*
+!data/data_final/manifest_mix.json
+data/eval_baseline/**/*.jsonl
+# Bước 4: bộ ViHOS đã map span mức từ — dựng lại bằng
+# `python -m src.dataset_builder.build_vihos`, chỉ giữ manifest làm bằng chứng
+data/data_explain/*
+!data/data_explain/manifest.json
 *.csv
 *.tsv
 *.parquet
@@ -34,6 +41,9 @@ models/*
 *.pth
 *.onnx
 *.safetensors
+
+# ==== Gói zip build để upload Kaggle (tái tạo được, không commit) ====
+*.zip
 
 # ==== Node / web demo ====
 node_modules/
@@ -53,5 +63,7 @@ Thumbs.db
 
 # ==== Log & báo cáo tạm ====
 *.log
+# ...nhưng GIỮ log bằng chứng của Bước 3
+!results/step3/logs/*.log
 wandb/
 runs/
