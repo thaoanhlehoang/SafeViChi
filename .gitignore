@@ -25,10 +25,11 @@ data/variants/*
 data/data_final/*
 !data/data_final/manifest_mix.json
 data/eval_baseline/**/*.jsonl
-# Bước 4: bộ ViHOS đã map span mức từ — dựng lại bằng
-# `python -m src.dataset_builder.build_vihos`, chỉ giữ manifest làm bằng chứng
+# Bước 4: bộ ViHOS đã map span mức từ (~2.1MB) — commit kèm để tái lập ngay,
+# hoặc dựng lại bằng `python -m src.dataset_builder.build_vihos`
 data/data_explain/*
 !data/data_explain/manifest.json
+!data/data_explain/*.jsonl
 *.csv
 *.tsv
 *.parquet

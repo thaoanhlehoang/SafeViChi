@@ -1,0 +1,32 @@
+{
+  "source": "htdung167/ViHOS",
+  "splits": {
+    "train": {
+      "total": 8844,
+      "malformed_index_spans": 0,
+      "by_label": {
+        "CLEAN": 4552,
+        "HATE": 4292
+      },
+      "empty_words": 0
+    },
+    "validation": {
+      "total": 1106,
+      "malformed_index_spans": 0,
+      "by_label": {
+        "HATE": 537,
+        "CLEAN": 569
+      },
+      "empty_words": 0
+    },
+    "test": {
+      "total": 1106,
+      "malformed_index_spans": 0,
+      "by_label": {
+        "CLEAN": 575,
+        "HATE": 531
+      },
+      "empty_words": 0
+    }
+  }
+}

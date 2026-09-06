@@ -1,0 +1,1106 @@
+{"words": ["Anh", "bar", "."], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Hello", "thầy"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Từ", "lúc", "mấy", "bro", "cmt", "cực", "kì", "cl", "gì", "đấy", "là", "rất", "khó", "để", "ngó", "được", "cái", "cmt", "hay", "buồn", "thực", "sự", "🙁"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nghe", "trần", "dần", "thấy", "cười", "đau", "cả", "bụng"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Idol", "tui", "có", "khác.", "Phải", "v", "chứ", "ai", "như", "cái", "con", "phò", "tiệp", "tiệp", "j", "đó.", "Đm", "nó", "như", "1", "con", "đàn", "bà."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Cảnh", "Sát", "GiựT", "Tiền", "=", "CSGT"], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Ông", "đi", "đâu", "mà", "lạc", "sang", "đây", "đây"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gia", "cát", "bị", "đồng", "bóng", "à"], "span_mask": [0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Mấy", "tụi", "DLV", "hay", "nói", "đu", "càng", "này", "nọ.", "Nảo", "chúng", "bị", "nhồi", "nên", "úng", "rồi.", "Thật", "ra", "đu", "càng", "đâu", "dể.", "Đu", "càng", "tốn", "cả", "triệu", "đô.", "Chỉ", "có", "ở", "tụi", "quan", "lớn", "tham", "nhủng.", "Chứ", "bò", "đỏ", "ấu", "trỉ", "umê", "bưng", "bô", "lương", "ba", "đồng", "làm", "gì", "có", "cửa", "đu,", "chỉ", "biết", "làm", "chốt", "thí..ha", "ha"], "span_mask": [0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["đungs", "v"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Quả", "múa", "chung", "được", "phết", "thầy", "ạ", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dễ", "thương", "quá", "lun", "hồi", "đó", "em", "cũng", "thích", "con", "mèo", "tom", "nữa", "mẹ", "ko", "cho", "cái", "nhõng", "nhẽo"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tuấn", "Hưng", "liên", "thiên", "quá", "rồi", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thối", "CC", "chỉ", "không", "ngửi", "đuợc", "thôi"], "span_mask": [1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Minh", "hiếu", "idol", "tui", "đó", "mọi", "người"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Đức", "Ánh", "khôn", "hơn", "cả", "họ", "nhà", "m."], "span_mask": [0, 0, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Ai", "giết", "dk", "con", "linh", "cá", "lóc", "tui", "ủng", "hộ", "10000usd"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Dm", "vtv", "mặt", "trời", "^^"], "span_mask": [1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Lũ", "pede", "xạo", "xự.", "Mới", "hơm", "qua", "chúng", "tâng", "nhau", "lên", "mây.", "Nay", "chúng", "siủa", "cắn", "nhau", "như", "chó", "tháng", "7.", "Hahaaaaaaa"], "span_mask": [1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["tr", "ơi", "nhìn", "thầy", "giống", "con", "póng", "quá", "à."], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Mặc", "áo", "đó", "stream", "đi", "abe"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "đánh", "máy", "giỏi", "thật!", "Dám", "biến", "đường", "đường", "là", "chủ", "tịch", "của", "một", "thành", "phố", "thủ", "đô", "trở", "thành", "tên", "nói", "láo!", "Tiên", "sư", "anh", "đánh", "máy!"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["má", "hôm", "qua", "tưởng", "anh", "Tiệp", "đi", "đôi", "dép", "này", "chứ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cai", "mat", "nha", "tien", "tri", "Tran", "Dan.nhin", "giong", "cai", "phau", "cau", "ga", "cong", "nghiep", "wa", "mn", "oi"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Ủa", "Toang", ":v"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Nếu", "là", "sela", "thì", "mọi", "chuyện", "sẽ", "k", "dừng", "lại", "ở", "đó", "❤️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["bậy", "bậy", "nà", "!", "bụi", "khói", "bao", "trùm", "hà", "lội", "là", "do", "cụ", "cả", "đang", "đốt", "rác", "bằng", "lò", "tôn", "đấy", "!", "năm", "nay", "cụ", "dọn", "nhà", "ăn", "tết", "sớm", "nên", "hơi", "ô", "nhiễm", "tí...bà", "con", "thông", "cảm", "!", "đang", "đốt", "hối", "hả", "để", "2020", "mời", "thượng", "khách", "phương", "bắc", "vào", "nhà", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["mấy", "cái", "thứ", "bắt", "chước", "trộm", "hình", "của", "người", "khác", "như", "mày", "muôn", "đời", "nát.", "Kinh", "tởm.", "Người", "ta", "đăng", "từ", "hôm", "qua", "thì", "mày", "ăn", "cắp", "hình", "rồi", "comment", "lại", "câu", "view", "hả", "mày?", "Tưởng", "vậy", "hay", "ho", "nhưng", "ko", "ai", "ngu", "như", "mày", "để", "mày", "qua", "mặt", "đâu."], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["T", "đọc", "mà", "t", "tức", "á"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đảng", "cộng", "chó"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["đ", "m,", "thầy", "giáo", "cũng", "sống", "ảo"], "span_mask": [1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["hóng", "đc", "chọn", ":(("], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đồ", "này", "đc", "lên", "báo", "rồi"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["thằng", "chó", "đó", "là", "thằng", "nào", "vậy?", "ai", "bjk", "cho", "thông", "tin", "coi"], "span_mask": [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["1", "màu", "đen", "1", "màu", "xám", "nhạt", "hơn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["nó", "ko", "cộng", "điểm,", "mà", "nó", "cho", "thí", "sinh", "rớt", "bớt", "thôi,", "có", "bà", "chị", "gặp", "vụ", "này", "r", ":))))", "thi", "điểm", "cao", "vẫn", "rớt", "nhé"], "span_mask": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Huỳnh", "Tuấn", "phản", "động", "đó", "bạn"], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["90tr", "dân", "Việt", "Nam", "đang", "vả", "nhung", "nè"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Tinh", "yêu", "như", "con", "chuồn", "chuồn"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hơi", "thở", "của", "nước"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chac", "tui", "chot", "wa", "cuoi", "dau", "bug", "luon"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nga", "Tran", "lom", "dom", ":))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Panda", "thai", "đã", "xem", "👍"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trư", "Bát", "Giới", "đi", "vùng", "dịch", "về", "ko", "chịu", "cách", "ly"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["😘😘😘"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Quan", "thì", "ăn", "cái", "bụng", "to", "như", "trống.", "Còn", "người", "dân", "thì", "ốm", "yếu", "nuôi", "tụi", "nó"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Clm", "@@@"], "span_mask": [1, 0], "label": "HATE"}
+{"words": ["Sam", "Bé", "Bố", "mày", "đéo", "có", "tư", "cách", "ở", "đây!", "Bố", "chửi", "thẳng", "cái", "thằng", "mặt", "lìn", "như", "mày", "đấy!", "Tay", "nhanh", "hơn", "não"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Là", "thật", "hay", "ghép", "đấy"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thắm", "tắc", "đường", "nên", "đến", "hơi", "muộn,", "nhé"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Văn", "Lộc", "yên", "nhen", "idol"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["chậm", "con", "cặc"], "span_mask": [0, 0, 1], "label": "HATE"}
+{"words": ["Con", "mẹ", "mày", "con", "linh", "cá", "lóc"], "span_mask": [1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Haha", "lại", "ba", "que", "xỏ", "lá"], "span_mask": [0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Nhắc", "nhẹ", "ở", "đây", "còn", "1", "người", "nữa", "cũng", "rất", "đẹp", "trai"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thoại", "Trần"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Má", "cái", "ông", "già", "này.", "Trẻ", "trâu", "Việt", "Nam", "nó", "chém", "ko", "trượt", "phát", "lào", "chứ", "ở", "đó", "mà", "súng", "bắn", "ko", "trúng..."], "span_mask": [1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["@hoa", "buitôi", "chửi", "nó", "để", "trong", "ngoặc", "đó", "bạn", ",", "chứ", "tôi", "biết", "thằng", "ba", "rọi", "này", "mồm", "nó", "hơn", "cống", "công", "cộng", ",", "từ", "thiện", "mà", "sủa", "như", "quái", "vật", "vậy,", "mồm", "nó", "độc", "quá", ",mồm", "nó", "chửi", "tục", "vậy", "thì", "tâm", "nó", "chỉ", "tà", "kiến", "và", "ác", "gian", "tham", "thôi."], "span_mask": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Anh", "Ba", "dữ", "quá"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bo", "truong", "cho"], "span_mask": [0, 0, 1], "label": "HATE"}
+{"words": ["Đổi", "cờ", "hay", "kỳ", "gì", "cũng", "không", "đổi", "cái", "rẻ", "rách", "3/", "đâu", "nha", "bác", ":)"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["trần", "dần", "chém", "gió.nghèo", "kiết", "xác", "không", "có", "tiền", "để", "làm", "răng", "gãy", "mẹ", "nó", "hết", "rồi", "mà", "còn", "ngồi", "chem", "gió"], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["~", "85", "triệu", "Dân", "ngu", "cu", "đen", "ngày", "càng", "bị", "4,5", "triệu", "đảng", "viện", "ức", "hiếp"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Nguyễn", "Thuận", "=))", "tư", "tưởng", "rừng", "rú", "gì", "v"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Thấy", "thầy", "ăn", "nói", "lịch", "sự", "như", "này", "em", "ko", "quen", "lắm", "😑😑"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đã", "bảo", "hông", "xem", "hoạt", "hình"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xin"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Lặng", "Táo", "Quân", "Vi", "Hành", "đổi", "lịch", "phát", "sóng", "rồi", "nhé", "chứ", "giờ", "Táo", "Quân", "sẽ", "không", "chiếu", "vào", "tối", "30", "Tết", "đâu"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gửi", "con", "ml", "nhung17", "nhé", "=)))"], "span_mask": [0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["d", "m", "hải", "quan", "k", "tham", "nhũng", "mang", "đầu", "tao", "đi", "mà", "chặt"], "span_mask": [1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1], "label": "HATE"}
+{"words": ["Hj", "hj", "e", "vui", "that", "nha"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ôi", "bố", "cái", "lũ", "thanh", "niên", "hãm", "lol.", "Đẹp", "mặt", "quá", "😒😒"], "span_mask": [0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Đồng", "chí", "Trần", "Dần", "đã", "hoàn", "thành", "xuất", "sắc", "nhiệm", "vụ", "của", "đảng", "và", "nhà", "nước", "giao", "cho"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Auto", "mua,", "comment", "có", "thể", "mua", "được", "mà,", "nếu", "chốt", "đơn", "là", "thật", "đi,", "nhưng", "sau", "không", "nhắn", "tin", "cho", "shop", "thì", "cũng", "đâu", "bán...kakaaaaaaa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nản", "cái", "chế", "độ..."], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["@công", "danh", "nguyen", "thể", "chế", "chính", "trị", "khác", "hẳn", "tư", "tưởng", "xã", "hội", "nhé.", "Con", "cờ", "hó", "china", "liên", "quan", "cmn", "gì?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Bạn", "nói", "chỉ", "dc", "cái", "đúng,", "like", "phát", "đéo", "biết", "mai", "có", "bị", "bọn", "nó", "đưa", "vào", "tội", "gì", "ko."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hải", "Yến", "mày", "mới", "là", "con", "rảnh", "đấy.", "Chưa", "xem", "đã", "bảo", "cảm", "thấy", "chán", "=))", "điên", "hết", "phần", "thiên", "hạ"], "span_mask": [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["chị", "MH", "nc", "có", "duyên", "thật"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ngân", "Đỗ", "nhìn", "mà", "tức", "á"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["HL", "đã", "ngu", "mà", "văn", "tiếp", "tục", "ngu", "đi", "khai", "báo", "cho", "dư", "luận", "biết", "là", "đã", "bỏ", "tiền", "riêng", "của", "mình", "để", "xây", "dựng", "đền", "đồng", "bóng,", "theo", "luật", "IRS", "mỹ", "bất", "cứ", "một", "công", "dân", "mỹ", "hoặc", "thường", "trú", "nhân", "ở", "mỹ", "khi", "ra", "nước", "ngoài", "làm", "ăn", "đều", "phải", "khai", "thuế", "với", "IRS,", "không", "biết", "ông", "thầ"], "span_mask": [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": [":)", "trung", "cộng", "muốn", "thắng", "thì", "tốt", "nhất", "nên", "cử", "cán", "bộ", "qua", "việt", "nam", "học", "tập,", "mấy", "thằng", "chưa", "học", "hết", "cấp", "2", "còn", "lôi", "lên", "làm", "lãnh", "đạo", "được,", "thì", "giải", "quyết", "hongkong", "chỉ", "là", "chuyện", "nhỏ"], "span_mask": [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ai", "cũng", "hiểu", "chỉ", "có", "một", "người", "ko", "hiểu", "là", "Add"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["@Phu", "Nguyen", "chắc", "phát", "âm", "nói", "với", "viết", "🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Có", "ai", "nạp", "cho", "ko", "b"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["bán", "page", "ko", "ad"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chau", "oi", "bn", "la,", "con", "cua,", "cô", "hả"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["T", "đang", "nợ", "1tr,", "thêm", "chỗ", "này", "là", "30tr", "à", ":("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cute"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Chậm", "chậm", "clg", "mấy", "con", "bò", "rảnh", "háng", "này"], "span_mask": [0, 0, 1, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["con", "điên"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Đầu", "cơ", "cả", "tỷ", "bạc", "tiền", "đất", "xung", "quanh", "đó", "rồi!", "=))", "Phải", "chuẩn", "bị", "chứ!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ad", "update", "tình", "hình", "quá", "chậm,", "người", "ta", "biết", "lâu", "rồi."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cũng", "muốn", "mang", "tiếng", "Dân", "Làm", "Việt", "lắm", "mà", "hôk", "được"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Anh", "này", "mà", "đưa", "lên", "báo", "thì", "hót", "hòn", "họt", "nhểy.", "Quên", "luôn", "cả", "mấy", "người", "kia", "luôn", "ấy", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hai", "người", "đẹp", "quá"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tào", "lao!"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Một", "lũ", "ăn", "bám"], "span_mask": [0, 1, 1, 1], "label": "HATE"}
+{"words": ["Lên", "thời", "sự", "nè", "ae", "êyyy"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dạo", "này", "dịch", "căng", "đét"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Hoàng", "Hoài", "Thương"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chúc", "chú", "cọp", "nhiều", "sức", "khỏe."], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Không", "ngờ", "mình", "ở", "gần", "nhà", "của", "nhà", "tiên", "tri", "ở", "Việt", "Nam"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["500", "triệu", "usd=", "hàng", "ngàn", "tháng", "lương", "công", "nhân,", "cty", "mang", "tiếng", "xấu,", "mất", "việc", "làm,", "lơi", "nhuận,", "hồ", "sơ", "vết", "nhơ", "có", "sẳn.", "Vậy", "cái", "giá", "của", "họ", "trả", "nhìu", "hơn", "500", "triêu", "usd"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Bệnh", "viện", "Anh", "như", "cc.", "Đã", "có", "triệu", "chứng", "rõ", "ràng,", "khai", "cả", "tiền", "sử", "tiếp", "xúc", "vẫn", "ko", "cho", "xét", "nghiệm", "mà", "yêu", "cầu", "cách", "ly", "tại", "nhà", "😔", "Ông", "bố", "điều", "mb", "bế", "về", "Vn", "chữa", "là", "hợp", "lý"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Vãi", "lol", "bác.kkk"], "span_mask": [1, 1, 0], "label": "HATE"}
+{"words": ["Vo", "Tuan", "Anh", "đéo", "hiểu", "kiểu", "gì"], "span_mask": [0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Hổ", "ca", "nhìn", "là", "thấy", "kết", "rồi", ",", "nhưng", "Hổ", "ca", "tỉnh", "hẳn", "chưa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Abe", "có", "thể", "chiếm", "đoạt", "được", "trái", "tim", "của", "Tiểu", "Tiểu", "nhưng", "riêng", "blue", "của", "Tiểu", "Tiểu", "thì", "Abe", "tuổi", "lol", "chiếm", "đoạt", "được", ":vv"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Con", "Bò", "đỏ", "nầy", "bị", "tẩy", "não", "cho", "nên", "không", "chuyển", "hoá", "thành", "người", "nổi,", "thích", "làm", "kiếp", "bò", "hơn", "làm", "người"], "span_mask": [1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["thế", "đéo", "nào", "xin", "lỗi", "1", "câu", "là", "xong", "v?"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hồng", "Xuyến", "mỗi", "ng", "mỗi", "gu.", "Và", "đó", "là", "ý", "kiến", "của", "mình", "thôi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đéo", "mẹ,", "MC", "Phan", "Anh", "có", "nhận", "lương", "từ", "dân", "tụi", "tao", "ko,", "hết", "lòng", "vì", "người", "vùng", "lũ,", "còn", "tụi", "mày", "có", "đứng", "ra", "kêu", "gọi", "và", "hết", "lòng", "lo", "cho", "dân", "ko", "hay", "chỉ", "là", "kêu", "gọi", "xong", "đem", "cúng", "mồ", "mã", "ông", "bà", "nhà", "tụi", "bây,", "đm", "cứ", "tưởng", "dân", "giờ", "ngu", "lắm", "ấy."], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Cảm", "ơn", "đảng"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Trông", "khổ", "vãi", "đái,", "mong", "bác", "quay", "về", "với", "tổ", "quốc", "😢"], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": [":)).ở", "thiên", "đường", "mọi", "ngành", "nghề", "đều", "hợp", "pháp", "nhé.đặc", "biệt", "là", "nghề", "cướp", "đường.làm", "thế", "bỏ", "tù", "6", "tháng", "còn", "nhẹ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hôm", "nay", "em", "bỏ", "hết", "liêm", "sỉ", "ra", "xin", "like", "avt", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nghe", "kì", "kì", "sao", "á.", "Con", "trai", "với", "mẹ", "mà", "liệu", "mấy", "cái", "lời", "nghe", "😋😋😡"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Riot", "Tiến", "Trần", "K", "để", "ý", "vs", "cả", "k", "có", "tn", "chờ", "nên", "k", "chấp", "nhận", "😂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chúng", "nó", "đéo", "còn", "gì", "để", "làm", "mà", "nên", "mới", "sống", "nhanh", "với", "sống", "chậm", ":v"], "span_mask": [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Má,", ".....xăng", "xuống", "giá", "mà", "luật", "CA", "cứ", "tăng", "tên"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Em", "mà", "đập", "đc", "thằng", "chính", "phủ", "như", "vậy", "chắc", "e", "đã", "làm", "rồi", "😂"], "span_mask": [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["A", "nghĩ", "sao", "về", "quan", "hệ", "đồng", "tính"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Huy", "Hoàng", "xàm", "lồn", "ít", "thôi."], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["chai", "lơ", "phim", "mới", "hả", "mn"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["như", "cl"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["thề", "a", "ác", "vs", "A", "Quang", "vl", "...", "a", "den", "vl"], "span_mask": [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["A", "tiệp:"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Không", "thể", "tưởng", "tượng", "nổi...", "Bọn", "chúng", "ăn", "bất", "chấp", "thủ", "đoạn"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Cứ", "tưởng", "thế", "là", "ngầu"], "span_mask": [0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Đm", "lần", "đầu", "tiên", "bố", "địt", "vào", "mày", "ad", "ạ."], "span_mask": [1, 0, 0, 0, 1, 1, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["nhanh", "chóng", "vãi", "lồng", "!", "cá", "chết", "3", "tuần", "mới", "xách", "đít", "đi", "lấy", "mẫu", "!"], "span_mask": [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Tạ", "Thu", "Hằng", "ae", "gì", "đâu", "nhỉ", "🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["vác", "Susan", "ra", "nha", "Thầy"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hi", "Độ", "tỷ", "tỷ", "-))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhà", "giàu", "đúng", "là", "có", "gu", "ăn", "mặc", "khác", "hẳn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bông", "ko", "ra", "bông", "trái", "ko", "ra", "trái...âm", "binh"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Bị", "giải", "tỏa", "nhưng", "đền", "bù", "không", "thỏa", "đáng,", "cả", "nhà", "sắp", "mất", "bát", "cơm", "nên", "làm", "liều."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hahaha", "súng", "bắn", "xạo", "VL"], "span_mask": [0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Có", "bàn", "chân", "lặng", "lẽ..."], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dit", "me", "vao", "long", "tot", "cho", "de", "cua", "may", "a"], "span_mask": [1, 1, 0, 0, 0, 1, 1, 0, 1, 0], "label": "HATE"}
+{"words": ["Thằng", "to", "ăn", "to", ".thằng", "bé", "ăn", "bé", "đúng", "là", "tấn", "trò", "đời"], "span_mask": [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Anh", "huấn", "lúc", "này"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Những", "hình", "ảnh", "bạo", "lực", "của", "người", "HK", "vẫn", "còn", "in", "đậm", "trong", "tâm", "trí", "của", "chính", "tôi.Cảm", "phúc", "ý", "chí", "và", "sự", "đồng", "lòng", "của", "họ.Thương", "lắm", "các", "cháu", "vẫn", "chưa", "đc", "trả", "tự", "do.Mong", "cho", "các", "cháu", "đc", "bình", "an."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vu", "Quynh", "Huong", "thế", "mà", "nó", "đéo", "chết", "đi.", "Giảm", "quá", "tải", "cho", "thế", "giới"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Tụi", "học", "trò", "vô", "văn", "hóa"], "span_mask": [1, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Ido", "của", "mình", "vẫn", "khỏe", "mừng", "quá."], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["kkkk"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Hậu", "việc", "hút", "thuốc", "Lào", "🙂", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Dần", "đã", "đạt", "cảnh", "giới", "cao", "nhất", "của", "thần", "quyền", "là...thần", "kinh"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Có", "lửa", "mới", "có", "khói.cũng", "như", "vụ", "Tiên", "Lãng", "Hải", "Phòng", "mà", "thôi.chết", "oan", "cho", "bọn🐕tham", "lam", "ăn", "cướp"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Du", "ma", "may"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Nguyễn", "Kỳ", "Phước", "tụi", "nước", "ngoài", "bắt", "nhịp", "chậm", "vại", "lòn", "😤"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["T", "thấy", "Khánh", "Chi", "nói", "chuyện", "chớt", "chớt", "sao", "á", "ta"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ây", "da..", "cô", "dễ", "thương", "quá", "😘", "anh", "Tuân", "cười", "như", "được", "mùa", "😆"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lê", "Nhật", "Khoa", "đem", "qua", "cmt", "bên", "Lộc", "sting", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vinh", "hạnh", "là", "một", "fan", "cứng", "của", "mixigaming"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "cái", "lồnnnn", "gì", "cx", "giỏi", "mà", "giỏi", "nhất", "là", "bốc", "phéttt", "thôi", "anh", "Tiệp", "ak", ":)))"], "span_mask": [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cho", "mình", "hỏi", "nút", "vàng", "đc", "làm", "bằng", "chất", "liệu", "j", "z"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bán", "mẹ", "nước", "rồi", "còn", "đâu."], "span_mask": [1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Đấy", "thế", "nhé.", "Thế", "là", "vừa", "lòng", "nhé.", "Chưa", "kể", "những", "ng", "kêu", "là", "không", "ngại", "nguy", "hiểm", "kia", "toàn", "là", "lính.", "Sai", "đâu", "đánh", "đó.", "Không", "kêu", "chắc", "tự", "ra", "làm.", "Mà", "nói", "là", "nói", "mấy", "cha", "bụng", "bự", "kia", "chứ", "nói", "gì", "lính", "lác."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Chi", "noi", "chuyen", "ma", "nhe", "thich", "đo", "chi", "ba😍😍😍"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thằng", "này", "nó", "thuộc", "dạng", "súc", "sinh,k", "còn", "từ", "ngữ", "gì", "để", "miêu", "tả", "hết", "độ", "cặn", "bã,", "khốn", "nạn,bỉ", "ổi", "của", "nó,k", "biết", "thằng", "bố", "con", "mẹ", "nó", "nghĩ", "gì", "khi", "có", "thằng", "con", "như", "nó,k", "biết", "con", "vợ", "nó", "cảm", "nhận", "thế", "nào", "về", "thằng", "chồng", "thổ", "tả", "như", "nó,", "thằng", "súc", "sinh", "này", "làm", "dơ", "bẩn", "thế", "giới", "đàn", "ông"], "span_mask": [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Trần", "Dần", "tiên", "tri", "người", "Vn", "sẽ", "về", "1", "mối", "quá", "đúng", "lun", ",", "nhưng", "quên", "vc", "phải", "bị", "tiêu", "diệt", "theo", "tất", "yếu", "lịch", "sử", "vì", "chỉ", "còn", "vài", "nước", "nghèo", "nàn", "chịu", "luồn", "cúi", "tàu", "cộng", "lưu", "manh"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["DMCSVN"], "span_mask": [1], "label": "HATE"}
+{"words": ["Ăn", "điêu", "nói", "hớt", "quen."], "span_mask": [1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Cánh", "Diều", "dẻo"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Ba", "dẻo", "vàng", "j", "den", "thui", "vay", "vàng", "mien", "ak"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chung", "cống", "rãnh", "sao", "so", "được", "với", "Ngài", "Chung", "bóng", "đá."], "span_mask": [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nam", "mô", "a", "di", "đà", "phật", "🙇🙇🙇"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["TQ", "chắc", "chắn", "sẽ", "không", "xâm", "lược", "láng", "giềng.", "Vì", "công", "cuộc", "xâm", "lược", "đó", "đã", "được", "TQ", "hoàn", "tất", "lâu", "rồi."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["ông", "can", "đang", "bận", "bảo", "vệ", "bọn", "ngu", "nhưng", "ra", "vẽ", "gánh", "team", ",", "và", "đứng", "trong", "bệ", "đá", "cổ", "nhưng", "vẫn", "cần", "sự", "cover", "từ", "đồng", "đội", "tránh", "bị", "dive", "bệ", "đá", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Phải", "treo", "cổ", "chúng", "nó", "lên", "thì", "may", "ra", "....."], "span_mask": [0, 1, 1, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nguyễn", "Minh", "Anh", "đẹp", "mà", "anh:))"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["đíu", "tin", "được", "luôn", "=))))))))"], "span_mask": [1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ngồi", "chờ", "thông", "báo", "cty", "cho", "nghỉ"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Giữ", "vững", "bản", "lĩnh", "chính", "trị", "vững", "vàng", "😷😷"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đừng", "có", "y", "y", "bệnh", "cả", "nước", "k", "đủ", "thuốc", "là", "ăn", "lol", "luôn", "chứ", "ở", "đó"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["ở", "xứ", "đông", "lào", "này", "chẳng", "có", "thành", "công", "nào", "mà", "thiếu", "được", "bàn", "chân", "của", "đảng", "!", "không", "thể", "thành", "công", "mà", "thiếu", "vai", "trò", "của", "đ...", "được", "!!!", "nếu", "chưa", "thì", "đ..", "sẽ", "tìm", "ra", "cách", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Dcm", "mồm", "đứa", "nào", "thôi", "dám", "rủa", "Bác", "tau", "bị", "codonqua."], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Chi", "dep", "qua", "c", "oi.su", "con", "cho", "do", "di", "c.con", "mat", "day", "con", "cho", "phan", "quoc."], "span_mask": [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["cái", "gì", "thế", ":))"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["như", "cc", "luôn", "ấy", ":v", "bài", "này", "view", "k", "cao", "đâu", "~"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nói", "chuyện", "thì", "đeo", "khẩu", "trang", "zô", "anh", "ưiii"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nha", "tien", "tri", "cung", "so", "virut", "hay", "sao,", "tien", "tri", "noi", "cong", "san", "tieu", "tan", "ma.", "Noi", "lao,"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Về", "lẹ", "xóa", "kênh", "thầy", "ơii"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đứng", "hình", "mất", "nửa", "tiếng", ":))"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cái", "đờ", "mờ", ":((("], "span_mask": [0, 1, 1, 0], "label": "HATE"}
+{"words": ["Bữa", "cơm", "gia", "đình", "🙂", "thíc", "thật", "ấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đm", "Ad,", "mày", "ngon", "kéo", "ra", "đó", "mà", "bve", "ngồi", "sủa", "phỏng", "có", "ích", "gì"], "span_mask": [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thích", "câu", "này", "vl", "\\\"", "Bạn", "lịch", "sự", "-", "admin", "lịch", "sự.", "Bạn", "cục", "súc", "-", "admin", "dí", "L`", "vào", "mặt", "bạn", "luôn", "\\\""], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["ngày", "càng", "tinh", "vi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hảo", "Đen", "có", "cl", "ý", ":))"], "span_mask": [0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Phi", "Quý", "dầu", "thơm", "mùi", "nhức", "đầu", "chết", "mẹ", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Có", "ai", "đi", "xem", "phim", "này", "vs", "tớ", "k:))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Oc", "bã", "đậu", "chỉ", "có", "j", "thôi"], "span_mask": [1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["vẫn", "mãi", "là", "một", "nước", "đang", "phát", "triển", ",", "và", "lạm", "phát", "ngày", "càng", "cao"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đây", "là", "thầy", "giáo", "ba", "😎", "còn", "baroibeo", "là", "khác", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thành", "Học", "Nguyễn", "Huy", "r", "về", "lây", "cho", "ae"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bán", "online", "10", "năm", "mà", "đm", "đạo", "đức", "kém", "vc", "boom", "hàng", "chết", "mẹ", "nó", "đi", "mng", "ơi", ":))"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["phải", "lạc", "quan", "lên", "thôi", "rồi", "cái", "gì", "cũng", "phải", "qua", "toàn", "dân", "có", "ý", "thức", "chắc", "chắn", "sẽ", "vượt", "qua"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thành", "Công", "thầy", "cố", "tình", "vậy", "để", "đỡ", "mất", "công", "biến", "về", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Một", "con", "bò", "vừa", "cmt"], "span_mask": [0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["live", "thật", "luôn", "hả", "mấy", "ông"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mùa", "đông", "quảng", "cáo", "áo", "cộc", "tay", ",nghe", "hợp", "lí", ":(("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhanh", "vcl"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Đkm", "chúng", "nó", "bán", "hết", "rồi", "còn", "đâu", "mà", "của", "mình"], "span_mask": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Má", "nước", "mắt", "cá", "sấu", "kìa", "trời"], "span_mask": [1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["bậy", "qua", "a", "âyy"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đúng", "là", "\"", "vay", "lồn", "vay", "lắm\"", "mà", "-_-"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Lúc", "hoạn", "nạn", "đấm", "nhau", "với", "mẽo", "ko", "thấy", "ai", ".", "Giờ", "phất", "lên", "1", "cái", "ai", "cũng", "muốn", "khoác", "tay", "làm", "bạn", ",", "cái", "thế", "giới", "này", "có", "kinh", "tế", "trong", "tay", "nó", "sướng", "là", "thế", "đấy"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nghe", "rất", "vô", "sinh", "nhưng", "lại", "có", "thai", "😀"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cho", "em", "hỏi", "dư", "luận", "viên", "đi", "ăn", "có", "được", "giảm", "giá", "không?", "Tiền", "điện,", "tiền", "xăng...", "có", "được", "miễn", "phí", "không", "ạ!", "😂"], "span_mask": [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Like", "chị", "Hiếu", "quá", "đi.", "Giới", "tính", "nào", "ko", "cần", "biết", "cứ", "có", "kinh", "tế,", "biết", "làm", "ăn", "giàu", "có,", "tử", "tế,", "bản", "lĩnh...tự", "do", "tài", "chính", "là", "ok", "hết.", "💝💝💝💝💝"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tôi", "sin", "tuyên", "thệ", "..", "trong", "nhiệm", "kỳ", "của", "mình", "sẽ", "cố", "gắng", "vơ", "vét", "đục", "khoét", "tàn", "phá", "đất", "nước", "này", "ko", "cho", "thằng", "sau", "lên", "ăn", "được", "gì", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Và", "người", "dân", "nghèo_trẻ", "em,cụ", "già", "không", "đc", "hưởng", "ASXH"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ông", "này", "chắc", "là", "bọn", "Tân", "thiên", "địa", "nằm", "vùng", "bên", "mình", "rồi...."], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Điều", "kiện", "hạn", "chế", "viruss", "phát", "tán", "có", "thể", "là", "phòng", "trên", "26", "độ", "là", "cơ", "bản.", "Còn", "mọi", "thứ", "điều", "cis", "thể.", "Hãy", "đọc", "kĩ", "những", "bài", "nói", "về", "viruss", "corona", "the", "trang", "chính", "thống", "nha"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tình", "hình", "dịch", "Covid19", "đang", "rất", "phức", "tạp.", "Mọi", "người", "ra", "đường", "nhớ", "đeo", "khẩu", "trang,", "ai", "sống", "một", "mặt", "đeo", "một", "cái,", "hai", "mặt", "đeo", "hai", "cái,", "ai", "sống", "như", "cặc", "thì", "đeo", "bao", "cao", "su", "dùm", "🙂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Anh", "mới", "trả", "góp", "XS", "Max", "mà", "ra", "iPhone", "11", "r", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["buồn", "của", "mỳ", "ý", "😥"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["sale", "cc"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Có", "cl", "chụy", "mày", "tin", "ấy", ":))"], "span_mask": [0, 1, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Xem", "thầy", "từ", "lúc", "10k", "sub"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đừng", "bao", "h", "so", "sánh", "abe", "với", "sela", "bởi", "vì", "abe", "tuổi", "lol", "mà", "so", "đc"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Ngu", "chua", "tung", "co", "di", "mua", "do", "phe", "thai", "ve", "xai", "made", "in", "tau", "khua", "dat", "nuoc", "ngoc", "dau", "ko", "noi", "la", "do", "lanh", "dao", "ngu", "ngoc"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Ngô", "Duy", "Tân", "hợp", "lí"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ok"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Con", "minh", "hiếu", "bêde", "già", "mất", "dạy"], "span_mask": [1, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Trung", "đái", "dầm"], "span_mask": [0, 1, 1], "label": "HATE"}
+{"words": ["Atm", "cao", "lãnh🤪"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": [":)))", "ý", "thức", "anh", "tịp", "như", "cái", "đầu", "bùi", "vậy"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["virus", "corona", "tuổi", "lìn", ":)))"], "span_mask": [0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Tuan", "Duong", "alo", "alo"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dương", "Dương", "????"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Like", "nếu", "bạn", "hiểu"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Có", "pải", "nổ", "lực", "là", "có", "được", "đâu.pải", "có", "1", "chút", "gọi", "là", "may", "mắn", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["🤣🤣🤣🤣"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Mjnh", "cho", "sdt", "di", "tui", "ve", "mjnh", "chau", "choi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["sai", "vl"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Ngọc", "Hà"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Chỉ", "muốn", "ad", "chửi", "chết", "tổ", "bọn", "chó", "chít", "này", "đi", "😋😋😋😋"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["VN", ":", "cailoz", "cát", "ko", ":vv"], "span_mask": [0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Ơ,", "thế", "bà", "già", "của", "mụ", "này", "ngoại", "tình", "vs", "ông", "hồ", "lòi", "ra", "mụ", "ah", "?"], "span_mask": [0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Đình", "Quang", "xạo", "l", "z", "pa"], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Chúng", "tôi", "sẽ", "khen", "tặng", "huân", "chương", "độc", "lập", "hạng", "nhất", "cho", "đồng", "chí", ":))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thịnh", "xin", "ảnh", "pro"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["sóng", "gió", "Youtube", "bà", "con", "ơi🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nước", "mía", "đi", "mọi", "người"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phục", "cái", "lồn", "mẹ", "chúng", "mày", "ý"], "span_mask": [0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Lon", "me", "no"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Ad", "ngu", "như", "1", "con", "chó....xh", "nước", "nào", "mà", "ko", "có", "cướp", "giật.....chẳng", "qua", "là", "kéo", "giảm", "chứ", "làm", "cc", "j", "hết", "tuyệt", "đối.....mày", "ăn", "cức", "nên", "não", "mày", "ko", "phát", "triển", "hả", "ad!!!"], "span_mask": [0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Linh", "vật", "đại", "diện", "thầy", "ba:))"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["me", "nhà", "no"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["ờ", "ờ", ".", "nợ", "thì", "chúng", "m", "nợ", "nhé.", ":T", "t", "đéo", "có", "nợ", "ai", "dâu", "nhé", ":T", "."], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["tự", "hào", "là", "học", "trò", "của", "abe"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["25:05", "phút", "Anh", "em", "chia", "sẻ", "mạnh", "tay", "tới", "Tập", "Cận", "Bình", "nhé!", "Trời", "sinh", "ra", "Tập", "tấc", "nhiêng", "sao", "lại", "sinh", "ra", "Tiger", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ai", "là", "cảm", "tình", "diên", "like"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vậy", "hằng", "năm", "thuế", "của", "dân", "đóng", "ngập", "mặt", "bọn", "bụng", "phệ", "trong", "QH", "NN", "kìa", "sao", "đám", "quan", "ko", "giỏi", "lấy", "đó", "ra", "quyên", "góp", "đi."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Chúng", "xây", "tượng", "đài", "nhiều", "hơn", "trường", "học."], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thằng", "Việt", "chờ", "khi", "nào", "thằng", "Chung", "xả", "nước", "đầu", "nguồn", "thì", "lên", "truyền", "thông", "hoan", "nghênh", "nữa", "nhé,", "dù", "gì", "Việt", "và", "Chung", "cũng", "là", "anh", "em", "tốt,", "Chung", "từng", "giữ", "nhà", "dùm", "Việt", "hẳn", "1000", "năm", "cơ", ":)"], "span_mask": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Nổ", "lực", "trùng", "tu", "nhăn", "sắc", ",để", "mồi", "chài", "đại", "gia", ",đó", "cũng", "gọi", "là", "nổ", "lực", "đó", "chị", "đẹp", "à", "."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đuoc", "cua", "ló"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Giúp", "mình", "với", "mọi", "người", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhân", "vật", "phụ", "mà", "lên", "hình", "to", "vậy", "abe", "🙂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hoàng", "Kiên", "nói", "đúng", "lại", "còn", "chuẩn", "🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bi", "benh", "ao", "tuong", "toi", "nghiep", "nhi"], "span_mask": [1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Triệu", "Kim", "Nhung", "cứ", "tưởng", "y", "tế", "Lạng", "Sơn", "🤦🏻‍♀️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thần", "tượng", "lúc", "nhiỏ", "của", "tui"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Phúc", "cmt", "dạo", "lên", "fan", "cứng", "thì", "kinh", "dồi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "chúng", "nó", "đi", "rồi", "còn", "mò", "về", "làm", "gì", "ta", ":3"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cháu", "đang", "còn", "nhỏ", "mà", "cô", "chú", "làm", "hư", "cháu", "quá😥"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Be", "de", "khung"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Sống", "chậm", "th"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Càng", "đọc", "càng", "tức", "con", "quỷ", "đó.", "Bây", "giơ", "vì", "nó", "bao", "nhiu", "ng", "chuẩn", "bị", "thất", "nghiệp,", "người", "gia", "thì", "lo", "sợ", "hoang", "mang,", "bao", "nhiu", "chủ", "Doanh", "nghiệp", "đợt", "này", "tiu", "luôn.", "Thứ", "gì", "đâu", "ak"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Rambo", "vẫn", "phải", "tự", "ngã", "xe", "mới", "chịu", "đc", ":)))).", "Sang", "cả", "thái", "lan", "tấu", "hài"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cô", "là", "người", "miền", "Tây", "giống", "con,", "nhìn", "cô", "chất", "phát,", "thật", "thà", "đúng", "với", "con", "người", "miền", "Tây", "vậy", "con", "rất", "mến", "mộ.", "Con", "luôn", "theo", "dõi", "và", "ủng", "hộ", "cô", "❤️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phân", "chia", "vùng", "miền", "là", "ngu.", "Ở", "đâu", "cũng", "có", "kẻ", "này", "người", "nọ.", "Thử", "hỏi", "phản", "ứng", "về", "vụ", "Formosa", "vừa", "rồi", "ở", "đâu", "được", "đoàn", "kết,", "đông", "đảo", "và", "không", "e", "ngại", "như", "giáo", "phận", "Vinh?"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nó", "đang", "tự", "chửi", "nó", ",", "lấy", "chồng", "còn", "(", "sinh", "con)", "ủa", "mà", "nó", "đẻ", "được", "không", "ta", "?", "Vì", "nó", "là", "quỷ", "rồi", "!...", "bọn", "bay", "thua", "con", "chó", "là", "con", "người", "thô", "tục", "từ", "thiện", "áp", "phe", "còn", "phước", "không?"], "span_mask": [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cmn", "Lag", "đúng", "chổ"], "span_mask": [1, 0, 0, 0], "label": "HATE"}
+{"words": ["Ôi,", "anh", "tôi", "=)))"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đầu", "ốc", "tôm", "nên", "nói", "ra", "không", "có", "lời", "nào", "nghe", "được", ".", "phụ", "nữ", "Việt", "Nam", "không", "có", "người", "nào", "phát", "ngôn", "như", "vậy", "thật", "ghê", "tởm"], "span_mask": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Con", "này", "thì", "có", "cdg", "mà", "ăn?"], "span_mask": [1, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Nghe", "mà", "muốn", "đập", "cái", "đth", "đm", ":)))"], "span_mask": [1, 1, 1, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Bả", "chửi", "người", "ta", "lên", "mạng", "câu", "like", ",", "bả", "mấy", "là", "người", "câu", "like", "đó", ",", "kêu", "người", "này", "người", "kia", "ủng", "hộ", "nhiều", "nhiều", ",", "đi", "Mỹ", "chơi", "về", "cho", "mỗi", "đứa", "ngàn", "đô", ",", "nghe", "muốn", "đái", "ỉa", "ra", "một", "lượt", "cho", "bả", "coi", ",", "lên", "mạng", "ngồi", "bán", "từng", "chai", "dầu", "thơm", "kiếm", "lời", "mà", "nói", "chuyện", "chảnh", "chó."], "span_mask": [1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Hướng", "dẫn", "con", "mẹ", "gì,", "giống", "như", "hút", "thuốc", "lá", "thế", "thôi."], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cùng", "nhau", "tự", "bảo", "vệ", "sức", "khoẻ", "chứ", "k", "phải", "vì", "miếng", "ăn", "sợ", "dịch", "bùng", "phát", "mà", "tranh", "nhau", "đi", "mua", "lương", "thực", "nhà", "nc", "nói", "rồi", "lương", "thực", "vẫn", "đủ", "cho", "nhân", "dân", "nhé"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "Trung", "lòi", "dái", ":))"], "span_mask": [0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Ơ", "tưởng", "duyên", "dáng", "chứ"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trung", "Anhh", "Ngọc", "Thảo", "mới", "đọc", "đến", "32", "h", "đã", "lên", "34", "r", "nè", "nhanh", "quá", "huhuu"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thanh", "Bình", "do", "anh", "bảo", "k", "có", "tư", "duy", "của", "con", "gái", "bình", "à", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lung", "linh", "là", "lên", "luôn"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Việt", "Nam", "đang", "lèo", "lái", "cho", "qua", "trận", "dịch", "nầy", "!", "Mong", "người", "Việt", "bốn", "phương", "tám", "hướng", "đừng", "chia", "rẽ", ",", "đấu", "đá", "nhau", "!", "Cùng", "nhau", "xây", "dựng", "giàu", "mạnh", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cứ", "tính", "ngìn", "tỷ", "đkm", "sợ", "thật"], "span_mask": [0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Sau", "vụ", "này", "thì", "deo", "biet", "a", "có", "đạt", "đc", "nút", "vàng", "của", "diu", "túp", "k", "á", ":)))", "chứ", "e", "là", "e", "vào", "huỷ", "đky", "luôn", "r", ":))"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ngọc", "Trang", "vô", "apple", "làm", "đi"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["ThanhTâm", "Nguyễn", "e", "từng", "như", "vậy", "à"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thằng", "assmin", "nhãm", "shitt...đành", "rằng", "page", "này", "là", "CHỬI.", "Nhưng", "mày", "là", "assmin", "thì", "chỉ", "nên", "viết", "gợi", "ý", "thôi...để", "mem", "nó", "CHỬI...mày", "dành", "CHỬI", "kiểu", "đó", "thì", "chơi", "thế", "đéo", "nào..."], "span_mask": [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Việt", "Nam", "giờ", "luật", "con", "mẹ", "nó", "rừng", "hết", "rồi!!!"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Bà", "này", "Người", "ở", "Bề", "Trên", "hả", "gì", "á...", "toàn", "nói", "chuyện", "kiểu", "người", "khuất", "mặt", "khuất", "mài", "ko...", "chắc", "ở", "bên", "trại", "Tâm", "Thần", "xuất", "trại..."], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Chặt", "bỏ", "chứ", "để", "làm", "gì"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Huyền", "Trang", "=)))", "đừng", "về", "nước", "lúc", "này", "nhé", "k", "đón", "đâu=)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhung", "Phạm", "giống", "mình", "đi", "kh", "quen", "nghe", "mùi", "máy", "lạnh", "là", "ói", "sml"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Hóng", "hóng😌😌"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Chi", "hieu", "dep", "qua", "da", "mat", "chi", "dep", "qua"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đã", "bắt", "đc", "susan0175", ":v"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["E", "khoe", "ké", "với", "ạ"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Duyên", "quá", "cô", "ơi♥️"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["đầu", "trận", "hùng", "hổ", "vđ"], "span_mask": [0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Các", "bạn", "nước", "ngoài", "không", "biết", "ở", "Việt", "Nam", "cái", "đấy", "nó", "là", "cái", "gì", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Từ", "ngày", "Chung", "lên", "thay", "Nhanh", ",", "xong", "Chung", "cho", "Nhanh", "xập", "nguồn,", "thương", "anh", "quá,", "ngu", "đoé", "gì", "mà", "ngu", "thế", "đào", "tạo", "đệ", "tử", "cũng", "cần", "cái", ",chí", "ít", "ra", "cũng", "phải", "chết", "thì", "cũng", "xin", "thế", "cho", "sư", "phụ", "chứ", "lỵ.", "Cứ", "hoang", "mang", "mãi,", "đến", "vụ", "Đồng", "Tâm", "anh", "Chung", "đường", "hoàng", "thế", "hoá", "ra", "chỉ", "là", "anh", "cahs.", "Tin", "anh", "ấy", "nhá", "bà", "con", "hết", "cửa", ",", "thật", "đấy"], "span_mask": [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Phát", "Võ", "=))))"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Cả", "năm", "không", "thưởng", "hay", "ngư", "nào"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Diễm", "Ngọc", "vui", "thôi", "đừng", "vui", "quá!", ":))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tẩy", "chay", "là", "xong", "mõm", "vs", "bọn", "này", "làm", "gì.", "N", "là", "ng", "của", "cty", "ấy", ":)))"], "span_mask": [1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cái", "quái", "gì", "nói", "lên", "sự", "thật", "về", "cái", "đất", "nước", "này", "cũg", "là", "phản", "động.", "Tự", "do", "ngôn", "luật", "ko", "bao", "h", "có", "chỗ", "đứg", "ở", "cái", "đất", "VN."], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Phết", "lo", "Tết", "😂"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chấp", "gì", "thằng", "thiểu", "năng", "đó", "Trần", "Ngọc", "Giàu", "ơi"], "span_mask": [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Đăng", "ký", "ở", "đâu", "ạ"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phương", "Minn", "nhìu", "đứa", "nó", "lạ", "loz", "vậy", "á..", "dở", "thì", "ng", "ta", "chê..", "thật", "sự", "đéo", "thể", "nào", "nge", "nổi", "nhạc", "jack", "..", "tụi", "mày", "cứ", "khen", "nó", "hoài", "nó", "chả", "thể", "nào", "tốt", "lên", "dc", "đâu"], "span_mask": [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Anh", "k", "đi", "cách", "ly", "hả", "anh?"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hy", "vọng", "các", "em", "sẽ", "được", "cách", "li", "o", "môi", "trường", "tốt", "cùng", "các", "bạn", "khác.", "Cố", "lên", "có", "chị", "ngân", "98", "mới", "nhập", "học", "nưa", "đó"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gia", "đình", "nào", "đó", ":"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phải", "bớt", "bao", "nhiêu", "thùng", "sữa", "cho", "tùng", "vậy", "anh"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khổ", "thân"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["A", "méo", "nên", "về", "nước", "thì", "mới", "đúng"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["cc", "ne", "Chu", "Tich.", "Phạt", "tao", "đi."], "span_mask": [1, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Nguyễn", "Thành", "Nhân", "hay", "lắm", "b"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Qtrong", "gì", "trước", "sau", "gì", "chẳng", "về", "1", "nhà"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hồi", "đó", "giờ", "nghe", "giọt", "nước", "mắt", "cá", "sấu.", "mà", "giờ", "mới", "thấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Trọng", "Thái", "đợi", "cái", "lone", ",", "đ!t", "chị", "m", "😉"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Lên", "xe", "đi"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Chị", "tiết", "nc", "cưng", "qá", ":))😍"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Buồn", "nhỉ,", "tận", "hưởng", "thôi"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tôi", "hồi", "còn", "thiếu", "nữ", "trăng", "tròn", "đấy", "các", "bác", "ạ!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cần", "tiêu", "diệt", "dân", "tộc", "Tàu", "khựa"], "span_mask": [0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Quan", "vn", "chúng", "nó", "tham", "vl...địt", "con", "mẹ", "lũ", "quan", "tham"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Thằng", "mặc", "váy,", "bởi", "vậy", "hơn", "thua", "với", "đàn", "bà", "ra", "mặt", "😂😂😂😂😂"], "span_mask": [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Đào", "Bảo", "Khánh", "\"sẵn", "đồ", "bú", "nhiều", "đâm", "ra", "ngáo\"Anh", "nhỉ"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Kim", "Phung", "tin", "chính", "xác", "nha", "tăng", "ghê", "quá", "lun"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Ngọc", "Quân", "chưa", "thấy", "lây", "ae", "ạ", "=))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dương", "Ly", "nhím", "=)))))"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Kố", "nên", "ank", "to^i", "ngke^’", "zi’", "cung~", "va^’t", "va?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mày", "nhìn", "lại", "mày", "đi,", "đăng", "clip", "đell", "đc", "5", "like,", "à", "phải", "rồi,", "bởi", "vậy", "mới", "bươi", "móc", "kiếm", "đàn", "bà", "để", "bình", "luận", "kiểu", "ganh", "tỵ", "😂😂"], "span_mask": [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Bóng", "vcl", "ý", "em", "nói", "thầy", "sela", "còn", "anh", "dơ", "như", "chó", "nha", ":))"], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Dỗi", "á", ":))", "no", "no", "no"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Việt", "cộng", "là", "cái", "thứ", "sinh", "ra", "từ", "thành", "phần", "bần", "cố", "nông,", "đã", "là", "bần", "cố", "nông", "thì", "chả", "có", "đứa", "nào", "được", "học", "hành", "tử", "tế", "đến", "nơi,", "đến", "chốn.", "Hậu", "quả", "là", "bọn", "Việt", "cộng", "nó", "quản", "lý,", "điều", "hành", "đất", "nước", "như", "cái", "con", "C,", "ngóc", "lên", "không", "nổi,", "nên", "phải", "bán", "đất", "nước", "cho", "bọn", "mọi", "rợ", "Tàu", "để", "có", "cái", "mà", "ăn", "dọng", "chứ", "!"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["con", "này", "hết", "thuốt", "chửa", "rồi."], "span_mask": [1, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Công", "an,chủ", "tịch", "xã,cán", "bộ", "thôn", "...con", "ăn", "cắp", "nữa", "là", "tham", "ô", "nó", "là", "điều", "tất", "nhiên", "rùi.!dkm", "giáo", "viên", "cấp", "1", "ở", "lớp", "có", "2", "đứa", "không", "tặng", "quà", "cô", "giáo", "ngày", "20-11", "cô", "giáo", "không", "phát", "kẹo", "cho", "hai", "cháu", "luôn", ".xã", "hội", "khốn", "nạn", "vl.Tiểu", "HọcLien", "Hồng-Gia", "Lộc-Hải", "Dương", "nhé!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Le", "Viet", "Anh", "nếu", "nhà", "t", "có", "ng", "bị", "thì", "sẽ", "xung", "phong", "đi", "cách", "ly", "chứ", "ko", "để", "lâu", "ngày", "đâu", "mà", "bị", "lm", "sao", "cả,", "chỉ", "có", "mấy", "loại", "cm", "trốn", "cách", "ly", "ko", "chữa", "kịp", "mới", "chết", "thôi,", "loại", "như", "cm", "thì", "nên", "chết", "sớm", "ko", "lại", "lây", "ra", "cộng", "đồng"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hằng", "Grin", "bạn", "mk", "cũng", "cố", "gắng", "thôiiii"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Linh", "lại", "là", "từ", "sơn", "bắc", "ninh"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ngày", "xưa,", "khi", "giấy", "vệ", "sinh", "chưa", "phổ", "biến", "thì", "mỗi", "gia", "đình", "đều", "thấm", "nhuần", "tư", "tưởng", "đảng", "mỗi", "ngày.", "Ngày", "nay,", "khi", "giấy", "vệ", "sinh", "quá", "phổ", "biến,", "nhiều", "mẫu", "mã,", "giá", "cả", "phải", "chăng,", "mềm", "mại", "chất", "lượng", "hơn", "hẳn", "thì", "đại", "đa", "số", "dân", "chúng", "trở", "nên", "lệch", "lạc", "tư", "tưởng", "chính", "trị"], "span_mask": [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thằng", "hùng", "vs", "bà", "4", "Nha", "đụ", "nín", "thở", "nhe", "a", "tuân."], "span_mask": [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cố", "lên", "cố", "lên"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đinh", "Thanh", "Hậu", "VN", "mình", "30", "rồi", "cơ", "à"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bóc", "lột", "còn", "hơn", "cả", "bọn", "Thực", "Dân", "nữa", "!"], "span_mask": [1, 1, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Idoi", "vẫn", "còn", "sống", "may", "quá"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Viet", "Mai", "Tran", "được", "quá", "nhờ"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ai", "cũng", "biết.", "Đã", "là", "chửi", "thì", "chửi", "thẳng,", "vòng", "vo", "nói", "nho", "nữa", "thì", "đổi", "tên", "page", "đi.", "Đậu", "má", "rau", "xanh."], "span_mask": [0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Trần", "Nhựt", "Linh", "nè"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Do", "Dat", "Gil", "lạc", "trôii", ":3", "😂😶"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bắn", "hẳn", "8000", "viên", "k", "trúng"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Huyền", "Khánh", "Phùng", "ác"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cùm", "măn", "chằn", "lai", "cầm", "tay", "bự", "hơn", "bóp", "l..", "nghe", "ko", "😂😂😂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Bắn", "bỏ", "nó", "đê"], "span_mask": [1, 1, 1, 0], "label": "HATE"}
+{"words": ["nhờ", "nó", "tố", "cáo", "mà", "khỏi", "ai", "thắc", "mắc", "thằng", "nào", "là", "thằng", "mặt", "heo", "😃😃😃😃"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Page", "PR", "k", "mà", "Thắm", "ơi", "hehe"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Hoàng", "Sâm", "lol", "sâm", "nôn", "link", ":))"], "span_mask": [0, 0, 0, 1, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Mồ", "tổ", "cha", "bọn", "nó", "làm", "trò", "hề", "với", "dân", "...một", "bè", "lủ", "hành", "dân", "để", "làm", "moi", "tiền", "dân", ".."], "span_mask": [1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Tuaz", "Hunq", "chữ", "G", "của", "thầy", "trong", "game", "là", "GG"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mỗi", "người", "1", "công", "việc..dm", "thằng", "đăng", "bài", "ngu", "đéo", "chịu", "đc"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Đừng", "chửi", "minh", "hiếu", "ok"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đỷ", "chị", "minh", "hiếu"], "span_mask": [1, 0, 0, 0], "label": "HATE"}
+{"words": ["Chửi", "bậy", "cũng", "có", "phải", "có", "văn", "hoá", "!!!", "page", "này", "giải", "trí", "vĩ", "lòn.", "Thích", "thích"], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["MƯA", "BẢO", "SAO", "KHÔNG", "LÊN", "SÓNG", "ĐƯỢC...", "BỘ", "LÊN", "SÓNG", "Ở", "NGOÀI", "TRỜI", "HẢ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "Ba", "giống", "Duke", "2016", "thời", "SKT.", "Đi", "top", "toàn", "chơi", "vs", "lính", ".", "3", "lane", "kia", "lo", "hết"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["ồ", "thế", "cơ", "à", "😘"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dương", "Thành", "Nguyên=))"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Yeah,", "Refund", "win", "rồi", "các", "bạn", "oiwiiiiii", "=))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Giống", "nhau", "như", "2", "giọt", "nước.", "Mà", "mỗi", "cái", "là", "1", "giọt", "nước", "mắt", "với", "1", "giọt", "nước", "💩", "thôi", "ạ", "😂😂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Bớt", "bớt", "dô", "diên", "dùm", "cái", "nha", "😒"], "span_mask": [1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["@Tủn", "3k", "rồi", "ăn", "nhiu", "tiền", "r", "mà", "binh", "dữ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tạm"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Nhật", "Phát", "Càng", "nói", "càng", "thấy", "bạn", "ngu", "=))", "thế", "những", "người", "nuôi", "bò", "dê", "lợn", "gà", "vì", "yêu", "thương", "nó,", "giờ", "họ", "cấm", "bạn", "ăn", "bạn", "chịu", "không", "=)))", "đến", "thua", "với", "lí", "luận", "ngu", "si"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Oce", "a", "nhõ", "🤣"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Thu", "Hằng", "có", "link", "hong", "tui", "kh", "vô", "được"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chén", "mẻ", "chứ", "chén", "kiểu", "mẹ", "gì"], "span_mask": [1, 1, 0, 1, 0, 1, 0], "label": "HATE"}
+{"words": ["Mai", "Quach", "ok", "hoa", "rơi", "cửa", "phật", "🤷"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["hiếp", "tao"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Đây", "là", "quần", "què", "à"], "span_mask": [0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["xuất", "khẩu", "gạo", "còn", "bị", "trả", "về", "vì", "vượt", "mức", "an", "toàn", "thì", "làm", "ăn", "j", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xem", "từ", "thiện", "cho", "thầy..."], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Rank", "Việt", "Nam", "mà", "yasuo", "tt6", "tt5", "thì", "del", "phải", "người", "Việt", "Nam", "r"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["8", "keo", "đang", "vật", "vã", "với", "29", "thứ", "tiếng", "rồi", "nên", "không", "làm", "phụ", "bếp", "được", "nữa", "kaka"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Phạm", "Văn", "Đồng", "bớt", "ngu", "đi", "đc", "rồi"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cái", "mặt", "đàn", "ông", "cái", "tiếng", "đàn", "bà", "bán", "nam", "bán", "nữ"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["572", "le", "quang", "dinh", "là", "dai", "ly", "ve", "so", "nha", "chú", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Định", "mất", "não", "be", "like"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["tội", "cho", "má", "nó...nghe", "nó", "nói", "vầy", "đau", "l...", "phải", "biết", "!"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Hàn", "quốc", "thuợng", "đẳng", "lắm", "mọi", "người", "đừng", "lo", "cho", "Hàn", "Quốc", "nha"], "span_mask": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Chi", "3", "la", "so", "1"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thuận", "trước", "khi", "phát", "ngôn", "ko", "chịu", "suy", "nghĩ", "xem", "chủ", "tus", "nó", "nói", "gì...thì", "ăn", "chửi", "là", "đúng", "thằng", "ngu", "ạ", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Review", "đề", "thi", "toán", "chiều", "nay", ":", "phòng", "thi", "nóng", "vcc", "đc", "cái", "giám", "thị", "xinh", "và", "đề", "cx", "dễ(", "hơn", "năm", "ngoái", ")", "nên", "cx", "khá", "ok"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Lê", "Hà", "Thư", "nên", "thế:))))", "mình", "có", "tuổi", "r:)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Như", "Hằng", "Nguyễn", "uống", "thuốc", "dô"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["chị", "Hiếu", "đẹp", "hao", "hao", "giống", "chị", "Cẩm", "Ly", "hen"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["@Ngoc", "Quynh", "Nhu", "Nguyen", "Thằng", "lồn", "cha", "với", "con", "đĩ", "mẹ", "mày", "không", "biết", "dạy", "mày", "nên", "mày", "mới", "dựng", "lồn", "lên", "xem", "vào", "chuyện", "của", "người", "khác,", "bộ", "tao", "ăn", "hết", "của", "ông", "nội", "mày", "sao", "mà", "mày", "lôi", "tao", "vào.", "Từ", "đầu", "tao", "đâu", "có", "lôi", "tên", "con", "đĩ", "mẹ", "mày", "ra", "nói", "đâu"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Người", "có", "tiếng", "mặc", "cái", "lìn", "gì", "chẳng", "đẹp", ".", "Người", "bt", "nó", "bảo", "là", "điên"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Tp", "hcm", "thi", "Nhật", "ha", "nội", "thi", "trung", "quoc"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["chị", "Hôm", "nay", "đẹp", "quá"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Fl", "duck.fuu", "mình", "trả", "bằng", "pos.142"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Toi", "roi"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Ad", "ăn", "phân", "con", "j", "mà", "ngu", "thế......????"], "span_mask": [0, 0, 1, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Thu", "Hít", "k", "nghe", "thì", "thou", "bớt", "khịa", "dùm."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Oh", "shjt"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Cười", "vô", "mặt", "mày", "một", "cái...", "cặn", "bã", "ạ...", "hãy", "tự", "biến", "mất", "luôn", "đi"], "span_mask": [0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Tại", "sao", "những", "đứa", "như", "này", "lại", "tồn", "tại", "trong", "khi", "những", "người", "tốt", "thì", "lại", "bị", "tan", "nạn", "&", "mất", "mạng", "vì", "lũ", "lụt", "mà", "méo", "do", "thiên", "tai", "gây", "ra", "nhể", "???"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cám", "ơn", "đảng.", "Cám", "ơn", "nhà", "nc", "😏"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Thị", "Ngọc", "Anh", "t", "chỉ", "nói", "k", "biết", "thực", "hư", "thế", "nào", "thì", "đừng", "cào", "phím.còn", "t", "cmt", "cho", "vui", "thôi.động", "gì", "đến", "mồ", "mả", "nhà", "bạn", "đâu", "mà", "dựng", "lông", "lên", "thế."], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Cực", "kỳ", "thuyết", "phục", "🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ngộ", "l", "ghê", "ta", "ơi"], "span_mask": [0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cởi", "áo", "là", "múa", "bụng", "nữa", "cũng", "hợp"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["nghe", "thì", "thuyết", "phục", "nhưng", "khi", "đọc", "lại", "thì", "rất", "thuyết", "phục", ":)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cân", "thận", "nó", "lại", "keu", "phản", "động", ":v"], "span_mask": [0, 0, 1, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["78", "mà"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Toi", "dong", "y", "cung", "quan", "diem", "voi", "ong", "nhung", "chua", "het", "dau", "toi", "cung", "chac", "voi", "ong", "se", "con", "nhung", "cai", "tham", "cao", "doc", "hai", "khong", "bao", "ngo", "duoc", "neu", "co", "duoc", "quyen", "toi", "se", "tieu", "diet", "tau", ",hay", "xoa", "sach", "het", "tau,", "the", "gioi", "moi", "binh", "yen", ",toi", "khong", "phai", "la", "nguoi", "co", "tai", ",", "nhung", "chac", "Chan", "bon", "tau", "da", "am", "muu", "dung", "nhu", "vay", "Dung", "dung", "vay"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Admin", "đánh", "rơi", "não", "trước", "khi", "đăng", "bài", "này?"], "span_mask": [0, 1, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Minh", "Anh", "lâu", "rồi", "đó", "dừ", "mới", "biết", "ạ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "yêu", "cô", "quá"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Câu", "cữa", "miệng", "đụ", "má", "nó", "😁"], "span_mask": [0, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ai", "bảo", "con", "trai", "ko", "mang", "lại", "đc", "hạnh", "phúc", "cho", "nhau"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lúc", "đầu", "nhìn", "tinh", "đâu", "cô", "nay", "la", "con", "gai", "thật", "k", "hoàn", "hảo", "k", "nhận", "ra"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mồm", "loz", "adm", "ns", "ngu", "bm."], "span_mask": [1, 1, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Cực", "kì", "thuyết", "phục", ":)))))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhưng", "tha", "cho", "THPT", "nha", ":)"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["ditme", "tối", "nay", "ao", "làng", "anh", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bú", "l", "ngọc", "Trinh", "sẽ", "tinh"], "span_mask": [1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["hay", "quá", "b", "ơi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["84%", "tham", "nhũng", ":)"], "span_mask": [1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ok", "anh", "ba"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Hot", "link", "em", "gái", "ngon", "ngọt", "nước", "cho", "ae", "nè"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Người", "ta", "không", "bán", "hàng,", "ngta", "bán", "sự", "khác", "biệt."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["đến", "cức", "tôi", "còn", "nhìn", "lần", "cuối", "rồi", "xả", "nước", "chứ", "như", "bọn", "hàn", "quắc", "đéo", "bh", "xem", "phim"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Hay", "quá", "k", "tưởng", "🤣🤣"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đăng", "Thảo"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["toàn", "chó", "k"], "span_mask": [0, 1, 0], "label": "HATE"}
+{"words": ["địt", "cụ", "m", "thành", "lê", "nhé"], "span_mask": [1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Nể", "mấy", "đứa", "cmt", "kêu", "ghép", ":>", "Ghép", "ghép", "cl", "nekk", "chứ", "ghép"], "span_mask": [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Đây"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Khả", "năng", "sinh", "tồn", "mà", "bà", "hàng", "xóm", "vốn", "là", "rõ", "nhất", "😅😅😅"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyen", "Mai", "Thi", "cũng", "chung", "team", "ah", "c", "kkk"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thua", "lào", "vs", "campuchia", "rùi.phát", "triển", "thụt", "lùi", "cmne"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": [":))", "rồi", "đó", "em", "về", "đây"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Văn", "Lộc", "con", "đỉ", "mẹ", "mày", "tus", "nào", "cũng", "thấy", "liếm", "fame"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Buồn", ":))"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Dân", "tộc", "trường", "tồn", "là", "sao?", "Ai", "cắt", "nghĩa", "tại", "sao", "phải", "viết", "như", "vậy", "đi?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhìn", "ngok", "nghếch", "vcđ"], "span_mask": [0, 1, 1, 1], "label": "HATE"}
+{"words": ["Đéo", "thấy", "thằng", "ad", "giúp", "ai", "dc", "cái", "cc", "j", "mà", "toàn", "ở", "đó", "bô", "lô", "ba", "la", "nhãm", "cức"], "span_mask": [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["đơn", "phương", "là", "tự", "nguyện", "đau", "là", "âm", "thầm", "nhớ", ":))))", "gán", "chịu", "đi", "dmm", "mi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Z", "đay", "la", "ai"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Văn", "Hưng", "🙂"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["triết", "lí"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Tóc", "tai", "như", "cái", "lông", "chổi", ":v"], "span_mask": [1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ngọc", "Hiếu", "hot", "trend", "đó", "nha", "😂😂"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["thằng", "lồn", "này", "chỉ", "biết", "tham", "Mu", "chứ", "biết", "cc", "gì"], "span_mask": [1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["khô", "gà", "thì", "ít.", "lá", "chanh", "thì", "nhiều."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dm", "anh", "xấu", "vl.", "Mé"], "span_mask": [1, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Ăn", "ở", "Cua", "Vàng", ",", "Hạ", "Long", "đấy", "🙂", "ko", "lẽ", "wifi", "địa", "phủ", "mạnh", "vậy", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Kiểu", "như", "này🙂"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Bán", "dân", "để", "trá", "nợ"], "span_mask": [1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Da", "của", "anh", "chuyển", "màu", "nhanh", "thế", "🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ông", "Thầy", "này", "muốn", "ngủ", "gầm", "cầu", "lắm", "rồy", "nè", "!!!!!!"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Khổ", "quá"], "span_mask": [1, 0], "label": "HATE"}
+{"words": ["Mạng", "mẽo", "như", "đầu", "b", "😏"], "span_mask": [0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Kênh", "như", "con", "c"], "span_mask": [0, 0, 0, 1], "label": "HATE"}
+{"words": ["Phương", "Minn", "thế", "là", "chúng", "ta", "chung", "thần", "tượng", "rồi", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Không", "sợ", "kẻ", "địch", "mạnh,", "chỉ", "sợ..."], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Máu", "cộng", "sản", "ăn", "vào", "người", "rùi", "nên", "vậy."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xin", "video", "với", "ông", "ơi"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tưởng", "lại", "quảng", "cáo", "thuốc", "sinh", "lực", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gu", "thời", "trang", "gạ", "địt", "à", "😀"], "span_mask": [0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Chị", "3", "giàu", "quá", "chị", "giúp", "đỡ", "cho", "e", "với"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vũ", "Thanh", "Huyền", "ngta", "cũng", "đâu", "muốn", "đâu", "bạn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bài", "này", "bình", "thường", "hơn", "so", "với", "mấy", "bài", "trước", "nhiều,"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nên", "mua", "các", "bạn", "à,", "điện", "thoại", "sài", "tốt", "phết", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Yêu", "Thầy", "Ba", "vãi", "cẹt", "😚"], "span_mask": [0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Ae", "cho", "xin", "1", "like", "ăn", "tết"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": [":))", "tội", "anh", "tôi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lợi", "cái", "đầu", "buồi", "j", "hả"], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Các", "em", "2k1", "yên", "tâm.trước", "kia", "anh", "cũng", "không", "thi", "đỗ", "nhưng", "nhờ", "sự", "cố", "gắng", "và", "ý", "chí", "kiên", "cường", "giờ", "đây", "anh", "đã", "có", "tất", "cả", "mọi", "thứ", "trong", "tay", "đó", "là", ":”THỨ", "2", "THỨ", "3", "THỨ", "4", "THỨ", "5", "THỨ", "6", "THỨ", "7", "và", "CHỦ", "NHẬT”", "chúc", "các", "em", "may", "mắn", "🍀🍀❤️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mày", "nên", "nhớ", "là", "nguời", "trong", "nam", "ngoài", "bắc", "cỡ", "70", "triêu", "nguời", "mày", "chờ", "chết", "là", "vừa"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Phạm", "Đăng", "the", "mat", "nước", "do", "roi", "ma", "k", "biet", "ngu", "ma", "con", "kich", "voi", "dong"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hi", "bức", "xúc", "quá", "không", "chịu", "được", "phải", "chửi", "cho", "hả", "hơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chi", "chuoi", "hay", "đo", "chi", "e", "ung", "hô", "chi", "trieu", "like"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nam", "Thành", "cmt", "của", "ông", "kia", "chỉ", "mang", "tính", "chất", "vả", "vào", "mồm", "mấy", "đứa", "tự", "nhục", "lúc", "nào", "cũng", "nói", "nhật", "là", "số", "1", "nhật", "là", "is", "the", "best", "từ", "đó", "cho", "ta", "thấy", "thì", "nhật", "cũng", "chẳng", "phải", "tốt", "đẹp", "lắm"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nghỉ", "hk", "đê"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Chụt", "Chụt", "thông", "kiểu", "đéo", "gì", "=))", "toang", "thật", "sự", "r"], "span_mask": [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Biết", "là", "đẹp", "rồi", "🤣", "muốn", "đi", "làm", "nhưng", "mà", "tiền", "kg", "có", "chị", "iu", "ui", "😂🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["May", "quá", "idol", "giới", "trẻ", "của", "vũ", "trụ", "vẫn", "chưa", "dính", "virus", "🤣🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mai", "Nam", "Hải", "buồn", "của", "anh", "tôi😞"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Như", "này", "đủ", "gánh", "chưa", "mấy", "đứa"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đm", "biết", "ngay", "được", "mấy", "anh", "em", "nhật", "ký", "yêu", "nước", "tôn", "vinh", "làm", "idol", "mà", ":)))))"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Có", "thể", "là", "do", "thế", "lực", "thù", "địch", "lợi", "dụng", "những", "hôm", "đêm", "tối", "đã", "ra", "đào", "bới", "bờ", "kè,", "khiến", "cho", "bờ", "kè", "bị", "sạt", "lở.", "Đây", "là", "1", "trong", "những", "chiêu", "trò", "kích", "động", "người", "dân", "của", "bè", "lũ", "phản", "động.", ":3"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["toàn", "các", "cô", "gái", "ngồi", "xổm", "trym", "quệt", "đất", "ạ.."], "span_mask": [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Triệu", "Thành", "Long", "tích", "cực", "lên", "ông", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "Châu", "có", "vợ", "chưa", "v", "ta"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dạo", "này", "bệnh", "lợn", "tả", "châu", "phi", "tạm", "yên", "!!", "Bây", "giờ", "lại", "bắt", "đầu", "bệnh", "bò", "điên", "hoang", "tưởng", ",", "rối", "loạn", "phân", "liệt", "ông", "giáo", "ạh", "!", "Thế", "có", "nguy", "ko", "chứ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Kiếp", "này", "coi", "như", "bỏ"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cắt", "cho", "quả", "mái", "xong", "nhìn", "mặt", "có", "chán", "k"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hoang", "Anh", "Vũ", "tên", "nhạc", "quả", "sau", "tên", "gì", "vậy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cô", "Minh", "Hiếu", "và", "Chị", "Cẩm", "Ly", "có", "nét", "giống", "nhau."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Danh", "cho", "banh", "cai", "lon", "luông", "con", "lin", "loc"], "span_mask": [1, 0, 0, 1, 1, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Nếu", "là", "dòng", "chính", "hãng", "của", "các", "thương", "hiệu", "như", "Dior,", "Chanel", "thì", "thông", "thường", "có", "in", "sx", "tại", "Pháp", "hay", "Mỹ", "này", "kia....", "Chứ", "dòng", "Sing", "cũng", "có", "thể", "là", "hàng", "Fake", "1", "đó", "nha", "kaka", "😌"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cs", "toàn", "bọn", "nói", "láo"], "span_mask": [0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Dell", "còn", "gì", "để", "nói", ":3"], "span_mask": [1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Sắp", "xuống", "lỗ", "rồi"], "span_mask": [0, 1, 1, 0], "label": "HATE"}
+{"words": ["Mong", "đợi", "nhất", "vẫn", "là", "Tùng"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khá", "rộng"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Lê", "Thương", ":))))"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Cái", "bọn", "trẻ", "trâu", "miền", "bắc", "hô", "hô", "miệng", "Việt", "kiều", "hàn", "mang", "bịnh", "dìa.", "R", "bảo", "viết", "thì", "nói", "chung", "chung", "Việt", "kiều."], "span_mask": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Tây", "nó", "lại", "bảo", "mới", "trốn", "viện"], "span_mask": [0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["@Yo", "Min", ":))))"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Ở", "trên", "chuyến", "may", "bay", "đó.nhieu", "người", "nhiễm", "kg", "khai", "báo", "chu", "đau", "phải", "minh", "nhung", "đâu."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["thế", "thì", "chúng", "ta", "lại", "có", "người", "Tày", "điện", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trường", "Tiến", "Nó", "biết", "rút", "kinh", "nghiệm", "từ", "“", "Nhung", "17", "“", "rồi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["con", "linh", "này", "nói", "tục", "ko", "có", "duyên", "đồ", "mất", "nết", "😎"], "span_mask": [1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Nghe", "có", "vẻ", "Xe", "Mẹt", "Xịt", "đấy", "nhưng", "lại", "rất", "Mi", "Xi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Linh"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["vailonnnn"], "span_mask": [1], "label": "HATE"}
+{"words": ["Từ", "bi", "mà", "chửi", "đụ", "má", "đụ", "mẹ"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["A", "lại", "viết", "sai", "chính", "tả", "rồi", "phải", "bỏ", "dấu", "-", "đi", "chứ", "😑😑(78t)"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cc"], "span_mask": [1], "label": "HATE"}
+{"words": ["Chụp", "hình", "sao", "ngủ", "vậyy", "mẹ", "mít", "=)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Thùy", "Dương", "Mạnh", "Duy", "Changg", "Nguyễn", "tag", "ai", "đó", "đi", "mn", "ơiiii", "hihi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["mẹ", "nó", "sủa", "nge", "mà", "thối", "qúa", "trời"], "span_mask": [1, 1, 1, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["hồi", "nhỏ", "tính", "để", "tóc", "như", "khánh", "phương", "akira", "hkt", "như", "vầy", "nhưng", "mẹ", "không", "cho", "lớn", "lên", "mới", "biết", "tuổi", "trẻ", "ai", "cũng", "mất", "sai", "lầm:v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Như", "cl", "luôn", "=))"], "span_mask": [0, 1, 0, 0], "label": "HATE"}
+{"words": ["Trong", "một", "diễn", "biến", "khác.", "Lại", "có", "cờ", "mẫu", "quốc", "phấp", "phới", "đâu", "đây"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mày", "đéo", "xứng", "đáng", "làm", "người", "dân", "nam", "định"], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cuong", "Phan", "con", "này", "năm", "sau", "dự", "là", "2000", "đô", "nhé"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["bóng", "già", "chuyển", "giới.", "CÔ", "CÔ", "nghe", "mắc", "ỉa.", "súc", "vật", "lũ", "bongs", "chó", "tởm", "lợm"], "span_mask": [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Loanh", "quanh", "đằng", "đít", "lại", "đằng", "đầu", ".", "Vẫn", "là", "một", "lũ", "xạo", "loz", "với", "nhau", ".", "Giờ", "khó", "kiếm", "ăn", "quay", "Ra", "cắn", "xé"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Quốc", "tịch", "VN", "nhưng", "sống", "ở", "Anh", "có", "nghĩa", "là", "sang", "anh", "sinh", "sống", "1", "tgian", "sau", "khi", "nhiễm", "bệnh", "thì", "về", "VN", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xam", "quá", "đi", ",", "gặp", "mấy", "con", "quỷ", "khùng", "cười", "muốn", "sạc", "luôn"], "span_mask": [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ngu", "na", "noi", "tren", "troi", "duoi", "dat", "k"], "span_mask": [1, 0, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["hơi", "quá", "lời,", "thật", "ra", "thiên", "hạ", "đã", "chửi", "còn", "hơn", "chó"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["giống", "thực", "xự"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Chậm", "cái", "l", "nhanh", "chậm", "kệ", "mẹ", "ngta", "đi", "cmt", "lắm", "ăn", "l", "àaaaaaaa", "🤞🏿"], "span_mask": [0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1], "label": "HATE"}
+{"words": ["Ổ", "mono", "lớn", "mở", "tỷ", "sốbom"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["abe", "moi'", "noi'", "cl", "gi`", "v", "?"], "span_mask": [0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Tuấn", "thượng", "đẳng", ":))"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tội", "ảnh", "lắm", "anh", "=)))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hết", "nhanh", "như", "chớp", "h", "qua", "thách", "thức", "danh", "hài", ":))))", "thầy", "ăn", "nhìu", "giải", "nhỉ", ":0"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lily", "Trịnh", "vụt", "đè", "tứ", "quý", "há", "hốc", "mõm"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Trọng", "Thái", "ong", "giám", "bảo", "anh", "tôi", "sai", "à", "?", "Sai", "cc", "đéo", "sai", "😆"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Sai", "lai", "cang", "sai", "dien", "lai", "cang", "dien"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Thanh", "Duy", "🙂"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Để", "bố", "xọc", "chết", "con", "mẹ", "nó"], "span_mask": [0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["xem", "giọng", "cười", "mình", "lại", "chán", "đéo", "muốn", "nói", "🤦"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Idol", "lên", "sóng", "diện", "thế😂"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đồ", "dỡ", "hơi"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Tộc", "trưởng", "said", ":"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dân", "băc", "minh", "ko", "xu", "đep", "con", "cho", "nay"], "span_mask": [1, 1, 0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Đm", "trang", "này", "phản", "động", "mọi", "người", "ạ.", "THP", "là", "doanh", "nghiệp", "nhà", "nước", "làm", "gì", "có", "chuyện", "sai", "trái", "bao", "giờ,", "bọn", "nó", "đào", "bùn", "lấy", "cặn", "đấy."], "span_mask": [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["*Tham", "nhũng", "kì", "diệu*"], "span_mask": [1, 1, 0, 0], "label": "HATE"}
+{"words": ["Định", "nghĩa", "chủ", "vs", "CEO", "nó", "khác", "nhau", "chứ", "🙄🙄"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hô", "hào", "tuyên", "truyền", "quyết", "tâm", "phòng", "dịch", "nhiều", "rồi", "một", "số", "người", "vẫn", "cố", "tình", "kô", "tuân", "thủ", "cách", "li", "ô", "phải", "dùng", "tới", "nắm", "đấm", "thôi....."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Nhân", "cách", "thua", "con", "gấu", "bông", "nhà", "t🙂"], "span_mask": [1, 1, 1, 1, 1, 1, 0, 1], "label": "HATE"}
+{"words": ["Đãng", "và", "nhà", "nước", "cùng", "tập", "đòn", "vtv", "khẳng", "định", "nước", "đó", "ko", "có", "ruồi", "nhé", ".", "Nên", "tin", "vào", "đãng", "chứ", ".", "Đm", "bọn", "cầm", "quyền", "."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cần", "gì", "tâm", "sự,", "làm", "ván", "pubg", "r", "đi", "ngủ", "sớm", "chuẩn", "bị", "đón", "chờ", "ngày", "mai", "khoẻ", "khoắn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "chúng", "mày", "ko", "nhịn", "tham", "ô", "cửa", "quyền", "đi", "."], "span_mask": [0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Trịnh", "Huế", "ai", "tỏ", "tình", "nhận", "lời", "luôn", "ý", "đợi", "cái", "gì", "🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "nay", "noi", "chuyen", "qua", "la", "mat", "day", "CDM", "phai", "cho", "con", "nay", "mot", "bai", "hoc", "nho", "doi"], "span_mask": [1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Với", "điều", "kiện", "phải", "đảm", "bảo", "tiến", "độ", "công", "việc", "nhé,", "là", "làm", "việc", "ở", "nhà,", "chứ", "ăn", "ở", "ko", "thì", "ko", "có", "1", "đồng"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chi", "ba", "bi", "ngao", "đa", "ha", "chi", "3"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Bt", "các", "bạn", "phan", "cuồng", "chửi", "vậy", "mik", "đã", "ko", "nêu", "ra", "ý", "kiến", "cá", "nhân"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lê", "Ngọc", "Minh", "Châu", "đóng", "học", "phí", "trong", "nonolive", "là", "chổ", "nào", "vậy", "bạn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mặt", "quần", "biết", "khùng"], "span_mask": [0, 0, 0, 1], "label": "HATE"}
+{"words": ["Nghe", "nhạc", "kute", "ý"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tạ", "Thị", "Ngọc", "Duyên", "mày", "cũng", "v", "chứ", "khác", "đéo", "đâu", "xớ"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["chị", "vạch", "loz", "ra", "cho", "em", "xem", "vs"], "span_mask": [0, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hải", "Yến", "có", "câu", "nói", "là", "(", "ko", "thích", "nhìn", "đéo", "ai", "bắt", "xem", ")"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ổng", "tư", "tưởng", "tiến", "bộ", "lên", "rồi,", "hết", "3", "que", "r"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Nơi", "sản", "sinh", "ra", "tham", "nhũng", "mà", "k", "có", "tham", "nhũng.cũng", "lạ"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Lo", "cho", "Bác", "lắm", "luôn"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["nhận", "hết", "trách", "nhiệm", "đi,", "anh", "đưa", "tiền", "cho", "phạt.", "Nhớ", "nói", "là:", "em", "làm", "mạnh", "tay,", "đè", "mấy", "chai", "Dr.", "Thanh", "chứ", "cty", "an", "toàn", "lắm.", "càng", "pr", "cty", "tết", "này", "anh", "thưởng", "nhìu", "cho"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Tu", "Tuan", "hâhhaa", "sao", "mà", "bỏ", "qua", "được", "ba", "tú"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Địt", "mẹ", "thiên", "đường", "ad", "nhỉ"], "span_mask": [1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Diệu", "Linh", "Nguyễn", "Thị", "Thanh", "Bình"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Có", "nge", "cau", "mãi", "mãi", "phồn", "vinh", "đâu"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chị", "Khánh", "Chi", "càng", "ngày", "càng", "đẹp", "càng", "duyên", "💖"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hai", "chi", "em", "ba", "nay", "mat", "dai", "an", "noi", "tuc", "tiu", "lon", "roi", "an", "noi", "mat", "dai", "hai", "chi", "em", "may", "no", "khoe"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["-", "Cùng", "tham", "gia", "chống", "covid-19", "nha", "mọi", "người", "<3"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Diện", "Trần", "có", "con", "r", "mà", "còn", "ngu", "mà", "rảnh", "lòn", "ghê"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Add", "ngu", "vãi", "nồi"], "span_mask": [0, 1, 1, 1], "label": "HATE"}
+{"words": ["Xe", "gì", "mà", "83", "tỉ", "vậy", "trời"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mình", "nói", "thật", "là", "bài", "này", "như", "lồn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Thời", "lồn", "nào", "rồi", "mà", "còn", "mị", "nhau", "như", "vậy"], "span_mask": [0, 1, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Tuổi", "cũng", "cao", "rồi", "mụ", "già", "ơi.", "Sống", "sao", "cho", "con", "cháu", "bạn", "bè", "quê", "hương", "tôn", "trọng", "quý", "mến", "Sau", "này", "mụ", "chết", "cũng", "về", "với", "cát", "bụi", "thôi"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nghĩ", "đến", "chỉ", "muốn", "băm", "con", "chó", "đĩ", "ấy", "trận"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 1, 0, 1], "label": "HATE"}
+{"words": ["Nghe", "rất", "lí", "Mạc", "sầu", "nhưng", "lại", "rất", "cô", "cô"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "Băng", "nhớ", "nhé😂😂"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thầy", "làm", "em", "xúc", "động", "qua'"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["lolz", "mắc", "cười,", "toàn", "1", "lủ", "ở", "vùng", "xa", "vùng", "xôi", "ở", "...", "nói", "chung", "là", "chỉ", "biết", "và", "thờ", "cái", "Ba", "Đình,", "đéo", "làm", "được", "gì", "thì", "ngậm", "cái", "mổm", "ăn", "c..c", "lại,", "ko", "nói,", "ko", "ai", "nói", "miệng", "thối", "đâu", "mấy", "con", "chó", "DLV", "ạh"], "span_mask": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Già", "mà", "non"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Về", "nhà", "có", "em", "chờ", "các", "anh", "ơi", ":("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bây", "h", "so", "hay", "sam", "gì", "nhìn", "cũng", "đ", "dám", "ăn", "😢"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Lại", "bảo", "không", "giống", "đeeeee"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["2", "triệu", "nè.", "Con", "chưa", "cả", "gội", "🤭"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chào", "thầy", "ba", "girl😌nứng", "vcl"], "span_mask": [0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Hihi"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Lê", "Huyền", "má", "quá", "đáng", "ghê", "á", ":))))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hợp", "lý", "quá", "anh", "độ", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ở", "đấy", "ngột", "ngạt", "quá", "thì", "đưa", "nó", "qua", "vũ", "hán", "cho", "nó", "thoáng", "mát😡😡"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["“Ông", "già", "đem", "hết", "tiền", "đãi", "bạn,dm", "tháng", "này", "thiếu", "sữa", "rồi”", ":)))"], "span_mask": [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nhật", "bản", "hẩy", "kiện", "thằng", "chủ", "tịt", "Hanoi", "cho", "nó", "biết", "thế", "nào", "là", "bố", "láo", "!"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Được", "của", "ló", "thầy", "ơi"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["nứng", "nứng"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["bít", "này", "viết", "có", "hết", "mực", "hông", "ad?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["thằng", "VC", "nào", "thì", "củng", "đều", "là", "lưu", "manh", "và", "gian", "trá", "....", "chức", "quyền", "càng", "cao", "thì", "độ", "lưu", "manh", "càng", "lớn", "....", "ĐM", "bọn", "VC", "...!!"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Lê", "Quang", "Tâm", "ông", "ko", "đc", "fan", "cứng", "là", "phải", "r😆"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vậy", "mà", "có", "cái", "bè", "lũ", "đòi", "huy", "động", "vàng", "trong", "dân,", "ngoại", "tệ", "trong", "dân,", "ngoại", "tệ", "đó", "từ", "nước", "ngoài", "gởi", "về", "chứ", "có", "in", "ra", "đâu", "thím", "7,", "ngoài", "ra", "đám", "con", "cháu", "của", "cái", "hội", "gì", "đấy", "qua", "ở", "chung", "với", "bọn", "đu", "càng", "chắc", "cũng", "ăn", "bám", "trợ", "cấp", "của", "chính", "phủ", "nước", "sở", "tại", "hay", "ăn", "từ", "tiền", "ba", "mẹ", "tụi", "nó", "đi", "hút", "máu", "đi", "bán", "đất", "vậy", "thím", "7,", "so", "ra", "cái", "nào", "nhục", "hơn", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Nền", "giáo", "dục", "phương", "tây", "đã", "dạy", "gì", "cho", "những", "\\\"ai", "kia\\\"☹️.", "Nghĩ", "nó", "chán,", "sang", "chảnh", "mà", "ý", "thức", "l0l😑"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["fan", "one", "piece", ":v"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tôi", "vẫn", "chưa", "hiểu,", "tại", "sao", "Saigon,", "một", "thành", "phố", "\"Ngụy\"", "đói", "khổ,", "bị", "bọn", "Mỹ", "\"Ngụy\"", "đàn", "áp,", "bóc", "lột,", "cần", "chế", "độ", "CS", "ta", "giải", "phóng,", "cứu", "đói,", "mà", "lại", "nộp", "ngân", "sách", "nhiều", "thế", "!", "(bằng", "55", "tỉnh", "thành", "khác)."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Mong", "anh", "em", "ủng", "hộ", "kênh", "mình"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Võ", "Ngọc", "Mỹ", "Duyên", "ừa", "haha", "mấy", "anh", "mấy", "chị", "hỏng", "biết", "đó", "nà", "cái", "lồn", "đâu", "bé=))))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Võ", "Thuần", "Nguyễn", "có", "bán", "Tiểu", "Tiểu", "không"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["còn", "tư", "bản", "giãy", "chết", "m", "dám", "nói", "ko", "phải", "từ", "mõm", "của", "đảng", "đi"], "span_mask": [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Hồ", "Nguyễn", "Quốc", "Phú", "mấy", "thằng", "đầu", "buồi", "này", "rp", "làm", "mẹ", "gì", "thứ", "như", "nó", "ngoài", "đầy", "rp", "tới", "sáng", "chưa", "hết", ":))"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ba", "hard", "cc", ":))"], "span_mask": [0, 0, 1, 0], "label": "HATE"}
+{"words": ["Nhị", "Thắng", "cực", "địt", "lol", "mẹ", "mày"], "span_mask": [0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Áo", "rất", "đẹp", "nhưng", "thầy", "mặc", "ko", "đẹp", ":("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhìn", "cái", "mặt", "muốn", "xịt", "chó", "cắn"], "span_mask": [0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Con", "C.A", "nhổ", "nuoc", "bọt", "voi", "danh", "dan", "thì", "xloi", "song", "huề"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Ngọc", "hoàng", "lại", "đi", "rừng", "ah", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chụp", "màn", "hình", "làm", "cl", "gì", "thế", "con", "bò", ":)))"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Bài", "hát", "này", "chỉ", "dành", "cho", "quảng", "cáo.", "Không", "có", "tiền", "thì", "làm", "nhạc", "làm", "sao", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cái", "mặt", "là", "nhìn", "dell", "ưa", "nổi", "với", "bị", "nứng", "lâu", "năm"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Quang", "Nguyễn", "Đún", "vậy", "burn", "chair", "hà", "lội", "ngon", "kkk"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hải", "Yến", "xinh", "gái", "mà", "cmt", "thúi", "hoắc", "à", "🤭"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Bọn", "chó"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Linh", "Việt", "kiều", "đâu", "có", "ở", "Việt", "Nam", "đâu", "mà", "kiếm"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["xin", "tên", "nhạc", ":3", "hihi", "cảm", "ơn"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xuất", "sắc", "quá", "chất", "😎"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Haizz.", "Nthe", "này", "thì", "dân", "khổ", "quá"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khổ", "a", "tôi"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Ánh", "sáng", "của", "đảng", "sẽ", "giết", "mày"], "span_mask": [0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Do", "con", "di", "nug", "lon"], "span_mask": [0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Tỏ", "tình", "kiểu", "gì", "khi", "mất", "huy", "hiệu", "FC", "🙂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chửi", "bới", "công", "an", "nó", "cho", "ra", "đảo", "rùi", "chán", "ghê!"], "span_mask": [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thâm", "vl", "bạn", "ơi"], "span_mask": [1, 1, 0, 0], "label": "HATE"}
+{"words": ["Khịa", "pew", "vl"], "span_mask": [1, 0, 1], "label": "HATE"}
+{"words": ["quan", "chức", "để", "lại", "cức", "đái", "cho", "đời....í", "lộn!", "cái", "đức."], "span_mask": [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Điên!!!", "Ông", "này", "điên", "điên", "mà", "lai", "được", "cccđ", "mời", "khi", "có", "sự", "kiện.", "Đúng", "là", "một", "lũ", "điên", "có", "tổ", "chức!!!"], "span_mask": [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["idol", "của", "chị", "hai", "tui", "😌"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sa", "béo", "nhìn", "ngấy", "vl", ":))"], "span_mask": [0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ảnh", "hưởng", "đến", "công", "việc", "thì", "kệ", "cụ", "nhà", "m"], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 0, 1], "label": "HATE"}
+{"words": ["Vấn", "đề", "nó", "là", "ở", "cái", "chế", "độ", "thôi."], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Lạy", "chúa", "con", "còn", "lứa", "tuổi", "học", "sinh", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cả", "ngàn", "đại", "biểu", "QH", "qua", "6", "năm", "vẫn", "không", "thông", "nổi", "cái", "luật", "biểu", "tình", "dù", "nó", "có", "sờ", "sờ", "trong", "hiến", "pháp", "2013", "!", "trong", "khi", "đó", "lại", "vung", "tiền", "làm", "trò", "mèo", "hù", "doạ", "nhân", "dân", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": [":))", "nó", "chửi", "cho", "đúng", ":))", "chứ", "k", "phải", "là", "nó", "chửi", "sai.nó", "chửi", "cho", "khôn", "ra", "chứ", "nó", "chửi", "k", "phải", "là", "để", "cho", "tụt", "hậu,cho", "đi", "xuống...tuy", "văn", "phong", "Thô-", "Tục", "nhưng", "nó", "Thật...nên", "đéo", "thể", "cãi", "được", ",thấy", "xấu", "hổ", "thì", "phải", "thay", "đổi"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Mới", "biết", "chúTrần", "Dần", "gần", "đây", "yêu", "chú", "quá,", "mong", "rằng", "khi", "mình", "già", "mình", "vẫn", "giữ", "được", "tinh", "thần", "tươi", "vui", "như", "chú"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "người", "sao", "lại", "như", "vậy?"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["đù", "cái", "bọn", "DLV", "lại", "được", "dịp", "vào", "\"như", "này", "mà", "đòi", "biểu", "tình", "đòi", "cá\".", "cái", "dm", "bọn", "này", "éo", "thấy", "nhục", "x2", "thì", "thôi", "chứ,", "éo", "thể", "nào", "tả", "được", ":))"], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["kệ", "mẹ", "thầy"], "span_mask": [0, 1, 0], "label": "HATE"}
+{"words": ["Tôi", "không", "xem", "đâu", "mọi", "người", "ơi.", "Chỉ", "bình", "luận", "thôi", "có", "được", "không.", "Nói", "thật", "ông", "trần", "dần", "này", "(tôi", "cố", "tình", "không", "viết", "hoa", "để", "thể", "hiện", "sự", "tôn", "trọng", "với", "ông", "ấy)", ".", "Một", "con", "người", "đáng", "khinh.", "Ảo", "tưởng", "không", "tự", "nhận", "ra", "mình", "là", "ai", "một", "thầy", "mo", "đúng", "nghĩa,", "chỉ", "có", "thể", "lừa", "bịp", "được", "những", "người", "dân", "tộc", "mà", "thôi.", "Nói", "đến", "ông", "ta", "ai", "mà", "không", "tức", "cười", "😂😂😂😂😂😄😁😁😃😂😂😃"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Dkm", "chửi", "hết", "bọn", "chó", "vàng", "made", "in", "vietnam"], "span_mask": [1, 1, 0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Việt", "Nam", "muôn", "năm", "🇻🇳💞"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thấy", "ghê", "dị🤣"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Cho", "chết", "mẹ", "nó", "cái", "đám", "bò", "đỏ", "đần", "độn"], "span_mask": [0, 1, 1, 1, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Sản", "phẩm", "chất", "lượng", "để", "phục", "vụ", "một", "lũ", "“cực", "kỳ", "thuyết", "phục”", "bị", "di", "căn", "giai", "đoạn", "cuối", "quả", "phí", "phạm.", "Toàn", "bọn", "bại", "não,", "thoái", "hoá", "văn", "hoá.", "Cứ", "tưởng", "thế", "là", "hay", "ho."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["lũ", "bán", "nước", "đang", "bú", "đít", "tụi", "đài", "loan", "china.dech", "mẹ", "gia", "đình", "thằng", "chủ", "tịch", "tỉnh", "QB", ",", "mả", "cha", "thằng", "bộ", "trưởng", "tài", "nguyên", "môi", "trường.lũ", "sâu", "bọ"], "span_mask": [1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["mì", "sào", "chua", "ngọt", "âhhahahah"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Bình", "có", "cả", "hậu", "hoàng"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dm", "lũ", "quan", "tham", "bán", "nước."], "span_mask": [1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Cái", "tập", "đoàn", "dacosan", "rước", "giặc", "đây", "mà"], "span_mask": [1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Quang", "Chivas", "thằng", "mồm", "lồn.", "Mặc", "váy", "vl."], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Iu", "cô", "gái", "khơ", "me", "hàm", "răng", "trắng", "tác", "cái", "l**", "đen", "thui", "🙏🙏"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Nhìn", "muôsn", "lại", "kéo", "khoá", "dùm", "quá:)"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Goi", "người", "ta", "chui", "người", "ta", "người", "ta", "chui", "lại", "là", "hue", ".....", "kkkk"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sang", "đài", "loan", "nó", "kiện", "cho", "công", "ty", "đi", "tù", "ý", "còn", "ở", "việt", "nam", "thì", "dmcs", "nun"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Đ**"], "span_mask": [1], "label": "HATE"}
+{"words": ["Cho", "em", "hỏi", "CEO", "là", "gì", "thế", "ạ", ":33"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trung", "Now", "never", "dieeeeeeeeee"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mấy", "ông", "đánh", "giầy", "kia", "ko", "là", "dân", "à?", "Cũng", "lỗi", "của", "dân", "đi", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chào", "ank", "Độ.", "Có", "thể", "ank", "không", "biết", "em.", "Nhưng", "em", "biết", "ank", "đấy.", "Vài", "năm", "trước", "em", "cũng", "giống", "ank", "bây", "giờ..."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tụi", "tui", "hỏng", "dám", "nói", "sau", "giải", "phóng,chỉ", "dám", "nghệ", "thuật", "hóa", "sự", "kiện", "sau", "75,", "TỪ", "NGÀY", "ĐỨT", "PHIM...🤣🤣🤣", "khổ", "quá."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cho", "em", "coi", "vu", "chi", "sua", "co", "đep", "khong", "em", "se", "cho", "vo", "em", "sua"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Xuống", "kim", "cương", "chưa", "Abe"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mặt", "như", "buê", "đuê", "ấy", "nhể"], "span_mask": [0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Nguyễn", "Ngọc", "Vũ", "hóng", "nào"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["chị", "đẹp", "quá"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["TRUNG", "QUỐC", "LÀ", "1", "BẬC", "THẦY", "VỀ", "HỐI", "LỘ.", ":)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Tôi", "co", "vang", "xe", "lamborini", "moto", "100", "000", "nha", "biet", "thu"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mn", "đừng", "ns", "này", "ns", "nọ", "chị", "ấy.", "Khẩu", "nghiệp", "mag", "ts", "tụi", "bây", "quả", "báo", "đấy", "con", "ạ."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Diễm", "hehe"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Muốn", "gớt", "nước", "mắt"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Đình", "Tuyên", "hahaa", "lạc", "hậu"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xao", "lôn", "k", "co", "gi", "vui", "..chung", "ta", "k", "nen", "xao", "lon.."], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Căn", "bản", "lắm", "crush", "vailon", ",", "k", "biết", "tỏ", "tình", "con", "nào", ":))"], "span_mask": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Chị", "nầy", "là", "giàu", "thật.còn", "thần", "bóng", "râu", "đó", "nó", "sạo", "lồn", "mà.chị", "đừng", "chưỡi", "ba", "mẹ", "nó.e", "thấy", "tội", "cha", "mẹ", "nó", "chi", "ơi.chưỡi", "nó", "đi."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Yêu", "Ông"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["trời", "đất", "nào", "chiếm", "tiền", "của", "nhà", "nước", "mà", "thề", "!", "nhưng", "bị", "cáo", "thì", "có!", "và", "quan", "trọng", "là", "tiền", "của", "nhân", "dân", "chứ", "nhà", "nước", "làm", "đách", "gì", "có", "tiền", "!", "nhà", "nước", "chỉ", "giỏi", "phá", "tiền", "thôi", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Sao", "cai", "mieng", "no", "xau", "du", "vay."], "span_mask": [0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Cho", "em", "1000đô", "đi", "chị", "iêu"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chẳng", "lẽ", "nên", "kêu", "người", "dân", "nhắn", "lại", "..", "xin", "lỗi", "bác", "thủ", "tướng", "em", "bị", "lụt", "ko", "có", "điện", "thoại", "nên", "bác", "đừng", "nhắn", "đễ", "làm", "giàu", "cho", "nhà", "mạng"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Uh,dung", "roi,du", "ma", "no", "nua", "di", "admin"], "span_mask": [0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Đc", "anh", "ui"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["như", "lon"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Thằng", "bê", "nầy", "nổ", "quá,", "cái", "miệng", "nầy", "tạo", "nghiệp,", "bê", "ng", "ta", "coi", "đc", "bê", "nầy", "khó", "coi", "quá"], "span_mask": [1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Sống", "chậm", "lại", "đi", "các", "bác", "ơi", "🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhà", "tiên", "tri", "hay", "đấy,", "ông", "có", "thêm", "1", "phiếu", "về", "VN", "chơi", "nhé", "👌"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["hủy", "thằng", "bố", "mày", "ý", ":))", "ngu"], "span_mask": [0, 1, 1, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Khùng", "quá", "thì", "đi", "chết", "sớm", "cho", "đỡ", "mang", "khẩu", "nghiệp", "mẹ", "ơi,", "già", "sắp", "chết", "ko", "lo", "nghĩ", "ngơi", "cho", "khỏe,", "suốt", "ngày", "lên", "xàm", "lồn", "cho", "chúng", "ghét"], "span_mask": [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1], "label": "HATE"}
+{"words": ["Em", "lại", "gửi", "cô", "Panda", "1", "video", "của", "thầy", "nữa", "ạ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tiến", "Lê", "bố", "m", "thích", "đấy", "đạo", "đức", "cl"], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Ô", "này", "xin", "làm", "lảnh", "đạo", "chỉ", "nhận", "thù", "lao", "$1/1", "năm(đở", "tốn", "lắm", "đó", "nhe."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["còn", "bạn", "giúp", "người", "bằng", "bàn", "phím"], "span_mask": [0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Cán", "Bộ,", "CA", "còn", "xuống", "cấp", "nghiêm", "trọng", "thảm", "hại..", "Sao", "trách", "Dân", "đòi", "Dân", "phải", "ngoan,", "Thượng", "Bất", "chính", "Hạ", "ắt", "tắc", "loạn..."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Ngọc", "Hào", "la", "sao", "ong"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["éo", "nha", "liu", "liu"], "span_mask": [1, 0, 0, 0], "label": "HATE"}
+{"words": ["Quả", "mồm", "sang", "đéo", "chịu", "dc", "kk"], "span_mask": [0, 1, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cực", "kỳ", "thuyết", "minh"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cực", "kì", "thuyết", "phục", "tiếp", "đi"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["from", "đen", "with", "love"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bộ", "phim", "bắt", "kim", "thang", "mới", "còn", "ghê", "hơn:(((("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chị", "là", "người", "khẩu", "xà", "nhưng", "tâm", "phật.", "Chấp", "nhất", "gì", "vs", "cái", "thứ", "đó", "chị", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Độ", "yêu", "Trang", "như", "Khá", "Bảnh", "yêu", "Vinahouse", ":))", "nhể", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vừa", "có", "tay", "maskeup", "vừa", "giới", "thiệu", "làm", "đẹp...", "biết", "đâu", "thật", "đâu", "vẽ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Abe", "Giang", "hồ🤣"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Viết", "cái", "cho", "lòng", "nhẹ", ",đúng", "lúc", "máy", "bay", "rơi", "là", "lúc", "t", "bị", "chính", "quyền", "xã", "củ", "hành,", "thế", "nên", "a", "ức", "chế", "kệ", "mẹ", "bố", "con", "thằng", "nào", "chết", ",người", "trong", "xã", "còn", "hành", "nhau", "thì", "tw", "nó", "cũng", "hành", "cút"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], "label": "HATE"}
+{"words": ["Sao", "tôi", "nhận", "k", "đc", "vậy"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Còn", "1", "câu,", "có", "nước", "mắt", "đâu", "mà", "lau", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đúng", "đó", "đi", "thách", "thức", "danh", "hài", "đi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phước", "Ngọc", "Nguyễn", "đcm", "=)))))))))))))"], "span_mask": [0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Uầy", "đc", "a", "ưiii🤩"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ms", "cs", "3’", "thui"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "cháu", "Bec", "và", "Đảng", "cộng", "sản", "quang", "vinh", "muôn", "năm...🤣🤣🤣"], "span_mask": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Các", "bạn", "bị", "ngu", "hả", "đây", "là", "style", "mà.?"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ở", "nhà", "nó", "lụi", "vô", "đại", "cười", "rớt", "nước", "mắt"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cương", "Đặng", "con", "mực", "mà"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hoangphat", "Nguyen", "hơi", "trách", "đâu", "trách", "bà", "quỷ", "này", "bạn", "ơi.mình", "người", "miền", "nam", "nhưng", "nghe", "còn", "mệt", "hả", "luôn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Chừng", "1", "xe", "hốt", "rác", "là", "xong", "hết", "😂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["xin", "lỗi", "thầy", "😭"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Duy", "Nguyen", "this", "me", "🤣🤣🤣🤣🤣🤣", "stay", "laughing", "in", "the", "middle", "of", "fun", "session"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dám", "phản", "động", "hả?", "kkkk", "."], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Thu", "Trang", "Nguyễn", "Minh", "Phượng", "hay", "là", "trang", "lòn", "nhỉ", "🙂"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Phạm", "Huy", "Đạt", "Đú", "và", "thử", "trải", "nghiệm", "dòng", "nhạc", "mới", "nó", "khác", "nhau", "nhé", "bạn", "ơi!!!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ae", "có", "link", "xem", "chưa", "vào", "đây", "gái", "ngon", "lắm"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Ông", "già", "tham", "vãi", "lồn..", "tay", "một", "cái,", "mồm", "một", "cái"], "span_mask": [1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Tội", "nghiệp", "con", "này", "nghiệp", "nó", "nặng", "quá", "nó", "chết", "hết", "đầu", "thai"], "span_mask": [0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Hồi", "sáng", "sau", "vào", "kênh", "của", "a", "châu", "không", "đc", "vậy", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Co", "3", "đep", "qua", "co", "3", "oi..."], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hành", "kinh", "VN", "đi,", "chung", "lòng", "cứu", "quốc..."], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cực", "kì", "thuyết", "phục", ":<"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "ơi", "cho", "em", "hỏi", "là", "con", "mèo", "nhà", "anh", "mua", "ở", "đâu", "vậy", "ạ", ":3"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["RF", "có", "đc", "top", "1", "thêm", "bnhieu", "lần", "nữa", "thì", "toiii", "vẫn", "ế"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["best", "xạo", "lol", "ý"], "span_mask": [0, 1, 1, 0], "label": "HATE"}
+{"words": ["V", "bài", "đom", "dóm", "khi", "nào", "ra", "v", "ạ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["được", "á"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Đăng", "Khoa", "thg", "học", "trò", "l", "này", ":)))"], "span_mask": [0, 0, 0, 1, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Bé", "Nguyên", "Xinh", "Đẹp", ":))", "ez"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xấu", "người", "xấu", "nết", "nhìn", "là", "biết", "cái", "miệng", "đẻ", "ra", "trước", "(khẩu", "nghiệp)"], "span_mask": [1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["được", "vl", "anh", "độ", "ạ😂"], "span_mask": [0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Hello", "Minh", "Hieu", "De", "Thuong", "Noi", "Chuyen", "Nghe", "Hay", "hay", "Giong", "Hy", "vui"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trend", "qq", "gì", "mà", "lạ", "lấm.", "Cãi", "lộn", "cát", "không"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thương", "chị", "quá", ":((("], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xin", "video", "với", "bro", "😄"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Linh", "Chi", "zề", "là", "duii", "rùiiii", "kakaa"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "lại", "có", "an", "vy", "vậy", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["E", "trsi", "làm", "cái", "cằm", "nhọn", "quá"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nói", "như", "là", "VN", "chẵng", "có", "cái", "nào.", "Nhờ", "đãng", "và", "nhà", "nước", "nên", "giờ", "chiếm", "được", "21", "điểm.", "Còn", "cái", "vụ", "năm", "74", "cứ", "trách", "người", "ở", "Miền", "Nam.", "Thế", "có", "thằng", "ở", "miền", "bắc", "nào", "đó", "đã", "nói", "là", "trung", "quốc", "chiếm", "giùm,", "mai", "mốt", "sẽ", "trả", "lại."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nguyễn", "Vĩnh", "San", "suỵt"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đm", "nó", "bây", "giờ", "mày", "là", "thằng", "ất", "ơ", "mới", "vào", "làm", "thì", "đm", "trên", "dưới", "cả", "bộ", "máy", "nó", "ăn", "thì", "mày", "có", "dám", "không", "ăn", "?", "Còn", "cha", "mẹ", "phải", "nuôi", "còn", "dự", "định", "tương", "lai", "đm", "ở", "đâu", "cũng", "thế", "thôi", ",", "trên", "mạng", "ai", "biết", "mày", "là", "ai", "mày", "nói", "như", "kiểu", "thánh", "thiện", "lắm", "nhưng", "mà", "đời", "sống", "đéo", "có", "cái", "bỏ", "vào", "mồm", "thì", "xin", "mượn", "lời", "Ngọc", "Trinh", "là", "\"", "cạp", "đất", "mà", "ăn\"", "nhé", ".", "Thân", "ái"], "span_mask": [1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Con", "co", "rona", "dau", "mà", "hỏng", "tap", "vo", "coi", "mo", "di", "nay", "vun", "on"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["dân", "ngu", "cu", "đen", "chết", "cả", "thôi"], "span_mask": [1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Bắn", "bỏ", "đi", "thứ", "lắm", "Tiền", "mà", "cặn", "bã", "xã", "hội"], "span_mask": [1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Con", "điên"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Cô", "dễ", "thương", "quá", "😍😍"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["bắc", "kỳ", "theo", "cs", "đánh", "chiếm", "miền", "nam", "=)))"], "span_mask": [1, 1, 0, 0, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Xin", "lỗi", ":((", "10", "năm", "trc", "bán", "hàng", "onl", "còn", "chưa", "dc", "phổ", "biến", "lắm", ":((,", "nói", "chi", "là", "có", "livestream", "lúc", "ấy", ":((", "Con", "này", "nó", "xạo", "vl", ":<"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Tấc", "nhiêng", "chỉ", "lung", "lay", "mỗi", "bộ", "xay", "xát", "thôi", ".."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hạ", "Anh", "tiền", "đang", "nhiều", "quá.", "Mà", "giờ", "cách", "ly", "chưa", "ai", "tiêu", "hộ", "đây"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Em", "thấy", "lủ", "chó", "Viêt", "Tân", "là", "có", "thwn", "thái", "nhất.", "Tiếc", "là", "nó", "đã", "lưu", "vog"], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], "label": "HATE"}
+{"words": ["0338929069catvitel", "chị", "ba"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Cũng", "đồng", "ý", "vs", "ad", "nhưng", "bạn", "m", "từ", "khi", "tham", "gia", "và", "đọc", "từng", "câu", "từng", "chữ", "bài", "đăng", "của", "ad", "thì", "thay", "đổi", "hẳn,từ", "đứa", "ngoan", "hiền", "thành", "láo", "xược,có", "tí", "chuyện", "là", "chửi", "bới", "um", "lên,1", "lol", "2", "lol.", "Buồn", "hẳn", ":'("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Cùng", "một", "lỗ", "đẻ", "ra", "và", "ngu", "như", "nhậu"], "span_mask": [0, 0, 1, 1, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Cố", "lên", "ABe", "ơiii", "em", "tin", "tưởng", "vào", "TAM", "KÊ", "SBTC"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Du", "na", "chet", "bat", "thuong", "o", "trai", "tam", "giam,chu", "vo", "fai", "o", "benh", "vien", "deo", "dau", "ma", "tui", "bay", "dao", "boi", ",soi", "moc,", "xoay", "sau", "vao", "lam", "ccc", "j", "z"], "span_mask": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["May", "Cha", "H", "O", "an", "Tro.", "Cap.", "Ranh", "c.", "Di", "ngoi", "le.", "Nhieu", "chuyen.", "Do", "Cai", "Thu", ",", "do", "tam", "than"], "span_mask": [0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["theo", "chân", "mấy", "anh", "hàn", "quốc", "rồi", ":"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Văn", "Tuấn", "Mai", "nước", "hoa", "như", "nước", "sông", "vậy", "đó", "mà", "nói", "chuyện", "xạo", "lồn"], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Trúc", "Phạm", "mấy", "đứa", "đc", "lắm,", "diễn", "đạt", "lắm", "🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trần", "Ngọc", "Dũng", "người", "bắc", "thì", "nói", "bắc..có", "cc", "gì", "mà", "phải", "nhột?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Tôi", "không", "dùng", "bảo", "hiểm", ",", "bởi", "vì", "bác", "sĩ", "coi", "thường", "sức", "khỏe", "bệnh", "nhân", "dùng", "bảo", "hiểm", "!!!!!!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Thu", "Tâm", "Vũ"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Mong", "mấy", "bác", "được", "cách", "li", "ở", "nhà", "đừng", "trốn", "là", "em", "vui", "rồi", ":)))))", "cứ", "đi", "nhông", "nhông", "thì", "em", "cũng", "sợ", ":))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cô", "Minh", "Hiếu", "dễ", "thương", "quá", "trời", "quá", "đất,", "tập", "này", "cô", "hút", "hết", "hào", "quang", "của", "chị", "\"", "Chi\"", "anh", "Tuân", "rồi", ".", "Ta", "nói", "gầu", "ghê", "luôn", "á", "😆"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dm", "Tôn", "Ngộ", "Không", "trông", "chán", "🙂"], "span_mask": [1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Chang", "Chang", "🥥🥥🥥🥥"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Đụ", "má", "chị", "ba", "xạo", "lồn,", "giàu", "quá", "sao", "không", "trả", "nợ", "cho", "chị", "minh", "hiếu", "đi,", "nhà", "cô", "ba", "chắc", "ở", "gần", "kho", "bom.ai", "ở", "gần", "coi", "chừng", "bị", "nổ", "banh", "xac👎"], "span_mask": [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["tiêu", "thụ", "bia", "nhiều", "nhất,", "trẻ", "trâu", "nhiều", "nhất", ":))"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["ĐÉO", "MĘ", "VÀNG", "NĢOC", "CÁI", "ĐÉO", "GÌ", "LÁO", "PHÉT.SĄO", "KE.ĐĮT.MĘ", "TŲI", "DÂN", "TRUNG", "QUŐC", "NÓ", "CHÔN", "SŐNG", "NĮ.", "BÂY", "GIÖ", "ĐÂY.ĐÉO", "MĘ", "DÂN", "LÀM", "NAIL.", "MÀ", "SÕ", "LÁ.", "LO", "LA", "LÊN", "MĄNG.", "NÓI", "LÀ", "SŐNG", "MÃN", "ĐÖI", "TRÊN", "NHUNG", "LŲA", "CÁI", "ĐÉO", "GÌ.DÂN", "CHÓ", "ĐÉO.", "SŐNG", "GÏA", "TĄO", "THÌ", "CÓ."], "span_mask": [1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Cần", "xử", "tử", "con", "thú", "máu", "lạnh", "này", "vì", "nếu", "để", "nó", "sống", ",", "xã", "hội", "sẽ", "nguy", "hiểm", "hơn", "!"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Quốc", "Đạt", "nước", "đi", "chính", "xác", "đấy", ":)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khánh", "Robinson", "woaooo"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Hương", "người", "ta", "gọi", "là", "đi", "trước", "thời", "đại", "đấy", "bạn", "ạ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Biến", "lun", "cho", "đẹp", "bầu", "trời.", "Tui", "qá", "mệt", "mõi", "rồi"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["dcm", "=)))"], "span_mask": [1, 0], "label": "HATE"}
+{"words": ["Nghe", "có", "vẻ", "vô", "lý", "nhưng", "vô", "cùng", "thuyết", "phục"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhìn", "kỹ", "mặc", "cô", "ba", "giống", "đàn", "ông", "ghê"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["baroibeo"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Nhà", "phát", "hành", "phim:"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gia", "Minh", "thầy", "bị", "camp", "chứ", "đánh", "lủng", "cc", "đâu", "petland", "quăng", "mạnh", "vcl", "ra", "ấy", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["😑"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Con", "này", "nó", "bỏ", "quên", "não", "khi", "chạy", "xe", "rùi.😈"], "span_mask": [1, 0, 1, 0, 0, 1, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Thật", "ra", "là", "quên", "kéo", "khóa", "quần", "ngoài", "lộ", "quần", "trong", "nên", "để", "lộ", "hẳn", "thành", "phong", "cách", "mới", "cho", "nó", "đỡ", "quê"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Mời", "em", "về", "với", "tộc", "của", "anh", "..."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lee", "Sin", "lol", "mẹ", "giáo", "án", "kiểm", "soát", "của", "thầy", "Tú"], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Tội", "nghiệp", "ông", "Hùng", "với", "bà", "Tư", "Nha", "quá.", "Biết", "tới", "cô", "là", "clip", "ông", "Hùng", "đụ", "bà", "Tư", "Nha", "nín", "thở.."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cho", "tui", "cái", "Facebook", "của", "bả", "đi"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thanh", "Hải", "có", "lên", "Tạ", "Hiện", "quẩy", "ko", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chị", "người", "việt", "hả", "chị", "gái.", "Chị", "đẹp", "gái", "quá"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bao", "nhiêu", "tiền", "đem", "cho", "con", "đi", "định", "cư", "bên", "mẽo", "cả", "rồi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Thôn", "làm", "là", "tham", "lồn", "còn", "thôn", "lầm", "là", "do", "thâm", "lồn", "của", "con", "gái", "mẹ", "chúng", "nó"], "span_mask": [1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Nghe", "bác", "nói", "vui", "tai", "mà.", "Mỗi", "người", "1", "chính", "kiến.", "Bác", "cứ", "tiếp", "tục", "nhé."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phải", "nói", "cho", "rõ", "là", "Chính", "phủ", "tặng", "chứ", "thủ", "tướng", "lương", "có", "hai", "chục", "triệu", "thì", "lấy", "đâu", "ra", "tiền", "mà", "tặng,", "thực", "tế", "thì", "ông", "cũng", "ko", "bỏ", "tiền", "túi", "ra!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Kéo", "khoá", "sợ", "\"ngột", "ngạt\""], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đù", "..đăńg", "qúa"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Và", "bộ", "tộc", "mixi", "cũng", "từ", "đó", "ra", "đời", "dưới", "sự", "lãnh", "đạo", "của", "tộc", "trưởng", "người", "Cao", "Bằng", "buồi", "to", "như", "lõi", "giấy", "vệ", "sinh", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Kay", "vl", "đang", "ngon", "bỗng", "nhớ", "lại", "mấy", "chuyện", "sân", "si", "suýt", "cười", "ỉa", "=))))))", "Triệu", "Huy", "Tú"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cũng", "có", "16x", "cái", "like", ",", "1", "là", "ngu", "giống", "admin", ",", "2", "là", "like", "thương", "hại", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Tởm"], "span_mask": [1], "label": "HATE"}
+{"words": [".", "Good", "luck", "to", "all", "my", "friends..", "☘️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["giống", "sương", "sương"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "yên", "tâm", "bố", "cũng", "hòm", "hòm", "7-8", "triệu/tháng", "thôi", "nhưng", "vẫn", "lo", "được", "2", "bữa", "tôm", "hùm", "1", "bữa", "cua", "alaska", "cho", "con", "đều", "được", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hoa", "hồng", "thì", "có", "màu", "đỏ🌹"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đào", "Mạnh", "An", "bên", "đấy", "nó", "vẫn", "coi", "đay", "là", "cúm", "bt", "thôi", "tự", "mua", "thuốc", "về", "mà", "uống:))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cay", "vl", "😞"], "span_mask": [0, 1, 0], "label": "HATE"}
+{"words": ["And", "DLV", "come", "in", "3...2..."], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ok", "thầy", ":)"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["tháng", "nào", "cũng", "đi", "đóng", "thuế", "để", "giải", "quyêt", "ngân", "sách", "kiểu", "này", "đây", ",xây", "tượng", "góp", "phần", "giàu", "đẹp", "đất", "nước", "còn", "gì", "haha"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bị", "nhiễm", "covit", "19", "sao", "ko", "ở", "bên", "anh", "mà", "chữa", "về", "VN", "làm", "đéo", "gì", "để", "lây", "nhiễm", "người", "khác", "tốn", "kém", "tiền", "nhà", "nước", ",bọn", "nhà", "giầu", "đú", "đỏn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["qua", "page", "Comcom", "xem", "dân", "VN", "cũng", "có", "nhiều", "thằng", "ngu", "tương", "tự", "đó", ":))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Sắp", "đc", "1", "năm", "r", ":v"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đừng", "so", "sánh", "2", "thầy", "ngu"], "span_mask": [0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Còn", "đó", "nó", "bị", "nứng", "lồn", "rồi", "nên", "nó", "chọc", "Ng", "ta"], "span_mask": [1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Vãi", "lìn", "😂😂"], "span_mask": [1, 1, 0], "label": "HATE"}
+{"words": ["mà", "t", "cũng", "đ'", "hiểu,", "rõ", "ràng", "là", "bọn", "quan", "nó", "cũng", "dùng", "nước", "mà", "?", "Hay", "bọn", "nó", "có", "nguồn", "nước", "riêng", "nên", "kệ", "mẹ", "dân", "???"], "span_mask": [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["áo", "với", "quần", "này", "đẹp", "hơn", "nè", "thầy", "ơi", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tú", "là", "con", "đĩ", "của", "aBe", "hãy", "gọi", "aBe", "là", "Daddy", "điiiiii"], "span_mask": [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Like", "hộ", "mình", "cái", "ảnh", "bià", "với", "ạ"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lê", "Ngọc", "Đức"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhanh", "khỏi", "còn", "về", "đá", "wc🤣"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bao", "giờ", "thpt", "đc", "nghỉ", "học", "mặc", "dù", "lùi", "lịch", "thi", "r", ":)"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Móa", ",", "tài", "sản", "mấy", "ổng", "từ", "cướp", "dân", "mà", "ra", "ko", "chứ", "ai"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Khiếp", "cái", "quả", "mồm", "của", "ông", "đấy", "chắc", "huyền", "thoại", "cmnr", "😂😂"], "span_mask": [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Lisa", "là", "con", "phản", "động..", "///.", "Sao", "bằng", "cô", "này"], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Kết", "quả", "từ", "sự", "lãnh", "đạo", "của", "đả:", "tham", "nhũng", "tràn", "lan", "nên", "mới", "gây", "ra", "đại", "họa", "này", "(", "làm", "đường", "thì", "bớt", "vật", "liệu", "chất", "lượng", "kém,", "lái", "xe", "thì", "mua", "bằng", ",", "chạy", "quá", "tốc", "độ", "thì", "đã", "được", "chó", "vàng", "bảo", "kê", "khi", "đã", "nộp", "mãi", "lộ,", "đăng", "kiểm", "thì", "kiểm", "tra", "bằng", "tiền", ".....)đmcs"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["trong", "nội", "bộ", "tổ", "chức", "tụi", "bây", "còn", "không", "tin", "nhau", "thì", "nhân", "dân", "nào", "mà", "tin", "tuyên", "giáo", "búa", "liềm"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["TPhcm", "có", "chợ", "nổi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["May", "thsng", "noi", "doc", ",", "cong", "san", "gioi", "lam", "ko", "can", "may", "thsng", "vo", "dung", "3", "que", "dau."], "span_mask": [0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Chỉ", "3", "vàng", "ngọc", "như", "con", "heo", "nọc", "nhà", "e"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["gáy", "đê", "thầy", "ơi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["xd", "ko", "có", "giấy", "phép", "mà", "-_-"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Việc", "nhẹ", "lương", "cao", "mình", "xin", "nhường", "cho", "những", "người", "thất", "nghiệp:))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chậm", "thôi", "các", "ông..."], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Kaxỹyyyy", "Katm???", "What????"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Anh", "sinh", "viên", "nghèo", "Hải", "Phòng", "và", "Con", "cave", "già", "Sa", "Đéc", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Ko", "ghi", "Trang", "mixi", "lại", "tưởng", "e", "nào", "khác", "🤣🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Gái", "hay", "trai", "vậy"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Câu", "Fame", "vớ", "vẩn"], "span_mask": [1, 0, 1, 1], "label": "HATE"}
+{"words": ["Trong", "khi", "thế", "giới", "đang", "đi", "lên", "thì", "nước", "mình", "lại", "đi", "xuống..."], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Táo", "quân", "năm", "nay", "người", "đóng", "vai", "ngọc", "hoàng", "là", "Idol", "Lộc", "Fuho", "phải", "không", "mọi", "người?", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phương", "Thảo", "nom", "có", "như", "thằng", "trẻ", "trâu", "ở", "quê", "không"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Philip", "lấy", "dữ", "liệu", "đâu", "vậy", "ad...tổ", "chức", "cái", "giải", "ao", "làng", "còn", "đéo", "có", "tiền,vũ", "khí", "thì", "ko", "có", "cái", "j", "ra", "hồn.Dữ", "liệu", "thế", "mà", "bọn", "3", "que", "nó", "tin", "được.Chứng", "tỏ", "bọn", "chống", "cộng", "toàn", "lợn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Chị", "nói", "đúng", "quá.", "Trời", "mưa", "còn", "tắc", "đường", "nữa.", "Đi", "ô", "tô", "thì", "còn", "lâu", "mới", "thoát,", "chứ", "đi", "xe", "máy", "thì", "tí", "là", "lách", "đc", "rồi", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["dkm", "chung", "no", "ko", "tiem", "cho", "cac", "chau", "sau", "nay", "lay", "ai", "giu", "nuoc"], "span_mask": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["hậu", "duệ", "mặt", "dày"], "span_mask": [0, 0, 1, 1], "label": "HATE"}
+{"words": ["Có", "thêm", "vài", "người", "như", "nhung", "thì", "toang."], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["tao", "lại", "dưới", "loz", "tao", "lại", "lên", ".kkk"], "span_mask": [0, 1, 0, 1, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Thùy", "Promise", "nghe", "Hư", "Trúc", "nhưng", "lại", "rất", "Mộ", "Dung", "Phục", "à", "emmm???"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phan", "cứng", "trong", "sự", "ngỡ", "ngàng😀"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["vậy", "nên", "mới", "gia", "nhập", "TPP", ":3"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trang", "lồn", "trâu", "này", "chả", "khác", "đéo", "gì", "việt", "tân.", "Fan", "thì", "địt", "có", "ai.", "Toàn", "gây", "thù", "chuốc", "oán", "cho", "nhau.", "Còn", "những", "thằng", "cmt", "ở", "trên", "vs", "những", "cái", "suy", "nghĩ", "lệch", "lạc", "cũng", "chẳng", "khác", "lồn", "gì", "lũ", "bán", "nước."], "span_mask": [0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Cày", "view", "video", "này", "đê", "mn", "cho", "lên", "top", "trending", "nào", "🤪"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ngu", "thì", "chết", "chứ", "bệnh", "tật", "j.", "Thắng", "lại", "làm", "j"], "span_mask": [1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cây", "ATM", "cao", "lãnh"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["add", "còn", "viết", "tắt", "của", "address", "nữa,", "ngu!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["haha", "chúng", "nó", "tính", "thoát", "trung", "bằng", "các", "chui", "vào", "rọ", "Mỹ", "=))", "thoát", "thoát", "cái", "cm", "mấy", "thằng", "phản", "động", ",", "não", "chó", "bày", "đặt", "chê", "bai"], "span_mask": [0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["vcl"], "span_mask": [1], "label": "HATE"}
+{"words": ["Quang", "Hải", "công", "khai", "ở", "đâu", "thế", "ạ", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thương", "thầy", ",", "thầy", "sela"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Có", "cc", "nè", "em", ":)"], "span_mask": [0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Xạo", "l*n", "quen", "rồi", "bạn", "ơi.", "😄"], "span_mask": [1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Giờ", "này", "chắc", "con", "mụ", "này", "nhục", "lắm", "đây."], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Bãi", "cức", "nào", "cũng", "có", "dấu", "răng", "của", "AD", "^^"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Lão", "già", "này", "đã", "mở", "được", "mắt", "rôi", "à,", "năm", "2022", "quoay", "đầu", "về", "bờ", ",", "đúng", "là", "đồ", "dở", "hết", "đường", "đi.", "Võ", "ông", "đánh", "gà", "ko", "tụt", "lông."], "span_mask": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["có", "shipcode", "không", "chế", ":v"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thị", "Thủy", "Tiên", "miễn", "là", "vẫn", "có", "tiền", "trả", "cho", "nhân", "viên", "thì", "ngta", "vẫn", "làm,", "nhưng", "những", "chỗ", "khác", "ko", "có", "tiền", "trả", "lương", "thì", "phải", "chịu", "rồi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Úi", "tốt", "nghiệp", "còn", "không", "đỗ", "thì", "làm", "được", "gì", "các", "em", "ơiii😫😫😫"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ăn", "mặc", "như", "loz"], "span_mask": [0, 0, 0, 1], "label": "HATE"}
+{"words": ["Ngọc", "Quyên", "cẩn", "thận", "nè", "e"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vẫn", "cứ", "là", "okk", "thầy", "nhỉ", ":)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sống", "chậm", "nhé", "ae", ":))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nó", "lại", "được", "vãi", "lòn"], "span_mask": [1, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Like", "cho", "cô", "👍"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["alloc(init,512,", "GetTickCount)"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Đỏ", "gì", "mà", "ở", "ngay", "sát", "bờ", "là", "sao", "?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Võ", "Hồng", "Gấm", "rồi", "mấy", "đó", "tiếp", "xúc", "với", "thêm", "nhiều", "người", "khác", "nữa", "á,nghe", "mà", "ớn", "lạnh,cầu", "mong", "cho", "đừng", "ai", "nhiễm", "nữa,k", "ở", "quê", "làm", "rần", "rần", "riết", "chị", "muốn", "bệnh", "lun", "á"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cuộc", "sống", "mà", "😩"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Abe", "bucu"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Vẫn", "là", "anh", "tôi", "sau", "khi", "cưới", "chị", "trang:))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Đeo", "xong", "lại", "kéo", "xuống"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Link", "em", "gái", "ngon", "ngọt", "nước", "nè", "bao", "phê", "luôn"], "span_mask": [0, 0, 0, 1, 1, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Này", "thì", "trend", "này🤦‍♀️🤦‍♀️"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhìn", "chị", "Minh", "Hiếu", "có", "duyên", "hết", "sức,", "nói", "chuyện", "rất", "chân", "thật,", "mặc", "dù", "mỗi", "lần", "live", "chửi", "rất", "táo", "tợn", "nhưng", "nghe", "và", "nhìn", "chị", "ấy", "rất", "thánh", "thiện", "và", "chất.", "Chúc", "chị", "luôn", "vui", "khoẻ", "và", "hp.", "Mong", "có", "dịp", "sẽ", "được", "gặp", "chị"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Quang", "là", "ca", "sĩ", "đó", "bạn", ",", "ko", "thi", "chương", "trình", "nào", "hết", "nhưng", "hát", "rất", "hay", "nên", "mọi", "ng", "thần", "tượng", "gọi", "là", "idol", "^^"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khá", "tú"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Nhảy", "ổn", "như", "mạng", "nhà", "t😕"], "span_mask": [1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Thanh", "Tuấn", "nghe", "mùi", "hôi", "thúi", "như", "cứt", "từ", "miệng", "bạn"], "span_mask": [0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Dân", "InDo", "t", "thấy", "đéo", "hiểu", "nội", "dung", "nó", "nói", "về", "cái", "gì"], "span_mask": [0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Nghe", "giọng", "mà", "n*ng", "hết", "sức", ":)))))"], "span_mask": [0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Đầu", "óc", "lão", "này", "có", "vấn", "đề", "kiểu", "gì", "ấy"], "span_mask": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Thực", "dân", "pháp", "rất", "ác", "đè", "đầu", "cởi", "cổ", "thu", "trăm", "thư", "thuế,", "bây", "giờ", "dân", "tự", "nguyện", "đóng", "nghìn", "thứ", "thuế"], "span_mask": [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Trời", "ơi", "kg", "ai", "xấu", "bằng", "con", "quỉ", "cái", "miệng", "rộng.", "Mở", "miệng", "ra", "dơ", "dái", "mất", "dạy.", "Nhà", "khổ", "thấy", "mẹ", "chắc", "đeo", "ba", "vàng", "giả", "chứ", "gì."], "span_mask": [0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["b52", "ơi", "lứng", "quá", "B52", "i"], "span_mask": [0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Fan", "cô", "Minh", "hiếu", "đâu", "taaaa", "❤️"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mong", "rằng", "những", "công", "dân", "Việt", "Nam", "đang", "ở", "bên", "Nhật", "Bản", "học", "tập", "và", "lao", "động", "luôn", "giữ", "được", "sức", "khỏe", "tốt.", "Và", "đồng", "thời", "chúc", "cho", "Nhật", "Bản", "nhanh", "chóng", "vượt", "qua", "đại", "nạn", "lần", "này", "❤"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thân?", "Chửi", "học", "trò", "như", "1", "con", "chó...", "Thương", "cái", "lồl.."], "span_mask": [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Anh", "Sẽ", "Đến", "100", "củ", "to", "quá"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["nếu", "nó", "niêm", "giá", "thì", "lỗi", "do", "người", "mua", "mất", "cảnh", "giác", "!", "sống", "ở", "thiên", "đường", "mà", "mất", "cảnh", "giác", "là", "sa", "chân", "xuống", "hố", "ngay", "tức", "thì!", "đi", "xe", "ôm", "cũng", "phải", "hỏi", "giá,", "mua", "bánh", "mì", "cũng", "hỏi", "giá....đến", "hối", "lộ", "công", "an", "hay", "bác", "sĩ", "còn", "có", "khung", "giá", "!", "ko", "hỏi", "thì", "đừng", "trách", "....", "thiên", "đường", "khốn", "cmn", "nạn", "!"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Co", "kg", "chi"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Chất", "tiền", "đoán", "nữa", "2017", "xe", "về", "2018", "xe", "về", "năm", "2019", "xe", "về", "tiền", "đoán", "xa", "chúc", "2022"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["@Quynh", "Anh", "Nguyen", "xĩuuuuu"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Hòm", "đang", "chờ", "e"], "span_mask": [1, 1, 1, 1], "label": "HATE"}
+{"words": ["Hai", "Vu", "trong", "truyền", "thuyết", "đây", "hả", ":)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Xin", "địa", "chỉ", "bán", "áo:))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Idol", "nè", "Vũ", "khắc", "CẶC"], "span_mask": [0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Phạm", "Vũ", "Nói", "dân", "trí", "thấp", "lại", "tự", "ái", ".", "Không", "biết", "thì", "ngậm", "con", "mẹ", "nó", "mồm", "đi", ",", "còn", "tinh", "tướng", ".", "EU", "là", "liên", "minh", "kinh", "tế", ".", "Còn", "\\\"Trời", "Âu\\\"", "ở", "đây", "là", "đang", "nói", "đến", "vị", "trí", "địa", "lý", "thuộc", "\\\"Châu", "Âu\\\"", ".", "Đéo", "phân", "biệt", "được", "\\\"Kinh", "Tế\\\"", "và", "\\\"Địa", "Lý\\\"", "à", "?", "Đúng", "là", "thùng", "rỗng", "thì", "kêu", "to."], "span_mask": [0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["ơ", "ơ", "sợ", "quá", "clm"], "span_mask": [0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["hỉ", "cần", "toàn", "dân", "ta", "đoàn", "kết,", "đồng", "lòng", "sẽ", "chiến", "thắng", "!", "như", "dân", "tộc", "Việt", "Nam", "ta", "đã", "từng", "chiến", "thắng", "!", "cố", "lên", "VN", "ơi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["I", "love", "u", "pặc", "pặc", "😘"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cay", "vãi", "c***"], "span_mask": [0, 1, 1], "label": "HATE"}
+{"words": ["nói", "chuyện", "vô", "văn", "hóa...", "bắn", "chết", "m", "giờ!"], "span_mask": [0, 0, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ba", "con", "hot", "cut'vao", "ma", "an", "nhe'"], "span_mask": [0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["đừng", "trù", "Gam", "nữa", "thầy?"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["già", "rồi", "bà", "già", ".", "bớt", "cái", "mồn", "lại", "tính", "chuyện", "đất", "đai", "nằm", "ở", "đâu", "và", "đi", "về", "đâu", "đi", "bà", "già", ".", "trẻ", "trâu", "làm", "gì", "nó", "làm,", "mình", "già", "quất", "cần", "cẩu", "rồi", "mà", "tào", "lao."], "span_mask": [0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Minh", "Hieu", "nói", "chuyen", "vui", "quá!😂😂"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Mỹ", "Duyên", "cánh", "hoa", "may", "mắn:))"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Người", "có", "tiền", "mặc", "gì", "chả", "đẹp"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tại", "c", "t", "chân", "thật", "quá", "k", "quỷ", "ma", "giống", "m"], "span_mask": [0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1], "label": "HATE"}
+{"words": ["Con", "mẹ", "mày.", "Nói", "mày", "là", "chó", "thì", "tội", "con", "chó.", "Mày", "còn", "thua", "con", "chó", "nữa", "tịp", "à"], "span_mask": [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Diệu", "Linh", "anh", "có", "nên", "làm", "quả", "đầu", "mới", "chơi", "trung", "thu", "không", "tar"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Linh", "cẩu"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["Dùng", "cái", "này", "có", "hết", "hôi", "nách", "k", "thầy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyên", "tắc", "bất", "di", "bất", "dịch", "của", "nhân", "dân", "ta", "khi", "tham", "gia", "giao", "thông:"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Trúc", "Thư", "hỏa", "thiêu", "nó", "đi"], "span_mask": [0, 0, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Minh", "luc", "co", "cai", "cam", "nhin", "vo", "la", "biet", "sua.", "Nhung", "xau", "qua", "nhon.", "Nhin", "la", "biet", "cam", "gia.", "Xau.", "Qua."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Thôi", "tụi", "nhật", "về", "nước", "dùm", "tao", "đi"], "span_mask": [0, 1, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Anh", "Trung", "trộm", "vé", "số"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["My", "talking", "tom", "mà", "tôi", "cứ", "tưởng", "tom", "and", "jerry", "các", "ông", "giáo", "ạ", ":(("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thay", "Ngu"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["Và", "nhưng", "huyền", "thoại", "sẽ", "xuất", "hiện."], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mong", "nhà", "tiên", "tri", "luôn", "luôn", "khỏe", "mạnh,", "tránh", "được", "dịch", "bệnh."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["đmm", "ghi", "rõ", "nguồn", "VD", "ra", "nhé", "ad"], "span_mask": [1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Á", "đù", "bệnh", "tâm", "thần", "mà", "cho", "làm", "trung", "tá", "mới", "hay,hèn", "gì", "bọn", "đảng", "cs", "toàn", "là", "một", "lủ", "tâm", "thần", "nhưng", "hám", "của."], "span_mask": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1], "label": "HATE"}
+{"words": ["Fan", "cứng", "dạo", "hả", "thầy", "lol", "🤤"], "span_mask": [0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Sự", "đồng", "lòng", "của", "người", "HK", "thật", "đáng", "ngưỡng", "mộ.Yêu", "cậu", "bé", "thật", "sự."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cả", "nhà", "cho", "cô", "top", "1", "trending", "nào"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "con", "bop", "vú", "bà", "ngoại", "😂😂😂😂"], "span_mask": [0, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Nguyễn", "Thanh", "Quang", "đc", "có", "í", "tưởng"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Để", "đây", "và", "không", "nói", "gì", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Link", "Facebook", "anh", "Trần", "Văn", "Xuân", "nè", "mọi", "người"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mày", "mới", "gọi", "là", "nhảm", "đó,đồ", "chó", "đẽ"], "span_mask": [1, 0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Sàm", "lồn"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Cũng", "có", "thế", "nói", "là", "mất", "hết", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["ad", "thông", "minh", "vl,", "chỉ", "số", "tia", "cực", "tím", "cao", "là", "do", "bức", "xạ", "mặt", "trời,", "nếu", "mức", "độ", "tăng", "thì", "do", "thằng", "nào", "xả", "thải", "nhà", "kính,", "khí", "CFC", "nhiều", "chứ", "liên", "quan", "dew", "gì", "đến", "chính", "quyền", "mà", "chưỡi???", ":v"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["ok", "a", "🙄🙄"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Da", "bao", "dung", "nghe", "cs", "noi", "!!!"], "span_mask": [0, 0, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Con", "lợn", "này", "béo", "vãi", "lon.", "Bắp", "tay", "to", "bằng", "ngón", "chân", "=))"], "span_mask": [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Đi", "vài", "bữa", "rã", "họng", "rồi", "lại", "lết", "về", "thôi", "mà.loại", "mất", "dậy", "..."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Bài", "hát", "này", "đang", "có", "quảng", "cáo"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mốt", "tập", "nói", "tiếng", "hoa", "kiểu", "này", "🤣🤣🤣", "Kom", "Tuấn", "Hạnh", "Kim", "Trần"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phạm", "Nguyễn", "Cát", "Vy", "ai", "biết", "."], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "bóng", "vẫn", "là", "con", "bóng.", "Con", "chó", "suốt", "đời", "vẫn", "là", "chó.."], "span_mask": [1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Gil", "qq"], "span_mask": [0, 1], "label": "HATE"}
+{"words": ["toang", "thế", "đéo", "nào", "đc", "a"], "span_mask": [0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Nhà", "tiên", "tri", "nghe", "bắt", "oi"], "span_mask": [0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Mày", "chả", "có", "tý", "văn", "hóa", "máu", "loz", "j"], "span_mask": [1, 0, 0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Bài", "này", "kiểu", "quảng", "cáo", "compack", "hay", "gì", "mà"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cái", "đmm", "nhé", "ad,", "đừng", "có", "vơ", "đũa", "cả", "nắm,", "ăn", "cứt", "cả", "đống", "nhé", "con.", "4.5", "tr", "Đảng", "viên", "k", "phải", "ai", "cũng", "xấu", "mà", "để", "m", "nói", "cái", "giọng", "của", "loại", "chó", "đấy.", "cái", "page", "chó", "bẩn", "ngu", "si", "này.", "m", "ra", "xem", "ngoài", "xã", "hội", "đầy", "Đảng", "viên", "vẫn", "nai", "lưng", "đi", "làm", "để", "nuôi", "đầy", "cái", "giống", "đéo", "ph"], "span_mask": [0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["đội", "trưởng", "mĩ", "hihihi"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tức", "á", "ca", "ko", "đc"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mốt", "hẹn", "vậy", "cho", "sang", "nè", "Tram", "Le", "Diệp", "Linh"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Coi", "phim", "mệt", "tim", "ds", "mệt"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Giờ", "m", "mới", "sáng", "mắt", "ra", "và", "tai", "đã", "nghe", "đc", "rùi", "phải", "k"], "span_mask": [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cô", "My", "ơi", "ở", "lại", "với", "e", "đi", ":))", "kệ", "mẹ", "thg", "lozzzz", "ba", "gà", ":))))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0], "label": "HATE"}
+{"words": ["Tuyền", "Phạm"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["đảng", "ko", "đủi", "thì", "nhân", "dân", "đủi", ":v", "rồi", "đảng", "bỏ", "tù", "dân", "vì", "gây", "rối", ":v", "tóm", "váy", "ngậm", "tiền", "rồi", "thì", "ráng", "nghe", "chửi", "đi", "đảng", "ơi", ":D"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Bác", "sĩ", "chữa", "khỏi", "bệnh", "cho", "một", "người", "trả", "tiền", "cho", "bệnh", "viện", "nó", "khác."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lan", "Hoa", "nhưng", "đạo", "nhái", "là", "kiếm", "được", "tiền", "tỷ", "còn", "hơn", "cái", "lũ", "trẻ", "trâu", "chĩa", "mỏ", "vào", "để", "cắn", "cho", "bỏ", "ghét", "🤔😏"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Do", "mặt", "Khánh", "Chi", "đơ", "hay", "sao", "mà", "mình", "nhìn", "thấy", "mặt", "có", "vẻ", "khó", "chịu", "vậy", "ạ?"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["mày", "biết", "củ", "cặc", "hong", ":v"], "span_mask": [1, 0, 0, 1, 0, 0], "label": "HATE"}
+{"words": ["Tiệp", "là", "ai", "tao", "ko", "cần", "biết", "nhưng", "mày", "nói", "như", "lol"], "span_mask": [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Cút", "mẹ", "luôn", "đi", "chứ", "tạm", "cl"], "span_mask": [0, 1, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Phạm", "Hải", "Linh"], "span_mask": [0, 0, 0], "label": "CLEAN"}
+{"words": ["Thật", "ra", "bình", "cứu", "hỏa", "china", "là", "dùng", "để", "xịt", "mấy", "thằng", "hút", "thuốc", "lá", "trên", "xe.", "Vừa", "tắt", "thuốc", "vừa", "chống", "hôi", "xe", "nữa", ".", "ĐMCS"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Sảm", "sì", "đú"], "span_mask": [1, 1, 1], "label": "HATE"}
+{"words": ["Xem", "mà", "cười", "đau", "bụng😆"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tui", "tin", "là", "boác", "kính", "yêu", "nói", "được", "29", "ngôn", "ngữ", "đó", "mọi", "người.", "Chắc", "là", "boác", "chỉ", "nói", "được", "chữ", "Hello", "bang", "29", "ngôn", "ngữ", "(", "Hi,", "Bon", "jour,", "Hola,", "Nĩ", "hảo,", "Hallo,", "Ciao...)", "mà", "tại", "tụi", "bưng", "bô", "bốc", "phét", "nói", "là", "boác", "nói", "29", "ngôn", "ngữ", ":)."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Này", "là", "táo", "liên", "quân", "k", "phải", "táo", "quân", "đâu", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Các", "anh", "làm", "tôi", "hơn", "buồn", "đấy", ",", "nhưng", "thôi", ",", "bảo", "ông", "già", "là", "nhớ", "mua", "quà", "cho", "tôi", "là", "được", ",", "đừng", "mua", "giải", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["MiMi", "Nguyen", "z", "cho", "an", "toàn", "nhe", "cưng"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Giàu", "quá", "cho", "vợ", "chịu", "sào", "đó"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["cả", "2", "cùng", "có", "lỗi", "mà", "biết", "ls", "dc", "cái", "số"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Khai", "giảng", "cuối", "thời", "hsinh", "mầm", "non✌🏻"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ờ", "giống", "mình", "ghê", ":v"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Con", "lợn", "ad", ",", "thế", "mày", "định", "làm", "gì", "?", "Vác", "súng", "ra", "biển", "đi", ",", "đừng", "vác", "bàn", "phím", "mà", "sủa", "theo", "lũ", "\"dâm", "chủ\"", "nữa", "nhé", "con", "."], "span_mask": [1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["người", "mình", "ở", "nước", "người", "ta", "trộm", "cướp", "lừa", "đảo,", "người", "ta", "sang", "đây", "làm", "ăn", "đàn", "hoàng", "thì", "bị", "khủng", "bố,", "chả", "hiểu", "nổi"], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0], "label": "HATE"}
+{"words": ["Nghĩa", "Nguyễn", "dễ", "toang", "lắm"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["trong", "khi", "đó", "chủ", "tịch", "thủ", "đô", "đang", "trân", "tráo", "khư", "khư", "ôm", "lấy", "dòng", "sông", "Tô", "Lịch", "thơ", "mộng", "!", "quyết", "bảo", "vệ", "nó", "khỏi", "bàn", "tay", "sạch", "sẽ", "của", "bọn", "Nhật", "Bổn", "tư", "bản", "!", "Bắc", "Kỳ", "lạ", "lắm", "thay...", "người", "nam", "méo", "hiểu", "được", "!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Tội", "anh", "tôi,", "lương", "tháng", "7", "-", "8", "triệu,", "đến", "tôm", "nhỏ", "chẳng", "có", "mà", "ăn,", "chỉ", "ăn", "được", "mỗi", "cua", "hoàng", "đế", "và", "tôm", "Alaska😢😢😢"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["mk", "chỉ", "thích", "xem", "a", "độ", "đá", "vs", "a", "bô", "béo"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Canh", "như", "chó", "đợi", "xương"], "span_mask": [0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["có", "ai", "biết", "làm", "cách", "nào", "để", "tìm", "lại", "được,", "đồng", "đội,", "đồng", "chí,", "hay", "bạn", "hữu", "cùng", "đơn", "vị", "của", "người", "trong", "bức", "ảnh", "không."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thanh", "Cẩm", "lỗ", "xoài", "rộng", "nhỉ"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Phượng", "Nguyễn", "đừng", "có", "zị", "nghen."], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Lon", "roi", "an", "noi", "mat", "dai"], "span_mask": [0, 0, 0, 0, 1, 1], "label": "HATE"}
+{"words": ["Thế", "mà", "chúng", "nó", "giật", "tít", "cộng", "gộp", "lại.", "Tít", "lẽ", "ra", "phải", "là", ":", "\"Muốn", "giết", "người?", "Hãy", "làm", "công", "an\""], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Ko", "nhận", "hối", "lộ"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mai", "Nam", "Hải", "a", "bị", "xiên", "có", "đau", "không", "a", ":(("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Mày", "chỉ", "sống", "thêm", "11", "ngày", "nữa", "thôi!", "Tao", "dạy", "mày", "những", "điều", "tốt", "đẹp", "sao", "mày", "sủa", "bậy", "thế", "Trần", "Đần."], "span_mask": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Đúng", "rạch", "mồm", "nó"], "span_mask": [0, 1, 1, 1], "label": "HATE"}
+{"words": ["chị", "ba", "nói", "chuyện", "dễ", "thương", "quá"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Công", "ty", "anh", "ở", "đâu", "vậy", ":D"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cực", "kì", "thuyết", "phục", "☺"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Không", "cho", "chúng", "bố", "ăn", "là", "chết", "với", "chúng", "bố.", "Thiên", "đường", "xhcn", "nó", "thế", "đấy", "con", "ạ."], "span_mask": [0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0], "label": "HATE"}
+{"words": ["Co", "ba", "vang", "ngọc", "noi", "hay", "qua", "cho", "e", "cacmobi", "100", "nha", "co"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Chị", "3", "ơi", "trã", "tiền", "cho", "cô", "minh", "hiều", "kìa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tùng", "sói", "said", ":\"", "nhìn", "cái", "gì", "mà", "nhìn", ";)", "\""], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thôn", "làm", "vậy", "là", "do", "thôn", "lầm,", "thôn", "lầm", "nên", "dân", "nó", "ghét,", "nó", "bật", "lại", "là", "thôn", "cái", "lù"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], "label": "HATE"}
+{"words": ["Chắc", "anh", "quên", "chưa", "kéo", "lên", "thôi"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["trinh", "thu.", "Mỹ", "ác", "hơn", "tàu", "chứ", "bạn", "ơi", ",", "có", "lẽ", "bạn", "kg", "biết", "lịch", "sử", "chính", "phủ", "Mỹ", "....", "nó", "gian", "tiếp", "kg", "trực", "tiếp", "như", "Trung", "Quốc", "..."], "span_mask": [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["tình", "yêu", "hãy", "nói", "về", "nhism", "korea"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Thị", "Thịnh", "xem", "ở", "đây", "chuẩn", "nè", "bạn"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Khánh", "Nghĩ", "chán", "vlol"], "span_mask": [0, 0, 0, 0, 1], "label": "HATE"}
+{"words": ["Nhiệt", "quần", "què", "ms", "đầu", "vào", "cảm", "rảm", "như", "chó", "h", "khen", "cc"], "span_mask": [0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1], "label": "HATE"}
+{"words": ["Ben", "my", "sao", "cung", "co", "quai", "Thái", "nua", "vay", "troi....song", "lam", "gi", "cho", "chat", "Dat"], "span_mask": [0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Nguyễn", "Long", "vlin", "thật", "lun", "á", "bọn", "vô", "ý", "thức"], "span_mask": [0, 0, 1, 0, 0, 0, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Kg", "Phan", "dong", "may'", "chui", "vao", "trong", "nay", "lam", "gi", "?"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Tử", "hình"], "span_mask": [0, 0], "label": "CLEAN"}
+{"words": ["cám", "ơn", "ad", "vì", "sự", "thay", "đổi", "nhỏ", "này", ":'("], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thầy", "ơi", "có", "cô", "kiếm", "thầy", "nè", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Dạ"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["ThanhHuy", "Nguyen", ":))))", "dc", "làm", "fan", "cứng", "chưa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "làm", "chủ", "tịch", "mà", "ngu", "thế", "đc", "nhỉ"], "span_mask": [0, 0, 1, 1, 1, 1, 0, 0, 0], "label": "HATE"}
+{"words": ["Chó", "rồ", "nhập"], "span_mask": [1, 1, 0], "label": "HATE"}
+{"words": ["lí", "lẽ", "rất", "thuyết", "phục:)))"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Minh", "Nguyen", "đếm", "lá", "chơi", "bời", "gì", "nữa"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nhật", "Phát", ":))", "làm", "ơn", "đọc", "kĩ", "trước", "khi", "thể", "hiện", "rằng", "bạn", "sinh", "ra", "đã", "thiếu", "cái", "não", "đi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Mỗi", "khi", "anh", "độ", "chửi", "bậy", "nó", "sẽ", "giật...", "Sau", "khi", "giật", "xong", "anh", "độ", "sẽ", "đập", "nó", "xuống", "bàn", "và", "chửi", "đitconmemay", "giật", "cailon", ":)"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0], "label": "HATE"}
+{"words": ["TÂM", "THẦN", "?!?", "CHỨ", "KG", "PHẢI", "TRỊNH", "THƯỢNG", "?!", "CÁCH", "HÀNH", "XỬ", "CỦA", "1", "NHÓM", "CÓ", "TIỀN", "CÓ", "QUYỀN", "NÊN", "BỐ", "LÁO", "!!!"], "span_mask": [1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0], "label": "HATE"}
+{"words": ["Cái", "thẻ", "ngành", "cứ", "photo", "lại", "cũng", "cầm", "đc", "cả", "tỉ", "bạc", "đấy"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bố", "lạy", "mày", "đừng", "\"hiếp", "dâm\"", "thị", "giác", "của", "bố", "nữa", "ad", "à", "😂😂😂"], "span_mask": [0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cái", "con", "này", "nó", "chết", "cũng", "không", "sửa", "đổi"], "span_mask": [0, 1, 0, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Giống", "như", "câu", ",", "Ngêu", "sò", "tranh", "nhau", ",", "Ngư", "ông", "đắc", "lợi"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Các", "man", "sống", "chậm", "tý", "nào"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Kệ", "cụ", "mày"], "span_mask": [0, 1, 1], "label": "HATE"}
+{"words": ["Chứ", "không", "phải", "lúc", "trước", "đi", "ra", "ngân", "hàng", "nói", "chị", "Ba", "gửi", "tiền", "về", "cái", "mặt", "lên", "như", "bà", "khùng", "ha", "😉Giờ", "thì", "bị", "ba", "vàng", "mã", "lừa", "gạt", "úp", "mặt", "vào", "cầu", "tiêu", "đi", "Minh", "Hiếu", "ơi", "nhục"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["qua", "việc", "này", "anh", "em", "đừng", "kinh", "thường", "1", "con", "ruồi,", "dù", "nó", "đã", "chết", "nó", "cũng", "có", "thể", "làm", "cho", "1", "người", "đàn", "ông", "đi", "tù", "7", "năm.", "Sức", "mạnh", "của", "1", "con", "ruồi", "chết", "ở", "đâu", "khủng", "thế???"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Hay", "là", "anh", "cũng", "thử", "để", "quả", "tóc", "này", "đi", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Câu", "hỏi", "ngược", "lại", "'", "có", "nên", "theo", "một", "ngừoi", "con", "trai", "có", "quá", "nhiều", "em", "crussh'???"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Cực", "kì", "thuyết", "phục🤣🤣"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Thanh", "xuân", "như", "1", "ly", "trà"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["thêm", "một", "người", "bị", "cộng", "sản", "nhồi", "sọ", "không", "biết", "sao", "có", "thể", "nạo", "ra", "được", "hết", "chất", "bã", "trong", "đầu"], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["dừng", "là", "đúng", "a", "ơi", "😆😆", "dừng", "luôn", "đi", "cũng", "được"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Bọn", "xu", "nịnh", "là", "những", "kẻ", "làm", "hư", "cán", "bộ,", "và", "là", "những", "kẻ", "yếu", "kém", "chuyên", "môn", "nhất."], "span_mask": [1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Lê", "Văn", "Quật", "nhớ", "thời", "ffq", ":))"], "span_mask": [0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["chị", "có", "tặng", "bọn", "em", "miếng", "đất", "nào", "ko", "chị", "MC", "best", "cơ", "hội", "🤣🤣"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ở", "1", "nơi", "khác"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Tóm", "lại", "là", "con", "gái", "hay", "trai...", "😶😶😶...bực", "mình", "vl", "nhìn", "hoài", "ko", "ra", "😑😑"], "span_mask": [0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Cực", "kì", "thuyết", "phục", ":*)"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Như", "một", "Con", "điên..."], "span_mask": [0, 0, 1, 1], "label": "HATE"}
+{"words": ["Bay", "kênh", "rồi", ":)))"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ông", "thấy", "đấy", "ông", "ad", "ạ.", "Nó", "cướp", "rồi", "cắt", "cổ,", "mình", "đi.", "Nó", "cướp", "mình", "bắt", "nó", "không", "chế", "mà", "nó", "bị", "thương", "thì", "mình", "đi", "tù", ":))", "nchung", "luật", "pháp", "buồn", "cười", "lắm."], "span_mask": [0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0], "label": "HATE"}
+{"words": ["Ai", "lớp", "du", "chu", "cờ", "mo", "cô", "hiếuuu💁‍♀️❤🙆‍♀️"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["buồn", "a", "ạ", "😞"], "span_mask": [0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Nguyễn", "Hoạt", "bác", "giỏi", "thật"], "span_mask": [0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["v", "cut"], "span_mask": [1, 1], "label": "HATE"}
+{"words": ["Cần", "đéo", "j", "quan", "tâm", "miệng", "đời"], "span_mask": [0, 1, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Con", "này", "là", "bê", "đê", "bong", "lộ", "xấu", "gớm...", "xấu", "xúc", "phạm", "ng", "nhìn..."], "span_mask": [1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["chết", "cười", "pha", "JJLeo", "hiến", "thân", "cho", "Rambo", "=)))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Vì", "sao", "RedBull", "thắng", "thế", "?"], "span_mask": [0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Sao", "kh", "đóng", "cm", "nó", "cửa", "khẩu", "đi", "nhỉ.", "Cứ", "cho", "mấy", "con", "mẹ", "đi", "lông", "nhông", "từ", "nước", "này", "sang", "nước", "khác", "rồi", "về", "VN", "lây", "lan", "bệnh", "đéo", "chịu", "cách", "ly.rồi", "chẳng", "bao", "lâu", "thành", "ổ"], "span_mask": [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Từ", "nay", "anh", "em", "ko", "được", "gọi", "bà", "gà", "nữa", "nhé", "kêu", "ba", "pro", "nhé", "=))"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["😍"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["😮😮"], "span_mask": [0], "label": "CLEAN"}
+{"words": ["Giá", "xăng", "rẻ", "hơn", "vài", "ngàn", "đồng,", "thu", "nhập", "cá", "nhân", "thì", "thấp", "hơn", "vài", "ngàn", "đô,", "thiên", "đường", "XHCN"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["từ", "dịch", "này", "thấy", "ý", "thức", "người", "nhật", "xăng", "đổ", "nửa", "bình,", "nhưng", "giấy", "vệ", "sinh", "không", "thể", "thiếu.", "không", "hy", "sinh", "bản", "thân", "để", "cứu", "người", "khác,", "nhưng", "dính", "dịch", "thì", "kéo", "nhiều", "người", "dính", "theo."], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1], "label": "HATE"}
+{"words": ["Đang", "nói", "chuyện", "này", "cái", "ổng", "bẻ", "lái", "qua", "chuyện", "khác", "mãi", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
+{"words": ["Ôi", "trời", "giai", "cấp", "lđ", "ở", "ta", "thì", "đổi", "trắng", "thay", "đen", "nhanh", "lắm,nhìn", "thì", "vậy", "mà", "lại", "không", "phải", "vậy,chỉ", "có", "điều", "rõ", "ràng", "nhất", "là", "chỗ", "nào", "cũng", "có", "chuyện", "vợ", "ông", "này", "cặp", "với", "chồng", "bà", "kia!"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "HATE"}
+{"words": ["Đéo", "ai", "làm", "thế"], "span_mask": [1, 0, 0, 0], "label": "HATE"}
+{"words": ["mấy", "ông", "học", "FPT", "lấy", "ý", "tưởng", "mà", "làm", "đồ", "án", "nè,", "biết", "đâu", "lại", "xuất", "sắc", ":v"], "span_mask": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "label": "CLEAN"}
