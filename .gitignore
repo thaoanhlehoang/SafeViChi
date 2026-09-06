@@ -15,21 +15,8 @@ dist/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
-# ==== Dữ liệu (không commit dữ liệu thật) ====
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/variants/*
-!data/variants/.gitkeep
-data/data_final/*
-!data/data_final/manifest_mix.json
-data/eval_baseline/**/*.jsonl
-# Bước 4: bộ ViHOS đã map span mức từ (~2.1MB) — commit kèm để tái lập ngay,
-# hoặc dựng lại bằng `python -m src.dataset_builder.build_vihos`
-data/data_explain/*
-!data/data_explain/manifest.json
-!data/data_explain/*.jsonl
+# ==== Dữ liệu ====
+# (đã bỏ ignore toàn bộ thư mục data/ — mọi file trong đó đều được track)
 *.csv
 *.tsv
 *.parquet
