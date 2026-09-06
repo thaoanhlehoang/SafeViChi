@@ -1,0 +1,77 @@
+{
+  "data/data_final/train.jsonl": {
+    "sha256": "6a45239e4e957393c114d3ec7d8f794b6d41032dd741fb8d215a6911804655fb",
+    "bytes": 22674569,
+    "lines": 116943
+  },
+  "data/data_final/validation.jsonl": {
+    "sha256": "a2a92576d675cae4e33d075325f6d373cbce1a80d57408483713227b8253fd59",
+    "bytes": 376365,
+    "lines": 2506
+  },
+  "data/data_final/validation_mixed.jsonl": {
+    "sha256": "1e1685e570869ad36f2848814c1b38416c4f2e158d4d3ba1af106cea6e5110e3",
+    "bytes": 538756,
+    "lines": 4176
+  },
+  "data/data_final/test.jsonl": {
+    "sha256": "5bd0b6f91428f140b8990c63cd01444a7952eb38eb8b95c86653eb37335720d9",
+    "bytes": 363264,
+    "lines": 2376
+  },
+  "data/data_final/manifest_mix.json": {
+    "sha256": "b30c581e8bc81078f4250c204588379912b02c46c6f86d7344d2a26f15ffb6f6",
+    "bytes": 1941,
+    "lines": null
+  },
+  "data/eval_baseline/test/C0_clean.jsonl": {
+    "sha256": "5bd0b6f91428f140b8990c63cd01444a7952eb38eb8b95c86653eb37335720d9",
+    "bytes": 363264,
+    "lines": 2376
+  },
+  "data/eval_baseline/test/C1_perturbed.jsonl": {
+    "sha256": "78864a00a7de16c0587e0a34b3a9eca018e74f3023d2a2cfd1c5544747ef0245",
+    "bytes": 369096,
+    "lines": 2376
+  },
+  "data/eval_baseline/test/C2_blindspot.jsonl": {
+    "sha256": "90a42ac59aaed1068af3bd960e199e90a05f2d099673172c20814956b1aa8b2f",
+    "bytes": 387132,
+    "lines": 1920
+  },
+  "data/eval_baseline/test/manifest.json": {
+    "sha256": "2a246240f4fdc5ede3e55eeda64c26bd12e6d72ec576f3b27cd7741fc6f488c3",
+    "bytes": 818,
+    "lines": null
+  },
+  "data/eval_baseline/val/C0_clean.jsonl": {
+    "sha256": "a2a92576d675cae4e33d075325f6d373cbce1a80d57408483713227b8253fd59",
+    "bytes": 376365,
+    "lines": 2506
+  },
+  "data/eval_baseline/val/C1_perturbed.jsonl": {
+    "sha256": "bae7dda63a4f7fb9181a668f224267327a33cc30bb8718f0b66b058101939e1b",
+    "bytes": 383232,
+    "lines": 2506
+  },
+  "data/eval_baseline/val/C2_blindspot.jsonl": {
+    "sha256": "a3d0bd1be07d009fd48ddbacb83b66f184bf711ecc7a4383c64d34468c887f4a",
+    "bytes": 413595,
+    "lines": 2060
+  },
+  "data/eval_baseline/val/manifest.json": {
+    "sha256": "ce5489777a0e4dec00f4a5f1676ab523cedf0aa51105c5a72794239152f0f7ef",
+    "bytes": 826,
+    "lines": null
+  },
+  "models/vihatet5-v2-best/model.safetensors": {
+    "sha256": "c6870ff17b8d19f25a52c6c420c8e768aad303e7a62f7177bdfe251354ea5de5",
+    "bytes": 1187392592,
+    "lines": null
+  },
+  "models/vihatet5-v2-best/config.json": {
+    "sha256": "d24d9ccc0e750920d1fb79c321f2c66fe69c136bb0c63b77b2ba8a9c8641850b",
+    "bytes": 812,
+    "lines": null
+  }
+}
