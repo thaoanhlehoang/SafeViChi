@@ -73,7 +73,14 @@ class OcclusionScorer:
 
     @torch.no_grad()
     def _score_chunk(self, texts: list[str]) -> list[float]:
-        inputs = [PROMPT_PREFIX + t for t in texts]
+        # BẮT BUỘC hạ chữ thường: từ điển sentencepiece của ViHateT5 KHÔNG có ký
+        # tự hoa nào — mọi chữ hoa bị map thành <unk>, nên câu viết HOA biến
+        # thành chuỗi rỗng nghĩa và model luôn trả về cùng một kết quả mặc định
+        # (đo được: "ĐỊT MẸ MÀY" -> margin -2,04 = CLEAN; hạ thường -> +15,14 =
+        # HATE). Chữ hoa vốn mang zero thông tin tới model, nên hạ thường không
+        # mất gì mà cứu lại phần tín hiệu đang bị vứt (~10% token trên dữ liệu
+        # thật). Chỉ hạ ở đây — text hiển thị cho người đọc vẫn giữ nguyên dạng.
+        inputs = [PROMPT_PREFIX + t.lower() for t in texts]
         enc = self.tokenizer(
             inputs, return_tensors="pt", padding=True, truncation=True,
             max_length=self.max_input_length,

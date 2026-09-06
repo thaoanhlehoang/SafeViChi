@@ -4,9 +4,9 @@
 > xác cụm từ nào* gây ra kết luận đó không — và cụm đó có trùng với cụm mà con
 > người khoanh không?
 >
-> **Trả lời ngắn**: có, ở mức **micro F1 = 0,5455** trên ViHOS test. Occlusion
-> bắt được **69,8%** số từ con người khoanh, và chỉ **1,9%** số câu là chỉ sai
-> hoàn toàn. Đổi lại, vùng nó khoanh **rộng gấp 1,56 lần** vùng gold.
+> **Trả lời ngắn**: có, ở mức **micro F1 = 0,5552** trên ViHOS test. Occlusion
+> bắt được **64,7%** số từ con người khoanh, và chỉ **1,5%** số câu là chỉ sai
+> hoàn toàn. Đổi lại, vùng nó khoanh **rộng gấp 1,33 lần** vùng gold.
 
 Mọi số trong tài liệu này lấy từ [`results/step4/localization.json`](../results/step4/localization.json)
 và [`results/step4/predictions_test.jsonl`](../results/step4/predictions_test.jsonl),
@@ -130,7 +130,75 @@ Margin không bị chặn trong [0, 1] nên không bao giờ bão hòa — đó 
 `probability()` vẫn còn trong code nhưng **chỉ để hiển thị cho người đọc**,
 không dùng để tính occlusion.
 
-### 3.2 Chuẩn hóa điểm theo từng câu
+### 3.2 Bắt buộc hạ chữ thường trước khi đưa vào model
+
+Phát hiện muộn, khi chạy demo bằng tay: câu chửi viết HOA bị phân loại **CLEAN**.
+
+```
+"ĐỊT MẸ MÀY"   -> margin −2,04  -> CLEAN   (SAI)
+"địt mẹ mày"   -> margin +15,14 -> HATE    (đúng)
+```
+
+Nguyên nhân: **từ điển sentencepiece của ViHateT5 không chứa một ký tự hoa
+nào**. Mọi chữ hoa bị map thành `<unk>`:
+
+```
+'ĐỊT MẸ MÀY' -> ['▁','<unk>','▁','<unk>','▁','<unk>']    ← model không đọc được gì
+'Chó'        -> ['▁','<unk>','h','ó']                     ← hoa 1 chữ cũng vỡ từ
+```
+
+Vì thế mọi câu viết HOA đều cho margin gần y hệt nhau (−2,04 / −2,03 / −1,95):
+model nhận vào một chuỗi rỗng nghĩa nên luôn trả cùng một đáp án mặc định.
+
+**Đây không phải trường hợp hiếm.** Tiếng Việt viết hoa đầu câu và tên riêng,
+nên vấn đề chạm gần như mọi câu:
+
+| | ViHOS test | Bước 3 eval C0 |
+|---|---:|---:|
+| Câu có chứa chữ hoa | 87,6% | 85,0% |
+| Token bị `<unk>` (trung bình) | **10,1%** | **10,3%** |
+| Câu hỏng nặng (>30% `<unk>`) | 1,7% | 1,7% |
+
+Ví dụ trong chính tập test, gold span lại rơi đúng vào từ viết hoa:
+
+```
+'Cảnh Sát GiựT Tiền = CSGT'  ->  6/19 token là <unk>
+gold = [GiựT, Tiền]   ← cả hai từ độc hại đều bị hủy thành <unk>
+```
+
+**Cách sửa**: hạ chữ thường ngay trước khi tokenize (`_score_chunk`). Chữ hoa
+vốn mang **zero thông tin** tới model — nó đã bị hủy sẵn rồi — nên hạ chữ
+thường không mất gì mà chỉ cứu lại phần tín hiệu đang bị vứt. Text hiển thị cho
+người đọc vẫn giữ nguyên dạng gốc.
+
+Ảnh hưởng lên số liệu (cùng cấu hình, chỉ khác hạ chữ thường):
+
+| Chỉ số | Trước | Sau |
+|---|---:|---:|
+| micro F1 | 0,5455 | **0,5552** |
+| micro precision | 0,4478 | **0,4861** |
+| micro recall | 0,6977 | 0,6472 |
+| Số từ được flag | 3 953 | **3 378** (gold: 2 537) |
+| Câu trượt hoàn toàn | 10 | **8** |
+
+F1 chỉ nhích +0,0097 — **lợi ích thật không nằm ở con số tổng** mà ở hai chỗ:
+span khoanh gọn hơn hẳn (rộng gấp 1,56× → 1,33×) và, quan trọng hơn cả, hệ
+thống thôi phân loại sai hoàn toàn các câu chửi viết hoa.
+
+Câu ví dụ ở trên sau khi sửa:
+
+```
+'Cảnh Sát GiựT Tiền = CSGT'   gold = [GiựT, Tiền]
+  trước: [Cảnh, Tiền, =, CSGT]   F1 = 0,33
+  sau  : [Sát, GiựT, Tiền]       F1 = 0,80
+```
+
+> **Bước 3 vẫn đang dính đúng lỗi này.** `src/classifier/data.py` không hạ chữ
+> thường, `normalize()` của Bước 2 cũng không (còn chủ động khôi phục chữ hoa).
+> Toàn bộ số liệu Bước 3 vì vậy được đo trong tình trạng mất ~10% token. Chưa
+> sửa, chưa chạy lại — ghi nhận ở §7.
+
+### 3.3 Chuẩn hóa điểm theo từng câu
 
 Điểm quan trọng của một từ = mức margin **tụt xuống** khi che nó đi.
 
@@ -153,13 +221,13 @@ tương đối: *"mạnh bằng ít nhất X% cụm mạnh nhất trong câu nà
 Trường hợp biên: câu mà không từ nào làm điểm tụt (đỉnh ≤ 0) trả về toàn 0 —
 không flag gì. Chia cho số âm sẽ lật dấu và cho kết quả sai hoàn toàn.
 
-### 3.3 Che theo cụm 2 từ
+### 3.4 Che theo cụm 2 từ
 
 Che từng từ đơn quá hẹp so với cách ViHOS khoanh span (theo **cụm ngữ nghĩa**,
 trung vị 3 từ). Cấu hình chốt là che **2 từ liền kề** mỗi lần, điểm tụt được
 cộng vào cả hai từ trong cụm.
 
-### 3.4 Dò ngưỡng trên validation, đóng băng, rồi mới áp lên test
+### 3.5 Dò ngưỡng trên validation, đóng băng, rồi mới áp lên test
 
 Giữ đúng kỷ luật của Bước 3: quét ngưỡng trên **validation**, chọn theo micro
 F1, **đóng băng**, rồi áp con số đó lên **test**. Không bao giờ chọn ngưỡng
@@ -169,16 +237,16 @@ Bảng quét trên validation (537 câu HATE):
 
 | Ngưỡng | Precision | Recall | micro F1 | Số từ được flag |
 |---:|---:|---:|---:|---:|
-| 0,00 | 0,3663 | 0,7931 | 0,5011 | 6 006 |
-| 0,05 | 0,4034 | 0,7224 | 0,5177 | 4 968 |
-| **0,10** | **0,4456** | **0,6554** | **0,5305** | **4 080** |
-| 0,15 | 0,4716 | 0,5959 | 0,5265 | 3 505 |
-| 0,20 | 0,4940 | 0,5490 | 0,5201 | 3 083 |
-| 0,30 | 0,5452 | 0,4888 | 0,5155 | 2 487 |
-| 0,50 | 0,6466 | 0,3839 | 0,4818 | 1 647 |
-| 0,80 | 0,7925 | 0,2354 | 0,3630 | 824 |
+| 0,00 | 0,3608 | 0,7956 | 0,4965 | 6 117 |
+| 0,05 | 0,4088 | 0,7271 | 0,5234 | 4 934 |
+| 0,10 | 0,4461 | 0,6543 | 0,5305 | 4 069 |
+| **0,15** | **0,4788** | **0,6020** | **0,5334** | **3 488** |
+| 0,20 | 0,5031 | 0,5555 | 0,5280 | 3 063 |
+| 0,30 | 0,5554 | 0,4917 | 0,5216 | 2 456 |
+| 0,50 | 0,6631 | 0,3825 | 0,4851 | 1 600 |
+| 0,80 | 0,8056 | 0,2390 | 0,3686 | 823 |
 
-Ngưỡng **0,10** thắng và **nằm giữa dải quét**, không dính biên — dải 0–0,8 đủ
+Ngưỡng **0,15** thắng và **nằm giữa dải quét**, không dính biên — dải 0–0,8 đủ
 rộng, không cần mở rộng thêm. Đường cong đúng dạng đánh đổi P/R kinh điển:
 ngưỡng càng cao, precision càng lên, recall càng xuống.
 
