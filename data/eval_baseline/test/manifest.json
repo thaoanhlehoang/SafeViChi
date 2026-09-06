@@ -1,0 +1,35 @@
+{
+  "source_path": "data/processed/vietnamese_nonstandard_v1_2/test.jsonl",
+  "seed": 42,
+  "blindspot_version": "1.0.0",
+  "blindspot_generation_failed": 456,
+  "conditions": {
+    "C0_clean": {
+      "file": "test_clean.jsonl",
+      "n": 2376,
+      "by_label": {
+        "CLEAN": 1944,
+        "HATE": 432
+      },
+      "desc": "original_text, chưa cấy biến thể"
+    },
+    "C1_perturbed": {
+      "file": "test_perturbed.jsonl",
+      "n": 2376,
+      "by_label": {
+        "CLEAN": 1944,
+        "HATE": 432
+      },
+      "desc": "text đã cấy biến thể, chưa normalize"
+    },
+    "C2_blindspot": {
+      "file": "test_blindspot.jsonl",
+      "n": 1920,
+      "by_label": {
+        "CLEAN": 1599,
+        "HATE": 321
+      },
+      "desc": "điểm mù ngoài vùng phủ normalizer"
+    }
+  }
+}
