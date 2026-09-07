@@ -19,13 +19,13 @@ from src.variant_generator.teencode import compile_teencode_lexicon
 def test_default_dictionary_is_compiled_with_conflicts_quarantined() -> None:
     lexicon = load_teencode_lexicon()
 
-    assert lexicon.input_pair_count == 625
-    assert lexicon.accepted_pair_count == 589
-    assert lexicon.standard_form_count == 271
+    assert lexicon.input_pair_count == 643
+    assert lexicon.accepted_pair_count == 611
+    assert lexicon.standard_form_count == 283
     assert lexicon.excluded_reason_counts == {
         "curated_conflict": 2,
         "curated_duplicate": 20,
-        "normalization_chain": 14,
+        "normalization_chain": 10,
     }
     assert lexicon.normalizes_pair("0", "không")
     assert not lexicon.normalizes_pair("dai", "trai")
