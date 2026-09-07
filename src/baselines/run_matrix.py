@@ -100,7 +100,14 @@ class T5Scorer:
         out = np.empty(len(texts), dtype=np.float64)
         for start in range(0, len(texts), self.batch_size):
             batch = texts[start:start + self.batch_size]
-            enc = self.tokenizer([PROMPT_PREFIX + t for t in batch],
+            # BẮT BUỘC hạ chữ thường: từ điển sentencepiece của ViHateT5 KHÔNG có
+            # ký tự hoa nào — mọi chữ hoa thành <unk> (đo được: 85% câu trong tập
+            # eval có chữ hoa, trung bình 10,3% token bị vứt; câu viết HOA toàn bộ
+            # thì model không đọc được gì và luôn trả cùng một đáp án mặc định).
+            # Chữ hoa vốn mang zero thông tin tới model nên hạ thường không mất gì.
+            # Blacklist (src/baselines/blacklist.py) vốn đã hạ thường sẵn, nên đây
+            # cũng là điều kiện công bằng giữa các hệ thống.
+            enc = self.tokenizer([PROMPT_PREFIX + t.lower() for t in batch],
                                  max_length=self.max_input_length, truncation=True,
                                  padding=True, return_tensors="pt").to(self.device)
             dec = torch.full((len(batch), 1), self.decoder_start,
