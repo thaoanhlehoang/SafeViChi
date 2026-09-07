@@ -30,19 +30,26 @@ F1 của lớp HATE trên tập test, ngưỡng đã dò trên validation rồi 
 | Hệ thống | C0 câu sạch | C1 né lọc | C2 điểm mù |
 |---|---:|---:|---:|
 | B1 · Blacklist | 0,6551 | 0,5982 | 0,4564 |
-| B2 · ViHateT5 gốc | 0,7279 | 0,5973 | 0,4625 |
-| B2 · ViHateT5 gốc + chuẩn hóa | 0,7217 | 0,7198 | 0,4763 |
-| **B3 · Pipeline SafeViChi đầy đủ** | **0,8220** | **0,7963** | **0,6370** |
+| B2 · ViHateT5 gốc | 0,7683 | 0,6046 | 0,4627 |
+| B2 · ViHateT5 gốc + chuẩn hóa | 0,7497 | 0,7218 | 0,4720 |
+| **B3 · Pipeline SafeViChi đầy đủ** | **0,8552** | **0,8266** | **0,6657** |
 
-Bốn kết luận, tất cả có ý nghĩa thống kê (McNemar ghép cặp, `p < 0,001`):
+Bốn kết luận, tất cả có ý nghĩa thống kê (McNemar ghép cặp, `p < 1e-6`):
 
-1. **Né lọc phá được model gốc** — ViHateT5 tụt 0,1395 F1 từ C0 xuống C1.
-2. **Bước 2 (chuẩn hóa) góp +0,1225** trên C1, và **không làm hỏng gì** trên câu
-   vốn đã sạch.
-3. **Bước 3 (fine-tune đối kháng) góp thêm +0,0765** trên C1, và **+0,1607** trên
-   điểm mù — nơi chuẩn hóa hoàn toàn bó tay.
+1. **Né lọc phá được model gốc** — ViHateT5 tụt 0,1638 F1 từ C0 xuống C1.
+2. **Bước 2 (chuẩn hóa) góp +0,1172** trên C1 (`p = 7,47e-30`), và **không làm
+   hỏng gì** trên câu vốn đã sạch (C0: Δ = −0,0052, `p = 0,550`).
+3. **Bước 3 (fine-tune đối kháng) góp thêm +0,1048** trên C1, và **+0,1937** trên
+   điểm mù (`p = 1,21e-26`) — nơi chuẩn hóa hoàn toàn bó tay.
 4. **Hai bước bổ trợ nhau, không thay thế nhau**: model đã fine-tune vẫn cần
-   chuẩn hóa (+0,0919 trên C1, `p = 4,69e-10`).
+   chuẩn hóa (+0,0825 trên C1, `p = 2,85e-08`).
+
+> **Số liệu cập nhật sau khi sửa lỗi chữ hoa** (xem [`buoc4_bao_cao.md`](buoc4_bao_cao.md) §3.2):
+> từ điển của ViHateT5 không có ký tự hoa nên mọi chữ hoa bị hủy thành `<unk>`,
+> làm mất ~10% token. Sau khi hạ chữ thường ở đầu vào, **mọi hệ T5 đều tăng**
+> (B3 đầy đủ: C0 +0,0332, C1 +0,0303, C2 +0,0287). Blacklist **không đổi** vì
+> vốn đã hạ chữ thường sẵn — nghĩa là bảng cũ đang thiệt cho T5 và lợi cho
+> blacklist.
 
 Chi tiết, khoảng tin cậy, điểm yếu và các sai lầm thiết kế đã sửa: xem
 [`buoc3_bao_cao.md`](buoc3_bao_cao.md).

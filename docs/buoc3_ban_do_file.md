@@ -93,12 +93,16 @@ cần để suy luận, mà lại nặng ~2 GB mỗi checkpoint.
 | `test/matrix.json` | Kết quả ma trận trên test ở **ngưỡng mặc định 0,5**, kèm 15 phép McNemar |
 | `test/matrix.md` | Bản markdown của trên, đọc nhanh |
 | `test/scores.jsonl` | **P(hate) từng dòng**, 26.688 dòng. Schema: `{system, condition, row_id, label, p_hate}`. Nhờ file này mà dò ngưỡng và vẽ ROC/PR **không cần GPU** |
-| `val/…` | Tương tự, trên validation. Dùng để dò ngưỡng |
 | `threshold/threshold.json` | **Số liệu báo cáo chính**: ngưỡng đã chọn + chỉ số tại ngưỡng đó cho 4 hệ thống T5 |
-| `threshold/threshold.md` | Bản markdown |
 | `logs/train_eval_v2.log` | **Log gốc của lần chạy thật.** Bằng chứng: F1 từng epoch, thời gian, dò ngưỡng |
 | `logs/train_v1_lr3e-4_DEPRECATED.log` | Log lần chạy đầu (lr 3e-4) — giữ để đối chiếu vì sao phải hạ learning rate. **Không dùng số liệu trong đây** |
 | `figures/*.pdf` | 8 hình/bảng, PDF vector. Xem báo cáo §8 |
+
+> **Không có `val/`**: kết quả validation của lần chạy lại (sau khi sửa lỗi chữ
+> hoa) không được tải về — bản cũ đã xóa để tránh lẫn số liệu hai lần chạy.
+> Ngưỡng đã dò trên validation vẫn được lưu nguyên trong `threshold/threshold.json`,
+> nên báo cáo không thiếu gì. Chỉ khi muốn **dò lại ngưỡng từ đầu** mới cần
+> chạy lại ma trận trên validation (xem `buoc3_tai_lap_pipeline.md` §3).
 
 ---
 

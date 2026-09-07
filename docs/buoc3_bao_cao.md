@@ -246,47 +246,60 @@ Ngưỡng đã dò trên validation và đóng băng. Xem thêm
 | Hệ thống | Ngưỡng | C0 câu sạch | C1 né lọc | C2 điểm mù |
 |---|---:|---:|---:|---:|
 | `b1_blacklist` | — | 0,6551 | 0,5982 | 0,4564 |
-| `b1_blacklist_norm` | — | 0,6560 | 0,6412 | 0,4564 |
-| `b2_t5base` | 0,443 | 0,7279 | 0,5973 | 0,4625 |
-| `b2_t5base_norm` | 0,429 | 0,7217 | 0,7198 | 0,4763 |
-| `b3_t5ft` | 0,695 | 0,8225 | 0,7053 | 0,6444 |
-| **`b3_t5ft_norm`** | 0,453 | **0,8220** | **0,7963** | **0,6370** |
+| `b1_blacklist_norm` | — | 0,6421 | 0,6308 | 0,4534 |
+| `b2_t5base` | 0,690 | 0,7683 | 0,6046 | 0,4627 |
+| `b2_t5base_norm` | 0,576 | 0,7497 | 0,7218 | 0,4720 |
+| `b3_t5ft` | 0,778 | 0,8743 | 0,7441 | 0,6529 |
+| **`b3_t5ft_norm`** | 0,586 | **0,8552** | **0,8266** | **0,6657** |
 
 Khoảng tin cậy 95% (bootstrap 1.000 lần lấy mẫu lại, seed 42):
 
 | Hệ thống | C0 | C1 | C2 |
 |---|---|---|---|
 | `b1_blacklist` | 0,620–0,689 | 0,558–0,638 | 0,410–0,505 |
-| `b2_t5base` | 0,694–0,762 | 0,559–0,633 | 0,415–0,512 |
-| `b2_t5base_norm` | 0,686–0,755 | 0,685–0,753 | 0,431–0,524 |
-| `b3_t5ft` | 0,794–0,850 | 0,669–0,740 | 0,598–0,687 |
-| `b3_t5ft_norm` | 0,794–0,849 | 0,767–0,827 | 0,595–0,678 |
+| `b2_t5base` | 0,735–0,800 | 0,567–0,639 | 0,417–0,510 |
+| `b2_t5base_norm` | 0,718–0,784 | 0,687–0,756 | 0,430–0,514 |
+| `b3_t5ft` | 0,851–0,897 | 0,710–0,776 | 0,608–0,696 |
+| `b3_t5ft_norm` | 0,831–0,879 | 0,800–0,853 | 0,628–0,705 |
+
+> **Số liệu đã chạy lại sau khi sửa lỗi chữ hoa** (xem [`buoc4_bao_cao.md`](buoc4_bao_cao.md)
+> §3.2). Từ điển sentencepiece của ViHateT5 không chứa ký tự hoa nào, nên mọi
+> chữ hoa bị hủy thành `<unk>` — đo được 85% câu trong tập eval có chữ hoa,
+> trung bình mất 10,3% token. Sau khi hạ chữ thường ở đầu vào model
+> (`run_matrix.py`), **mọi hệ T5 đều tăng**: `b3_t5ft_norm` +0,0332 (C0),
+> +0,0303 (C1), +0,0287 (C2). Hai hệ blacklist **không đổi** vì
+> `src/baselines/blacklist.py` vốn đã hạ chữ thường sẵn — nghĩa là bảng cũ
+> đang thiệt cho T5 và lợi cho blacklist. (Chênh lệch nhỏ ở
+> `b1_blacklist_norm` so với bảng cũ là do lần chạy lại, không do sửa lỗi.)
 
 Precision / Recall / macro F1 / Accuracy đầy đủ nằm trong Bảng 1 (PDF) và
 `results/step3/threshold/threshold.json`.
 
 ### 5.2 Trả lời bốn câu hỏi
 
-Tất cả kiểm định bằng McNemar ghép cặp trên cùng từng dòng test, đo tại ngưỡng
-0,5 để phép ghép cặp so cùng một điểm vận hành.
+Các hiệu số dưới đây đo tại **ngưỡng 0,5** để phép ghép cặp so cùng một điểm
+vận hành (khác với bảng 5.1 dùng ngưỡng đã dò).
+
+Tất cả kiểm định bằng **McNemar ghép cặp** trên cùng từng dòng test.
 
 **Q1 — Né lọc có phá được model không? CÓ.**
-`b2_t5base` tụt từ 0,7347 (C0) xuống 0,5952 (C1): **−0,1395**. Tiền đề của cả đề
+`b2_t5base` tụt từ 0,7557 (C0) xuống 0,5860 (C1): **−0,1697**. Tiền đề của cả đề
 tài được xác nhận bằng số.
 
-**Q2 — Bước 2 góp bao nhiêu? +0,1169 trên C1** (`p = 6,80e-21`).
-Trên C0 thì Δ = −0,0033, `p = 0,749`, **không có ý nghĩa** — nghĩa là bật chuẩn
+**Q2 — Bước 2 góp bao nhiêu? +0,1327 trên C1** (`p = 7,47e-30`).
+Trên C0 thì Δ = −0,0052, `p = 0,550`, **không có ý nghĩa** — nghĩa là bật chuẩn
 hóa lên câu vốn đã sạch **không làm hỏng gì**. Đây là bằng chứng cho triết lý
 "thà không sửa còn hơn sửa sai" của bộ chuẩn hóa.
-Trên C2 thì Δ = 0,0000, `p = 1,00` — đúng như bất biến ở mục 2.2.
+Trên C2 thì Δ = +0,0076, `p = 0,324`, không có ý nghĩa — đúng như bất biến ở
+mục 2.2.
 
 **Q3 — Bước 3 góp thêm bao nhiêu?**
 
 | Điều kiện | `b2_t5base_norm` → `b3_t5ft_norm` | p-value |
 |---|---:|---|
-| C0 | +0,0917 | 2,73e-05 |
-| C1 | +0,0819 | 5,90e-04 |
-| C2 | **+0,1966** | 2,20e-06 |
+| C0 | +0,1024 | 2,90e-14 |
+| C1 | +0,1086 | 9,96e-16 |
+| C2 | **+0,1926** | 1,21e-26 |
 
 Trên điểm mù, fine-tune là thứ **duy nhất** cứu được — chuẩn hóa hoàn toàn bó tay
 ở đó.
@@ -295,44 +308,44 @@ Trên điểm mù, fine-tune là thứ **duy nhất** cứu được — chuẩn
 
 | Điều kiện | `b3_t5ft` → `b3_t5ft_norm` | p-value | Kết luận |
 |---|---:|---|---|
-| C0 | −0,0007 | 0,672 | không ý nghĩa |
-| C1 | **+0,0919** | 4,69e-10 | **có ý nghĩa** |
-| C2 | 0,0000 | 1,00 | không ý nghĩa (input giống hệt) |
+| C0 | −0,0157 | 0,144 | không ý nghĩa |
+| C1 | **+0,0745** | 2,85e-08 | **có ý nghĩa** |
+| C2 | +0,0019 | 1,00 | không ý nghĩa (input gần như giống hệt) |
 
 Đây là kết luận quan trọng nhất về mặt kiến trúc: **hai bước bổ trợ nhau, không
 thay thế nhau**. Fine-tune đối kháng không xóa được nhu cầu chuẩn hóa.
 
-**So với cách ngây thơ nhất:** pipeline đầy đủ hơn blacklist +0,1680 (C0),
-**+0,1957** (C1), +0,1850 (C2), tất cả `p < 1e-4`.
+**So với cách ngây thơ nhất:** pipeline đầy đủ hơn blacklist +0,1978 (C0),
+**+0,2290** (C1), +0,2084 (C2), tất cả `p < 1e-6`.
 
 ### 5.3 Tổng kết mức đóng góp trên C1 — kịch bản chính
 
 ```
-ViHateT5 gốc, không phòng vệ         0,5973
-  + Bước 2 (chuẩn hóa)      +0,1225  0,7198
-  + Bước 3 (fine-tune)      +0,0765  0,7963   ← pipeline đầy đủ
+ViHateT5 gốc, không phòng vệ         0,6046
+  + Bước 2 (chuẩn hóa)      +0,1172  0,7218
+  + Bước 3 (fine-tune)      +0,1048  0,8266   ← pipeline đầy đủ
 ```
 
 Trên C2 điểm mù, tỉ trọng đảo ngược hoàn toàn:
 
 ```
-ViHateT5 gốc, không phòng vệ         0,4625
-  + Bước 2 (chuẩn hóa)      +0,0138  0,4763   ← gần như vô hiệu
-  + Bước 3 (fine-tune)      +0,1607  0,6370
+ViHateT5 gốc, không phòng vệ         0,4627
+  + Bước 2 (chuẩn hóa)      +0,0093  0,4720   ← gần như vô hiệu
+  + Bước 3 (fine-tune)      +0,1937  0,6657
 ```
 
 ### 5.4 Diện tích dưới đường cong
 
 | Hệ thống | AUC C0 | AUC C1 | AUC C2 | AP C0 | AP C1 | AP C2 |
 |---|---:|---:|---:|---:|---:|---:|
-| `b2_t5base` | 0,931 | 0,857 | 0,765 | 0,818 | 0,659 | 0,485 |
-| `b2_t5base_norm` | 0,928 | 0,912 | 0,765 | 0,817 | 0,787 | 0,485 |
-| `b3_t5ft` | 0,959 | 0,911 | 0,882 | 0,896 | 0,784 | 0,714 |
-| `b3_t5ft_norm` | 0,949 | 0,937 | 0,882 | 0,884 | 0,858 | 0,714 |
+| `b2_t5base` | 0,953 | 0,875 | 0,774 | 0,859 | 0,680 | 0,498 |
+| `b2_t5base_norm` | 0,951 | 0,936 | 0,781 | 0,851 | 0,814 | 0,515 |
+| `b3_t5ft` | 0,980 | 0,932 | 0,887 | 0,939 | 0,825 | 0,723 |
+| **`b3_t5ft_norm`** | 0,972 | **0,962** | **0,890** | 0,924 | **0,899** | **0,729** |
 
 AP (Precision-Recall) đáng tin hơn AUC ở đây vì nhãn lệch nặng. Khoảng cách giữa
-hai chỉ số nói lên điều đó: trên C2, AUC của `b2_t5base` là 0,765 nghe khá ổn,
-nhưng AP chỉ 0,485 — sát mức nền.
+hai chỉ số nói lên điều đó: trên C2, AUC của `b2_t5base` là 0,774 nghe khá ổn,
+nhưng AP chỉ 0,498 — sát mức nền. Pipeline đầy đủ nâng AP lên 0,729.
 
 ---
 
@@ -341,13 +354,13 @@ nhưng AP chỉ 0,485 — sát mức nền.
 ### 6.1 Những gì kết quả chứng minh được
 
 1. **Né lọc là mối đe dọa thật, không phải giả định.** Model tốt nhất hiện có
-   cho tiếng Việt mất 13,95 điểm F1 chỉ vì văn bản bị biến dạng.
+   cho tiếng Việt mất 16,38 điểm F1 chỉ vì văn bản bị biến dạng.
 2. **Hai lớp phòng vệ bổ trợ nhau, phân công rõ ràng.** Chuẩn hóa gánh phần lớn
-   trên biến thể thông thường (+0,1225 trên C1); fine-tune gánh phần lớn trên
-   điểm mù (+0,1607 trên C2). Bỏ bất kỳ bên nào cũng để lộ một mặt trận.
+   trên biến thể thông thường (+0,1172 trên C1); fine-tune gánh phần lớn trên
+   điểm mù (+0,1937 trên C2). Bỏ bất kỳ bên nào cũng để lộ một mặt trận.
 3. **Chuẩn hóa không gây tác dụng phụ.** Trên C0, bật chuẩn hóa lên câu sạch cho
-   Δ = −0,0033, không có ý nghĩa thống kê.
-4. **Mọi so sánh chính đều có ý nghĩa thống kê**, `p < 0,001`, kiểm định ghép cặp
+   Δ = −0,0052, `p = 0,550`, không có ý nghĩa thống kê.
+4. **Mọi so sánh chính đều có ý nghĩa thống kê**, `p < 1e-6`, kiểm định ghép cặp
    chứ không phải đặt cạnh nhau hai con số rời rạc.
 
 ### 6.2 Những điểm yếu phải nói rõ
@@ -355,10 +368,10 @@ nhưng AP chỉ 0,485 — sát mức nền.
 1. **B2 có lợi thế sân nhà ở C0.** Câu test lấy từ ViHSD, mà
    `ViHateT5-base-HSD` cũng đã fine-tune trên chính ViHSD. Nói cách khác, B2
    được chấm trên dữ liệu họ hàng với dữ liệu nó đã học. B3 vẫn thắng
-   (+0,0884, `p = 2,18e-05`) → kết luận càng chắc, nhưng phải ghi nhận.
+   (+0,0869) → kết luận càng chắc, nhưng phải ghi nhận.
 
-2. **Điểm mù vẫn là mặt trận thua.** Ngay cả pipeline đầy đủ cũng chỉ đạt 0,6370
-   trên C2, thấp hơn C0 tới 18,5 điểm. Chưa giải quyết xong, chỉ mới thu hẹp.
+2. **Điểm mù vẫn là mặt trận thua.** Ngay cả pipeline đầy đủ cũng chỉ đạt 0,6657
+   trên C2, thấp hơn C0 tới 18,95 điểm. Chưa giải quyết xong, chỉ mới thu hẹp.
 
 3. **Bộ chuẩn hóa hiện tại không tái tạo được dữ liệu train.** Chi tiết ở mục
    6.3 — đây là hạn chế về tính tái lập, cần biết trước khi dựng lại pipeline.
@@ -450,7 +463,9 @@ Seed cũng không phát hiện được file bị sửa tay hay copy nhầm. Vi�
 ## 8. Hình và bảng
 
 Toàn bộ ở `results/step3/figures/`, định dạng **PDF vector**, font nhúng trong
-file, nhúng thẳng vào Word/LaTeX được.
+file, nhúng thẳng vào Word/LaTeX được. Đã vẽ lại theo số liệu sau khi sửa lỗi
+chữ hoa — vẽ lại bất cứ lúc nào bằng `python -m src.reporting.make_figures`
+(~5 giây, không cần GPU).
 
 | File | Nội dung |
 |---|---|
