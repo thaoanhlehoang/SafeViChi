@@ -19,7 +19,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from src.explainability.occlusion import (
+from src.explainer.occlusion import (
     OcclusionScorer, normalize_importance, occlude_words, split_words,
 )
 

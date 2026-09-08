@@ -1,31 +1,23 @@
-# --- Core ML ---
 torch>=2.1.0
 transformers>=4.40.0
 datasets>=2.19.0
 pyarrow>=16.0.0
 fsspec[http]>=2024.5.0
 scikit-learn>=1.4.0
-scipy>=1.11.0          # kiểm định McNemar trong src/baselines/stats.py
+scipy>=1.11.0
 sentencepiece>=0.2.0
 
-# --- Xử lý văn bản tiếng Việt ---
 unicodedata2>=15.1.0
 regex>=2024.4.0
 
-# --- Sinh biến thể / tăng cường dữ liệu ---
 nlpaug>=1.1.11
 
-# --- Đánh giá & trực quan hóa ---
 pandas>=2.2.0
-matplotlib>=3.8.0      # vẽ + xuất PDF vector (src/reporting/)
+matplotlib>=3.8.0
 
-# --- Xuất mô hình cho on-device demo ---
 onnx>=1.16.0
 onnxruntime>=1.18.0
 optimum>=1.19.0
 
-# --- Notebook ---
 jupyter>=1.0.0
-
-# --- Kiểm thử ---
 pytest>=8.0.0

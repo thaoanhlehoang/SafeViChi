@@ -33,7 +33,7 @@ import json
 from pathlib import Path
 
 from src.classifier.metrics import report
-from src.explainability.occlusion import (
+from src.explainer.occlusion import (
     OcclusionScorer, normalize_importance, occlude_words, top_k_spans,
 )
 
