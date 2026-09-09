@@ -5,59 +5,267 @@
   <title>SafeViChi — Demo phát hiện nội dung độc hại tiếng Việt</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
-    textarea { width: 100%; min-height: 80px; font-size: 16px; padding: 8px; }
-    button { margin-top: 12px; padding: 8px 16px; font-size: 16px; cursor: pointer; }
-    #result { margin-top: 20px; padding: 12px; border-radius: 8px; background: #f5f5f5; white-space: pre-wrap; }
-    .flag { background: #fde2e2; padding: 0 2px; border-radius: 3px; }
-    .note { color: #666; font-size: 14px; margin-top: 24px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #fafafa;
+      color: #333;
+    }
+    h1 { margin-bottom: 8px; color: #1a73e8; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+
+    /* Loading overlay */
+    #loadingOverlay {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #loadingOverlay.hidden { display: none; }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #e0e0e0;
+      border-top-color: #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 12px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loadingStatus { color: #666; font-size: 14px; margin-top: 8px; }
+    #progressBar {
+      width: 100%; height: 6px;
+      background: #e0e0e0; border-radius: 3px;
+      margin-top: 12px; overflow: hidden;
+    }
+    #progressFill {
+      height: 100%; width: 0%;
+      background: #1a73e8; border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    /* Input area */
+    #mainArea.disabled { opacity: 0.4; pointer-events: none; }
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      font-size: 16px;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: #1a73e8; outline: none; }
+    button {
+      margin-top: 12px;
+      padding: 10px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #1557b0; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Result */
+    #result {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      display: none;
+      line-height: 1.6;
+    }
+    #result.hate {
+      border-color: #f44336;
+      background: #fff5f5;
+    }
+    #result.clean {
+      border-color: #4caf50;
+      background: #f5fff5;
+    }
+    .label-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .label-hate { background: #f44336; color: white; }
+    .label-clean { background: #4caf50; color: white; }
+    .flag {
+      background: #ffcdd2;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #b71c1c;
+    }
+    .detail { color: #666; font-size: 13px; margin-top: 8px; }
+    .analyzing { color: #1a73e8; font-style: italic; }
+
+    /* Footer */
+    .note {
+      color: #999;
+      font-size: 12px;
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
   </style>
 </head>
 <body>
-  <h1>SafeViChi — Demo</h1>
-  <p>Gõ một câu tiếng Việt (kể cả bỏ dấu, teencode, chèn ký tự...) và bấm Kiểm tra.
-     Toàn bộ xử lý diễn ra ngay trong trình duyệt này — mở tab Network trong DevTools
-     để tự kiểm chứng không có request nào được gửi đi.</p>
-
-  <textarea id="input" placeholder="Nhập văn bản tại đây..."></textarea>
-  <br />
-  <button id="checkBtn">Kiểm tra</button>
-
-  <div id="result" style="display:none;"></div>
-
-  <p class="note">
-    TODO: tích hợp onnxruntime-web + model đã export (xem README.md trong thư mục này)
-    và port logic src/normalization/normalizer.py sang JavaScript.
-    Bản này hiện chỉ là khung giao diện minh họa với logic giả (mock).
+  <h1>🛡️ SafeViChi — Demo</h1>
+  <p class="subtitle">
+    Gõ một câu tiếng Việt (kể cả bỏ dấu, teencode, chèn ký tự...) và bấm Kiểm tra.<br/>
+    Toàn bộ xử lý diễn ra <strong>ngay trong trình duyệt này</strong> — mở tab Network
+    trong DevTools để tự kiểm chứng không có dữ liệu nào được gửi đi.
   </p>
 
-  <script>
-    // TODO: thay bằng lớp chuẩn hóa + gọi model ONNX thật
-    function mockNormalize(text) {
-      return text.toLowerCase();
-    }
-    function mockPredict(text) {
-      const badWords = ["ngu", "óc", "chó"];
-      const hit = badWords.some((w) => text.includes(w));
-      return { label: hit ? "offensive" : "clean", confidence: hit ? 0.87 : 0.95, flagged: hit ? badWords.filter(w => text.includes(w)) : [] };
-    }
+  <!-- Loading model -->
+  <div id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div><strong>Đang tải bộ não AI vào trình duyệt...</strong></div>
+    <div id="loadingStatus">Chuẩn bị tải model (~1 GB)...</div>
+    <div id="progressBar"><div id="progressFill"></div></div>
+  </div>
 
-    document.getElementById("checkBtn").addEventListener("click", () => {
-      const raw = document.getElementById("input").value;
-      const normalized = mockNormalize(raw);
-      const { label, confidence, flagged } = mockPredict(normalized);
+  <!-- Main input -->
+  <div id="mainArea" class="disabled">
+    <textarea id="input" placeholder="Nhập văn bản tại đây... VD: m co bị n.gu l k z ma"></textarea>
+    <br />
+    <button id="checkBtn" disabled>Kiểm tra</button>
 
-      let highlighted = normalized;
-      flagged.forEach((w) => {
-        highlighted = highlighted.replaceAll(w, `<span class="flag">${w}</span>`);
+    <div id="result"></div>
+  </div>
+
+  <p class="note">
+    SafeViChi — Bộ lọc nội dung độc hại tiếng Việt chạy 100% On-device.<br/>
+    Model: ViHateT5 (fine-tuned) • Tokenizer: SentencePiece • Runtime: Transformers.js + ONNX
+  </p>
+
+  <!-- ONNX Runtime Web — engine chạy model AI trong trình duyệt -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js"></script>
+
+  <script type="module">
+    import { initModel, scanMessage, isReady } from './js/ai_scanner.js';
+
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingStatus = document.getElementById('loadingStatus');
+    const progressFill = document.getElementById('progressFill');
+    const mainArea = document.getElementById('mainArea');
+    const checkBtn = document.getElementById('checkBtn');
+    const inputEl = document.getElementById('input');
+    const resultDiv = document.getElementById('result');
+
+    // ========== Bước 1: Tải model ==========
+    try {
+      await initModel('./onnx_model', (pct) => {
+        progressFill.style.width = pct + '%';
+        if (pct < 50) {
+          loadingStatus.textContent = `Đang tải Encoder (${pct * 2}%)...`;
+        } else {
+          loadingStatus.textContent = `Đang tải Decoder (${(pct - 50) * 2}%)...`;
+        }
       });
 
-      const resultDiv = document.getElementById("result");
-      resultDiv.style.display = "block";
-      resultDiv.innerHTML =
-        `<b>Sau chuẩn hóa:</b> ${highlighted}<br/>` +
-        `<b>Nhãn:</b> ${label} (${(confidence * 100).toFixed(0)}%)`;
+      // Model đã sẵn sàng!
+      loadingOverlay.classList.add('hidden');
+      mainArea.classList.remove('disabled');
+      checkBtn.disabled = false;
+    } catch (err) {
+      loadingStatus.textContent = '❌ Lỗi tải model: ' + err.message;
+      console.error(err);
+    }
+
+    // ========== Bước 2: Xử lý nút Kiểm tra ==========
+    checkBtn.addEventListener('click', async () => {
+      const rawText = inputEl.value.trim();
+      if (!rawText) return;
+
+      // Hiển thị trạng thái đang phân tích
+      checkBtn.disabled = true;
+      checkBtn.textContent = 'Đang phân tích...';
+      resultDiv.style.display = 'block';
+      resultDiv.className = '';
+      resultDiv.innerHTML = '<span class="analyzing">🔍 AI đang quét tin nhắn...</span>';
+
+      try {
+        const result = await scanMessage(rawText);
+
+        // Hiển thị kết quả
+        resultDiv.className = result.label;
+        const badgeClass = result.label === 'hate' ? 'label-hate' : 'label-clean';
+        const labelText = result.label === 'hate' ? '⚠️ Nội dung độc hại' : '✅ Nội dung sạch';
+
+        // Highlight từ xấu trong câu đã chuẩn hóa
+        let highlightedText = result.normalized;
+        if (result.flaggedWords.length > 0) {
+          // Sắp xếp từ dài trước để tránh replace nhầm
+          const sortedFlags = [...result.flaggedWords].sort((a, b) => b.word.length - a.word.length);
+          for (const fw of sortedFlags) {
+            // Escape regex special chars trong từ
+            const escaped = fw.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            highlightedText = highlightedText.replace(
+              new RegExp(`\\b${escaped}\\b`, 'gi'),
+              `<span class="flag" title="Điểm: ${fw.score}">${fw.word}</span>`
+            );
+            // Fallback nếu word boundary không match (tiếng Việt Unicode)
+            if (!highlightedText.includes('class="flag"')) {
+              highlightedText = highlightedText.replace(
+                fw.word,
+                `<span class="flag" title="Điểm: ${fw.score}">${fw.word}</span>`
+              );
+            }
+          }
+        }
+
+        resultDiv.innerHTML = `
+          <div><span class="label-badge ${badgeClass}">${labelText}</span></div>
+          <div style="margin-top:12px">
+            <b>Văn bản gốc:</b> ${escapeHtml(result.original)}<br/>
+            <b>Sau chuẩn hóa:</b> ${highlightedText}
+          </div>
+          <div class="detail">
+            Độ tin cậy: ${(result.confidence * 100).toFixed(1)}%
+            ${result.flaggedWords.length > 0
+              ? ' • Từ gây cảnh báo: ' + result.flaggedWords.map(f => `"${f.word}" (${f.score})`).join(', ')
+              : ''}
+          </div>
+        `;
+      } catch (err) {
+        resultDiv.className = '';
+        resultDiv.innerHTML = `<span style="color:red">❌ Lỗi: ${err.message}</span>`;
+        console.error(err);
+      }
+
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Kiểm tra';
     });
+
+    // Nhấn Enter để kiểm tra
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        checkBtn.click();
+      }
+    });
+
+    // Helper: escape HTML để tránh XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
   </script>
 </body>
 </html>
