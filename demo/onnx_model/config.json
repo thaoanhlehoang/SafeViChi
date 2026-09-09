@@ -13,6 +13,7 @@
   "eos_token_id": 1,
   "feed_forward_proj": "relu",
   "initializer_factor": 1.0,
+  "is_decoder": false,
   "is_encoder_decoder": true,
   "is_gated_act": false,
   "layer_norm_epsilon": 1e-06,
@@ -26,7 +27,8 @@
   "relative_attention_max_distance": 128,
   "relative_attention_num_buckets": 32,
   "scale_decoder_outputs": true,
-  "transformers_version": "4.57.6",
+  "tie_word_embeddings": true,
+  "transformers_version": "5.0.0",
   "use_cache": false,
   "vocab_size": 32100
 }

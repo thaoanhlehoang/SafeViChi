@@ -31,6 +31,7 @@ let isModelReady = false;
 
 const PROMPT_PREFIX = 'vihsd: ';
 const DECODER_START_TOKEN_ID = 0n; // BigInt vì ONNX Runtime dùng int64
+const OCCLUSION_WINDOW = 2;        // khớp cấu hình chính thức ở results/step4/
 
 // ============================================================
 // Khởi tạo Model
@@ -60,10 +61,16 @@ export async function initModel(modelDir = './onnx_model', onProgress = null) {
   const { AutoTokenizer, env } = await import(
     'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3'
   );
+  // Transformers.js mặc định tìm model local ở `/models/<id>` (localModelPath),
+  // nên phải trỏ lại về thư mục demo, nếu không nó sẽ 404 rồi âm thầm rơi sang
+  // tải từ Hugging Face Hub — trái với cam kết chạy 100% on-device.
   env.allowLocalModels = true;
+  env.allowRemoteModels = false;
   env.useBrowserCache = true;
+  const dirParts = modelDir.replace(/\/+$/, '').split('/');
+  env.localModelPath = dirParts.slice(0, -1).join('/') || '.';
 
-  tokenizer = await AutoTokenizer.from_pretrained(modelDir);
+  tokenizer = await AutoTokenizer.from_pretrained(dirParts[dirParts.length - 1]);
 
   // Tìm token ID cho "hate" và "clean"
   const hateEncoded = tokenizer.encode('hate', { add_special_tokens: false });
@@ -288,10 +295,13 @@ export async function scanMessage(rawText, options = {}) {
   if (label === 'hate') {
     const words = splitWords(normalizedText);
     if (words.length > 0) {
-      const importance = await occludeWords(words);
+      // window = 2: bám đúng cấu hình chính thức đã chốt ở bước 4.3
+      // (src/explainer/demo.py), để demo web ra cùng cụm từ với số liệu Python.
+      const importance = await occludeWords(words, OCCLUSION_WINDOW);
       const normImp = normalizeImportance(importance);
       const spans = topKSpans(normImp, topK, threshold);
       flaggedWords = spans.map(i => ({
+        index: i,
         word: words[i],
         score: Math.round(normImp[i] * 100) / 100,
       }));
@@ -301,6 +311,10 @@ export async function scanMessage(rawText, options = {}) {
   return {
     original: rawText,
     normalized: normalizedText,
+    // Trả kèm mảng từ đã tách để phía giao diện tô sáng THEO VỊ TRÍ.
+    // Tô bằng tìm-thay chuỗi là sai: từ 1 ký tự như "M" khớp cả vào phần HTML
+    // vừa chèn vào trước đó (title="Điểm: 1") và làm vỡ thẻ span.
+    words: splitWords(normalizedText),
     label,
     confidence: Math.round(confidence * 10000) / 10000,
     flaggedWords,

@@ -207,27 +207,18 @@
         const badgeClass = result.label === 'hate' ? 'label-hate' : 'label-clean';
         const labelText = result.label === 'hate' ? '⚠️ Nội dung độc hại' : '✅ Nội dung sạch';
 
-        // Highlight từ xấu trong câu đã chuẩn hóa
-        let highlightedText = result.normalized;
-        if (result.flaggedWords.length > 0) {
-          // Sắp xếp từ dài trước để tránh replace nhầm
-          const sortedFlags = [...result.flaggedWords].sort((a, b) => b.word.length - a.word.length);
-          for (const fw of sortedFlags) {
-            // Escape regex special chars trong từ
-            const escaped = fw.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            highlightedText = highlightedText.replace(
-              new RegExp(`\\b${escaped}\\b`, 'gi'),
-              `<span class="flag" title="Điểm: ${fw.score}">${fw.word}</span>`
-            );
-            // Fallback nếu word boundary không match (tiếng Việt Unicode)
-            if (!highlightedText.includes('class="flag"')) {
-              highlightedText = highlightedText.replace(
-                fw.word,
-                `<span class="flag" title="Điểm: ${fw.score}">${fw.word}</span>`
-              );
-            }
-          }
-        }
+        // Tô sáng từ gây cảnh báo THEO VỊ TRÍ (index) chứ không tìm-thay chuỗi:
+        // mỗi từ được escape riêng rồi mới ghép lại, nên không có cách nào
+        // nội dung người dùng gõ (hay HTML vừa chèn) làm vỡ thẻ span.
+        const flagByIndex = new Map(result.flaggedWords.map(f => [f.index, f]));
+        const highlightedText = result.words
+          .map((w, i) => {
+            const fw = flagByIndex.get(i);
+            return fw
+              ? `<span class="flag" title="Điểm: ${fw.score}">${escapeHtml(w)}</span>`
+              : escapeHtml(w);
+          })
+          .join(' ');
 
         resultDiv.innerHTML = `
           <div><span class="label-badge ${badgeClass}">${labelText}</span></div>
@@ -238,7 +229,7 @@
           <div class="detail">
             Độ tin cậy: ${(result.confidence * 100).toFixed(1)}%
             ${result.flaggedWords.length > 0
-              ? ' • Từ gây cảnh báo: ' + result.flaggedWords.map(f => `"${f.word}" (${f.score})`).join(', ')
+              ? ' • Từ gây cảnh báo: ' + result.flaggedWords.map(f => `"${escapeHtml(f.word)}" (${f.score})`).join(', ')
               : ''}
           </div>
         `;
