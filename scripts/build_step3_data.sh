@@ -12,10 +12,8 @@
 #     data/data_final/                    (bộ huấn luyện Bước 3)
 #     data/eval_baseline/{test,val}/      (ma trận 3 điều kiện)
 #
-# ⚠️ Script này KHÔNG ghi đè data/processed/normalized/ nếu đã có sẵn. Lý do
-#    xem cảnh báo đầu file src/dataset_builder/build_normalized.py — bản
-#    normalizer hiện tại không tái tạo đúng file cũ, và file cũ mới là thứ đã
-#    dùng để train ra checkpoint đang có.
+# Luu y: Script nay khong ghi de data/processed/normalized/ neu da co san.
+# Xem chi tiet trong src/dataset_builder/build_normalized.py.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."

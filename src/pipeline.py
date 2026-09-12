@@ -1,11 +1,10 @@
 """
-Ghép toàn bộ pipeline một đường thẳng (Mục 3.1 trong docs/plan.md):
-
+Pipeline xử lý SafeViChi:
     Văn bản đầu vào
-        -> [1] Lớp chuẩn hóa (rule-based)
-        -> [2] Bộ phân loại (ViSoBERT fine-tune / ViHateT5)
+        -> [1] Lớp chuẩn hóa (normalizer)
+        -> [2] Bộ phân loại (ViHateT5 fine-tune)
         -> [3] Module giải thích (occlusion)
-        -> Đầu ra: nhãn rủi ro + cụm từ gây cảnh báo
+        -> Đầu ra: nhãn rủi ro + cụm từ cảnh báo
 """
 
 from __future__ import annotations
@@ -68,6 +67,12 @@ class SafeViChiPipeline:
 
 if __name__ == "__main__":
     import argparse
+    import sys
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, required=True, help="Đường dẫn tới thư mục model")
     parser.add_argument("--text", type=str, default="m4y ng.u qu4", help="Văn bản cần kiểm tra")

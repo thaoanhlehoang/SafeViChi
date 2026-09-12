@@ -1,7 +1,7 @@
 """
 Bộ sinh biến thể né lọc có tham số cường độ.
 
-Tương ứng Mục 3.3 trong docs/plan.md. 6 nhóm biến thể:
+Gồm 6 nhóm biến thể:
   1. remove_diacritics       - loại bỏ dấu
   2. teencode_substitute     - biến thể teencode
   3. insert_separators       - chèn ký tự phân tách

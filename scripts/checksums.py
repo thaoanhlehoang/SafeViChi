@@ -21,6 +21,12 @@ import json
 import sys
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 MANIFEST_PATH = Path("data/CHECKSUMS.json")
 
 # Các file làm nên kết quả Bước 3. Thiếu file nào ở đây là mất khả năng tái lập.

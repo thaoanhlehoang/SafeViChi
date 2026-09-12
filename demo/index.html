@@ -167,7 +167,7 @@
     const inputEl = document.getElementById('input');
     const resultDiv = document.getElementById('result');
 
-    // ========== Bước 1: Tải model ==========
+    // Tai model va tokenizer
     try {
       await initModel('./onnx_model', (pct) => {
         progressFill.style.width = pct + '%';
@@ -178,16 +178,15 @@
         }
       });
 
-      // Model đã sẵn sàng!
       loadingOverlay.classList.add('hidden');
       mainArea.classList.remove('disabled');
       checkBtn.disabled = false;
     } catch (err) {
-      loadingStatus.textContent = '❌ Lỗi tải model: ' + err.message;
+      loadingStatus.textContent = 'Lỗi tải model: ' + err.message;
       console.error(err);
     }
 
-    // ========== Bước 2: Xử lý nút Kiểm tra ==========
+    // Xu ly su kien nut kiem tra
     checkBtn.addEventListener('click', async () => {
       const rawText = inputEl.value.trim();
       if (!rawText) return;

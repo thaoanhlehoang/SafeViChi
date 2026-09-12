@@ -19,7 +19,7 @@ occlusion.py) nên ngưỡng có đơn vị margin, KHÔNG phải xác suất �
 định 0..5 phản ánh điều đó.
 
 Chạy (GPU khuyến nghị, ~531 câu HATE trong test):
-    python -m src.explainability.evaluate_localization \
+    python -m src.explainer.evaluate_localization \
         --model_name models/vihatet5-v2-best \
         --val_path  data/data_explain/validation.jsonl \
         --test_path data/data_explain/test.jsonl \

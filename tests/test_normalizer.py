@@ -2,10 +2,10 @@
 Unit tests cho bộ chuẩn hóa SafeViChi.
 
 Bao phủ 11 loại perturbation:
-  ✓ xử lý: surface_obfuscation, boundary_variation, expressive_lengthening,
-            diacritic_variation, abbreviation_clipping, intentional_spelling,
-            phonetic_spelling, dialectal_writing, slang_lexical
-  ✗ bỏ qua: context_dependent, typographical_noise
+  - Xử lý: surface_obfuscation, boundary_variation, expressive_lengthening,
+           diacritic_variation, abbreviation_clipping, intentional_spelling,
+           phonetic_spelling, dialectal_writing, slang_lexical
+  - Bỏ qua: context_dependent, typographical_noise
 
 Nguyên tắc kiểm tra an toàn: THÀ KHÔNG SỬA CHỨ ĐỪNG SỬA SAI.
   - Số thuần phải giữ nguyên

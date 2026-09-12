@@ -15,6 +15,8 @@ INVALID_LABEL_ID = -1
 
 
 def _binary_scores(label_ids: np.ndarray, pred_ids: np.ndarray) -> dict[str, float]:
+    label_ids = np.asarray(label_ids)
+    pred_ids = np.asarray(pred_ids)
     if len(label_ids) == 0:
         return {"accuracy": 0.0, "f1": 0.0, "precision": 0.0, "recall": 0.0}
 

@@ -8,16 +8,22 @@ Mặc định dùng ĐÚNG cấu hình chính thức đã chốt ở 4.3 (relati
 ngưỡng 0.1) để những gì nhìn thấy ở đây khớp với số liệu đã báo cáo.
 
 Chạy:
-    python -m src.explainability.demo "Mày ngu như con chó vậy"
-    python -m src.explainability.demo --format markdown "câu cần soi"
+    python -m src.explainer.demo "Mày ngu như con chó vậy"
+    python -m src.explainer.demo --format markdown "câu cần soi"
     echo "câu 1
-    câu 2" | python -m src.explainability.demo   # đọc từ stdin, mỗi dòng 1 câu
+    câu 2" | python -m src.explainer.demo
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 from src.explainer.occlusion import (
     OcclusionScorer, normalize_importance, occlude_words, split_words,

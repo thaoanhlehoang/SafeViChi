@@ -1,4 +1,4 @@
-from src.explainability.demo import bucket, render
+from src.explainer.demo import bucket, render
 
 
 def test_bucket_levels():

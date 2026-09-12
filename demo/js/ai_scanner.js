@@ -1,47 +1,32 @@
 /**
- * SafeViChi AI Scanner — Chạy hoàn toàn trên trình duyệt (On-device).
+ * SafeViChi AI Scanner - Chạy hoàn toàn trên trình duyệt (on-device).
  *
- * Kiến trúc:
- *   - Transformers.js: CHỈ dùng để load tokenizer (đọc tokenizer.json)
- *   - ONNX Runtime Web: Load trực tiếp encoder_model.onnx + decoder_model.onnx
- *   - Normalizer: Port từ Python, xử lý teencode/lookalike/separator
- *   - Occlusion: Che từng từ để giải thích lý do cảnh báo
- *
- * Cách dùng (cho Người B):
- *   import { initModel, scanMessage } from './js/ai_scanner.js';
- *
- *   await initModel('./onnx_model', (pct) => console.log(pct + '%'));
- *   const result = await scanMessage("m co bị n.gu l k z ma");
+ * - Transformers.js: Dùng để load tokenizer từ tokenizer.json
+ * - ONNX Runtime Web: Load encoder_model.onnx và decoder_model.onnx
+ * - Normalizer: Chuẩn hóa teencode, ký tự đồng dạng và ký tự phân tách
+ * - Occlusion: Che từng từ để khoanh vùng cụm từ gây cảnh báo
  *
  * @module ai_scanner
  */
 
 import { normalize, init as initNormalizer } from './normalizer.js';
 
-// ============================================================
-// Biến toàn cục module
-// ============================================================
-
 let tokenizer = null;
-let encoderSession = null;   // ONNX InferenceSession cho encoder
-let decoderSession = null;   // ONNX InferenceSession cho decoder
+let encoderSession = null;
+let decoderSession = null;
 let hateTokenId = null;
 let cleanTokenId = null;
 let isModelReady = false;
 
 const PROMPT_PREFIX = 'vihsd: ';
-const DECODER_START_TOKEN_ID = 0n; // BigInt vì ONNX Runtime dùng int64
-const OCCLUSION_WINDOW = 2;        // khớp cấu hình chính thức ở results/step4/
-
-// ============================================================
-// Khởi tạo Model
-// ============================================================
+const DECODER_START_TOKEN_ID = 0n;
+const OCCLUSION_WINDOW = 2; // Cửa sổ n-gram khớp với cấu hình benchmark ở step 4
 
 /**
  * Tải model ViHateT5 ONNX và tokenizer vào bộ nhớ trình duyệt.
  *
- * @param {string} modelDir - Đường dẫn thư mục chứa ONNX + tokenizer (VD: './onnx_model')
- * @param {Function} [onProgress] - Callback nhận % tiến trình (0-100)
+ * @param {string} modelDir - Thư mục chứa file ONNX và tokenizer (mặc định: './onnx_model')
+ * @param {Function} [onProgress] - Callback nhận % tiến trình tải
  */
 export async function initModel(modelDir = './onnx_model', onProgress = null) {
   if (isModelReady) {
@@ -51,19 +36,17 @@ export async function initModel(modelDir = './onnx_model', onProgress = null) {
 
   const report = (msg) => console.log('[SafeViChi] ' + msg);
 
-  // --- Bước 0: Load từ điển teencode ---
+  // 1. Tải từ điển teencode
   report('Đang tải từ điển teencode...');
   const dictUrl = modelDir.replace(/\/onnx_model\/?$/, '') + '/teencode_dict.json';
   await initNormalizer(dictUrl);
 
-  // --- Bước 1: Load tokenizer bằng Transformers.js ---
+  // 2. Tải tokenizer qua Transformers.js
   report('Đang tải tokenizer...');
   const { AutoTokenizer, env } = await import(
     'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3'
   );
-  // Transformers.js mặc định tìm model local ở `/models/<id>` (localModelPath),
-  // nên phải trỏ lại về thư mục demo, nếu không nó sẽ 404 rồi âm thầm rơi sang
-  // tải từ Hugging Face Hub — trái với cam kết chạy 100% on-device.
+  // Trỏ localModelPath về đúng thư mục demo để đảm bảo 100% on-device
   env.allowLocalModels = true;
   env.allowRemoteModels = false;
   env.useBrowserCache = true;
@@ -72,71 +55,48 @@ export async function initModel(modelDir = './onnx_model', onProgress = null) {
 
   tokenizer = await AutoTokenizer.from_pretrained(dirParts[dirParts.length - 1]);
 
-  // Tìm token ID cho "hate" và "clean"
   const hateEncoded = tokenizer.encode('hate', { add_special_tokens: false });
   const cleanEncoded = tokenizer.encode('clean', { add_special_tokens: false });
   hateTokenId = Number(hateEncoded[0]);
   cleanTokenId = Number(cleanEncoded[0]);
-  report(`Token IDs — hate: ${hateTokenId}, clean: ${cleanTokenId}`);
+  report(`Token IDs - hate: ${hateTokenId}, clean: ${cleanTokenId}`);
 
-  // --- Bước 2: Load model ONNX bằng ONNX Runtime Web trực tiếp ---
-  // (Bỏ qua hoàn toàn phần model loading của Transformers.js)
-
-  // Cấu hình ONNX Runtime Web
+  // 3. Khởi tạo phiên suy luận ONNX Runtime Web
   if (typeof ort !== 'undefined') {
     ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
   }
 
-  // Load Encoder (~418 MB)
-  report('Đang tải Encoder ONNX (~418 MB)...');
+  report('Đang tải encoder ONNX (~418 MB)...');
   if (onProgress) onProgress(5);
   encoderSession = await ort.InferenceSession.create(
     `${modelDir}/onnx/encoder_model.onnx`,
     { executionProviders: ['wasm'] }
   );
-  report('✅ Encoder đã tải xong!');
+  report('Encoder đã tải xong');
   if (onProgress) onProgress(50);
 
-  // Load Decoder (~620 MB)
-  report('Đang tải Decoder ONNX (~620 MB)...');
+  report('Đang tải decoder ONNX (~620 MB)...');
   decoderSession = await ort.InferenceSession.create(
     `${modelDir}/onnx/decoder_model.onnx`,
     { executionProviders: ['wasm'] }
   );
-  report('✅ Decoder đã tải xong!');
+  report('Decoder đã tải xong');
   if (onProgress) onProgress(100);
 
-  // Debug: in ra tên input/output của model
-  report('Encoder inputs: ' + JSON.stringify(encoderSession.inputNames));
-  report('Encoder outputs: ' + JSON.stringify(encoderSession.outputNames));
-  report('Decoder inputs: ' + JSON.stringify(decoderSession.inputNames));
-  report('Decoder outputs: ' + JSON.stringify(decoderSession.outputNames));
-
   isModelReady = true;
-  report('🎉 Model đã sẵn sàng! Có thể quét tin nhắn.');
+  report('Model đã sẵn sàng');
 }
 
-// ============================================================
-// Tính Logit Margin — Cốt lõi bộ phân loại
-// ============================================================
-
-/**
- * Chuyển mảng số thường sang BigInt64Array (ONNX Runtime yêu cầu int64).
- */
 function toBigInt64(arr) {
   return new BigInt64Array(Array.from(arr).map(v => BigInt(v)));
 }
 
 /**
- * Tính logit margin (hate_logit - clean_logit) cho 1 câu.
- *
- * Luồng: tokenize → encoder → decoder (1 bước) → đọc logits
- *
- * @param {string} text - Văn bản đã chuẩn hóa
- * @returns {Promise<number>}
+ * Tính logit margin (hate_logit - clean_logit) cho một câu.
+ * Chuỗi xử lý: tokenize -> encoder -> 1 bước decoder -> logits.
  */
 async function getLogitMargin(text) {
-  // Tokenize (hạ chữ thường vì tokenizer ViHateT5 không có ký tự hoa)
+  // Hạ chữ thường vì tokenizer ViHateT5 không chứa ký tự hoa
   const input = PROMPT_PREFIX + text.toLowerCase();
   const encoded = tokenizer(input, {
     padding: true,
@@ -144,7 +104,6 @@ async function getLogitMargin(text) {
     max_length: 256,
   });
 
-  // Chuyển sang tensor ONNX Runtime (int64 = BigInt64Array)
   const seqLen = encoded.input_ids.dims
     ? encoded.input_ids.dims[1]
     : encoded.input_ids.size;
@@ -155,24 +114,22 @@ async function getLogitMargin(text) {
   const inputIds = new ort.Tensor('int64', toBigInt64(inputIdsData), [1, seqLen]);
   const attentionMask = new ort.Tensor('int64', toBigInt64(attMaskData), [1, seqLen]);
 
-  // ---- Chạy Encoder ----
+  // Chạy encoder
   const encoderOutput = await encoderSession.run({
     input_ids: inputIds,
     attention_mask: attentionMask,
   });
 
-  // Lấy hidden states từ encoder (tên output có thể khác tùy model)
   const encoderHidden = encoderOutput.last_hidden_state
     || encoderOutput[encoderSession.outputNames[0]];
 
-  // ---- Chạy Decoder (1 bước duy nhất) ----
+  // Chạy decoder một bước khởi đầu
   const decoderInputIds = new ort.Tensor(
     'int64',
     new BigInt64Array([DECODER_START_TOKEN_ID]),
     [1, 1]
   );
 
-  // Tự động tìm đúng tên input cho encoder hidden states
   const decoderInputNames = decoderSession.inputNames;
   const encoderHiddenName = decoderInputNames.find(n =>
     n.includes('encoder_hidden_states') || n.includes('encoder_output')
@@ -188,20 +145,15 @@ async function getLogitMargin(text) {
   };
 
   const decoderOutput = await decoderSession.run(decoderFeeds);
-
-  // Lấy logits (tên output có thể là 'logits' hoặc khác)
   const logitsTensor = decoderOutput.logits
     || decoderOutput[decoderSession.outputNames[0]];
-  const logits = logitsTensor.data; // Float32Array [1 x 1 x vocab_size]
+  const logits = logitsTensor.data;
 
   const hateLogit = logits[hateTokenId];
   const cleanLogit = logits[cleanTokenId];
   return hateLogit - cleanLogit;
 }
 
-/**
- * Tính margins cho nhiều câu (tuần tự vì browser không có batch GPU).
- */
 async function getLogitMargins(texts) {
   const margins = [];
   for (const text of texts) {
@@ -209,10 +161,6 @@ async function getLogitMargins(texts) {
   }
   return margins;
 }
-
-// ============================================================
-// Thuật toán Occlusion — Port từ occlusion.py
-// ============================================================
 
 function splitWords(text) {
   return text.match(/\S+/g) || [];
@@ -255,33 +203,22 @@ function normalizeImportance(importance) {
 
 function topKSpans(importance, k = null, threshold = 0.0) {
   if (k !== null) {
-    const ranked = importance
+    return importance
       .map((score, idx) => ({ score, idx }))
       .sort((a, b) => b.score - a.score)
       .slice(0, k)
       .map(x => x.idx)
       .sort((a, b) => a - b);
-    return ranked;
   }
   return importance.map((v, i) => (v > threshold ? i : -1)).filter(i => i >= 0);
 }
 
-// ============================================================
-// API chính — scanMessage()
-// ============================================================
-
 /**
- * Quét 1 tin nhắn: chuẩn hóa → phân loại → giải thích.
- *
- * @param {string} rawText - Tin nhắn gốc
- * @param {Object} [options]
- * @param {number} [options.topK=3]
- * @param {number} [options.threshold=0.1]
- * @returns {Promise<{original, normalized, label, confidence, flaggedWords}>}
+ * Quét một tin nhắn: Chuẩn hóa văn bản -> Dự đoán nhãn -> Khoanh vùng từ ngữ vi phạm.
  */
 export async function scanMessage(rawText, options = {}) {
   if (!isModelReady) {
-    throw new Error('[SafeViChi] Model chưa được tải. Gọi initModel() trước.');
+    throw new Error('[SafeViChi] Model chưa được tải. Hãy gọi initModel() trước.');
   }
 
   const { topK = 3, threshold = 0.1 } = options;
@@ -295,8 +232,7 @@ export async function scanMessage(rawText, options = {}) {
   if (label === 'hate') {
     const words = splitWords(normalizedText);
     if (words.length > 0) {
-      // window = 2: bám đúng cấu hình chính thức đã chốt ở bước 4.3
-      // (src/explainer/demo.py), để demo web ra cùng cụm từ với số liệu Python.
+      // Dùng window = 2 đồng bộ với thiết lập chính thức của bước 4
       const importance = await occludeWords(words, OCCLUSION_WINDOW);
       const normImp = normalizeImportance(importance);
       const spans = topKSpans(normImp, topK, threshold);
@@ -311,9 +247,6 @@ export async function scanMessage(rawText, options = {}) {
   return {
     original: rawText,
     normalized: normalizedText,
-    // Trả kèm mảng từ đã tách để phía giao diện tô sáng THEO VỊ TRÍ.
-    // Tô bằng tìm-thay chuỗi là sai: từ 1 ký tự như "M" khớp cả vào phần HTML
-    // vừa chèn vào trước đó (title="Điểm: 1") và làm vỡ thẻ span.
     words: splitWords(normalizedText),
     label,
     confidence: Math.round(confidence * 10000) / 10000,

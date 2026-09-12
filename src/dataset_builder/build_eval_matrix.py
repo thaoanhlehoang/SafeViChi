@@ -31,7 +31,14 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import sys
 from pathlib import Path
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 from src.normalization.normalizer import normalize
 from src.utils.seed import SEED_DEFAULT, set_global_seed

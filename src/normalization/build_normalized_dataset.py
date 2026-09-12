@@ -29,7 +29,7 @@ def process_split(split_name: str) -> None:
     """Đọc 1 split (train/validation/test), chuẩn hóa, ghi ra file mới."""
     input_path = INPUT_DIR / f"{split_name}.jsonl"
     if not input_path.exists():
-        print(f"⚠ Không tìm thấy {input_path}, bỏ qua.")
+        print(f"Khong tim thay {input_path}, bo qua.")
         return
 
     output_path = OUTPUT_DIR / f"{split_name}.jsonl"
@@ -64,14 +64,14 @@ def process_split(split_name: str) -> None:
                 print(f"  ... {count:,} dòng ({speed:.0f} dòng/s)")
 
     elapsed = time.time() - start_time
-    print(f"  ✓ Hoàn thành {split_name}: {count:,} dòng trong {elapsed:.1f}s")
+    print(f"  Hoan thanh {split_name}: {count:,} dong trong {elapsed:.1f}s")
 
 
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
-    print("TẠO DATASET CHUẨN HÓA TỪ DỮ LIỆU BIẾN THỂ")
+    print("TAO DATASET CHUAN HOA TU DU LIEU BIEN THE")
     print(f"Input dir:  {INPUT_DIR}")
     print(f"Output dir: {OUTPUT_DIR}")
     print("=" * 60)
@@ -80,8 +80,8 @@ def main():
         process_split(split)
 
     print(f"\n{'='*60}")
-    print("✓ Hoàn thành tất cả!")
-    print(f"Dữ liệu chuẩn hóa nằm ở: {OUTPUT_DIR}")
+    print("Hoan thanh tat ca!")
+    print(f"Du lieu chuan hoa nam o: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":

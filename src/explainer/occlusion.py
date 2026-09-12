@@ -24,8 +24,13 @@ from __future__ import annotations
 
 import re
 
-import torch
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+try:
+    import torch
+    from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+except ImportError:
+    torch = None
+    AutoModelForSeq2SeqLM = None
+    AutoTokenizer = None
 
 PROMPT_PREFIX = "vihsd: "
 WORD_RE = re.compile(r"\S+")
@@ -40,6 +45,8 @@ class OcclusionScorer:
 
     def __init__(self, model_name_or_path: str, device: str | None = None,
                  max_input_length: int = 256, batch_size: int = 64):
+        if torch is None or AutoTokenizer is None or AutoModelForSeq2SeqLM is None:
+            raise ImportError("OcclusionScorer can PyTorch va Transformers. Cai dat bang: pip install torch transformers")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name_or_path)
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,35 +59,20 @@ class OcclusionScorer:
     def _label_token_id(self, word: str) -> int:
         ids = self.tokenizer(word, add_special_tokens=False)["input_ids"]
         if len(ids) != 1:
-            raise ValueError(f"Nhãn {word!r} không map về đúng 1 token (tokenizer trả {ids}) — "
-                              "kiểm tra lại checkpoint/tokenizer, xem ghi chú ở src/classifier/data.py")
+            raise ValueError(f"Nhan {word!r} khong map ve dung 1 token (tokenizer tra {ids}) - "
+                              "kiem tra lai checkpoint/tokenizer.")
         return ids[0]
 
     def score_batch(self, texts: list[str]) -> list[float]:
-        """Logit margin (hate_logit - clean_logit) cho từng câu trong batch.
-
-        Dùng margin thay vì P(hate) softmax vì model tự tin cực đoan (margin
-        quan sát thực tế ~16-30) khiến xác suất bão hòa về đúng 1.0/0.0 trong
-        float32 — xem docstring đầu file.
-
-        Tự cắt thành chunk `batch_size` để câu dài (occlusion sinh N+1 câu con)
-        không làm tràn bộ nhớ GPU.
-        """
+        """Logit margin (hate_logit - clean_logit) cho tung cau trong batch."""
         scores: list[float] = []
         for start in range(0, len(texts), self.batch_size):
             scores.extend(self._score_chunk(texts[start:start + self.batch_size]))
         return scores
 
-    @torch.no_grad()
     def _score_chunk(self, texts: list[str]) -> list[float]:
-        # BẮT BUỘC hạ chữ thường: từ điển sentencepiece của ViHateT5 KHÔNG có ký
-        # tự hoa nào — mọi chữ hoa bị map thành <unk>, nên câu viết HOA biến
-        # thành chuỗi rỗng nghĩa và model luôn trả về cùng một kết quả mặc định
-        # (đo được: "ĐỊT MẸ MÀY" -> margin -2,04 = CLEAN; hạ thường -> +15,14 =
-        # HATE). Chữ hoa vốn mang zero thông tin tới model, nên hạ thường không
-        # mất gì mà cứu lại phần tín hiệu đang bị vứt (~10% token trên dữ liệu
-        # thật). Chỉ hạ ở đây — text hiển thị cho người đọc vẫn giữ nguyên dạng.
-        inputs = [PROMPT_PREFIX + t.lower() for t in texts]
+        with torch.no_grad():
+            inputs = [PROMPT_PREFIX + t.lower() for t in texts]
         enc = self.tokenizer(
             inputs, return_tensors="pt", padding=True, truncation=True,
             max_length=self.max_input_length,

@@ -12,7 +12,7 @@ model cần học chịu đựng).
 Chạy:
     python -m src.dataset_builder.build_normalized
 
-⚠️ CẢNH BÁO TÁI LẬP — ĐỌC TRƯỚC KHI CHẠY ĐÈ ⚠️
+LƯU Ý TÁI LẬP - ĐỌC KỸ TRƯỚC KHI CHẠY GHI ĐÈ:
 ------------------------------------------------
 File `data/processed/normalized/` hiện có trong repo được sinh ra ngày
 2026-09-04 bằng một phiên bản normalizer RỘNG TAY HƠN bản đang có trong

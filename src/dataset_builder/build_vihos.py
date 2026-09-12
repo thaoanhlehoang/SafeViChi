@@ -21,8 +21,15 @@ import argparse
 import ast
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 SPLITS = ("train", "validation", "test")
 WORD_RE = re.compile(r"\S+")

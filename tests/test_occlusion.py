@@ -1,4 +1,4 @@
-from src.explainability.occlusion import (
+from src.explainer.occlusion import (
     normalize_importance, occlude_words, split_words, top_k_spans,
 )
 

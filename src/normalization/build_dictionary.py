@@ -287,7 +287,7 @@ def main():
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(dictionary, f, ensure_ascii=False, indent=2, sort_keys=True)
 
-    print(f"\n✓ Đã lưu từ điển ({len(dictionary)} entries) vào {OUTPUT_PATH}")
+    print(f"\nDa luu tu dien ({len(dictionary)} entries) vao {OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

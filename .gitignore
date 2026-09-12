@@ -10,6 +10,8 @@ env/
 .Python
 build/
 dist/
+.pytest_cache/
+.pytest_tmp/
 
 # ==== Jupyter ====
 .ipynb_checkpoints/
