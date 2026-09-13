@@ -38,7 +38,6 @@ models/*
 # ==== Node / web demo ====
 node_modules/
 demo/dist/
-package-lock.json
 
 # ==== Biến môi trường & secrets ====
 .env
