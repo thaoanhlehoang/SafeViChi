@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SafeViChi design QA comparison</title>
+  <style>
+    :root { --scale: .53; --source-width: 1440px; --source-height: 1024px; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 12px 18px 18px;
+      color: #17221f;
+      background: #e9eeec;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+    .qa-board { display: grid; gap: 12px; justify-content: center; }
+    .qa-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: calc(var(--source-width) * var(--scale));
+      color: #53645e;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .qa-label span { color: #80908a; font-weight: 500; }
+    .scaled-frame {
+      position: relative;
+      width: calc(var(--source-width) * var(--scale));
+      height: calc(var(--source-height) * var(--scale));
+      overflow: hidden;
+      border: 1px solid rgba(49, 95, 80, .16);
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(31, 46, 40, .08);
+    }
+    .scaled-frame > img,
+    .scaled-frame > iframe {
+      position: absolute;
+      inset: 0;
+      width: var(--source-width);
+      height: var(--source-height);
+      transform: scale(var(--scale));
+      transform-origin: top left;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="qa-board">
+    <div class="qa-label">Source visual truth <span>Option 1 · 1440 × 1024</span></div>
+    <div class="scaled-frame">
+      <img src="./reference-option-1.png" alt="Selected option 1 design reference" />
+    </div>
+    <div class="qa-label">Implementation <span>Automatic harmful-content warning · 1440 × 1024</span></div>
+    <div class="scaled-frame">
+      <iframe src="../?qa=1&amp;state=warning" title="SafeViChi implemented demo"></iframe>
+    </div>
+  </main>
+</body>
+</html>
