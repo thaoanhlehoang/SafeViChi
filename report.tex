@@ -1,0 +1,351 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage[T5]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{enumitem}
+
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2cm}
+\doublespacing % Tăng khoảng cách dòng để dễ đọc và tăng số trang
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    
+    {\LARGE \textbf{TÀI LIỆU DỰ ÁN}\par}
+    \vspace{1.5cm}
+    
+    {\Large \textbf{Hệ thống phát hiện nội dung độc hại tiếng Việt,\\ chống né bộ lọc, xử lý cục bộ trên thiết bị}\par}
+    
+    \vspace{3cm}
+    {\large \textbf{Dự án: SafeViChi}\par}
+    \vspace{1.5cm}
+    
+    \begin{center}
+        \begin{tabular}{l l}
+            \textbf{Thành viên nhóm:} & Lê Hoàng Thảo Anh \\[0.2cm]
+                                      & Đinh Văn Trường \\[0.2cm]
+                                      & Nguyễn Minh Nhật \\
+        \end{tabular}
+    \end{center}
+    
+    \vspace{2cm}
+    {\normalsize \textbf{Hà Nội, 2026}\par}
+    
+    \vfill
+\end{titlepage}
+
+\newpage
+\tableofcontents
+
+\newpage
+\section*{Giải thích thuật ngữ}
+\addcontentsline{toc}{section}{Giải thích thuật ngữ}
+\begin{itemize}
+    \item \textbf{On-device}: Thuật ngữ chỉ việc thực thi các tác vụ máy tính (như suy luận mô hình AI) trực tiếp trên thiết bị đầu cuối của người dùng thay vì gửi dữ liệu lên máy chủ đám mây.
+    \item \textbf{Hate Speech}: Ngôn từ thù ghét, các phát ngôn mang tính xúc phạm, công kích cá nhân hoặc một nhóm người trên không gian mạng.
+    \item \textbf{Teencode}: Ngôn ngữ mạng, từ lóng thường được giới trẻ sử dụng trên internet bằng cách thay thế các chữ cái chuẩn bằng ký tự, con số hoặc chữ cái khác.
+    \item \textbf{Homoglyph}: Các ký tự có hình dáng tương đồng hoặc giống hệt nhau nhưng thuộc các bảng mã Unicode khác nhau (ví dụ: ký tự 'a' trong bảng chữ cái Latin và chữ 'a' trong bảng chữ cái Cyrillic).
+    \item \textbf{Rule-based Normalizer}: Bộ chuẩn hóa văn bản hoạt động dựa trên các quy tắc (luật) được lập trình sẵn bằng các cấu trúc điều kiện logic nhằm làm sạch dữ liệu đầu vào.
+    \item \textbf{Adversarial Training}: Phương pháp huấn luyện đối kháng, giúp mô hình học máy tăng cường sự bền bỉ bằng cách cho mô hình học trên cả các dữ liệu đã bị cố tình làm nhiễu hoặc biến dạng.
+    \item \textbf{FGM (Fast Gradient Method)}: Một thuật toán tạo nhiễu đối kháng bằng cách tính toán và sử dụng độ dốc (gradient) của hàm mất mát.
+    \item \textbf{Occlusion}: Phương pháp che khuất một phần dữ liệu đầu vào để đánh giá mức độ quan trọng của phần dữ liệu đó đối với kết quả dự đoán của hệ thống AI.
+    \item \textbf{Logit Margin}: Độ chênh lệch giữa giá trị dự đoán thô (chưa qua hàm kích hoạt softmax hay sigmoid) của hai nhãn phân loại khác nhau, dùng để đo mức độ tự tin của mô hình.
+    \item \textbf{ONNX Runtime Web}: Nền tảng cho phép thực thi mô hình học máy trực tiếp trên trình duyệt web thông qua công nghệ WebAssembly mà không cần cài đặt thêm phần mềm.
+    \item \textbf{Tokenizer}: Bộ tách từ, có nhiệm vụ chuyển đổi văn bản thô thành các chuỗi ký hiệu (token) rời rạc mà mô hình ngôn ngữ có thể hiểu và xử lý được.
+\end{itemize}
+
+\newpage
+\section{Động lực}
+\subsection{Bối cảnh phát triển của mạng xã hội}
+Trong thời đại kỹ thuật số hiện nay, mạng xã hội và các nền tảng trực tuyến đã trở thành một phần không thể thiếu trong cuộc sống hàng ngày. Tuy nhiên, sự phát triển này cũng kéo theo một hệ lụy nghiêm trọng: sự gia tăng của các nội dung độc hại, ngôn từ thù ghét, bắt nạt trên không gian mạng và các phát ngôn mang tính xúc phạm. Đặc biệt đối với tiếng Việt, do sự đa dạng về mặt ngữ nghĩa, từ vựng và cú pháp, việc kiểm duyệt các nội dung này trở thành một thách thức vô cùng to lớn đối với các nhà quản trị mạng và các kỹ sư phát triển phần mềm.
+
+\subsection{Bài toán Né bộ lọc}
+Khó khăn lớn nhất trong việc phát hiện nội dung độc hại tiếng Việt không nằm ở việc phân loại các câu chửi bới theo chuẩn ngữ pháp, mà nằm ở hành vi cố tình biến dạng chữ viết của người dùng nhằm lách luật hay né bộ lọc. Các hệ thống phát hiện nội dung độc hại truyền thống thường dựa trên danh sách từ khóa hoặc các mô hình học máy cơ bản, rất dễ bị qua mặt bởi những mánh khóe đơn giản của người dùng. Thậm chí, ngay cả các mô hình học sâu hiện đại như T5, BERT hay RoBERTa cũng gặp phải sự sụt giảm hiệu năng một cách nghiêm trọng khi đối mặt với các kỹ thuật né lọc này.
+
+Một số phương pháp né lọc phổ biến mà người dùng thường sử dụng bao gồm:
+\begin{itemize}
+    \item \textbf{Teencode và Viết tắt:} Chuyển đổi các chữ cái thành các ký tự số hoặc các chữ cái có hình dáng tương tự (ví dụ: "quá" thành "wá", "không" thành "ko", "k0").
+    \item \textbf{Bỏ dấu hoặc gõ sai dấu:} Lợi dụng tính chất từ đồng âm hoặc khả năng tự suy luận của người đọc (ví dụ: "chết" thành "chet", "chêt").
+    \item \textbf{Chèn ký tự phân cách:} Đưa các ký tự đặc biệt, dấu câu vào giữa các từ để đánh lừa tokenizer của mô hình (ví dụ: "n.g.u", "c\_h\_ó").
+    \item \textbf{Sử dụng Homoglyph:} Dùng các ký tự trong bảng mã Unicode khác nhưng có hình dáng giống chữ cái Latin (ví dụ: dùng ký tự Cyrillic 'a' thay vì 'a').
+    \item \textbf{Lỗi gõ phím cố ý:} Hoán đổi vị trí các chữ cái hoặc gõ lặp ký tự (ví dụ: "nguuuu").
+\end{itemize}
+
+Thực nghiệm đã chỉ ra rằng, khi áp dụng các kỹ thuật né lọc này, điểm F1 của mô hình ngôn ngữ ViHateT5 gốc bị tụt mạnh từ $0.768$ xuống chỉ còn $0.605$. Sự sụt giảm hiệu năng này là một lỗ hổng nghiêm trọng, cho thấy kỹ thuật né lọc thực sự là điểm yếu chí mạng của mô hình ngôn ngữ nếu không có cơ chế bảo vệ thích hợp. Nếu không khắc phục được điều này, hệ thống sẽ bỏ sót một lượng lớn các nội dung độc hại, gây ảnh hưởng xấu tới trải nghiệm người dùng và môi trường mạng.
+
+\subsection{Giải pháp đề xuất: SafeViChi}
+Nhận thức được những thách thức trên, dự án \textbf{SafeViChi} ra đời với mục tiêu xây dựng một hệ thống phòng thủ trước các kỹ thuật né lọc trong tiếng Việt. SafeViChi kết hợp giữa phương pháp xử lý văn bản truyền thống (Rule-based Normalizer) và cơ chế học sâu tiên tiến (Adversarial Training) để không chỉ khôi phục hiệu năng phát hiện mà còn đảm bảo mô hình hoạt động bền bỉ trước mọi loại văn bản nhiễu. Điểm đột phá của dự án là khả năng vận hành hoàn toàn cục bộ trên thiết bị người dùng, giải quyết triệt để bài toán bảo mật và quyền riêng tư dữ liệu.
+
+\newpage
+\section{Ràng buộc dự án}
+Việc xây dựng một hệ thống AI thực tế không chỉ dừng lại ở độ chính xác trên các bộ dữ liệu chuẩn, mà còn phải tuân thủ nghiêm ngặt các giới hạn về hạ tầng, tài nguyên và luật lệ về bảo mật. SafeViChi được thiết kế với những ràng buộc cốt lõi sau:
+
+\subsection{Xử lý hoàn toàn cục bộ trên thiết bị}
+Quyền riêng tư của người dùng là yếu tố không thể thỏa hiệp. Mọi tin nhắn, bình luận và nội dung văn bản của người dùng đều chứa đựng các thông tin nhạy cảm. Do đó, một ràng buộc tiên quyết của SafeViChi là hệ thống tuyệt đối không được gửi dữ liệu văn bản lên bất kỳ máy chủ đám mây nào. Toàn bộ chu trình kiểm duyệt phải diễn ra ngay tại phía thiết bị của người dùng (trong trình duyệt, trên ứng dụng di động hoặc máy tính cá nhân).
+Hệ quả của ràng buộc này bao gồm:
+\begin{itemize}
+    \item Không thể sử dụng các API của các mô hình ngôn ngữ lớn như GPT-4 hay Claude, bởi chúng yêu cầu truyền tải dữ liệu qua mạng internet.
+    \item Ngăn chặn hoàn toàn rủi ro rò rỉ dữ liệu và các cuộc tấn công đánh cắp thông tin trên đường truyền.
+\end{itemize}
+
+\subsection{Giới hạn về tài nguyên phần cứng}
+Chạy mô hình AI ngay trên thiết bị người dùng đồng nghĩa với việc đối mặt với sự hạn chế về tài nguyên phần cứng. Thiết bị người dùng có thể là những chiếc điện thoại cũ với dung lượng RAM thấp hoặc trình duyệt web phải chia sẻ tài nguyên cho nhiều thẻ khác nhau.
+\begin{itemize}
+    \item \textbf{Dung lượng mô hình:} Mô hình AI phải được lượng hóa và nén ở mức tối đa để giảm thời gian tải xuống qua mạng.
+    \item \textbf{Độ trễ suy luận:} Thời gian xử lý từ lúc nhận văn bản đến lúc đưa ra kết quả phải được tối ưu ở mức mili-giây, đảm bảo người dùng có trải nghiệm mượt mà, không gặp hiện tượng đóng băng giao diện.
+    \item \textbf{Tiêu thụ bộ nhớ:} Kiểm soát chặt chẽ việc rò rỉ bộ nhớ và dung lượng RAM được cấp phát.
+\end{itemize}
+
+\subsection{Công nghệ triển khai Web đa nền tảng}
+Để hệ thống có khả năng tương thích cao nhất và tiếp cận được đông đảo người dùng, công nghệ WebAssembly và ONNX Runtime Web đã được chọn làm nền tảng triển khai. Việc biên dịch mô hình PyTorch sang định dạng ONNX cho phép thực thi mạng neural trực tiếp bằng bộ mã hóa V8 của trình duyệt, tận dụng khả năng tăng tốc phần cứng ngay trên trình duyệt mà không cần cài đặt phần mềm.
+
+\subsection{Yêu cầu về tính giải thích được}
+Một hệ thống tự động xóa bài hoặc khóa tài khoản chỉ dựa trên một con số dự đoán xác suất sẽ gây ra sự phản đối từ người dùng. Sự minh bạch trong kiểm duyệt đòi hỏi hệ thống phải giải thích được nguyên nhân. Module giải thích trở thành một yêu cầu bắt buộc, có nhiệm vụ khoanh vùng chính xác các từ hoặc cụm từ vi phạm, giúp đội ngũ điều hành viên có cái nhìn khách quan và người dùng hiểu rõ tại sao nội dung của họ bị cảnh báo.
+
+\newpage
+\section{Phương pháp xử lý}
+Để giải quyết bài toán chống né lọc và thỏa mãn toàn bộ các ràng buộc khắt khe nêu trên, nhóm nghiên cứu đã thiết kế SafeViChi theo một luồng xử lý khép kín gồm 4 bước chuyên sâu.
+
+\subsection{Bước 1: Chuẩn bị dữ liệu và Sinh biến thể phi chuẩn}
+Một mô hình chỉ thông minh bằng dữ liệu mà nó được học. Để mô hình nhận diện được các biến dạng do người dùng tạo ra, ta phải chủ động tạo ra những biến dạng tương tự trong quá trình huấn luyện.
+Dựa trên kho ngữ liệu 75.000 mẫu thu thập từ ViHSD, VOZ-HSD và ViHOS, chúng tôi đã xây dựng "Trình sinh biến thể":
+\begin{enumerate}
+    \item \textbf{Lỗi đánh máy:} Hoán đổi các phím liền kề trên bàn phím.
+    \item \textbf{Chèn khoảng trắng:} Ví dụ: "đ ộ c h ạ i".
+    \item \textbf{Chèn ký tự đặc biệt:} Ví dụ: "đ.ộ.c-h.ạ.i".
+    \item \textbf{Lặp ký tự:} Ví dụ: "độcccc hạiii".
+    \item \textbf{Teencode:} Thay thế bằng các ký hiệu phổ biến của giới trẻ.
+    \item \textbf{Bỏ dấu thanh:} Bỏ các dấu hỏi, ngã, nặng, huyền, sắc.
+    \item \textbf{Bỏ toàn bộ dấu:} Chuyển về tiếng Việt không dấu.
+    \item \textbf{Chữ hoa chữ thường ngẫu nhiên:} Viết hoa xen kẽ.
+    \item \textbf{Homoglyph:} Dùng ký tự thuộc bảng mã khác nhưng nhìn giống ký tự Latin.
+    \item \textbf{Viết dính liền:} Xóa mọi khoảng trắng.
+    \item \textbf{Đảo ngữ:} Thay đổi thứ tự từ trong câu.
+    \item \textbf{Trộn lẫn các hiện tượng:} Kết hợp 2 hoặc nhiều hiện tượng cùng lúc để tăng độ khó.
+\end{enumerate}
+
+\subsection{Bước 2: Lớp chuẩn hóa theo luật (Rule-based Normalizer)}
+Để giảm tải áp lực cho mô hình học sâu và tăng tốc độ xử lý On-device, SafeViChi sử dụng một module Rule-based Normalizer gồm 5 tầng tuần tự:
+\begin{itemize}
+    \item \textbf{Tầng 1 - Chuẩn hóa Unicode NFC:} Tiếng Việt có hai chuẩn gõ là dựng sẵn và tổ hợp. Tầng này thống nhất toàn bộ văn bản về chuẩn NFC để tránh lỗi sai lệch dấu, gây nhầm lẫn cho Tokenizer.
+    \item \textbf{Tầng 2 - Xử lý Homoglyph:} Tầng này đối chiếu với một bảng tra cứu khổng lồ để ánh xạ các ký tự lạ, tương đồng hình học về ký tự Latin gốc.
+    \item \textbf{Tầng 3 - Xóa phân cách vô nghĩa:} Dùng biểu thức chính quy để xóa các dấu chấm, phẩy, gạch nối bị nhồi nhét bất thường vào giữa các ký tự của một từ.
+    \item \textbf{Tầng 4 - Gộp ký tự lặp:} Nén các chuỗi ký tự giống nhau liên tiếp (ví dụ: "aaa" thành "a") để khôi phục cấu trúc từ.
+    \item \textbf{Tầng 5 - Tra từ điển Teencode:} Sử dụng từ điển tích hợp để ánh xạ các từ viết tắt phổ biến về dạng chuẩn, giúp mô hình bắt được ngữ nghĩa chính xác.
+\end{itemize}
+
+\subsection{Bước 3: Phân loại và Huấn luyện đối kháng}
+Sau khi qua lớp chuẩn hóa, văn bản được đưa vào mô hình học sâu. \textbf{ViHateT5} – một phiên bản thu nhỏ của mô hình ngôn ngữ T5 được tinh chỉnh riêng cho tiếng Việt. Quá trình huấn luyện sử dụng một kỹ thuật mang tính bước ngoặt: Học đối kháng với thuật toán FGM.
+
+Cụ thể, tập dữ liệu huấn luyện được pha trộn theo tỷ lệ chiến lược:
+\begin{itemize}
+    \item 60\% câu biến thể đã qua lớp chuẩn hóa.
+    \item 30\% câu gốc sạch.
+    \item 10\% câu điểm mù – những câu được thiết kế đặc biệt để vượt mặt hoàn toàn 5 tầng của lớp chuẩn hóa.
+\end{itemize}
+
+Khi áp dụng FGM, hệ thống tự động tính toán gradient của hàm mất mát và tiêm một lượng nhiễu nhỏ, có phương chiều làm tăng hàm mất mát nhiều nhất, trực tiếp vào không gian vector của từ vựng. Kỹ thuật này ép mô hình ngôn ngữ phải rời bỏ sự phụ thuộc quá mức vào các đặc trưng bề mặt và buộc nó phải phân tích ngữ nghĩa sâu. Đây chính là chìa khóa để mô hình có thể phát hiện các nội dung độc hại dù chúng bị biến dạng một cách cực kỳ tinh vi.
+
+\subsection{Bước 4: Giải thích và Khoanh vùng vi phạm}
+Để giải quyết ràng buộc về tính giải thích, SafeViChi xây dựng một module khoanh vùng vi phạm. Thay vì dựa vào cơ chế sự chú ý nội tại bên trong T5 vốn thường cho ra kết quả không ổn định và khó diễn giải, dự án sử dụng thuật toán \textbf{Occlusion}.
+
+Quy trình hoạt động của thuật toán Occlusion:
+\begin{enumerate}
+    \item Tách văn bản thành danh sách các từ.
+    \item Trượt một cửa sổ dọc theo câu văn. Tại mỗi vị trí, các từ trong cửa sổ bị thay thế bằng một từ khóa mặt nạ.
+    \item Đưa câu văn bị che khuất một phần này qua mô hình để tính toán \textbf{Logit Margin} (chênh lệch giữa dự đoán nhãn độc hại và nhãn sạch).
+    \item Nếu việc che đi cụm từ đó làm giảm mạnh giá trị Logit Margin, điều đó khẳng định cụm từ đó chính là nguyên nhân trực tiếp làm tăng mức độ độc hại của câu văn.
+    \item Thuật toán tổng hợp các mức giảm này và làm nổi bật các cụm từ có độ rủi ro cao nhất.
+\end{enumerate}
+Mặc dù đòi hỏi mô hình phải tính toán lặp lại nhiều lần, thuật toán Occlusion mang lại độ chính xác cực cao trong việc khoanh vùng từ ngữ vi phạm, tạo nên sự minh bạch cho hệ thống.
+
+\newpage
+\section{Đánh giá và Kết quả}
+Các đánh giá thực nghiệm của dự án được thực hiện vô cùng cẩn trọng nhằm phản ánh đúng sức mạnh của mô hình trong điều kiện khác nhau.
+
+Thiết lập đánh giá được xây dựng trên một ma trận gồm 3 điều kiện song song cho mỗi dòng dữ liệu trong tập kiểm thử:
+\begin{itemize}
+    \item \textbf{C0 (Câu sạch):} Văn bản nguyên thủy chưa qua biến dạng. Dùng làm thước đo trần hiệu năng.
+    \item \textbf{C1 (Né lọc):} Văn bản đã bị biến dạng ngẫu nhiên bằng 12 hiện tượng phi chuẩn.
+    \item \textbf{C2 (Điểm mù):} Những biến thể đặc biệt có khả năng vượt mặt hoàn toàn module Rule-based Normalizer.
+\end{itemize}
+
+\subsection{Phân loại nội dung độc hại}
+Kết quả đánh giá bằng thang đo \textbf{F1-Score} cho lớp phân loại ngôn từ thù ghét trên tập kiểm thử (gồm 2.376 mẫu C0/C1 và 1.920 mẫu C2) được trình bày trong bảng sau:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|p{7cm}|c|c|c|}
+\hline
+\textbf{STT} & \textbf{Cấu hình Hệ thống} & \textbf{C0 (Sạch)} & \textbf{C1 (Né lọc)} & \textbf{C2 (Điểm mù)} \\ \hline
+1 & Lọc bằng danh sách từ khóa & 0.6551 & 0.5982 & 0.4564 \\ \hline
+2 & ViHateT5 gốc & 0.7683 & 0.6046 & 0.4627 \\ \hline
+3 & ViHateT5 gốc + Chuẩn hóa & 0.7497 & 0.7218 & 0.4720 \\ \hline
+4 & ViHateT5 đối kháng (không có chuẩn hóa) & 0.8523 & 0.7441 & 0.6657 \\ \hline
+\textbf{5} & \textbf{SafeViChi (Chuẩn hóa + Đối kháng)} & \textbf{0.8552} & \textbf{0.8266} & \textbf{0.6657} \\ \hline
+\end{tabular}
+\caption{Bảng F1-Score chi tiết đo lường độ chính xác phân loại nội dung độc hại.}
+\end{table}
+
+\textbf{Phân tích chuyên sâu và Kiểm định thống kê:}
+\begin{itemize}
+    \item \textbf{Sự thiếu hụt của mô hình gốc:} Khi chuyển từ C0 sang C1, ViHateT5 gốc mất đi $0.1638$ điểm F1. Điều này chứng minh rằng việc triển khai một mô hình ngôn ngữ thông thường ra môi trường thực tế là không đủ để chặn đứng các kỹ thuật lách luật cơ bản.
+    \item \textbf{Hiệu quả của Rule-based Normalizer:} Lớp chuẩn hóa (hàng 3) đã chứng tỏ sự hiệu quả trong việc phục hồi hiệu năng, cộng thêm $+0.1172$ điểm F1 trên điều kiện C1 so với mô hình gốc. Hơn nữa, nó không gây tổn hại đáng kể đối với câu gốc.
+    \item \textbf{Bước nhảy vọt nhờ Huấn luyện Đối kháng:} Kỹ thuật FGM mang lại kết quả tốt trong việc đối phó với điều kiện điểm mù (C2). Ở điều kiện mà lớp chuẩn hóa bị vô hiệu hóa hoàn toàn, điểm F1 tăng vọt từ $0.4720$ lên $0.6657$. Mô hình đã học được  nét nghĩa tiềm ẩn của từ.
+    \item \textbf{Tổng hợp:} Cấu hình đầy đủ mang lại mức F1 cao nhất trên mọi điều kiện (hàng 5). Hai module này chứng minh rằng chúng không hề dư thừa mà bổ trợ cho nhau một cách hoàn hảo.
+\end{itemize}
+
+\subsection{Khoanh vùng giải thích}
+Mục tiêu của module giải thích là xác định được chính xác vị trí chứa nội dung gây độc hại trong câu. Để đánh giá điều này, hệ thống sử dụng tập dữ liệu kiểm thử được các chuyên gia gán nhãn thủ công vị trí của từ ngữ vi phạm.
+
+Kết quả định lượng của module Occlusion:
+\begin{itemize}
+    \item \textbf{Micro F1:} Đạt $0.5455$ (trong đó độ chính xác là $0.4478$ và độ phủ là $0.6977$).
+    \item \textbf{Macro F1:} Đạt $0.5766$.
+    \item \textbf{Tỷ lệ trượt hoàn toàn:} Chỉ $1.9\%$. Nghĩa là trong $98.1\%$ các trường hợp, hệ thống luôn chỉ ra trúng ít nhất một phần của cụm từ vi phạm, hiếm khi chệch hoàn toàn sang một khu vực vô tội.
+\end{itemize}
+Vùng được thuật toán khoanh trung bình rộng hơn $1.56$ lần so với vùng do con người gán nhãn. Đây là đặc thù của phương pháp che cửa sổ trượt: các từ đệm nằm liền kề từ độc hại cũng chịu ảnh hưởng sụt giảm điểm khi che cùng cửa sổ, dẫn đến việc báo cáo có phần dư thừa nhưng đảm bảo không bỏ sót.
+
+\newpage
+\section{Hạn chế}
+
+\subsection{Giới hạn Tokenizer với Ký tự In hoa}
+Một trong những nhược điểm lớn nhất đến từ việc sử dụng Tokenizer của mô hình trước đó. Từ điển của công cụ này chỉ chứa các từ viết thường. Khi người dùng cố tình viết in hoa toàn bộ một câu, mô hình lập tức bị mù chữ và trả về các ký hiệu không xác định.
+
+\textbf{Cách xử lý tạm thời:} Pipeline của SafeViChi bắt buộc phải hạ chữ thường toàn bộ chuỗi văn bản đầu vào trước khi tiến hành xử lý. Giải pháp này giúp khôi phục ngữ nghĩa nhưng lại vô tình xóa bỏ một đặc trưng rất quan trọng: việc in hoa thường là biểu hiện của mức độ cảm xúc mạnh.
+
+\subsection{Vấn đề Khuếch đại trong thuật toán Occlusion}
+Như đã phân tích ở phần kết quả, việc sử dụng kích thước cửa sổ gồm 2 từ trong thuật toán che khuất gây ra hiện tượng khuếch đại. Khi một từ thô tục đứng cạnh một từ đệm vô hại, việc che phủ cả hai từ cùng lúc khiến điểm dự đoán suy giảm mạnh. Thuật toán do đó kết luận cả từ đệm cũng mang mức độ rủi ro tương đương từ thô tục và tiến hành tô sáng cả cụm.
+Điều này dẫn đến độ chính xác cục bộ bị thấp. Giao diện hiển thị sẽ bôi đỏ một khoảng lớn hơn mức cần thiết, gây bối rối nhẹ cho người dùng khi thấy những từ ngữ bình thường cũng bị đánh dấu cảnh báo.
+
+\subsection{Tiêu tốn năng lực tính toán cho tính năng Giải thích}
+Trong môi trường thực thi WebAssembly, sức mạnh tính toán của trình duyệt bị giới hạn nghiêm trọng. Thuật toán Occlusion đòi hỏi phải thực hiện suy luận mô hình nhiều lần tương ứng với số lượng từ trong câu. Đối với một câu dài 50 từ, mô hình sẽ phải chạy suy luận 50 lần. Quá trình này có thể gây ra độ trễ lên tới vài giây, phá vỡ trải nghiệm tương tác trực tiếp.
+Dù tính năng này vô cùng cần thiết cho các tác vụ kiểm duyệt ngầm, nhưng nó không phù hợp để kích hoạt tự động theo từng nhịp nhấn phím trên các thiết bị di động cũ, đòi hỏi phải có cơ chế đánh giá trễ hoặc chỉ kích hoạt khi có yêu cầu giải thích từ phía người dùng.
+
+\newpage
+\section{Hướng dẫn tái thiết lập lại pipeline}
+
+\subsection{Khởi tạo môi trường ảo}
+\begin{lstlisting}[language=bash]
+# Tao moi truong ao Python
+python -m venv .venv
+
+# Kich hoat moi truong ao (tren Linux/macOS)
+source .venv/bin/activate
+# Hoac tren Windows
+# .venv\Scripts\activate
+
+# Cai dat danh sach cac thu vien yeu cau
+pip install -r requirements-lock.txt
+\end{lstlisting}
+
+
+\subsection{Xây dựng và Tiền xử lý Dữ liệu}
+Hệ thống cho phép biên dịch lại toàn bộ dữ liệu hoặc chạy độc lập từng công đoạn. Để chạy toàn bộ quy trình sinh dữ liệu:
+\begin{lstlisting}[language=bash]
+bash scripts/build_step3_data.sh
+\end{lstlisting}
+Nếu muốn chạy thủ công từng khối lệnh:
+\begin{lstlisting}[language=bash]
+# Khau 1: Ap dung chuan hoa 5 tang
+python -m src.dataset_builder.build_normalized --seed 42 --force
+
+# Khau 2: Pha tron du lieu cho tap huan luyen
+python -m src.dataset_builder.build_mixed \
+    --out_dir data/data_final \
+    --splits train validation \
+    --clean_ratio 0.30 \
+    --blind_ratio 0.10 \
+    --seed 42
+
+# Khau 3: Dung ma tran 3 dieu kien (C0, C1, C2) de danh gia
+python -m src.dataset_builder.build_eval_matrix \
+    --source_path data/processed/vietnamese_nonstandard_v1_2/test.jsonl \
+    --out_dir data/eval_baseline/test \
+    --seed 42
+\end{lstlisting}
+
+\subsection{Tiến hành Huấn luyện Mô hình}
+Quá trình huấn luyện sử dụng FGM yêu cầu phần cứng mạnh. Kích thước lô dữ liệu và tốc độ học cần được tuân thủ nghiêm ngặt để tránh phá vỡ các trọng số đã được đào tạo trước đó.
+\begin{lstlisting}[language=bash]
+python -m src.classifier.train \
+    --data_path   data/data_final/train.jsonl \
+    --val_path    data/data_final/validation_mixed.jsonl \
+    --test_path   data/data_final/test.jsonl \
+    --output_dir  models/vihatet5-v2 \
+    --seed 42 \
+    --learning_rate 1e-5 \
+    --fgm_epsilon 0.3 \
+    --epochs 8 \
+    --early_stopping_patience 2 \
+    --per_device_train_batch_size 16 \
+    --fp16
+\end{lstlisting}
+
+\subsection{Đánh giá đo lường}
+Mã kịch bản đánh giá tự động sẽ tìm ra ngưỡng phân loại tối ưu trên tập xác thực và áp dụng vào tập kiểm thử nhằm tránh hiện tượng quá khớp.
+\begin{lstlisting}[language=bash]
+# Thuc thi danh gia toan bo 6 he thong
+bash scripts/run_step3_eval.sh models/vihatet5-v2-best
+
+# Tim nguong cat toi uu va co dinh cho diem
+python -m src.baselines.tune_threshold \
+    --val_scores  results/step3/val/scores.jsonl \
+    --test_scores results/step3/test/scores.jsonl \
+    --out_dir     results/step3/threshold \
+    --seed 42
+
+# Xay dung he thong bieu do
+python -m src.reporting.make_figures
+\end{lstlisting}
+
+\subsection{Khởi chạy Web Demo}
+Demo hoàn toàn không phụ thuộc vào máy chủ, được xử lý trực tiếp bởi trình duyệt, mang đến tốc độ phản hồi khá nhanh.
+\begin{lstlisting}[language=bash]
+cd demo
+# Dung Local HTTP Server
+python -m http.server 8000
+\end{lstlisting}
+Người dùng mở trình duyệt, truy cập vào đường dẫn máy chủ ảo. Quá trình tiền xử lý, phân tách từ và suy luận đều diễn ra ngay trên RAM máy tính người dùng.
+
+\end{document}
+
