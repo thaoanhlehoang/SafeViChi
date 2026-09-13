@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "version": "vihatet5-v2-fp32-ddc790f7-e6d43cee",
+  "totalBytes": 1089251120,
+  "assets": {
+    "encoder": {
+      "path": "encoder_model.onnx",
+      "bytes": 438588825,
+      "sha256": "ddc790f7c199d3cc89ab1523a1b6d9ef67f5f72b6706a4e1b17ee5918e20bfc0"
+    },
+    "decoder": {
+      "path": "decoder_model.onnx",
+      "bytes": 650662295,
+      "sha256": "e6d43ceee6d3c132b93a4c24eabdcc9b9e0bf95b1efa70b02d30ecfd575426ae"
+    }
+  }
+}
