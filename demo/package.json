@@ -1,0 +1,28 @@
+{
+  "name": "safevichi-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build && node scripts/verify-build.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "verify:model": "node scripts/verify-model.mjs",
+    "verify:model:remote": "node scripts/verify-model.mjs --remote"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@huggingface/transformers": "3.8.1",
+    "material-symbols": "0.47.2",
+    "onnxruntime-web": "1.22.0"
+  },
+  "devDependencies": {
+    "jsdom": "29.1.1",
+    "vite": "8.3.0",
+    "vitest": "5.0.0"
+  }
+}
