@@ -1,0 +1,47 @@
+SafeViChi - Browser pipeline terminal/console log
+Date: 2026-09-14
+URL: http://127.0.0.1:4173/
+Model: ONNX Runtime Web, 4 local threads
+Input: djt me mày
+
+Console output from the real browser run:
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:30:31.192Z","stage":"input_received","originalText":"djt me mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:30:31.193Z","stage":"normalizing","originalText":"djt me mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:30:31.195Z","stage":"classifying","normalizedText":"djt mẹ mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:30:31.288Z","stage":"explaining","normalizedText":"djt mẹ mày","label":"hate"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:30:31.500Z","stage":"complete","original":"djt me mày","normalized":"djt mẹ mày","words":["djt","mẹ","mày"],"label":"hate","confidence":1,"flaggedWords":[{"index":0,"word":"djt","score":0.65},{"index":1,"word":"mẹ","score":1},{"index":2,"word":"mày","score":0.43}]}
+
+Observed result:
+- Input: djt me mày
+- Normalized: djt mẹ mày
+- Classification: hate
+- Confidence: 1
+- Explanation spans: djt (0.65), mẹ (1.00), mày (0.43)
+
+Additional browser pipeline runs:
+
+Input: thằng cụ mày
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:07.729Z","stage":"input_received","originalText":"thằng cụ mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:07.729Z","stage":"normalizing","originalText":"thằng cụ mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:07.730Z","stage":"classifying","normalizedText":"thằng cụ mày"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:07.802Z","stage":"explaining","normalizedText":"thằng cụ mày","label":"hate"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:07.960Z","stage":"complete","original":"thằng cụ mày","normalized":"thằng cụ mày","words":["thằng","cụ","mày"],"label":"hate","confidence":1,"flaggedWords":[{"index":0,"word":"thằng","score":0.56},{"index":1,"word":"cụ","score":1},{"index":2,"word":"mày","score":0.47}]}
+
+Input: hãm l
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:11.648Z","stage":"input_received","originalText":"hãm l"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:11.648Z","stage":"normalizing","originalText":"hãm l"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:11.649Z","stage":"classifying","normalizedText":"hãm l"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:11.710Z","stage":"explaining","normalizedText":"hãm l","label":"hate"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:11.830Z","stage":"complete","original":"hãm l","normalized":"hãm l","words":["hãm","l"],"label":"hate","confidence":1,"flaggedWords":[{"index":0,"word":"hãm","score":0.72},{"index":1,"word":"l","score":1}]}
+
+Input: súc vật ngu
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:15.484Z","stage":"input_received","originalText":"súc vật ngu"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:15.484Z","stage":"normalizing","originalText":"súc vật ngu"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:15.484Z","stage":"classifying","normalizedText":"súc vật ngu"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:15.540Z","stage":"explaining","normalizedText":"súc vật ngu","label":"hate"}
+[SafeViChi][pipeline] {"timestamp":"2026-09-14T16:33:15.718Z","stage":"complete","original":"súc vật ngu","normalized":"súc vật ngu","words":["súc","vật","ngu"],"label":"hate","confidence":1,"flaggedWords":[{"index":0,"word":"súc","score":0.56},{"index":1,"word":"vật","score":1},{"index":2,"word":"ngu","score":0.76}]}
+
+Additional results:
+- thằng cụ mày -> hate, confidence 1.00; flagged: thằng 0.56, cụ 1.00, mày 0.47
+- hãm l -> hate, confidence 1.00; flagged: hãm 0.72, l 1.00
+- súc vật ngu -> hate, confidence 1.00; flagged: súc 0.56, vật 1.00, ngu 0.76
