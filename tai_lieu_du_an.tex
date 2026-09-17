@@ -1,0 +1,283 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\geometry{left=2.2cm,right=2.2cm,top=2.2cm,bottom=2.2cm}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    hypertexnames=false,
+    pdftitle={Tài liệu dự án SafeViChi},
+    pdfauthor={Nhóm phát triển SafeViChi}
+}
+
+\definecolor{safegreen}{RGB}{45,102,84}
+\definecolor{lightgreen}{RGB}{235,243,240}
+\definecolor{warningred}{RGB}{170,55,55}
+
+\titleformat{\section}{\Large\bfseries\color{safegreen}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{safegreen}}{\thesubsection.}{0.6em}{}
+\setlist[itemize]{noitemsep,topsep=4pt}
+\setlist[enumerate]{noitemsep,topsep=4pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lhead{Tài liệu dự án SafeViChi}
+\rhead{Hệ thống trò chuyện an toàn}
+\cfoot{\thepage}
+
+\newcommand{\imagewithcaption}[3]{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=#2\textwidth]{#1}
+        \caption{#3}
+    \end{figure}
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{18mm}
+    {\Large \textbf{TÀI LIỆU DỰ ÁN}}\\[10mm]
+    {\large HỆ THỐNG PHÁT HIỆN NỘI DUNG ĐỘC HẠI TIẾNG VIỆT}\\[25mm]
+
+    {\Huge\bfseries\color{safegreen}
+    SafeViChi\\[5mm]
+    \large Trò chuyện an toàn, xử lý cục bộ trên thiết bị\par}
+
+    \vspace{22mm}
+    \begin{tabular}{rl}
+        \textbf{Tên dự án:} & SafeViChi\\[2mm]
+        \textbf{Lĩnh vực:} & Trí tuệ nhân tạo, xử lý ngôn ngữ tự nhiên\\[2mm]
+        \textbf{Phạm vi:} & Phát hiện nội dung độc hại tiếng Việt trên thiết bị\\[2mm]
+        \textbf{Đơn vị thực hiện:} & Nhóm sinh viên Trường Đại học Công nghệ\\[2mm]
+        \textbf{Phiên bản tài liệu:} & 1.0
+    \end{tabular}
+
+    \vfill
+    {\large Hà Nội, 2026}
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Tổng quan dự án}
+
+SafeViChi là một hệ thống hỗ trợ trò chuyện có khả năng nhận biết nội dung độc hại bằng tiếng Việt. Hệ thống được thiết kế cho những tình huống người dùng muốn trao đổi tự nhiên nhưng vẫn cần một lớp bảo vệ trước các câu chửi, lời công kích hoặc nội dung gây hại. Điểm quan trọng của dự án là quá trình kiểm tra được thực hiện trực tiếp trong trình duyệt, vì vậy nội dung tin nhắn không cần rời khỏi thiết bị của người dùng.
+
+Trong thực tế, nội dung độc hại không phải lúc nào cũng xuất hiện dưới dạng từ ngữ rõ ràng. Người dùng có thể bỏ dấu, viết teencode, chèn dấu câu, kéo dài ký tự hoặc thay thế chữ bằng những ký tự có hình dạng tương tự. SafeViChi giải quyết vấn đề này bằng cách kết hợp ba lớp: chuẩn hóa văn bản, mô hình phân loại đã được huấn luyện đối kháng và bộ phận giải thích giúp chỉ ra vùng văn bản đáng chú ý.
+
+\subsection{Mục tiêu}
+
+Dự án hướng tới các mục tiêu sau:
+\begin{itemize}
+    \item Nhận biết nội dung độc hại tiếng Việt trong các cuộc trò chuyện.
+    \item Duy trì khả năng phát hiện khi văn bản bị biến dạng để né bộ lọc.
+    \item Cảnh báo người dùng trước khi gửi một tin nhắn có nguy cơ gây hại.
+    \item Chỉ ra những từ hoặc cụm từ khiến tin nhắn bị đánh giá là nguy hiểm.
+    \item Xử lý toàn bộ dữ liệu văn bản ngay trên thiết bị để bảo vệ quyền riêng tư.
+\end{itemize}
+
+\subsection{Phạm vi của hệ thống}
+
+Phiên bản hiện tại tập trung vào một giao diện trò chuyện trên trình duyệt. Người dùng có thể tạo tài khoản demo, đăng nhập, chọn một cuộc trò chuyện, nhập tin nhắn và gửi tin nhắn. Ở thời điểm người dùng chuẩn bị gửi, hệ thống sẽ kiểm tra nội dung. Với tin nhắn an toàn, tin nhắn được gửi như bình thường. Với tin nhắn có nguy cơ gây hại, hệ thống hiển thị cảnh báo và cho phép người dùng sửa hoặc vẫn tiếp tục gửi.
+
+\section{Đối tượng sử dụng và yêu cầu}
+
+\subsection{Đối tượng sử dụng}
+
+Đối tượng chính của SafeViChi là người dùng các ứng dụng trò chuyện bằng tiếng Việt. Hệ thống cũng có thể được dùng trong bản thử nghiệm của các nền tảng cộng đồng, diễn đàn hoặc công cụ giao tiếp nội bộ, nơi việc cảnh báo sớm giúp giảm xung đột mà không làm gián đoạn hoàn toàn quyền tự quyết của người gửi.
+
+\subsection{Yêu cầu chức năng}
+
+\begin{enumerate}
+    \item Người dùng có thể tạo hồ sơ demo với tên hiển thị, tên đăng nhập và mật khẩu.
+    \item Người dùng có thể đăng nhập và quay lại giao diện trò chuyện.
+    \item Người dùng có thể tìm kiếm và chọn một cuộc trò chuyện trong danh sách.
+    \item Người dùng có thể nhập và gửi tin nhắn văn bản.
+    \item Hệ thống phân loại tin nhắn trước khi gửi.
+    \item Hệ thống hiển thị cảnh báo nếu tin nhắn có nội dung độc hại.
+    \item Người dùng có thể chọn sửa tin nhắn hoặc xác nhận gửi.
+    \item Tin nhắn được xác định là an toàn sẽ được gửi và hiển thị thông báo xác nhận.
+\end{enumerate}
+
+\subsection{Yêu cầu phi chức năng}
+
+\begin{itemize}
+    \item \textbf{Riêng tư:} nội dung kiểm tra không được gửi lên máy chủ.
+    \item \textbf{Dễ sử dụng:} cảnh báo phải ngắn gọn, dễ hiểu và đưa ra lựa chọn rõ ràng.
+    \item \textbf{Phản hồi nhanh:} việc kiểm tra cần diễn ra đủ nhanh để không làm người dùng có cảm giác bị chặn khi trò chuyện.
+    \item \textbf{Khả năng chống né bộ lọc:} mô hình cần được kiểm tra với nhiều dạng viết không chuẩn.
+    \item \textbf{Tái lập:} các bước chuẩn bị dữ liệu và đánh giá được quản lý bằng các thiết lập hạt giống cố định.
+\end{itemize}
+
+\section{Thiết kế và kiến trúc hệ thống}
+
+\subsection{Kiến trúc tổng thể}
+
+SafeViChi gồm hai phần có quan hệ chặt chẽ. Phần thứ nhất là giao diện trò chuyện, chịu trách nhiệm hiển thị cuộc hội thoại và tiếp nhận thao tác của người dùng. Phần thứ hai là pipeline nhận diện, được tải vào trình duyệt dưới dạng mô hình ONNX và các tệp JavaScript hỗ trợ chuẩn hóa, mã hóa và suy luận.
+
+Luồng xử lý một tin nhắn được thực hiện theo thứ tự:
+\begin{enumerate}
+    \item Người dùng nhập văn bản vào ô soạn tin.
+    \item Hệ thống giữ lại nội dung hiển thị ban đầu để dùng khi cần gửi.
+    \item Bộ chuẩn hóa xử lý một bản sao của văn bản nhằm giảm tác động của các cách viết biến dạng.
+    \item Mô hình phân loại tính điểm cho hai khả năng: nội dung độc hại và nội dung an toàn.
+    \item Nếu cần, bộ phận giải thích phân tích thêm để xác định vùng từ ngữ có ảnh hưởng lớn đến cảnh báo.
+    \item Giao diện hiển thị kết quả và chờ lựa chọn của người dùng.
+\end{enumerate}
+
+\subsection{Các lớp xử lý nội dung}
+
+\begin{table}[H]
+    \centering
+    \caption{Các lớp chính trong pipeline nhận diện}
+    \begin{tabularx}{0.95\textwidth}{>{\bfseries}p{3.1cm} X}
+        \toprule
+        Lớp xử lý & Vai trò \\
+        \midrule
+        Chuẩn bị dữ liệu & Tạo các mẫu văn bản gốc và các biến thể phi chuẩn để huấn luyện, kiểm thử và đánh giá. \\
+        Chuẩn hóa & Đưa các cách viết khác nhau về dạng dễ xử lý hơn thông qua chuẩn Unicode, xử lý ký tự đồng dạng, ký tự phân cách, ký tự lặp và từ điển teencode. \\
+        Phân loại & Dùng mô hình ViHateT5 được tinh chỉnh để dự đoán tin nhắn thuộc nhóm độc hại hay an toàn. \\
+        Giải thích & Dùng phương pháp che từng cụm từ để tìm vùng khiến điểm độc hại giảm đáng kể. \\
+        Giao diện & Hiển thị kết quả, cảnh báo và các lựa chọn gửi hoặc chỉnh sửa tin nhắn. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Công nghệ sử dụng}
+
+Phần huấn luyện và đánh giá được viết bằng Python. Mô hình phân loại dựa trên ViHateT5 và được tinh chỉnh bằng dữ liệu có nhiều dạng biến thể. FGM được sử dụng trong quá trình huấn luyện đối kháng để giúp mô hình ổn định hơn trước những thay đổi nhỏ trong biểu diễn đầu vào. Khi triển khai, mô hình được chuyển sang ONNX để chạy bằng ONNX Runtime Web trong trình duyệt.
+
+Phần giao diện sử dụng HTML, CSS và JavaScript. Các tệp trong thư mục `demo` đảm nhiệm việc tải mô hình, chuẩn hóa văn bản và điều khiển luồng gửi tin nhắn. Cách tổ chức này giúp bản demo có thể chạy bằng một máy chủ tĩnh đơn giản mà không cần dựng thêm máy chủ xử lý nội dung.
+
+\section{Mô tả giao diện và chức năng}
+
+\subsection{Đăng nhập}
+
+Màn hình đăng nhập có bố cục tập trung, gồm khu vực nhận diện thương hiệu, hai ô nhập tên đăng nhập và mật khẩu, cùng nút đăng nhập. Phía trên biểu mẫu có hai lựa chọn chuyển qua lại giữa đăng nhập và tạo tài khoản. Cách bố trí này giúp người dùng nhận biết ngay trạng thái hiện tại mà không phải đi qua nhiều trang.
+
+\imagewithcaption{image/đăng nhập.png}{0.92}{Màn hình đăng nhập của SafeViChi.}
+
+\subsection{Tạo tài khoản demo}
+
+Màn hình tạo tài khoản bổ sung trường tên hiển thị và hướng dẫn ngắn về quy tắc của tên đăng nhập. Đây là bước giúp người dùng có một hồ sơ để bắt đầu cuộc trò chuyện trong bản demo. Biểu mẫu giữ cùng phong cách với màn hình đăng nhập, nhờ đó người dùng không phải làm quen lại với giao diện.
+
+\imagewithcaption{image/đăng ký.png}{0.92}{Màn hình tạo tài khoản demo.}
+
+\subsection{Không gian trò chuyện}
+
+Sau khi đăng nhập, người dùng nhìn thấy danh sách cuộc trò chuyện ở bên trái và nội dung cuộc trò chuyện đang được chọn ở khu vực chính. Thanh trên cùng thể hiện tên SafeViChi, mục đích của hệ thống và trạng thái sẵn sàng. Khu vực nhập tin nhắn nằm ở cuối trang, giúp thao tác gửi tin nhắn luôn ở vị trí quen thuộc.
+
+\subsection{Gửi tin nhắn an toàn}
+
+Khi tin nhắn không có dấu hiệu đáng ngại, hệ thống cho phép gửi và đưa tin nhắn vào cuộc trò chuyện. Một thông báo nhỏ ở góc dưới xác nhận rằng tin nhắn đã được gửi an toàn. Phản hồi này giúp người dùng biết thao tác đã hoàn tất mà không che khuất nội dung đang đọc.
+
+\imagewithcaption{image/tin nhắn an toàn.png}{0.96}{Tin nhắn được xác định là an toàn và đã được gửi.}
+
+\subsection{Cảnh báo trước khi gửi}
+
+Nếu nội dung có nguy cơ gây hại, hệ thống không tự động loại bỏ ngay lập tức. Tin nhắn được đánh dấu trực quan và một hộp cảnh báo xuất hiện gần khu vực soạn tin. Hộp cảnh báo đưa ra hai lựa chọn: ``Chỉnh sửa'' để quay lại sửa nội dung hoặc ``Vẫn gửi'' nếu người dùng đã xem xét và muốn tiếp tục.
+
+\imagewithcaption{image/cảnh báo tin nhắn đôc hại.png}{0.96}{Cảnh báo được hiển thị trước khi tin nhắn có nguy cơ gây hại được gửi.}
+
+\subsection{Tin nhắn được gửi kèm cảnh báo}
+
+Trong trường hợp người dùng chọn tiếp tục, tin nhắn vẫn được gửi nhưng giữ dấu hiệu cảnh báo ngay trong cuộc trò chuyện. Cách xử lý này cân bằng giữa an toàn và quyền quyết định của người dùng: hệ thống can thiệp đúng lúc, giải thích rủi ro, nhưng không âm thầm thay đổi nội dung hoặc tự quyết định thay người dùng.
+
+\imagewithcaption{image/tin nhắn độc hại đã được gửi kèm cảnh báo.png}{0.96}{Tin nhắn được gửi sau khi người dùng xác nhận, kèm dấu hiệu cảnh báo.}
+
+\section{Dữ liệu và mô hình nhận diện}
+
+\subsection{Các dạng biến thể được xem xét}
+
+Dữ liệu của dự án không chỉ gồm những câu viết đúng chính tả. Bộ sinh biến thể tạo ra các trường hợp gần với cách người dùng thực tế cố tình né bộ lọc, chẳng hạn bỏ dấu, dùng teencode, chèn ký tự phân cách, lặp ký tự, sử dụng ký tự đồng dạng hoặc tạo lỗi gõ. Các mẫu này được gắn với câu gốc để có thể so sánh trực tiếp khả năng nhận diện giữa văn bản bình thường và văn bản đã biến dạng.
+
+\subsection{Huấn luyện đối kháng}
+
+Tập huấn luyện được trộn theo tỷ lệ 60\% câu biến thể đã chuẩn hóa, 30\% câu sạch và 10\% câu thuộc nhóm điểm mù. Trong quá trình tinh chỉnh mô hình, FGM tạo ra nhiễu nhỏ trên tầng biểu diễn để mô hình học được ranh giới ổn định hơn thay vì ghi nhớ một kiểu viết duy nhất.
+
+\subsection{Giải thích kết quả}
+
+Khi một tin nhắn bị đánh dấu, hệ thống có thể che lần lượt từng cửa sổ gồm hai từ và đo mức thay đổi của chênh lệch điểm giữa lớp độc hại và lớp an toàn. Những vùng làm điểm độc hại giảm mạnh được xem là vùng có ảnh hưởng lớn đến quyết định. Cách làm này không chỉ tạo ra cảnh báo chung chung mà còn hỗ trợ hiển thị phần văn bản cần người dùng xem lại.
+
+\section{Đánh giá hệ thống}
+
+\subsection{Kết quả phân loại}
+
+Chỉ số chính được sử dụng là F1 của lớp độc hại trên ba điều kiện: câu sạch, câu đã biến dạng để né bộ lọc và câu thuộc vùng điểm mù của lớp chuẩn hóa.
+
+\begin{table}[H]
+    \centering
+    \caption{F1 của lớp độc hại trên tập kiểm thử}
+    \begin{tabular}{lccc}
+        \toprule
+        Hệ thống & Câu sạch & Né bộ lọc & Điểm mù \\
+        \midrule
+        Danh sách từ khóa & 0.6551 & 0.5982 & 0.4564 \\
+        ViHateT5 gốc & 0.7683 & 0.6046 & 0.4627 \\
+        ViHateT5 gốc và chuẩn hóa & 0.7497 & 0.7218 & 0.4720 \\
+        \textbf{SafeViChi đầy đủ} & \textbf{0.8552} & \textbf{0.8266} & \textbf{0.6657} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Kết quả cho thấy mô hình gốc giảm mạnh khi câu được viết theo cách né bộ lọc. Lớp chuẩn hóa phục hồi phần lớn mức giảm này, còn huấn luyện đối kháng giúp cải thiện thêm ở những trường hợp tinh vi mà luật chuẩn hóa không xử lý được. Hai cơ chế có tính bổ trợ: chuẩn hóa xử lý nhanh các dạng biến đổi đã biết, trong khi mô hình học được cách nhận biết những biến dạng khó đoán hơn.
+
+\subsection{Kết quả khoanh vùng}
+
+Trên tập kiểm thử ViHOS gồm 531 câu độc hại có vùng đánh dấu do con người gán, bộ phận giải thích đạt Micro F1 là 0.5455, Precision là 0.4478 và Recall là 0.6977. Tỷ lệ không tìm được bất kỳ từ nào trong vùng vi phạm chỉ là 1.9\%. Điều này cho thấy hệ thống thường tìm đúng khu vực cần chú ý, dù vùng đánh dấu có thể rộng hơn vùng do con người xác định.
+
+\section{Quy trình sử dụng}
+
+Một phiên sử dụng điển hình gồm các bước sau:
+\begin{enumerate}
+    \item Mở giao diện SafeViChi và chọn ``Tạo tài khoản'' nếu chưa có hồ sơ demo.
+    \item Điền thông tin cần thiết rồi đăng nhập.
+    \item Chọn một cuộc trò chuyện trong danh sách bên trái.
+    \item Nhập tin nhắn vào ô soạn ở cuối màn hình.
+    \item Nhấn nút gửi và chờ hệ thống kiểm tra nội dung.
+    \item Nếu tin nhắn an toàn, hệ thống gửi và hiển thị xác nhận.
+    \item Nếu xuất hiện cảnh báo, đọc phần được đánh dấu, sau đó chọn chỉnh sửa hoặc tiếp tục gửi.
+\end{enumerate}
+
+\section{Hạn chế và hướng phát triển}
+
+Phiên bản hiện tại là bản demo tập trung vào tin nhắn văn bản tiếng Việt. Hệ thống chưa xử lý đầy đủ hình ảnh, âm thanh, liên kết hoặc ngữ cảnh kéo dài qua nhiều lượt trò chuyện. Kết quả phân loại cũng nên được hiểu là tín hiệu hỗ trợ ra quyết định, không phải phán quyết tuyệt đối về ý định của người viết.
+
+Trong các phiên bản tiếp theo, dự án có thể mở rộng theo các hướng:
+\begin{itemize}
+    \item Bổ sung cơ chế xử lý nội dung đa phương thức.
+    \item Cho phép người dùng báo cáo cảnh báo sai để cải thiện dữ liệu.
+    \item Tinh chỉnh ngưỡng cảnh báo theo bối cảnh sử dụng nhưng vẫn giữ nguyên nguyên tắc không gửi dữ liệu riêng tư ra ngoài.
+    \item Cải thiện khả năng giải thích để phân biệt từ ngữ gây hại với câu trích dẫn hoặc ngữ cảnh giáo dục.
+    \item Tối ưu kích thước mô hình và thời gian suy luận trên thiết bị có cấu hình thấp.
+\end{itemize}
+
+\section{Kết luận}
+
+SafeViChi kết hợp một giao diện trò chuyện dễ sử dụng với pipeline nhận diện nội dung độc hại được thiết kế riêng cho tiếng Việt. Hệ thống không chỉ kiểm tra các câu viết thông thường mà còn chú ý đến những cách biến dạng thường được dùng để né bộ lọc. Việc chạy on-device giúp bảo vệ nội dung riêng tư, còn cảnh báo trước khi gửi giúp người dùng có cơ hội xem lại và tự quyết định.
+
+Với kết quả F1 đạt 0.8552 trên câu sạch, 0.8266 trên câu né bộ lọc và 0.6657 trên nhóm điểm mù, dự án cho thấy sự kết hợp giữa chuẩn hóa và huấn luyện đối kháng có hiệu quả rõ rệt. Đây là nền tảng phù hợp để tiếp tục phát triển một công cụ trò chuyện an toàn, minh bạch và tôn trọng người dùng tiếng Việt.
+
+\end{document}
