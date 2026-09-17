@@ -52,6 +52,11 @@ Thumbs.db
 
 # ==== Log & báo cáo tạm ====
 *.log
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
 # ...nhưng GIỮ log bằng chứng của Bước 3
 !results/step3/logs/*.log
 wandb/
