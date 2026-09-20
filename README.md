@@ -1,5 +1,7 @@
 # SafeViChi
 
+[Dùng thử bản demo](https://safevichi.pages.dev/)
+
 Hệ thống phát hiện nội dung độc hại tiếng Việt chống các kỹ thuật né bộ lọc, xử lý hoàn toàn cục bộ trên thiết bị (on-device).
 
 ---
