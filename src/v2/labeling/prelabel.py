@@ -45,8 +45,12 @@ NHAN_GOC_SACH = {"CLEAN"}
 NHAN_GOC_NGUY_HAI = {"OFFENSIVE", "HATE"}
 
 BATCH_INSTRUCTION = (
-    "Bạn sẽ nhận nhiều tin nhắn, mỗi tin mở đầu bằng [số thứ tự]. Gán từng tin độc lập với nhau. "
-    "Trả về đúng một dòng JSON cho mỗi tin, theo đúng thứ tự, và thêm trường \"stt\" là số thứ tự của tin đó."
+    "Bạn sẽ nhận nhiều mẫu, mỗi mẫu mở đầu bằng [số thứ tự] và được ghi dạng chuỗi JSON. Một mẫu có thể là một "
+    "tin nhắn hoặc một đoạn hội thoại hai người nhiều dòng (ngăn bằng \\n, mỗi dòng là toàn bộ lượt nói của một "
+    "người, các dòng luân phiên hai người, không ghi người nói); "
+    "khi đó gán nhãn cho cả đoạn theo tình huống nặng nhất, mỗi cụm bằng chứng nằm gọn trong một dòng. "
+    "Gán từng mẫu độc lập với nhau. Trả về đúng một dòng JSON cho mỗi mẫu, theo đúng thứ tự, và thêm trường "
+    "\"stt\" là số thứ tự của mẫu đó."
 )
 
 
@@ -115,7 +119,7 @@ def validate_output(raw: dict, text: str) -> Validated:
         phrase = unicodedata.normalize("NFC", phrase).strip()
         if not phrase:
             continue
-        if phrase in text:
+        if "\n" not in phrase and phrase in text:  # mỗi cụm phải nằm gọn trong một dòng
             if phrase not in kept:
                 kept.append(phrase)
         else:

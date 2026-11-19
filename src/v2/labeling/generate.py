@@ -1,7 +1,13 @@
-"""Sinh câu train bằng LLM theo bảng kịch bản (kich_ban.yaml): kịch bản × kênh × giọng × độ lộ.
+"""Sinh dữ liệu train bằng LLM theo bảng kịch bản (kich_ban.yaml): kịch bản × kênh × giọng × độ lộ × kiểu lộ.
 
-Người nhận tin luôn là học sinh THCS, THPT hoặc sinh viên. Mỗi ô nguy hại có một ô "sinh đôi" AN_TOAN
-cùng kênh, giọng. Câu sinh CHỈ vào train (nguon=sinh_llm, cach_gan=llm, split=train). Kịch bản có
+Mỗi mẫu là một ĐOẠN HỘI THOẠI hai người: `text` nhiều dòng ngăn bằng "\\n", mỗi dòng là TOÀN BỘ lượt nói của
+một người (các tin nhắn liên tiếp của cùng người được gộp vào một dòng, nối bằng dấu cách), các dòng luân phiên
+hai người, KHÔNG có nhãn người nói ("A:", "B:"). Số dòng lưu ở `so_dong`.
+Nhãn gán cho cả đoạn theo tình huống nặng nhất (DE_DOA > LUA_DAO > QUAY_ROI > XUC_PHAM > AN_TOAN); mỗi cụm
+bằng chứng nằm gọn trong một dòng. Sản phẩm gửi vào mô hình cửa sổ tối đa 8 tin gần nhất theo đúng dạng này.
+
+Người nhận luôn là học sinh THCS, THPT hoặc sinh viên. Mỗi ô nguy hại có một ô "sinh đôi" AN_TOAN cùng kênh,
+giọng, kiểu lộ. Câu sinh CHỈ vào train (nguon=sinh_llm, cach_gan=llm, split=train). Kịch bản có
 giu_ngoai_train=true không được sinh.
 
 QUY TẮC AN TOÀN (đưa nguyên vào prompt):
@@ -18,8 +24,8 @@ Cấu hình nhà cung cấp, model, khóa API: như prelabel.py (xem src/v2/labe
 
 Chạy:
     python -m src.v2.labeling.generate --dry-run
-    python -m src.v2.labeling.generate --kich-ban LD1 DD1 --limit-o 2      # thử nhỏ
-    python -m src.v2.labeling.generate --workers 4                         # chạy thật; chạy lại để tiếp tục
+    python -m src.v2.labeling.generate --kich-ban LD1 --limit-o 2       # thử nhỏ: 1 ô LD1 và ô sinh đôi
+    python -m src.v2.labeling.generate --workers 4                      # chạy thật; chạy lại để tiếp tục
 """
 
 from __future__ import annotations
@@ -39,7 +45,7 @@ from typing import Callable
 import yaml
 
 from src.dataset_builder.dedup import group_near_duplicates
-from src.v2.data.merge import make_record, normalize_text
+from src.v2.data.merge import make_record, normalize_lines, normalize_text
 from src.v2.labeling import llm, prelabel
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -47,8 +53,9 @@ KICH_BAN_PATH = Path(__file__).with_name("kich_ban.yaml")
 OUT_DIR = ROOT / "data" / "v2" / "interim"
 DATA_V2 = ROOT / "data" / "v2"
 TEST_NGUOI_VIET = OUT_DIR / "test_nguoi_viet.jsonl"
-DEFAULT_SO_CAU = 10
+DEFAULT_SO_DOAN = 5
 MIN_WORDS = 3
+MAX_LINES = 8
 
 SAFETY_RULES = """\
 QUY TẮC AN TOÀN:
@@ -57,15 +64,23 @@ QUY TẮC AN TOÀN:
 - Câu sinh chỉ là nội dung tin nhắn, không sinh hướng dẫn cách lừa đảo hay cách thực hiện hành vi."""
 
 GENERATION_RULES = """\
-Bạn đang tạo dữ liệu huấn luyện cho SafeViChi, ứng dụng chạy trên điện thoại để phát hiện và cảnh báo tin nhắn
-nguy hại gửi tới trẻ em và thanh thiếu niên Việt Nam. Dữ liệu chỉ dùng để dạy mô hình nhận ra và cảnh báo.
+Bạn đang tạo dữ liệu huấn luyện cho SafeViChi, ứng dụng gắn vào nền tảng nhắn tin để phát hiện và cảnh báo tin
+nhắn nguy hại gửi tới trẻ em và thanh thiếu niên Việt Nam. Dữ liệu chỉ dùng để dạy mô hình nhận ra và cảnh báo.
 
-Cách viết:
-- Viết tin nhắn giống thật như người Việt hay nhắn, đúng kênh, giọng văn và độ lộ được yêu cầu.
-  Người nhận luôn là học sinh THCS, THPT hoặc sinh viên.
-- Mỗi tin 1 đến 4 câu. Các tin trong một lượt phải khác nhau rõ về cách mở đầu, độ dài, chi tiết, người nhắn.
-- Gán nhãn đúng theo hướng dẫn ở trên. Tin AN_TOAN phải thật sự an toàn theo hướng dẫn.
-- bang_chung: các cụm chép NGUYÊN VĂN từ chính tin đó, theo mục 5 của hướng dẫn. Tin AN_TOAN để [].
+Mỗi mẫu là một ĐOẠN HỘI THOẠI giữa hai người, viết như người Việt nhắn thật:
+- "text": các dòng nối nhau bằng ký tự xuống dòng "\\n". MỖI DÒNG LÀ TOÀN BỘ LƯỢT NÓI CỦA MỘT NGƯỜI: nếu một người
+  nhắn nhiều tin liên tiếp thì gộp hết vào cùng một dòng, nối bằng dấu cách. Các dòng LUÂN PHIÊN hai người: dòng 1
+  người thứ nhất, dòng 2 người thứ hai, dòng 3 người thứ nhất... Không ghi tên hay nhãn người nói ở đầu dòng
+  (không "A:", "B:", "Người 1:").
+- Một trong hai người luôn là học sinh THCS, THPT hoặc sinh viên (người cần được bảo vệ).
+- Nhắn dồn dập (ví dụ QR2) thể hiện bằng một dòng dài gồm nhiều tin của cùng một người, có thể kèm dòng trả lời
+  ngắn của người kia hoặc không có.
+- Đúng kênh, giọng văn, độ lộ và kiểu lộ được yêu cầu (teencode, không dấu, sai chính tả… đúng như người thật gõ).
+- Các đoạn trong một lượt phải khác nhau rõ về số dòng, cách mở đầu, chi tiết, người nhắn.
+- "nhan": nhãn của CẢ ĐOẠN theo hướng dẫn ở trên; nhiều loại cùng xuất hiện thì lấy loại nặng nhất theo thứ tự
+  DE_DOA > LUA_DAO > QUAY_ROI > XUC_PHAM > AN_TOAN. Đoạn AN_TOAN phải thật sự an toàn theo hướng dẫn.
+- "bang_chung": các cụm chép NGUYÊN VĂN, mỗi cụm nằm gọn trong MỘT dòng (có thể lấy từ nhiều dòng khác nhau),
+  theo mục 5 của hướng dẫn. Đoạn AN_TOAN để [].
 - Số điện thoại ghi [SDT], số tài khoản ghi [STK], tên người dùng tên phổ biến bịa ra.
 - Chỉ trả về một JSON list, không thêm lời dẫn, lời giải thích hay lưu ý nào."""
 
@@ -75,6 +90,9 @@ ASSISTANT_PATTERN = re.compile(
 DOMAIN_PATTERN = re.compile(
     r"(?<![\w\[])([a-z0-9][a-z0-9-]*)\.(com|vn|net|org|xyz|top|info|io|me|cc|site|online|shop|link|ly|club|vip|app)\b",
     re.IGNORECASE)
+# Tiền tố người nói ở đầu dòng: "A:", "B -", "Người 1:", "Nguoi A:", "Bạn A:", "[A]:"
+SPEAKER_PREFIX = re.compile(
+    r"^\s*\[?\s*(?:(?:người|nguoi|ng|bạn|ban|user|speaker)\s*[AB12]|[AB])\s*\]?\s*[:：\-–]\s*", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------- bảng kịch bản
@@ -97,15 +115,26 @@ class BangKichBan:
     giong: dict[str, str]
     do_lo: dict[str, str]
     do_lo_sinh_doi: dict[str, str]
+    kieu_lo: dict[str, str]
+    kenh_mot_dong: tuple[str, ...]
     kich_ban: tuple[KichBan, ...]
+    muc_tieu_doan: dict[str, int] | None = None  # số đoạn nguy hại mục tiêu mỗi nhãn; None = dùng mọi ô
 
 
 def load_kich_ban(path: Path = KICH_BAN_PATH) -> BangKichBan:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     kenh, giong, do_lo = data["kenh"], data["giong"], data["do_lo"]
-    do_lo_sinh_doi = data["do_lo_sinh_doi"]
+    do_lo_sinh_doi, kieu_lo = data["do_lo_sinh_doi"], data["kieu_lo"]
+    kenh_mot_dong = tuple(data.get("kenh_mot_dong") or ())
+    muc_tieu = data.get("muc_tieu_doan")
+    if muc_tieu is not None and any(k not in prelabel.LABELS or int(v) <= 0 for k, v in muc_tieu.items()):
+        raise ValueError("muc_tieu_doan phải là {nhãn: số dương}")
     if set(do_lo) != set(do_lo_sinh_doi):
         raise ValueError("do_lo và do_lo_sinh_doi phải có cùng mã")
+    if set(kieu_lo) != {"ngay_dau", "lo_dan", "mot_dong"}:
+        raise ValueError("kieu_lo phải gồm đúng ngay_dau, lo_dan, mot_dong")
+    if any(k not in kenh for k in kenh_mot_dong):
+        raise ValueError("kenh_mot_dong có kênh không có trong bảng")
     items: list[KichBan] = []
     seen: set[str] = set()
     for row in data["kich_ban"]:
@@ -125,7 +154,8 @@ def load_kich_ban(path: Path = KICH_BAN_PATH) -> BangKichBan:
         if len(kb.vi_du) > 5:
             raise ValueError(f"{kb.ma}: tối đa 5 câu ví dụ")
         items.append(kb)
-    return BangKichBan(kenh, giong, do_lo, do_lo_sinh_doi, tuple(items))
+    return BangKichBan(kenh, giong, do_lo, do_lo_sinh_doi, kieu_lo, kenh_mot_dong, tuple(items),
+                       {k: int(v) for k, v in muc_tieu.items()} if muc_tieu else None)
 
 
 def load_test_texts(directory: Path = DATA_V2) -> set[str]:
@@ -155,28 +185,51 @@ def check_examples_not_in_test(bang: BangKichBan, test_texts: set[str]) -> None:
 class O:
     o_id: str
     ma: str
-    nhan: str          # nhãn mong đợi của câu sinh ra
+    nhan: str          # nhãn mong đợi của đoạn sinh ra
     sinh_doi: bool
     kenh: str
     giong: str
     do_lo: str
-    so_cau: int
+    kieu_lo: str
+    so_doan: int
 
 
-def plan_cells(bang: BangKichBan, ma: list[str] | None = None, so_cau: int = DEFAULT_SO_CAU,
+def pick_kieu_lo(bang: BangKichBan, kenh: str, giong_index: int, do_lo_index: int) -> str:
+    """Kênh một dòng luôn mot_dong; kênh hội thoại luân phiên ngay_dau / lo_dan theo ô (giữ tổng lượt gọi)."""
+    if kenh in bang.kenh_mot_dong:
+        return "mot_dong"
+    return ("ngay_dau", "lo_dan")[(giong_index + do_lo_index) % 2]
+
+
+def cells_per_scenario(bang: BangKichBan, nhan: str, so_doan: int, full: int) -> int:
+    """Số ô mỗi kịch bản của một nhãn để đạt muc_tieu_doan (tính trên mọi kịch bản được sinh của nhãn đó,
+    không phụ thuộc --kich-ban), tối thiểu 1, tối đa `full`."""
+    if not bang.muc_tieu_doan or nhan not in bang.muc_tieu_doan:
+        return full
+    n_scen = sum(1 for kb in bang.kich_ban if kb.nhan == nhan and not kb.giu_ngoai_train)
+    return max(1, min(full, round(bang.muc_tieu_doan[nhan] / (n_scen * so_doan))))
+
+
+def plan_cells(bang: BangKichBan, ma: list[str] | None = None, so_doan: int = DEFAULT_SO_DOAN,
                co_sinh_doi: bool = True) -> list[O]:
-    """Mọi ô theo thứ tự cố định; mỗi ô nguy hại kèm ngay ô sinh đôi AN_TOAN."""
+    """Ô theo thứ tự cố định; mỗi ô nguy hại kèm ngay ô sinh đôi AN_TOAN cùng kênh, giọng, kiểu lộ.
+    Nếu có muc_tieu_doan, mỗi kịch bản chỉ lấy k ô chọn đều (bước nhảy cố định) trong các ô kênh × giọng × độ lộ."""
     cells: list[O] = []
     for kb in bang.kich_ban:
         if kb.giu_ngoai_train or (ma and kb.ma not in ma):
             continue
+        candidates = []
         for kenh in kb.kenh:
-            for giong in kb.giong:
-                for do_lo in bang.do_lo:
-                    base = f"{kb.ma}-{kenh}-{giong}-{do_lo}"
-                    cells.append(O(base, kb.ma, kb.nhan, False, kenh, giong, do_lo, so_cau))
-                    if co_sinh_doi:
-                        cells.append(O(f"{base}-SD", kb.ma, "AN_TOAN", True, kenh, giong, do_lo, so_cau))
+            for gi, giong in enumerate(kb.giong):
+                for di, do_lo in enumerate(bang.do_lo):
+                    candidates.append((kenh, giong, do_lo, pick_kieu_lo(bang, kenh, gi, di)))
+        k = cells_per_scenario(bang, kb.nhan, so_doan, len(candidates))
+        chosen = [candidates[(i * len(candidates)) // k] for i in range(k)]
+        for kenh, giong, do_lo, kieu_lo in chosen:
+            base = f"{kb.ma}-{kenh}-{giong}-{do_lo}-{kieu_lo}"
+            cells.append(O(base, kb.ma, kb.nhan, False, kenh, giong, do_lo, kieu_lo, so_doan))
+            if co_sinh_doi:
+                cells.append(O(f"{base}-SD", kb.ma, "AN_TOAN", True, kenh, giong, do_lo, kieu_lo, so_doan))
     return cells
 
 
@@ -185,32 +238,45 @@ def build_system_prompt() -> str:
     return f"{sections}\n\n{GENERATION_RULES}\n\n{SAFETY_RULES}"
 
 
+def line_range(kieu_lo: str) -> str:
+    return "đúng 1 dòng" if kieu_lo == "mot_dong" else "từ 2 đến 6 dòng, số dòng khác nhau giữa các đoạn"
+
+
 def build_user_prompt(cell: O, bang: BangKichBan) -> str:
     kb = next(k for k in bang.kich_ban if k.ma == cell.ma)
     lines = []
     if cell.sinh_doi:
         lines += [
             f"Đây là ô SINH ĐÔI AN TOÀN của kịch bản nguy hại {kb.ma} ({kb.mo_ta}).",
-            f"Viết tin AN_TOAN theo tình huống: {kb.sinh_doi}",
-            f"Mức giống tin nguy hại: {bang.do_lo_sinh_doi[cell.do_lo]}",
+            f"Viết đoạn AN_TOAN theo tình huống: {kb.sinh_doi}",
+            f"Mức giống nguy hại: {bang.do_lo_sinh_doi[cell.do_lo]}. Có thể có chữ trông nguy hiểm nhưng ngữ cảnh "
+            "trong đoạn cho thấy vô hại (bạn thân đùa, nhắc nợ lịch sự...).",
         ]
     else:
         lines += [
             f"Kịch bản {kb.ma}, nhãn {kb.nhan}: {kb.mo_ta}",
             f"Độ lộ: {bang.do_lo[cell.do_lo]}",
         ]
+    if cell.sinh_doi and cell.kieu_lo != "mot_dong":
+        where = "ngay dòng đầu" if cell.kieu_lo == "ngay_dau" else "ở các dòng cuối, sau vài dòng nói chuyện bình thường"
+        lines.append(f"Vị trí chữ dễ nhầm: {where}")
+    else:
+        lines.append(f"Kiểu lộ: {bang.kieu_lo[cell.kieu_lo]}")
     lines += [
         f"Kênh: {bang.kenh[cell.kenh]}",
         f"Giọng văn: {bang.giong[cell.giong]}",
+        f"Độ dài mỗi đoạn: {line_range(cell.kieu_lo)}.",
         "Người nhận: học sinh THCS, THPT hoặc sinh viên.",
     ]
     if kb.vi_du and not cell.sinh_doi:
         lines.append("Vài tin thật cùng kịch bản để tham khảo phong cách (không chép lại):")
         lines += [f"- {json.dumps(ex, ensure_ascii=False)}" for ex in kb.vi_du]
-    template = json.dumps({"text": "...", "nhan": cell.nhan, "bang_chung": [], "kich_ban": kb.ma,
-                           "kenh": cell.kenh, "giong": cell.giong, "do_lo": cell.do_lo}, ensure_ascii=False)
+    sample_text = "..." if cell.kieu_lo == "mot_dong" else "lượt người 1\\nlượt người 2\\nlượt người 1"
+    template = json.dumps({"text": sample_text, "nhan": cell.nhan, "bang_chung": [],
+                           "kich_ban": kb.ma, "kenh": cell.kenh, "giong": cell.giong, "do_lo": cell.do_lo,
+                           "kieu_lo": cell.kieu_lo}, ensure_ascii=False).replace("\\\\n", "\\n")
     lines += [
-        f"Viết {cell.so_cau} tin khác nhau. Trả về một JSON list gồm {cell.so_cau} phần tử dạng:",
+        f"Viết {cell.so_doan} đoạn khác nhau. Trả về một JSON list gồm {cell.so_doan} phần tử dạng:",
         template,
     ]
     return "\n".join(lines)
@@ -248,16 +314,38 @@ def defang(text: str) -> str:
     return DOMAIN_PATTERN.sub(r"\1[.]\2", text)
 
 
+def clean_conversation(raw: str | list) -> tuple[str, int]:
+    """Chuẩn hóa đoạn hội thoại: mỗi dòng một tin, bỏ tiền tố người nói, vô hiệu hóa link.
+    Trả về (text, số dòng bị bỏ tiền tố)."""
+    if isinstance(raw, list):
+        raw = "\n".join(str(x) for x in raw)
+    stripped = 0
+    lines = []
+    for line in normalize_lines(raw).split("\n"):
+        new = SPEAKER_PREFIX.sub("", line, count=1)
+        if new != line:
+            stripped += 1
+        new = defang(normalize_text(new))
+        if new:
+            lines.append(new)
+    return "\n".join(lines), stripped
+
+
 def check_item(item: dict, cell: O) -> tuple[dict | None, str | None]:
-    """Kiểm một câu sinh. Trả về (kết quả đã kiểm, None) hoặc (None, lý do bỏ)."""
+    """Kiểm một đoạn sinh. Trả về (kết quả đã kiểm, None) hoặc (None, lý do bỏ)."""
     raw_text = item.get("text")
-    if not isinstance(raw_text, str) or not raw_text.strip():
+    if not isinstance(raw_text, (str, list)) or not raw_text:
         return None, "khong_co_text"
-    text = defang(normalize_text(raw_text))
+    text, stripped = clean_conversation(raw_text)
+    lines = text.split("\n") if text else []
     if len(text.split()) < MIN_WORDS:
         return None, "qua_ngan"
     if ASSISTANT_PATTERN.search(text):
         return None, "giong_tro_ly"
+    if cell.kieu_lo == "mot_dong" and len(lines) != 1:
+        return None, "sai_so_dong"
+    if cell.kieu_lo != "mot_dong" and not 2 <= len(lines) <= MAX_LINES:
+        return None, "sai_so_dong"
     nhan = item.get("nhan")
     nhan = nhan.strip().upper() if isinstance(nhan, str) else nhan
     if nhan not in prelabel.LABELS:
@@ -266,7 +354,8 @@ def check_item(item: dict, cell: O) -> tuple[dict | None, str | None]:
         return None, "nhan_khong_khop_kich_ban"
     evidence = item.get("bang_chung") or []
     if isinstance(evidence, list):
-        evidence = [defang(normalize_text(p)) if isinstance(p, str) else p for p in evidence]
+        evidence = [defang(normalize_text(SPEAKER_PREFIX.sub("", p, count=1))) if isinstance(p, str) else p
+                    for p in evidence]
     v = prelabel.validate_output(
         {"nhan": nhan, "bang_chung": evidence, "the": item.get("the") or [], "do_chac": 1.0}, text)
     ly_do_duyet = []
@@ -274,19 +363,20 @@ def check_item(item: dict, cell: O) -> tuple[dict | None, str | None]:
         ly_do_duyet.append("mat_het_bang_chung")
     return {
         "text": text, "nhan": nhan, "bang_chung": v.bang_chung, "the": v.the,
-        "bang_chung_bi_bo": v.bang_chung_bi_bo, "can_duyet": bool(ly_do_duyet), "ly_do_duyet": ly_do_duyet,
+        "bang_chung_bi_bo": v.bang_chung_bi_bo, "bo_tien_to_dau_dong": stripped,
+        "can_duyet": bool(ly_do_duyet), "ly_do_duyet": ly_do_duyet,
     }, None
 
 
 def to_record(checked: dict, cell: O, index: int, meta: dict) -> dict:
     record = make_record(text=checked["text"], nguon="sinh_llm", nguon_id=f"{cell.o_id}:{index}",
-                         nhan_goc="", split_goc="")
+                         nhan_goc="", split_goc="", nhieu_dong=True)
     record.pop("bang_chung_goi_y", None)
     record.update({
         "nhan": checked["nhan"], "bang_chung": checked["bang_chung"], "the": checked["the"],
         "cach_gan": "llm", "split": "train",
         "kich_ban": cell.ma, "kenh": cell.kenh, "giong": cell.giong, "do_lo": cell.do_lo,
-        "sinh_doi": cell.sinh_doi,
+        "kieu_lo": cell.kieu_lo, "sinh_doi": cell.sinh_doi,
         "can_duyet": checked["can_duyet"], "ly_do_duyet": checked["ly_do_duyet"],
         "llm_bang_chung_bi_bo": checked["bang_chung_bi_bo"],
         "llm_provider": meta.get("provider"), "llm_model": meta.get("model"),
@@ -364,12 +454,13 @@ def load_test_nguoi_viet(path: Path = TEST_NGUOI_VIET) -> list[str]:
 
 def collect(cells: list[O], done: dict[str, dict], meta_default: dict | None = None,
             cau_test: list[str] | None = None) -> tuple[list[dict], dict]:
-    """Kiểm từng câu, khử trùng gần đúng giữa các câu sinh và với câu test người viết (dedup.py),
-    trả về (bản ghi, thống kê)."""
+    """Kiểm từng đoạn, khử trùng gần đúng trên cả đoạn giữa các đoạn sinh và với câu test người viết
+    (dedup.py), trả về (bản ghi, thống kê)."""
     dropped: Counter = Counter()
     refused: list[str] = []
     errors: list[str] = []
     records: list[dict] = []
+    prefixes = 0
     for cell in cells:
         entry = done.get(cell.o_id)
         if entry is None:
@@ -386,6 +477,7 @@ def collect(cells: list[O], done: dict[str, dict], meta_default: dict | None = N
             if reason:
                 dropped[reason] += 1
                 continue
+            prefixes += checked["bo_tien_to_dau_dong"]
             records.append(to_record(checked, cell, i, meta))
 
     kept = records
@@ -410,15 +502,19 @@ def collect(cells: list[O], done: dict[str, dict], meta_default: dict | None = N
         return dict(sorted(Counter(str(r[key]) for r in kept).items()))
 
     stats = {
-        "so_cau": len(kept),
+        "so_doan": len(kept),
+        "so_dong_trung_binh": round(sum(r["so_dong"] for r in kept) / len(kept), 2) if kept else 0,
         "theo_nhan": count("nhan"),
         "theo_kich_ban": dict(sorted(Counter(f"{r['kich_ban']}{'-SD' if r['sinh_doi'] else ''}"
                                              for r in kept).items())),
         "theo_kenh": count("kenh"),
         "theo_giong": count("giong"),
         "theo_do_lo": count("do_lo"),
+        "theo_kieu_lo": count("kieu_lo"),
+        "theo_so_dong": dict(sorted(Counter(r["so_dong"] for r in kept).items())),
         "can_duyet": sum(r["can_duyet"] for r in kept),
-        "cau_bi_bo": dict(dropped),
+        "dong_bi_bo_tien_to": prefixes,
+        "doan_bi_bo": dict(dropped),
         "so_o_da_chay": sum(1 for c in cells if c.o_id in done),
         "o_bi_tu_choi": refused,
         "o_loi_api": errors,
@@ -426,11 +522,23 @@ def collect(cells: list[O], done: dict[str, dict], meta_default: dict | None = N
     return kept, stats
 
 
+def describe_plan(cells: list[O], bang: BangKichBan) -> str:
+    lines = ["===== KẾ HOẠCH ====="]
+    for nhan, n in sorted(Counter(c.nhan for c in cells).items()):
+        n_doan = sum(c.so_doan for c in cells if c.nhan == nhan)
+        lines.append(f"  {nhan}: {n} ô, khoảng {n_doan} đoạn")
+    lines.append(f"  Theo kiểu lộ: {dict(sorted(Counter(c.kieu_lo for c in cells).items()))}")
+    held = [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train]
+    lines.append(f"Tổng {len(cells)} lượt gọi, khoảng {sum(c.so_doan for c in cells)} đoạn. "
+                 f"Để ngoài train: {', '.join(held) or 'không'}.")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--kich-ban", nargs="*", default=None, help="chỉ chạy các mã này, ví dụ LD1 DD1")
     parser.add_argument("--limit-o", type=int, default=None, help="chỉ chạy N ô đầu (sau lọc)")
-    parser.add_argument("--so-cau-moi-o", type=int, default=DEFAULT_SO_CAU)
+    parser.add_argument("--so-doan-moi-o", type=int, default=DEFAULT_SO_DOAN)
     parser.add_argument("--khong-sinh-doi", action="store_true", help="bỏ các ô sinh đôi AN_TOAN")
     parser.add_argument("--workers", type=int, default=1, help="số lượt gọi song song")
     parser.add_argument("--kich-ban-file", type=Path, default=KICH_BAN_PATH)
@@ -442,7 +550,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     bang = load_kich_ban(args.kich_ban_file)
     check_examples_not_in_test(bang, load_test_texts())
-    cells = plan_cells(bang, args.kich_ban, args.so_cau_moi_o, not args.khong_sinh_doi)
+    cells = plan_cells(bang, args.kich_ban, args.so_doan_moi_o, not args.khong_sinh_doi)
     if args.limit_o is not None:
         cells = cells[: args.limit_o]
     system = build_system_prompt()
@@ -453,23 +561,21 @@ def main(argv: list[str] | None = None) -> int:
         print(system)
         shown: set[str] = set()
         for cell in cells:
-            if cell.nhan in shown:
+            key = f"{cell.nhan}/{cell.kieu_lo == 'mot_dong'}"
+            if key in shown:
                 continue
-            shown.add(cell.nhan)
+            shown.add(key)
             print(f"\n===== USER: {cell.nhan} (ô {cell.o_id}) =====")
             print(build_user_prompt(cell, bang))
-        print("\n===== KẾ HOẠCH =====")
-        per_label = Counter(c.nhan for c in cells)
-        for nhan, n in sorted(per_label.items()):
-            print(f"  {nhan}: {n} ô × {args.so_cau_moi_o} câu ≈ {n * args.so_cau_moi_o} câu")
-        held = [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train]
-        print(f"Tổng {len(cells)} lượt gọi. Để ngoài train: {', '.join(held) or 'không'}. "
-              f"prompt_version={version}. Không gọi API.")
+        print()
+        print(describe_plan(cells, bang))
+        print(f"prompt_version={version}. Không gọi API.")
         return 0
 
+    print(describe_plan(cells, bang))
     llm.load_dotenv()
     config = llm.config_from_env()
-    config.temperature = 1.0  # cần câu đa dạng
+    config.temperature = 1.0  # cần đa dạng
     meta = {"provider": config.provider, "model": config.model, "prompt_version": version}
     tag = llm.safe_name(f"{config.provider}_{config.model}_{version}")
 
@@ -477,7 +583,7 @@ def main(argv: list[str] | None = None) -> int:
         return llm.with_retries(lambda: llm.call_llm(config, system_prompt, user_prompt))
 
     raw_path = args.out_dir / "sinh_llm_cache" / f"raw_{tag}.jsonl"
-    all_cells = plan_cells(bang, None, args.so_cau_moi_o, not args.khong_sinh_doi)
+    all_cells = plan_cells(bang, None, args.so_doan_moi_o, not args.khong_sinh_doi)
     run_cells(cells, bang, system=system, complete=complete, raw_path=raw_path, meta=meta,
               workers=args.workers)
     # Gộp mọi ô đã chạy (kể cả ở lần trước) thành một file đầu ra.

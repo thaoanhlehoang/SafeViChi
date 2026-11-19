@@ -35,7 +35,7 @@ dữ liệu cũ.
 
 | Cột | Nội dung |
 | --- | --- |
-| `text` | Nội dung tin nhắn |
+| `text` | Tin nhắn hoặc đoạn hội thoại hai người (tối đa 8 dòng): mỗi lượt nói một dòng (gộp các tin liên tiếp của cùng người), luân phiên hai người, không ghi ai nói. Trong CSV ngăn các lượt bằng ` \|\| ` hoặc xuống dòng trong ô |
 | `nhan` | `AN_TOAN`, `XUC_PHAM`, `QUAY_ROI`, `DE_DOA` hoặc `LUA_DAO` |
 | `bang_chung` | Các cụm chép **nguyên văn** từ `text`, cách nhau bằng dấu `|`. `AN_TOAN` để trống |
 | `kich_ban` | Mã trong bảng kịch bản (`LD1`, `DD2`...), hoặc `moi` |

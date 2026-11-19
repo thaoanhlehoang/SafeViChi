@@ -11,7 +11,9 @@ Mỗi tin nhắn được gán:
    Câu nguy hại cũng được để trống nếu cái hại nằm ở cả câu chứ không ở chữ nào cụ thể (ví dụ mỉa mai).
 3. **Thẻ (nếu có):** `tieng_long`, `vung_mien`, `an_y`, `trich_dan`. Thẻ chỉ để phân tích lỗi, không phải nhãn.
 
-Chỉ nhìn tin nhắn đó, không đoán bối cảnh không có trong câu.
+Một mẫu có thể là một tin nhắn, hoặc một **đoạn hội thoại** hai người tối đa 8 dòng: mỗi dòng là toàn bộ lượt nói
+của một người (các tin liên tiếp của cùng người gộp vào một dòng), các dòng luân phiên hai người, không ghi ai nói
+(ứng dụng gửi vào mô hình đúng dạng này). Chỉ nhìn những gì có trong mẫu, không đoán bối cảnh không có trong đó.
 
 ## 2. Năm nhãn
 
@@ -34,6 +36,10 @@ Chỉ nhìn tin nhắn đó, không đoán bối cảnh không có trong câu.
 5. Còn lại → `AN_TOAN`
 
 Thứ tự này cũng là quy tắc khi một câu dính nhiều loại: "Chuyển 5 triệu không tao tung ảnh con đĩ mày" là `DE_DOA`.
+
+Với đoạn hội thoại nhiều dòng (mỗi dòng một lượt nói, luân phiên hai người): gán **một nhãn cho cả đoạn** là tình huống nặng nhất xuất hiện
+trong đoạn, theo cùng thứ tự `DE_DOA` > `LUA_DAO` > `QUAY_ROI` > `XUC_PHAM` > `AN_TOAN`. Ý đồ có thể chỉ lộ ở các
+dòng cuối; các dòng trước giúp hiểu ngữ cảnh (ví dụ lời "tao giết mày" giữa hai bạn đang đùa nhau về trận game).
 
 ## 4. Ví dụ và ca khó
 
@@ -97,6 +103,7 @@ Quảng cáo thật (giá rõ, không đòi trả trước bất thường, khô
 - Lấy cụm ngắn nhất vẫn đủ nghĩa. "mày ngu như bò" thì lấy `ngu như bò`, không lấy cả câu.
 - Nhiều chỗ thì ghi nhiều cụm. Không lấy từ đệm ("thì", "là", "ạ") ở hai đầu cụm.
 - Với `LUA_DAO`: lấy lời yêu cầu (chuyển tiền, đưa mã, bấm link, cài app), lời hứa hẹn bất thường và câu hối thúc.
+- Với đoạn hội thoại: mỗi cụm nằm gọn trong **một dòng**; được lấy nhiều cụm từ nhiều dòng khác nhau.
 
 ## 6. Quy trình
 

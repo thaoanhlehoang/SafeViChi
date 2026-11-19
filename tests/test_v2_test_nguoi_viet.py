@@ -58,6 +58,20 @@ def test_multiple_evidence_split_by_pipe(tmp_path):
     assert errors == [] and records[0]["bang_chung"] == ["ck 200k phí giữ suất", "hạn trong hôm nay"]
 
 
+def test_multiline_text_with_separator(tmp_path):
+    path = _csv(tmp_path, '"ê có vở không || có || chiều ra sau trường gặp tao, mang tiền theo",DE_DOA,'
+                          'ra sau trường gặp tao|mang tiền theo,DD1,nhom_lop,A,,\n'
+                          '"câu này || có cụm",DE_DOA,này có,moi,sms,B,,\n'
+                          '"lượt nói || lượt nói || lượt nói || lượt nói || lượt nói || lượt nói || lượt nói || lượt nói || lượt nói",AN_TOAN,,moi,sms,B,,\n')
+    records, errors, _ = t.load([path])
+    assert len(records) == 1
+    r = records[0]
+    assert r["text"] == "ê có vở không\ncó\nchiều ra sau trường gặp tao, mang tiền theo"
+    assert r["so_dong"] == 3 and "nguoi_noi" not in r
+    assert any("a.csv:3: bang_chung" in e for e in errors)  # cụm vắt qua hai dòng
+    assert any("a.csv:4: qua 8 dong" in e for e in errors)
+
+
 def test_cohen_kappa():
     assert t.cohen_kappa([]) is None
     assert t.cohen_kappa([("A", "A"), ("B", "B")]) == 1.0
@@ -88,16 +102,16 @@ def test_main_refuses_to_write_with_errors(tmp_path):
 
 def test_generated_near_duplicate_of_test_is_dropped(tmp_path):
     bang = g.load_kich_ban()
-    cells = g.plan_cells(bang, ["DD1"], so_cau=2, co_sinh_doi=False)[:1]
-    near = "Chiều nay tan học ra sau trường gặp tao, đứa nào trốn thì mai biết tay nha mày"
-    other = "Tao nói rồi đấy, trưa mai cổng sau, đi một mình thôi không thì đừng trách"
+    cells = g.plan_cells(bang, ["DD1"], so_doan=2, co_sinh_doi=False)[:1]
+    near = "ê mày\nChiều nay tan học ra sau trường gặp tao, đứa nào trốn thì mai biết tay nha mày"
+    other = "nghe bảo m mách cô\nTao nói rồi đấy, trưa mai cổng sau, đi một mình thôi không thì đừng trách"
     done = {cells[0].o_id: {"o_id": cells[0].o_id, "items": [
         {"text": near + "!", "nhan": "DE_DOA", "bang_chung": ["ra sau trường gặp tao"]},
         {"text": other, "nhan": "DE_DOA", "bang_chung": ["đừng trách"]},
     ], "loi": None, "tu_choi": False}}
     records, stats = g.collect(cells, done, cau_test=[near])
     assert [r["text"] for r in records] == [other]
-    assert stats["cau_bi_bo"]["trung_cau_test_nguoi_viet"] == 1
+    assert stats["doan_bi_bo"]["trung_cau_test_nguoi_viet"] == 1
 
     path = tmp_path / "test_nguoi_viet.jsonl"
     path.write_text(json.dumps({"text": near}, ensure_ascii=False) + "\n", encoding="utf-8")

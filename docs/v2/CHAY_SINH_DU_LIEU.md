@@ -30,22 +30,24 @@ ANTHROPIC_API_KEY=<khóa>                # hoặc OPENAI_API_KEY / GEMINI_API_KE
 
 ## 2. Sinh câu train (generate.py)
 
-Bảng kịch bản: `docs/v2/KICH_BAN.md`. Mỗi **ô** là một lần gọi LLM, sinh 10 câu cho một tổ hợp
-kịch bản × kênh × giọng × độ lộ. Mỗi ô nguy hại có một ô sinh đôi `AN_TOAN`. Tổng 960 ô, khoảng 9.600 câu.
+Bảng kịch bản và dạng hội thoại: `docs/v2/KICH_BAN.md`. Mỗi **ô** là một lần gọi LLM, sinh 5 đoạn hội thoại cho
+một tổ hợp kịch bản × kênh × giọng × độ lộ × kiểu lộ. Mỗi ô nguy hại có một ô sinh đôi `AN_TOAN`. Tổng 800 ô,
+khoảng 4.000 đoạn (LUA_DAO 800, DE_DOA 600, QUAY_ROI 600, AN_TOAN 2.000; chỉnh ở `muc_tieu_doan` trong
+`src/v2/labeling/kich_ban.yaml`).
 
 ```bash
 # (a) Xem prompt, không gọi API, không tốn tiền
 python -m src.v2.labeling.generate --dry-run
 
-# (b) Thử 2 ô: một ô LD1 và ô sinh đôi an toàn của nó (khoảng 20 câu)
+# (b) Thử 2 ô: một ô LD1 và ô sinh đôi an toàn của nó (khoảng 10 đoạn hội thoại)
 python -m src.v2.labeling.generate --kich-ban LD1 --limit-o 2
 
 # (c) Chạy hết, 4 lượt gọi song song
 python -m src.v2.labeling.generate --workers 4
 ```
 
-Sau bước (b), **mở `data/v2/interim/sinh_llm.jsonl` đọc kỹ khoảng 20 câu** xem có tự nhiên, đúng nhãn, đúng bằng
-chứng không, rồi mới chạy (c). Thống kê nằm ở `data/v2/interim/sinh_llm_stats.json`.
+Sau bước (b), **mở `data/v2/interim/sinh_llm.jsonl` đọc kỹ khoảng 10 đoạn** xem có tự nhiên, các dòng có luân
+phiên hai người, đúng nhãn, đúng bằng chứng không, rồi mới chạy (c). Thống kê nằm ở `data/v2/interim/sinh_llm_stats.json`.
 
 Ô bị LLM từ chối (hay gặp ở QR1, DD3) được ghi log và liệt kê ở mục `o_bi_tu_choi` trong file thống kê. Không cần
 sửa prompt để lách. Ô lỗi mạng hoặc API (`o_loi_api`) sẽ được thử lại ở lần chạy sau.

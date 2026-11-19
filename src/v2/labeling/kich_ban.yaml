@@ -1,5 +1,7 @@
 # Bảng kịch bản sinh câu v2 (generate.py). Người nhận tin luôn là học sinh THCS, THPT hoặc sinh viên.
-# Mỗi ô = kịch bản × kênh × giọng × độ lộ; mỗi ô nguy hại có một ô "sinh đôi" AN_TOAN cùng kênh, giọng.
+# Mỗi ô = kịch bản × kênh × giọng × độ lộ (kèm một kiểu lộ); mỗi ô sinh 5 đoạn hội thoại.
+# text là đoạn nhiều dòng, mỗi dòng một tin nhắn, không có nhãn người nói.
+# Mỗi ô nguy hại có một ô "sinh đôi" AN_TOAN cùng kênh, giọng, kiểu lộ.
 # giu_ngoai_train: true = KHÔNG sinh vào train, để làm cột "kịch bản chưa thấy" khi đánh giá.
 # vi_du: 3–5 câu thật lấy từ phần mẫu (KHÔNG BAO GIỜ lấy câu test). Chưa có thì để [].
 # Sửa file này là đổi dữ liệu train: ghi lại khi commit. Bảng đọc được: docs/v2/KICH_BAN.md.
@@ -24,6 +26,23 @@ giong:
 do_lo:
   lo_lieu: "lộ liễu: ý đồ thể hiện rõ ngay trong câu"
   an_y: "ẩn ý: ý đồ nói tránh, vòng vo, lịch sự giả tạo, phải đọc kỹ mới thấy"
+
+# Số đoạn nguy hại mục tiêu mỗi nhãn. Mỗi kịch bản có tối đa 24 ô (3 kênh × 4 giọng × 2 độ lộ); nếu mục tiêu
+# cần ít ô hơn, script chọn đều các ô trong 24 ô đó. Ô sinh đôi AN_TOAN đi theo ô nguy hại (cùng số lượng).
+muc_tieu_doan:
+  LUA_DAO: 800
+  DE_DOA: 600
+  QUAY_ROI: 600
+
+# Kiểu lộ: ý đồ xuất hiện ở đâu trong đoạn hội thoại.
+kieu_lo:
+  ngay_dau: "lộ ngay từ dòng đầu"
+  lo_dan: "vài dòng đầu nói chuyện bình thường, ý đồ chỉ lộ ở các dòng cuối"
+  mot_dong: "chỉ 1 dòng (một tin nhắn duy nhất)"
+
+# Kênh chỉ sinh đoạn 1 dòng (bình luận, SMS). Các kênh khác sinh hội thoại nhiều dòng,
+# luân phiên ngay_dau / lo_dan theo ô để giữ tổng số lượt gọi.
+kenh_mot_dong: [binh_luan, sms]
 
 # Mô tả độ lộ cho ô sinh đôi AN_TOAN (cùng mã do_lo với ô nguy hại tương ứng).
 do_lo_sinh_doi:

@@ -3,6 +3,10 @@ v2 với nguon="nguoi_viet", cach_gan="nguoi", split="test". Nếu có cột nha
 
 Cột: text, nhan, bang_chung (các cụm cách nhau bằng |), kich_ban, kenh, nguoi_viet, ghi_chu, nhan_nguoi_kia.
 
+text có thể là đoạn hội thoại hai người, tối đa 8 dòng: mỗi dòng là toàn bộ lượt nói của một người (gộp các tin
+liên tiếp), các dòng luân phiên hai người, không ghi người nói. Trong ô CSV xuống dòng trực tiếp, hoặc ngăn các
+lượt bằng " || " (được đổi thành xuống dòng khi nạp). Mỗi cụm bằng chứng nằm gọn trong một dòng.
+
 Chạy:
     python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
 Dòng lỗi được in ra kèm số dòng; chỉ ghi file đầu ra khi không còn lỗi (dùng --bo-qua-loi để ghi phần hợp lệ).
@@ -14,17 +18,20 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
 
-from src.v2.data.merge import make_record, normalize_text
+from src.v2.data.merge import make_record, normalize_lines, normalize_text
 
 ROOT = Path(__file__).resolve().parents[3]
 OUT_PATH = ROOT / "data" / "v2" / "interim" / "test_nguoi_viet.jsonl"
 LABELS = ("AN_TOAN", "XUC_PHAM", "QUAY_ROI", "DE_DOA", "LUA_DAO")
 KENH = {"messenger_zalo", "nhom_lop", "chat_game", "binh_luan", "sms"}
 REQUIRED = ("text", "nhan", "nguoi_viet")
+MAX_LINES = 8
+LINE_SEPARATOR = re.compile(r"\s*\|\|\s*")
 
 
 def split_evidence(value: str) -> list[str]:
@@ -35,14 +42,18 @@ def row_to_record(row: dict, source_file: str, line_no: int) -> tuple[dict | Non
     """Trả về (bản ghi, danh sách lỗi). Có lỗi thì bản ghi vẫn trả về để báo, nhưng không được ghi ra."""
     r = {str(k).strip().lower(): (v or "").strip() for k, v in row.items() if k}
     errors: list[str] = []
-    text = normalize_text(r.get("text", ""))
+    text = normalize_lines(LINE_SEPARATOR.sub("\n", r.get("text", "")))
     if not text:
         return None, []
+    lines = text.split("\n")
+    so_dong = len(lines)
+    if so_dong > MAX_LINES:
+        errors.append(f"qua {MAX_LINES} dong: {so_dong}")
     nhan = r.get("nhan", "").upper()
     if nhan not in LABELS:
         errors.append(f"nhan khong hop le: {r.get('nhan')!r}")
     evidence = split_evidence(r.get("bang_chung", ""))
-    missing = [p for p in evidence if p not in text]
+    missing = [p for p in evidence if not any(p in line for line in lines)]  # mỗi cụm nằm gọn trong 1 dòng
     if missing:
         errors.append(f"bang_chung khong co nguyen van trong text: {missing}")
     if nhan == "AN_TOAN" and evidence:
@@ -58,7 +69,8 @@ def row_to_record(row: dict, source_file: str, line_no: int) -> tuple[dict | Non
         errors.append(f"nhan_nguoi_kia khong hop le: {other!r}")
 
     digest = hashlib.sha1(f"{nguoi_viet}|{text}".encode("utf-8")).hexdigest()[:12]
-    record = make_record(text=text, nguon="nguoi_viet", nguon_id=digest, nhan_goc="", split_goc="")
+    record = make_record(text=text, nguon="nguoi_viet", nguon_id=digest, nhan_goc="", split_goc="",
+                         nhieu_dong=True)
     record.pop("bang_chung_goi_y", None)
     record.update({
         "nhan": nhan, "bang_chung": evidence, "cach_gan": "nguoi", "split": "test",

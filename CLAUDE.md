@@ -40,14 +40,22 @@ SafeViChi phát hiện tin nhắn tiếng Việt nguy hại, kể cả khi bị 
 
 `bang_chung` là các cụm chép nguyên văn từ tin nhắn, được phép rỗng. Phân loại và tô sáng được đo và đặt ngưỡng riêng.
 
-## Định dạng dữ liệu v2 (`data/v2/*.jsonl`, mỗi dòng một tin nhắn)
+## Định dạng dữ liệu v2 (`data/v2/*.jsonl`, mỗi dòng JSONL một mẫu)
 
 ```json
 {"id": "v2_000123", "text": "...", "nhan": "DE_DOA", "bang_chung": ["..."],
  "nguon": "vihsd|vihos|vithsd|thu_thap|nguoi_viet|sinh_llm", "nguon_id": "...",
  "cach_gan": "nguoi|llm|llm_nguoi_duyet", "the": ["tieng_long", "vung_mien", "an_y", "trich_dan"],
+ "so_dong": 3,
  "bien_dang": "C0|C1|C2", "nhom_trung": "...", "split": "train|validation|test"}
 ```
+
+Mỗi mẫu là một **đoạn hội thoại** hai người, 1–8 dòng ngăn bằng `"\n"`. Mỗi dòng là **toàn bộ lượt nói của một
+người**: các tin nhắn liên tiếp của cùng người được gộp vào một dòng (nối bằng dấu cách), nên các dòng luôn luân
+phiên hai người. **Không** có nhãn người nói trong `text`. Ứng dụng gửi vào mô hình đúng dạng này (cửa sổ trượt tối
+đa 8 dòng gần nhất). Câu một dòng của bộ cũ (ViHSD, ViHOS) là hội thoại 1 dòng. Nhãn gán cho cả đoạn theo tình
+huống nặng nhất; mỗi cụm `bang_chung` nằm gọn trong một dòng. Sinh biến dạng (C1/C2) áp dụng theo từng dòng, giữ
+nguyên `"\n"`.
 
 ## Quy tắc bắt buộc
 

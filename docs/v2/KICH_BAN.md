@@ -6,26 +6,49 @@ SafeViChi hướng tới trẻ em và thanh thiếu niên, nên kịch bản xoa
 làm quen. Người nhận tin luôn là học sinh THCS, THPT hoặc sinh viên. Câu do LLM sinh **chỉ vào train**
 (`nguon=sinh_llm`).
 
+## Dạng dữ liệu: đoạn hội thoại
+
+Mỗi mẫu là một đoạn hội thoại hai người, đúng dạng ứng dụng sẽ gửi vào mô hình:
+
+```
+Mày có vở không cho t mượn
+t có
+thế chiều hẹn ở cổng trường t mượn nha
+```
+
+- Mỗi dòng là **toàn bộ lượt nói của một người**: tin nhắn liên tiếp của cùng người gộp vào một dòng (nối bằng dấu
+  cách), rồi mới xuống dòng sang người kia. Các dòng luôn luân phiên hai người. Không ghi người nói.
+- Kênh hội thoại (`messenger_zalo`, `nhom_lop`, `chat_game`): 2–6 dòng. Kênh `binh_luan`, `sms`: 1 dòng.
+- Nhãn gán cho cả đoạn theo tình huống nặng nhất (`DE_DOA` > `LUA_DAO` > `QUAY_ROI` > `XUC_PHAM` > `AN_TOAN`).
+  Mỗi cụm bằng chứng nằm gọn trong một dòng, được lấy từ nhiều dòng.
+- Nhắn dồn dập (QR2) là một dòng dài gồm nhiều tin của cùng một người.
+
 ## Cách sinh
 
-- Một lần gọi LLM cho một **ô** = kịch bản × kênh × giọng × độ lộ (`lo_lieu` | `an_y`), xin 10 câu khác nhau.
-- Mỗi ô nguy hại có một ô **sinh đôi** `AN_TOAN` cùng kênh, giọng: tình huống an toàn nhưng dễ nhầm.
-- Mỗi kịch bản dùng 3 kênh × 4 giọng (chọn trong `kich_ban.yaml`) × 2 độ lộ = 24 ô.
+- Một lần gọi LLM cho một **ô** = kịch bản × kênh × giọng × độ lộ (`lo_lieu` | `an_y`) × kiểu lộ, xin 5 đoạn.
+- Kiểu lộ: `ngay_dau` (lộ ngay dòng đầu), `lo_dan` (vài dòng đầu bình thường, lộ ở cuối), `mot_dong` (kênh bình luận
+  và SMS). Kênh hội thoại luân phiên `ngay_dau` / `lo_dan` theo ô, nên tổng số lượt gọi không tăng.
+- Mỗi ô nguy hại có một ô **sinh đôi** `AN_TOAN` cùng kênh, giọng, kiểu lộ: đoạn an toàn nhưng dễ nhầm (có chữ
+  trông nguy hiểm nhưng ngữ cảnh vô hại, như bạn thân đùa, nhắc nợ trà sữa).
+- Mỗi kịch bản có tối đa 3 kênh × 4 giọng (chọn trong `kich_ban.yaml`) × 2 độ lộ = 24 ô. Số đoạn mục tiêu mỗi
+  nhãn đặt ở `muc_tieu_doan`; nếu cần ít ô hơn, script chọn đều trong 24 ô (LUA_DAO: 16 ô mỗi kịch bản).
 - Kênh: `messenger_zalo`, `nhom_lop`, `chat_game`, `binh_luan` (TikTok/Facebook), `sms`.
 - Giọng: teencode Gen Z, thân mật, không dấu, viết tắt, giọng Bắc, Trung, Nam; kẻ giả danh thêm giọng trang trọng
   giả admin, shop hoặc nhà tuyển dụng.
-- Mục tiêu: `LUA_DAO` 10 kịch bản × 24 ô × 10 câu ≈ 2.400 câu; `DE_DOA`, `QUAY_ROI` mỗi nhãn ≈ 1.200 câu;
-  câu sinh đôi `AN_TOAN` ≈ 4.800 câu.
-- `LD7` để ngoài train (không sinh), dùng làm cột "kịch bản chưa thấy" khi đánh giá. Test của LD7 phải là câu thật.
+- Dự kiến: 800 lượt gọi, khoảng 4.000 đoạn: `LUA_DAO` 160 ô ≈ 800 đoạn; `DE_DOA`, `QUAY_ROI` mỗi nhãn 120 ô ≈ 600
+  đoạn; sinh đôi `AN_TOAN` 400 ô ≈ 2.000 đoạn.
+- `LD7` để ngoài train (không sinh), dùng làm cột "kịch bản chưa thấy" khi đánh giá.
 
 ## Kiểm tra tự động
 
-- Nhãn hợp lệ và khớp ô: nhãn của kịch bản, hoặc `AN_TOAN` với ô sinh đôi. Câu lệch nhãn bị bỏ.
-- Cụm bằng chứng phải có nguyên văn trong câu. Cụm không khớp bị bỏ; câu nguy hại mất hết bằng chứng thì gắn
-  `can_duyet=true`. Câu `AN_TOAN` không giữ bằng chứng.
-- Bỏ câu dưới 3 từ và câu có giọng trợ lý ("Dưới đây là", "Lưu ý:", "Tôi không thể"...).
+- Nhãn hợp lệ và khớp ô: nhãn của kịch bản, hoặc `AN_TOAN` với ô sinh đôi. Đoạn lệch nhãn bị bỏ.
+- Số dòng đúng kiểu lộ (1 dòng với `mot_dong`, 2–8 dòng với kênh hội thoại). Tiền tố người nói ở đầu dòng
+  ("A:", "B:", "Người 1:") tự bị bỏ.
+- Cụm bằng chứng phải khớp nguyên văn trong một dòng. Cụm không khớp hoặc vắt qua hai dòng bị bỏ; đoạn nguy hại mất
+  hết bằng chứng thì gắn `can_duyet=true`. Đoạn `AN_TOAN` không giữ bằng chứng.
+- Bỏ đoạn dưới 3 từ và đoạn có giọng trợ lý ("Dưới đây là", "Lưu ý:", "Tôi không thể"...).
 - Tên miền tự vô hiệu hóa thành dạng `xxx[.]com`.
-- Khử trùng gần đúng giữa các câu sinh bằng `src/dataset_builder/dedup.py`.
+- Khử trùng gần đúng trên cả đoạn bằng `src/dataset_builder/dedup.py`, và loại đoạn gần trùng câu test người viết.
 - Ô bị LLM từ chối chỉ ghi log và bỏ qua, không cố lách. Ô lỗi mạng hoặc API được thử lại ở lần chạy sau.
 - Câu ví dụ (`vi_du`, tối đa 5 mỗi kịch bản) lấy từ phần mẫu; script dừng nếu ví dụ trùng câu test.
 

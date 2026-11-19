@@ -40,8 +40,14 @@ NHAN_GOC_NGUY_HAI = {"OFFENSIVE", "HATE"}
 
 
 def normalize_text(text: str) -> str:
-    """NFC và gộp khoảng trắng. Không đổi chữ nào khác."""
+    """NFC và gộp khoảng trắng (kể cả xuống dòng) thành một dòng. Không đổi chữ nào khác."""
     return " ".join(unicodedata.normalize("NFC", text).split())
+
+
+def normalize_lines(text: str) -> str:
+    """Chuẩn hóa một đoạn hội thoại: mỗi dòng một lượt nói, chuẩn hóa từng dòng, bỏ dòng trống, giữ xuống dòng."""
+    lines = [normalize_text(line) for line in unicodedata.normalize("NFC", text).splitlines()]
+    return "\n".join(line for line in lines if line)
 
 
 def make_id(nguon: str, nguon_id: str) -> str:
@@ -59,16 +65,22 @@ def make_record(
     split_goc: str,
     bang_chung_goi_y: list[str] | None = None,
     nhan_goc_chi_tiet: dict | None = None,
+    nhieu_dong: bool = False,
 ) -> dict:
+    """Bản ghi định dạng chung v2. Câu của bộ dữ liệu cũ là hội thoại 1 dòng (nhieu_dong=False gộp mọi
+    xuống dòng). Hội thoại nhiều dòng: mỗi dòng là toàn bộ lượt nói của một người, các dòng luân phiên hai người."""
+    text = normalize_lines(text) if nhieu_dong else normalize_text(text)
+    so_dong = text.count("\n") + 1 if text else 0
     record = {
         "id": make_id(nguon, nguon_id),
-        "text": normalize_text(text),
+        "text": text,
         "nhan": "",
         "bang_chung": [],
         "nguon": nguon,
         "nguon_id": nguon_id,
         "cach_gan": "",
         "the": [],
+        "so_dong": so_dong,
         "bien_dang": "C0",
         "nhom_trung": "",
         "split": "",
