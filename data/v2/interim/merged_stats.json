@@ -1,0 +1,36 @@
+{
+  "tong": 34857,
+  "theo_nguon": {
+    "vihos": 11056,
+    "vihsd": 23801
+  },
+  "theo_nguon_nhan_goc": {
+    "vihos": {
+      "CLEAN": 5696,
+      "HATE": 5360
+    },
+    "vihsd": {
+      "CLEAN": 19759,
+      "HATE": 2497,
+      "OFFENSIVE": 1545
+    }
+  },
+  "theo_nguon_split_goc": {
+    "vihos": {
+      "test": 1106,
+      "train": 8844,
+      "validation": 1106
+    },
+    "vihsd": {
+      "train": 23801
+    }
+  },
+  "co_bang_chung_goi_y": {
+    "vihos": 5360
+  },
+  "so_text_khac_nhau": 24019,
+  "so_ban_ghi_trung_text_chinh_xac": 10838,
+  "canh_bao": [
+    "Chưa có ViTHSD trong D:\\SafeViChi\\data\\raw\\vithsd (bộ trên Hugging Face bị gated: cần chấp nhận điều khoản và đăng nhập `huggingface-cli login`). Bỏ qua ViTHSD."
+  ]
+}

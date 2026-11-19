@@ -7,7 +7,7 @@ SafeViChi phát hiện tin nhắn tiếng Việt nguy hại, kể cả khi bị 
 
 - **v1 (vòng loại, nhánh `main`, tag `v1-vong-loai`):** chuẩn hóa 5 tầng → ViHateT5 fine-tune đối kháng (FGM)
   → occlusion để tô sáng. Nhãn HATE/CLEAN. Kết quả nằm trong `results/step3`, `results/step4`.
-- **v2 (vòng chung kết, nhánh `v2`):** đổi sang 5 nhãn theo tình huống và một mô hình ngôn ngữ nhỏ
+- **v2 (vòng chung kết, nhánh `v2-final`):** đổi sang 5 nhãn theo tình huống và một mô hình ngôn ngữ nhỏ
   (dưới 2 GB khi lượng tử hóa) trả về nhãn kèm cụm từ bằng chứng.
 - **Hạn nộp: 26/11/2026.** Lịch từng ngày nằm trong `docs/v2/KE_HOACH.md`. Ưu tiên giữ lịch hơn làm đẹp code.
 
@@ -44,7 +44,7 @@ SafeViChi phát hiện tin nhắn tiếng Việt nguy hại, kể cả khi bị 
 
 ```json
 {"id": "v2_000123", "text": "...", "nhan": "DE_DOA", "bang_chung": ["..."],
- "nguon": "vihsd|vihos|vithsd|thu_thap|sinh_llm", "nguon_id": "...",
+ "nguon": "vihsd|vihos|vithsd|thu_thap|nguoi_viet|sinh_llm", "nguon_id": "...",
  "cach_gan": "nguoi|llm|llm_nguoi_duyet", "the": ["tieng_long", "vung_mien", "an_y", "trich_dan"],
  "bien_dang": "C0|C1|C2", "nhom_trung": "...", "split": "train|validation|test"}
 ```
@@ -52,8 +52,10 @@ SafeViChi phát hiện tin nhắn tiếng Việt nguy hại, kể cả khi bị 
 ## Quy tắc bắt buộc
 
 - **Không sửa gì trong `results/step3`, `results/step4`, `data/data_final`, `models/`** của v1. v1 là một dòng baseline.
-- **Test chỉ chứa câu thật do người duyệt** (`cach_gan` là `nguoi` hoặc `llm_nguoi_duyet`, `nguon` khác `sinh_llm`).
-  Câu do LLM sinh chỉ được vào train.
+- **Test chỉ chứa câu thật do người duyệt hoặc câu do người trong nhóm tự viết** (`cach_gan` là `nguoi` hoặc
+  `llm_nguoi_duyet`; câu người viết có `nguon="nguoi_viet"`, `cach_gan="nguoi"`, xem `docs/v2/HUONG_DAN_VIET_TEST.md`).
+  Câu do LLM sinh (`nguon="sinh_llm"`) chỉ được vào train. Câu người viết phải được viết **trước** khi đọc câu LLM sinh,
+  để không bắt chước; câu sinh gần trùng câu người viết bị loại khỏi train.
 - **Không dùng nhãn của VOZ-HSD làm nhãn train.** Đó là nhãn do máy gán; tác giả không khuyến nghị dùng để fine-tune
   (xem `data/processed/vietnamese_nonstandard_v1_2/DATASET_CARD.md`). Chỉ dùng làm kho câu thô để LLM và người gán lại.
 - **Khử trùng gần đúng trước khi chia tập**, dùng lại `src/dataset_builder/dedup.py`; cả nhóm trùng vào cùng một split.

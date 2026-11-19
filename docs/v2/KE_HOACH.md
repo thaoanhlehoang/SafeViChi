@@ -12,7 +12,7 @@ mô hình nhỏ dưới 2 GB trả về nhãn kèm cụm từ bằng chứng, v�
 
 | Ngày | Việc | Máy | Xong |
 | --- | --- | --- | --- |
-| T5 19/11 | Chốt `HUONG_DAN_GAN_NHAN.md`; tạo nhánh `v2`, tag `v1-vong-loai`; script LLM gán sơ bộ ViHSD, ViHOS, ViTHSD sang 5 nhãn; bắt đầu gom tin lừa đảo thật (đã che thông tin); sửa số lệch của v1 | API, máy riêng | [ ] |
+| T5 19/11 | Chốt `HUONG_DAN_GAN_NHAN.md`; tạo nhánh `v2-final`, tag `v1-vong-loai`; script LLM gán sơ bộ ViHSD, ViHOS, ViTHSD sang 5 nhãn; bắt đầu gom tin lừa đảo thật (đã che thông tin); sửa số lệch của v1 | API, máy riêng | [ ] |
 | T6 20/11 | Hai người gán thử 100 câu, đo Cohen's kappa, sửa hướng dẫn; LLM sinh câu theo kịch bản cho `DE_DOA`, `QUAY_ROI`, `LUA_DAO` | API | [ ] |
 | T7 21/11 | Hai người duyệt độc lập tập test (~150 câu thật mỗi nhãn, kèm bằng chứng); khử trùng, chia tập, sinh biến dạng C1/C2; **đóng băng dataset** | Máy riêng | [ ] |
 | CN 22/11 | Train song song: Qwen3-1.7B QLoRA và encoder đa nhiệm; chạy LLM API làm baseline trên test | Colab, Kaggle, API | [ ] |

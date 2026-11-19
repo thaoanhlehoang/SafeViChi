@@ -1,0 +1,203 @@
+# Bảng kịch bản sinh câu v2 (generate.py). Người nhận tin luôn là học sinh THCS, THPT hoặc sinh viên.
+# Mỗi ô = kịch bản × kênh × giọng × độ lộ; mỗi ô nguy hại có một ô "sinh đôi" AN_TOAN cùng kênh, giọng.
+# giu_ngoai_train: true = KHÔNG sinh vào train, để làm cột "kịch bản chưa thấy" khi đánh giá.
+# vi_du: 3–5 câu thật lấy từ phần mẫu (KHÔNG BAO GIỜ lấy câu test). Chưa có thì để [].
+# Sửa file này là đổi dữ liệu train: ghi lại khi commit. Bảng đọc được: docs/v2/KICH_BAN.md.
+
+kenh:
+  messenger_zalo: "tin nhắn riêng qua Messenger hoặc Zalo"
+  nhom_lop: "tin nhắn trong nhóm chat của lớp"
+  chat_game: "khung chat trong game (Liên Quân, Free Fire, Roblox, Minecraft...)"
+  binh_luan: "bình luận dưới bài đăng TikTok hoặc Facebook"
+  sms: "tin nhắn SMS"
+
+giong:
+  teencode: "teencode Gen Z, viết tắt và từ lóng giới trẻ"
+  than_mat: "thân mật kiểu bạn bè, có dấu"
+  khong_dau: "gõ không dấu"
+  viet_tat: "viết tắt nhiều, gõ vội, sai chính tả, thiếu dấu câu"
+  giong_bac: "giọng miền Bắc"
+  giong_trung: "giọng miền Trung"
+  giong_nam: "giọng miền Nam"
+  trang_trong_gia_danh: "trang trọng, giả giọng admin, shop, nhà tuyển dụng hoặc tổ chức"
+
+do_lo:
+  lo_lieu: "lộ liễu: ý đồ thể hiện rõ ngay trong câu"
+  an_y: "ẩn ý: ý đồ nói tránh, vòng vo, lịch sự giả tạo, phải đọc kỹ mới thấy"
+
+# Mô tả độ lộ cho ô sinh đôi AN_TOAN (cùng mã do_lo với ô nguy hại tương ứng).
+do_lo_sinh_doi:
+  lo_lieu: "an toàn nhưng dùng nhiều từ ngữ, chủ đề giống tin nguy hại nên rất dễ bị nhầm"
+  an_y: "an toàn, cùng chủ đề, viết tự nhiên bình thường"
+
+kich_ban:
+  - ma: LD1
+    nhan: LUA_DAO
+    mo_ta: "Game: nạp thẻ giá rẻ, kim cương/quân huy/Robux miễn phí, gửi mã thẻ cào hoặc đăng nhập link để nhận"
+    sinh_doi: "Bạn rủ chơi game, khoe vừa nạp thẻ ở kênh chính thức"
+    kenh: [chat_game, messenger_zalo, binh_luan]
+    giong: [teencode, khong_dau, viet_tat, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD2
+    nhan: LUA_DAO
+    mo_ta: "Game: mua bán, trao đổi acc; nhận tiền hoặc acc rồi biến mất, đòi \"phí xác minh\""
+    sinh_doi: "Bạn bè bàn chuyện leo rank, mượn acc chơi thử có thỏa thuận rõ"
+    kenh: [chat_game, messenger_zalo, binh_luan]
+    giong: [teencode, than_mat, viet_tat, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD3
+    nhan: LUA_DAO
+    mo_ta: "Giveaway giả của idol, streamer, shop: trúng quà, nộp phí ship hoặc đăng nhập để nhận"
+    sinh_doi: "Giveaway thật, chỉ yêu cầu follow và bình luận"
+    kenh: [binh_luan, messenger_zalo, sms]
+    giong: [trang_trong_gia_danh, teencode, khong_dau, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD4
+    nhan: LUA_DAO
+    mo_ta: "Việc làm thêm cho học sinh, sinh viên: CTV online, like/đánh giá, gõ chữ tại nhà, phải nộp cọc hoặc nạp tiền làm nhiệm vụ"
+    sinh_doi: "Tin tuyển part-time thật (quán cà phê, gia sư), không thu cọc"
+    kenh: [messenger_zalo, binh_luan, sms]
+    giong: [trang_trong_gia_danh, teencode, khong_dau, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD5
+    nhan: LUA_DAO
+    mo_ta: "Nick bạn bè bị hack: hỏi mượn tiền gấp, nhờ nhận mã OTP, nhờ \"bình chọn giúp\" qua link đăng nhập"
+    sinh_doi: "Bạn bè hỏi mượn tiền thật, có chuyện chung rõ ràng"
+    kenh: [messenger_zalo, nhom_lop, chat_game]
+    giong: [than_mat, teencode, khong_dau, giong_trung]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD6
+    nhan: LUA_DAO
+    mo_ta: "Bán vé concert, đồ cũ, đồ học tập trên nhóm: nhận cọc rồi chặn"
+    sinh_doi: "Bạn cùng lớp pass lại sách, hẹn gặp ở trường"
+    kenh: [binh_luan, nhom_lop, messenger_zalo]
+    giong: [teencode, than_mat, viet_tat, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD7
+    nhan: LUA_DAO
+    mo_ta: "Vay tiền online nhanh cho học sinh sinh viên, chỉ cần ảnh căn cước"
+    sinh_doi: "Bạn nhắc nhau cẩn thận với app vay"
+    kenh: [sms, messenger_zalo, binh_luan]
+    giong: [trang_trong_gia_danh, teencode, khong_dau, giong_bac]
+    giu_ngoai_train: true
+    vi_du: []
+  - ma: LD8
+    nhan: LUA_DAO
+    mo_ta: "Làm quen online rồi nhờ nhận quà, đóng phí, chuyển tiền giúp"
+    sinh_doi: "Làm quen lịch sự, không đòi gì"
+    kenh: [messenger_zalo, chat_game, binh_luan]
+    giong: [than_mat, teencode, khong_dau, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD9
+    nhan: LUA_DAO
+    mo_ta: "Rủ rê \"đầu tư\", kiếm tiền nhanh, rủ thêm bạn để nhận hoa hồng"
+    sinh_doi: "Bạn kể chuyện tiết kiệm tiền tiêu vặt"
+    kenh: [messenger_zalo, nhom_lop, binh_luan]
+    giong: [trang_trong_gia_danh, than_mat, teencode, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD10
+    nhan: LUA_DAO
+    mo_ta: "Học bổng, cuộc thi giả: trúng tuyển, đóng phí giữ suất"
+    sinh_doi: "Thông báo học bổng thật của trường, không thu phí"
+    kenh: [sms, messenger_zalo, binh_luan]
+    giong: [trang_trong_gia_danh, khong_dau, viet_tat, giong_trung]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: LD11
+    nhan: LUA_DAO
+    mo_ta: "Bán khóa học, tài liệu giả: khóa luyện thi, IELTS, \"khóa học kiếm tiền online\" giá sốc, bán đề thi \"lộ\"; chuyển khoản trước rồi biến mất"
+    sinh_doi: "Trung tâm thật giới thiệu khóa học, có địa chỉ, học thử, không ép chuyển gấp"
+    kenh: [binh_luan, messenger_zalo, nhom_lop]
+    giong: [trang_trong_gia_danh, teencode, khong_dau, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+
+  - ma: DD1
+    nhan: DE_DOA
+    mo_ta: "Bạo lực học đường: hẹn đánh, chặn đường cổng trường, \"ra sau trường gặp tao\""
+    sinh_doi: "Bạn đùa kiểu thân, có dấu hiệu đùa rõ trong câu; hẹn gặp ở cổng trường"
+    kenh: [nhom_lop, messenger_zalo, binh_luan]
+    giong: [teencode, khong_dau, giong_bac, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: DD2
+    nhan: DE_DOA
+    mo_ta: "Đòi nợ giữa bạn bè hoặc vay nóng: dọa đến nhà, báo nhà trường, đăng lên nhóm lớp"
+    sinh_doi: "Nhắc trả tiền trà sữa, tiền quỹ lịch sự"
+    kenh: [messenger_zalo, nhom_lop, sms]
+    giong: [than_mat, teencode, giong_trung, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: DD3
+    nhan: DE_DOA
+    mo_ta: "Tống tiền bằng ảnh hoặc clip: \"không chuyển tiền tao gửi cho cả lớp\""
+    sinh_doi: "Bạn trêu dọa đăng ảnh dìm hàng kiểu đùa"
+    kenh: [messenger_zalo, chat_game, sms]
+    giong: [teencode, khong_dau, viet_tat, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: DD4
+    nhan: DE_DOA
+    mo_ta: "Dọa tung tin, bêu xấu lên confession, nhóm lớp nếu không làm theo"
+    sinh_doi: "Nhắc nhau đừng đăng ảnh người khác khi chưa hỏi"
+    kenh: [nhom_lop, messenger_zalo, binh_luan]
+    giong: [teencode, than_mat, khong_dau, giong_trung]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: DD5
+    nhan: DE_DOA
+    mo_ta: "Trong game: dọa hack acc, dọa tìm ra ngoài đời \"tao biết trường mày\""
+    sinh_doi: "Trash talk trong game không nhắm ra đời thực"
+    kenh: [chat_game, messenger_zalo, binh_luan]
+    giong: [teencode, viet_tat, khong_dau, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+
+  - ma: QR1
+    nhan: QUAY_ROI
+    mo_ta: "Người lạ làm quen online rồi xin ảnh riêng tư, rủ gặp riêng, dặn giữ bí mật, đổi quà/thẻ game lấy ảnh"
+    sinh_doi: "Làm quen lịch sự, rủ đi chơi nhóm"
+    kenh: [messenger_zalo, chat_game, binh_luan]
+    giong: [than_mat, teencode, khong_dau, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: QR2
+    nhan: QUAY_ROI
+    mo_ta: "Nhắn dồn dập sau khi bị từ chối, lập nick khác khi bị chặn"
+    sinh_doi: "Hỏi lại một lần vì chưa thấy trả lời"
+    kenh: [messenger_zalo, chat_game, sms]
+    giong: [than_mat, teencode, viet_tat, giong_nam]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: QR3
+    nhan: QUAY_ROI
+    mo_ta: "Bình phẩm ngoại hình, body shaming nhắm vào một bạn trong nhóm lớp"
+    sinh_doi: "Khen nhau lịch sự"
+    kenh: [nhom_lop, binh_luan, messenger_zalo]
+    giong: [teencode, khong_dau, giong_bac, giong_trung]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: QR4
+    nhan: QUAY_ROI
+    mo_ta: "Bêu riếu, đăng ảnh chế, rủ cả lớp tẩy chay một bạn"
+    sinh_doi: "Kể chuyện vui về chính mình"
+    kenh: [nhom_lop, binh_luan, messenger_zalo]
+    giong: [teencode, viet_tat, giong_nam, khong_dau]
+    giu_ngoai_train: false
+    vi_du: []
+  - ma: QR5
+    nhan: QUAY_ROI
+    mo_ta: "Trong game: bám đuôi, spam chat quấy rối một người chơi"
+    sinh_doi: "Rủ nhau chơi tiếp trận sau"
+    kenh: [chat_game, binh_luan, messenger_zalo]
+    giong: [teencode, viet_tat, khong_dau, giong_bac]
+    giu_ngoai_train: false
+    vi_du: []
