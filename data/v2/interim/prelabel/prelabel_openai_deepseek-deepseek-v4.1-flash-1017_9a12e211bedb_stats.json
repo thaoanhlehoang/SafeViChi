@@ -1,0 +1,32 @@
+{
+  "so_ban_ghi": 10062,
+  "theo_nhan": {
+    "AN_TOAN": 5663,
+    "XUC_PHAM": 4108,
+    "DE_DOA": 197,
+    "QUAY_ROI": 81,
+    "LUA_DAO": 13
+  },
+  "theo_nhan_goc_va_nhan": {
+    "CLEAN->AN_TOAN": 3823,
+    "CLEAN->DE_DOA": 41,
+    "CLEAN->LUA_DAO": 13,
+    "CLEAN->QUAY_ROI": 19,
+    "CLEAN->XUC_PHAM": 475,
+    "HATE->AN_TOAN": 1553,
+    "HATE->DE_DOA": 148,
+    "HATE->QUAY_ROI": 54,
+    "HATE->XUC_PHAM": 3547,
+    "OFFENSIVE->AN_TOAN": 287,
+    "OFFENSIVE->DE_DOA": 8,
+    "OFFENSIVE->QUAY_ROI": 8,
+    "OFFENSIVE->XUC_PHAM": 86
+  },
+  "can_duyet": 5125,
+  "ly_do_duyet": {
+    "do_chac_thap": 4391,
+    "lech_nhan_goc_nguy_hai_thanh_an_toan": 1840,
+    "lech_nhan_goc_sach_thanh_nguy_hai": 548,
+    "co_bang_chung_bi_bo": 19
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "tong": 10557,
+  "giu": 9625,
+  "loai": 932,
+  "ly_do_loai": {
+    "kiem_lai_ra_XUC_PHAM": 424,
+    "kiem_lai_ra_AN_TOAN": 241,
+    "kiem_lai_ra_DE_DOA": 181,
+    "kiem_lai_ra_QUAY_ROI": 71,
+    "kiem_lai_ra_LUA_DAO": 14,
+    "chua_kiem_duoc": 1
+  },
+  "theo_nhan": {
+    "AN_TOAN(sinh_doi)": {
+      "giu": 4945,
+      "loai": 350,
+      "ti_le_giu": 0.934
+    },
+    "DE_DOA": {
+      "giu": 1361,
+      "loai": 113,
+      "ti_le_giu": 0.923
+    },
+    "LUA_DAO": {
+      "giu": 1751,
+      "loai": 72,
+      "ti_le_giu": 0.961
+    },
+    "QUAY_ROI": {
+      "giu": 1098,
+      "loai": 389,
+      "ti_le_giu": 0.738
+    },
+    "XUC_PHAM": {
+      "giu": 470,
+      "loai": 8,
+      "ti_le_giu": 0.983
+    }
+  },
+  "theo_kich_ban": {
+    "DD1": {
+      "giu": 509,
+      "loai": 85,
+      "ti_le_giu": 0.857
+    },
+    "DD2": {
+      "giu": 589,
+      "loai": 5,
+      "ti_le_giu": 0.992
+    },
+    "DD3": {
+      "giu": 490,
+      "loai": 104,
+      "ti_le_giu": 0.825
+    },
+    "DD4": {
+      "giu": 586,
+      "loai": 5,
+      "ti_le_giu": 0.992
+    },
+    "DD5": {
+      "giu": 485,
+      "loai": 100,
+      "ti_le_giu": 0.829
+    },
+    "LD1": {
+      "giu": 392,
+      "loai": 1,
+      "ti_le_giu": 0.997
+    },
+    "LD10": {
+      "giu": 307,
+      "loai": 7,
+      "ti_le_giu": 0.978
+    },
+    "LD11": {
+      "giu": 374,
+      "loai": 4,
+      "ti_le_giu": 0.989
+    },
+    "LD2": {
+      "giu": 377,
+      "loai": 10,
+      "ti_le_giu": 0.974
+    },
+    "LD3": {
+      "giu": 305,
+      "loai": 2,
+      "ti_le_giu": 0.993
+    },
+    "LD4": {
+      "giu": 303,
+      "loai": 7,
+      "ti_le_giu": 0.977
+    },
+    "LD5": {
+      "giu": 368,
+      "loai": 26,
+      "ti_le_giu": 0.934
+    },
+    "LD6": {
+      "giu": 380,
+      "loai": 18,
+      "ti_le_giu": 0.955
+    },
+    "LD8": {
+      "giu": 394,
+      "loai": 1,
+      "ti_le_giu": 0.997
+    },
+    "LD9": {
+      "giu": 383,
+      "loai": 7,
+      "ti_le_giu": 0.982
+    },
+    "QR1": {
+      "giu": 590,
+      "loai": 9,
+      "ti_le_giu": 0.985
+    },
+    "QR2": {
+      "giu": 538,
+      "loai": 61,
+      "ti_le_giu": 0.898
+    },
+    "QR3": {
+      "giu": 317,
+      "loai": 278,
+      "ti_le_giu": 0.533
+    },
+    "QR4": {
+      "giu": 520,
+      "loai": 65,
+      "ti_le_giu": 0.889
+    },
+    "QR5": {
+      "giu": 557,
+      "loai": 40,
+      "ti_le_giu": 0.933
+    },
+    "XP1": {
+      "giu": 385,
+      "loai": 93,
+      "ti_le_giu": 0.805
+    },
+    "XP2": {
+      "giu": 476,
+      "loai": 4,
+      "ti_le_giu": 0.992
+    }
+  },
+  "provider": "openai",
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "prompt_version": "9a12e211bedb",
+  "reasoning": "none",
+  "provider_order": [
+    "wafer/us"
+  ],
+  "max_price": [
+    0.04,
+    0.5
+  ],
+  "dau_vao": "D:\\SafeViChi\\data\\v2\\interim\\sinh_llm.jsonl"
+}
