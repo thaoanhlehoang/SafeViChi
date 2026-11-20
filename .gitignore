@@ -69,3 +69,6 @@ Thumbs.db
 !results/step3/logs/*.log
 wandb/
 runs/
+
+# Log chạy pipeline dữ liệu v2 (không commit)
+logs_v2/

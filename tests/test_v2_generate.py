@@ -19,24 +19,30 @@ def test_kich_ban_yaml_matches_plan(bang):
     assert codes[:11] == [f"LD{i}" for i in range(1, 12)]
     assert [c for c in codes if c.startswith("DD")] == [f"DD{i}" for i in range(1, 6)]
     assert [c for c in codes if c.startswith("QR")] == [f"QR{i}" for i in range(1, 6)]
+    assert [c for c in codes if c.startswith("XP")] == ["XP1", "XP2"]
+    # XUC_PHAM chỉ sinh hội thoại nhiều dòng (câu XUC_PHAM thật đều là bình luận một dòng)
+    for kb in bang.kich_ban:
+        if kb.nhan == "XUC_PHAM":
+            assert not set(kb.kenh) & set(bang.kenh_mot_dong)
     assert [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train] == ["LD7"]
     assert set(bang.kenh) == {"messenger_zalo", "nhom_lop", "chat_game", "binh_luan", "sms"}
     assert set(bang.do_lo) == {"lo_lieu", "an_y"}
     assert set(bang.kieu_lo) == {"ngay_dau", "lo_dan", "mot_dong"}
     assert set(bang.kenh_mot_dong) == {"binh_luan", "sms"}
     for kb in bang.kich_ban:
-        assert len(kb.kenh) == 3 and len(kb.giong) == 4 and kb.sinh_doi
+        assert len(kb.kenh) == 3 and len(kb.giong) in (4, 6) and len(set(kb.giong)) == len(kb.giong) and kb.sinh_doi
 
 
 def test_plan_counts_kieu_lo_and_held_out(bang):
     cells = g.plan_cells(bang)
-    assert len(cells) == 800  # không vượt ngân sách lượt gọi
-    assert Counter(c.nhan for c in cells) == {"LUA_DAO": 160, "DE_DOA": 120, "QUAY_ROI": 120, "AN_TOAN": 400}
-    assert bang.muc_tieu_doan == {"LUA_DAO": 800, "DE_DOA": 600, "QUAY_ROI": 600}
+    # phương án train 15.000 câu (chốt 20/11)
+    assert bang.muc_tieu_doan == {"LUA_DAO": 2000, "DE_DOA": 1500, "QUAY_ROI": 1500, "XUC_PHAM": 500}
+    assert len(cells) == 2144  # không vượt ngân sách lượt gọi
+    assert Counter(c.nhan for c in cells) == {"LUA_DAO": 376, "DE_DOA": 300, "QUAY_ROI": 300, "XUC_PHAM": 96,
+                                              "AN_TOAN": 1072}
+    assert g.target_shortfalls(bang, g.DEFAULT_SO_DOAN) == []  # mọi nhãn đạt ít nhất 90% mục tiêu
     ld = [c for c in cells if c.nhan == "LUA_DAO"]
-    assert sum(c.so_doan for c in ld) == 800
-    assert Counter(c.do_lo for c in ld) == {"lo_lieu": 80, "an_y": 80}
-    assert set(Counter(c.ma for c in ld).values()) == {16}
+    assert Counter(c.do_lo for c in ld) == {"lo_lieu": 188, "an_y": 188}
     # chọn ô không phụ thuộc --kich-ban
     assert [c.o_id for c in g.plan_cells(bang, ["LD3"])] == [c.o_id for c in cells if c.ma == "LD3"]
     assert not any(c.ma == "LD7" for c in cells)
@@ -49,7 +55,9 @@ def test_plan_counts_kieu_lo_and_held_out(bang):
     twin = cells[1]
     assert twin.o_id == cells[0].o_id + "-SD" and twin.nhan == "AN_TOAN" and twin.kieu_lo == cells[0].kieu_lo
     only = g.plan_cells(bang, ["DD1"], so_doan=3, co_sinh_doi=False)
-    assert len(only) == 24 and all(c.ma == "DD1" and c.so_doan == 3 for c in only)
+    # DD1: (2 kênh hội thoại × 2 kiểu lộ + 1 kênh một dòng) × 6 giọng × 2 độ lộ = 60 ô
+    assert len(only) == 60 and all(c.ma == "DD1" and c.so_doan == 3 for c in only)
+    assert len({(c.kenh, c.giong, c.do_lo, c.kieu_lo) for c in only}) == 60
     assert g.plan_cells(bang, ["LD7"]) == []
 
 
@@ -230,3 +238,15 @@ def test_api_error_is_retried_next_run(tmp_path, bang):
     llm = FakeLLM()
     done = g.run_cells(cells, bang, system="s", complete=llm, raw_path=raw, meta={}, log=lambda _: None)
     assert llm.calls == 1 and g.collect(cells, done)[1]["theo_nhan"] == {"DE_DOA": 1}
+
+
+def test_parse_items_without_list_brackets():
+    from src.v2.labeling import generate as gen
+    content = '{\n "text": "a\\nb",\n "nhan": "QUAY_ROI",\n "bang_chung": ["a"]\n},\n{\n "text": "c", "nhan": "QUAY_ROI"\n}'
+    items = gen.parse_items(content)
+    assert [i["text"] for i in items] == ["a\nb", "c"]
+    # object lồng bên trong không bị tách thành mẫu riêng
+    nested = '{"text": "x", "meta": {"k": 1}} {"text": "y"}'
+    assert [i["text"] for i in gen.parse_items(nested)] == ["x", "y"]
+    # list chuẩn vẫn đọc như cũ
+    assert len(gen.parse_items('```json\n[{"text": "x"}, {"text": "y"}]\n```')) == 2

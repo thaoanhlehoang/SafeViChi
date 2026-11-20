@@ -76,12 +76,26 @@ Mỗi mẫu là một ĐOẠN HỘI THOẠI giữa hai người, viết như ng�
 - Nhắn dồn dập (ví dụ QR2) thể hiện bằng một dòng dài gồm nhiều tin của cùng một người, có thể kèm dòng trả lời
   ngắn của người kia hoặc không có.
 - Đúng kênh, giọng văn, độ lộ và kiểu lộ được yêu cầu (teencode, không dấu, sai chính tả… đúng như người thật gõ).
-- Các đoạn trong một lượt phải khác nhau rõ về số dòng, cách mở đầu, chi tiết, người nhắn.
+- Các đoạn trong một lượt phải KHÁC NHAU THẬT SỰ, không phải một khuôn đổi vài chữ: mỗi đoạn một tình huống,
+  một cách tiếp cận, một câu mở đầu, một độ dài khác nhau. Không lặp lại cụm từ đặc trưng giữa các đoạn
+  (ví dụ không phải đoạn nào cũng "phí xác minh", "bí mật nha", "đừng kể ai").
+
+GIỌNG VĂN TỰ NHIÊN, KHÔNG GIẢ TẠO:
+- Viết như tin nhắn thật người Việt gõ trên điện thoại, không như văn mẫu hay kịch bản tuyên truyền.
+- Câu ngắn, có thể cụt, viết tắt, gõ sai, thiếu dấu câu, emoji hoặc "=))", "haha" vừa phải. Không dùng từ sách vở
+  ("tôn trọng quyền riêng tư", "hành vi", "đảm bảo an toàn") trừ khi người thật hay nói vậy trong tình huống đó.
+- Không nhân vật nào giảng giải đạo lý, giải thích vì sao việc gì đúng hay sai, hay tóm tắt bài học.
+- Người nhận phản ứng như người thật: lơ, trả lời cộc lốc, hỏi lại, nghi ngờ, đùa, hoặc mắc bẫy; không phải lúc
+  nào cũng từ chối lịch sự.
+- Kẻ xấu không tự khai ý đồ, nói như người thật đang dụ, dọa hoặc gạ (đúng mức độ lộ được yêu cầu). Lời dọa trong
+  DE_DOA phải là dọa thật, người đọc hiểu được hậu quả, không mơ hồ đến mức thành câu vô hại.
+- Đoạn AN_TOAN là chuyện thường ngày thật, không cố chứng minh là mình an toàn ("không phải hẹn riêng đâu nha").
 - "nhan": nhãn của CẢ ĐOẠN theo hướng dẫn ở trên; nhiều loại cùng xuất hiện thì lấy loại nặng nhất theo thứ tự
   DE_DOA > LUA_DAO > QUAY_ROI > XUC_PHAM > AN_TOAN. Đoạn AN_TOAN phải thật sự an toàn theo hướng dẫn.
 - "bang_chung": các cụm chép NGUYÊN VĂN, mỗi cụm nằm gọn trong MỘT dòng (có thể lấy từ nhiều dòng khác nhau),
   theo mục 5 của hướng dẫn. Đoạn AN_TOAN để [].
-- Số điện thoại ghi [SDT], số tài khoản ghi [STK], tên người dùng tên phổ biến bịa ra.
+- Số điện thoại ghi [SDT], số tài khoản ghi [STK], tên người dùng tên phổ biến bịa ra. Chỉ ghi [SDT]/[STK] khi
+  người thật sẽ gửi số đó; đoạn AN_TOAN cũng có thể có (gửi số cho bạn, chuyển tiền trả nợ bạn bè).
 - Chỉ trả về một JSON list, không thêm lời dẫn, lời giải thích hay lưu ý nào."""
 
 ASSISTANT_PATTERN = re.compile(
@@ -201,6 +215,15 @@ def pick_kieu_lo(bang: BangKichBan, kenh: str, giong_index: int, do_lo_index: in
     return ("ngay_dau", "lo_dan")[(giong_index + do_lo_index) % 2]
 
 
+def kieu_lo_options(bang: BangKichBan, kenh: str, giong_index: int, do_lo_index: int) -> tuple[str, ...]:
+    """Kiểu lộ của các ô cho một (kênh, giọng, độ lộ): kênh một dòng chỉ có mot_dong; kênh hội thoại có cả
+    ngay_dau và lo_dan, kiểu của pick_kieu_lo đứng trước để khi lấy ít ô vẫn luân phiên hai kiểu."""
+    first = pick_kieu_lo(bang, kenh, giong_index, do_lo_index)
+    if first == "mot_dong":
+        return (first,)
+    return (first, "lo_dan" if first == "ngay_dau" else "ngay_dau")
+
+
 def cells_per_scenario(bang: BangKichBan, nhan: str, so_doan: int, full: int) -> int:
     """Số ô mỗi kịch bản của một nhãn để đạt muc_tieu_doan (tính trên mọi kịch bản được sinh của nhãn đó,
     không phụ thuộc --kich-ban), tối thiểu 1, tối đa `full`."""
@@ -213,7 +236,8 @@ def cells_per_scenario(bang: BangKichBan, nhan: str, so_doan: int, full: int) ->
 def plan_cells(bang: BangKichBan, ma: list[str] | None = None, so_doan: int = DEFAULT_SO_DOAN,
                co_sinh_doi: bool = True) -> list[O]:
     """Ô theo thứ tự cố định; mỗi ô nguy hại kèm ngay ô sinh đôi AN_TOAN cùng kênh, giọng, kiểu lộ.
-    Nếu có muc_tieu_doan, mỗi kịch bản chỉ lấy k ô chọn đều (bước nhảy cố định) trong các ô kênh × giọng × độ lộ."""
+    Nếu có muc_tieu_doan, mỗi kịch bản chỉ lấy k ô chọn đều (bước nhảy cố định) trong các ô
+    kênh × giọng × độ lộ × kiểu lộ (kênh hội thoại có 2 kiểu lộ, kênh một dòng có 1)."""
     cells: list[O] = []
     for kb in bang.kich_ban:
         if kb.giu_ngoai_train or (ma and kb.ma not in ma):
@@ -222,7 +246,8 @@ def plan_cells(bang: BangKichBan, ma: list[str] | None = None, so_doan: int = DE
         for kenh in kb.kenh:
             for gi, giong in enumerate(kb.giong):
                 for di, do_lo in enumerate(bang.do_lo):
-                    candidates.append((kenh, giong, do_lo, pick_kieu_lo(bang, kenh, gi, di)))
+                    for kieu_lo in kieu_lo_options(bang, kenh, gi, di):
+                        candidates.append((kenh, giong, do_lo, kieu_lo))
         k = cells_per_scenario(bang, kb.nhan, so_doan, len(candidates))
         chosen = [candidates[(i * len(candidates)) // k] for i in range(k)]
         for kenh, giong, do_lo, kieu_lo in chosen:
@@ -285,26 +310,30 @@ def build_user_prompt(cell: O, bang: BangKichBan) -> str:
 # ---------------------------------------------------------------- phân tích và kiểm đầu ra
 
 def parse_items(content: str) -> list[dict]:
-    """Lấy JSON list trong phản hồi; nếu không có thì thử từng dòng JSON."""
+    """Lấy JSON list trong phản hồi; nếu không đọc được list (thiếu ngoặc [ ], object ngăn bằng dấu phẩy, object
+    trải nhiều dòng) thì quét lần lượt từng object JSON cấp ngoài cùng."""
     cleaned = re.sub(r"```(?:json)?", "", content)
     start, end = cleaned.find("["), cleaned.rfind("]")
     if start != -1 and end > start:
         try:
             data = json.loads(cleaned[start:end + 1])
-            if isinstance(data, list):
-                return [x for x in data if isinstance(x, dict)]
+            found = [x for x in data if isinstance(x, dict)] if isinstance(data, list) else []
+            if found:  # list rỗng hoặc list chuỗi (vd. bang_chung) thì quét object bên dưới
+                return found
         except json.JSONDecodeError:
             pass
-    items = []
-    for line in cleaned.splitlines():
-        line = line.strip().rstrip(",")
-        if line.startswith("{"):
-            try:
-                obj = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if isinstance(obj, dict):
-                items.append(obj)
+    decoder = json.JSONDecoder()
+    items: list[dict] = []
+    pos = cleaned.find("{")
+    while pos != -1:
+        try:
+            obj, end_pos = decoder.raw_decode(cleaned, pos)
+        except json.JSONDecodeError:
+            pos = cleaned.find("{", pos + 1)
+            continue
+        if isinstance(obj, dict):
+            items.append(obj)
+        pos = cleaned.find("{", end_pos)
     return items
 
 
@@ -522,12 +551,27 @@ def collect(cells: list[O], done: dict[str, dict], meta_default: dict | None = N
     return kept, stats
 
 
+def target_shortfalls(bang: BangKichBan, so_doan: int) -> list[str]:
+    """Nhãn nào thiếu quá 10% so với muc_tieu_doan vì hết ô trong bảng (tính trên kế hoạch đầy đủ, không theo --kich-ban)."""
+    if not bang.muc_tieu_doan:
+        return []
+    full = plan_cells(bang, None, so_doan, co_sinh_doi=False)
+    out = []
+    for nhan, target in sorted(bang.muc_tieu_doan.items()):
+        got = sum(c.so_doan for c in full if c.nhan == nhan)
+        if got < 0.9 * target:  # thiếu dưới 10% do làm tròn hoặc vài kịch bản ít ô thì chấp nhận
+            out.append(f"{nhan} chỉ đạt {got}/{target} đoạn mục tiêu vì hết ô trong bảng kịch bản "
+                       "(thêm kịch bản, kênh hoặc giọng nếu cần).")
+    return out
+
+
 def describe_plan(cells: list[O], bang: BangKichBan) -> str:
     lines = ["===== KẾ HOẠCH ====="]
     for nhan, n in sorted(Counter(c.nhan for c in cells).items()):
         n_doan = sum(c.so_doan for c in cells if c.nhan == nhan)
         lines.append(f"  {nhan}: {n} ô, khoảng {n_doan} đoạn")
     lines.append(f"  Theo kiểu lộ: {dict(sorted(Counter(c.kieu_lo for c in cells).items()))}")
+    lines += [f"  CẢNH BÁO: {w}" for w in target_shortfalls(bang, cells[0].so_doan if cells else DEFAULT_SO_DOAN)]
     held = [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train]
     lines.append(f"Tổng {len(cells)} lượt gọi, khoảng {sum(c.so_doan for c in cells)} đoạn. "
                  f"Để ngoài train: {', '.join(held) or 'không'}.")
@@ -576,7 +620,7 @@ def main(argv: list[str] | None = None) -> int:
     llm.load_dotenv()
     config = llm.config_from_env()
     config.temperature = 1.0  # cần đa dạng
-    meta = {"provider": config.provider, "model": config.model, "prompt_version": version}
+    meta = {"provider": config.provider, "model": config.model, "prompt_version": version, **config.describe()}
     tag = llm.safe_name(f"{config.provider}_{config.model}_{version}")
 
     def complete(system_prompt: str, user_prompt: str) -> str:
@@ -597,6 +641,7 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(stats, ensure_ascii=False, indent=2))
     print(f"Đã ghi {out_path}")
+    print(f"Token đã dùng lượt này: {llm.USAGE.summary()}")
     return 0
 
 
