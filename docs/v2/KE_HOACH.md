@@ -34,18 +34,54 @@ xuống ~100 câu và ghi rõ trong báo cáo.
 | `QUAY_ROI` | Lọc lại từ cùng kho: gạ gẫm, bêu riếu ngoại hình | Gạ gẫm qua tin riêng, nhắn tiếp sau khi bị từ chối |
 | `LUA_DAO` | Tin rác SMS/Zalo/Messenger của nhóm và người quen (xin phép, che thông tin); ví dụ trong bài cảnh báo của Cục An toàn thông tin | Theo từng hình thức lừa đảo trong danh sách cảnh báo |
 
-Quy mô mục tiêu: test ~150 câu thật mỗi nhãn; train 1.500–3.000 câu mỗi nhãn nguy hại, `AN_TOAN` gấp 2–3 lần.
+Quy mô mục tiêu: test ~150 câu thật mỗi nhãn; **train khoảng 15.000 đoạn** (chốt 20/11, xem bảng dưới).
 Train do LLM gán: người duyệt mọi câu LLM không chắc hoặc lệch nhãn gốc, cộng mẫu ngẫu nhiên 10–20% để ước tỉ lệ sai.
+
+### Quyết định 19–20/11
+
+- **Dữ liệu gốc:** tải đủ ViHSD (train/dev/test) và ViTHSD từ Hugging Face, ghim revision
+  (`data/raw/NGUON_TAI.json`). ViHOS và ViTHSD gần như toàn là câu của ViHSD, nên gộp theo text còn **30.580 câu
+  khác nhau**; nhãn gốc của từng bộ giữ ở `nguon_goc`, câu các bộ gán mâu thuẫn có `nhan_goc_bat_dong=true`.
+- **Kho test tách trước khi gọi LLM:** sau khử trùng gần đúng, nhóm câu nào chưa từng nằm trong split train của
+  ViHSD/ViHOS (ViHateT5 nền của v1 đã học phần đó) và chưa từng gửi LLM thì vào kho test (6.724 câu,
+  `data/v2/interim/kho_test.jsonl`). Kho test **không bao giờ gửi LLM**; câu test/validation chọn từ đây do người gán.
+- **Gán lại có chọn lọc 10.062 câu** của kho train (`can_gan_lai.jsonl`): mọi câu nhãn gốc nguy hại, ứng viên từ
+  khóa, câu CLEAN có từ trong blacklist v1 (ca dễ báo nhầm), cộng 3.000 câu CLEAN ngẫu nhiên (seed 42).
+- **LLM:** DeepSeek V4.1 Flash 1017 qua OpenRouter, khóa endpoint `wafer/us`, tắt thinking, giá trần 0,04/0,5 USD
+  mỗi triệu token. Đã so với Qwen3.8 27B trên cùng 10 mẫu (`results/v2/thu_model/`): DeepSeek sinh `DE_DOA` rõ
+  hơn, không hỏng định dạng, rẻ hơn khoảng 3 lần; bỏ Qwen.
+- **Sinh 10.720 đoạn** (2.144 lượt gọi): `LUA_DAO` ~1.880, `DE_DOA` 1.500, `QUAY_ROI` 1.500, `XUC_PHAM` ~480 (chỉ
+  hội thoại nhiều dòng), cộng đoạn sinh đôi `AN_TOAN` cùng số. Sau đó **lọc lại**: LLM gán lại từng đoạn mà không
+  biết nhãn yêu cầu, chỉ giữ đoạn trùng nhãn.
+- **Xử lý nhãn LLM lệch nhãn gốc (chốt 20/11):** không gán lại bằng tay. Chỉ giữ câu thật mà nhãn LLM (sạch/nguy hại)
+  khớp với ít nhất một người gán gốc; câu mà mọi người gán gốc cùng một ý còn LLM nói ngược lại thì bỏ khỏi train
+  (`python -m src.v2.data.dong_thuan` -> `that_gan_lai.jsonl`, trường `dong_thuan`). Kết quả: giữ 8.649, bỏ 1.413
+  (865 HATE→`AN_TOAN`, 475 CLEAN→`XUC_PHAM`, 73 CLEAN→nhãn hiếm). Hai người gán độc lập mẫu 200 câu (100 giữ,
+  100 bỏ, ẩn nhãn) trong `data/v2/raw/kiem_nhan_A.csv`, `kiem_nhan_B.csv`; `python -m src.v2.labeling.agreement`
+  tính kappa, ước tỉ lệ nhãn sai của câu giữ, và cho biết câu bị bỏ thường đúng theo LLM hay theo nhãn gốc.
+- **Chi phí và thời gian** ghi ở `results/v2/chi_phi_du_lieu/chi_phi.json` (sinh bằng `python -m src.v2.labeling.chi_phi`).
+
+| Nhãn | Nguồn | Dự kiến lấy vào train |
+| --- | --- | --- |
+| `AN_TOAN` | ~4.500 câu thật gán lại + đoạn sinh đôi | ~6.000 |
+| `XUC_PHAM` | ~5.000 câu thật gán lại + ~480 hội thoại sinh | ~3.000 |
+| `LUA_DAO` | Đoạn sinh (+ tin lừa đảo thật thu thập, nếu có) | ~1.750 |
+| `DE_DOA` | Đoạn sinh + câu thật gán lại | ~1.450 |
+| `QUAY_ROI` | Đoạn sinh + câu thật gán lại | ~1.450 |
 
 Các bước:
 
-1. [ ] `src/v2/data/merge.py`: gộp 3 bộ về định dạng chung trong `CLAUDE.md`.
-2. [ ] `src/v2/labeling/prelabel.py`: LLM gán sơ bộ theo hướng dẫn, lưu cả lý do và độ chắc.
-3. [ ] `src/v2/labeling/generate.py`: sinh câu theo bảng kịch bản × kênh × giọng văn.
-4. [ ] `src/v2/labeling/agreement.py`: kappa giữa 2 người, danh sách câu bất đồng.
-5. [ ] `src/v2/data/split.py`: khử trùng (dùng `dedup.py`), chia theo nhóm, giữ 2 kiểu điểm mù ngoài train.
-6. [ ] `src/v2/data/perturb.py`: sinh C1/C2 theo từng từ để vị trí bằng chứng đi theo.
-7. [ ] Thẻ dữ liệu `data/v2/DATASET_CARD.md`, checksum, test tự động.
+1. [x] `src/v2/data/download.py`, `src/v2/data/merge.py`: tải và gộp 3 bộ về định dạng chung, mỗi text một bản ghi.
+2. [x] `src/v2/data/chon_gan_lai.py`: khử trùng, tách kho test, chọn câu cần gán lại.
+3. [x] `src/v2/labeling/prelabel.py`: LLM gán sơ bộ 10.062 câu (chạy 20/11, 7,8 phút).
+4. [x] `src/v2/labeling/generate.py` + `loc_sinh.py`: sinh 10.557 đoạn, giữ 9.625 sau lọc (chạy 20/11).
+   Chi phí cả bước 3–4: `results/v2/chi_phi_du_lieu/chi_phi.json`.
+5. [ ] `src/v2/labeling/agreement.py`: kappa giữa 2 người, danh sách câu bất đồng (script xong 20/11; chờ
+   hai người gán `kiem_nhan_A.csv`, `kiem_nhan_B.csv`).
+6. [ ] `src/v2/data/split.py` (phần train xong 20/11: `data/v2/train.jsonl` 13.392 dòng, thẻ `data/v2/DATASET_CARD.md`): chọn test/validation từ kho test, lập train ~15.000 đoạn cân nhãn, giữ 2 kiểu điểm mù
+   ngoài train, loại đoạn sinh gần trùng câu test người viết.
+7. [ ] `src/v2/data/perturb.py`: sinh C1/C2 theo từng từ để vị trí bằng chứng đi theo.
+8. [ ] Thẻ dữ liệu `data/v2/DATASET_CARD.md`, checksum, test tự động.
 
 ## Bảng thực nghiệm (yêu cầu 3)
 
@@ -60,6 +96,10 @@ Các bước:
 | 7 | #6 + chuẩn hóa đầu vào (v2 đầy đủ) | Lợi ích của chuẩn hóa | Không |
 | 8 | #7 bản 4-bit | Lượng tử hóa mất bao nhiêu, tiết kiệm bao nhiêu | Không |
 | 9 | LLM lớn qua API, zero/few-shot | Trần chất lượng và cái giá | Không |
+
+**Chưa chốt dòng #9.** Đã bỏ Qwen3.8 27B. Yêu cầu 3 của ban tổ chức có nhắc "LLM lớn qua API"; nếu giữ dòng này thì
+dùng chính DeepSeek V4.1 Flash và ghi rõ trong báo cáo rằng nó cũng là LLM gán sơ bộ dữ liệu train, nên điểm có thể
+cao hơn thực tế.
 
 Cột đo cho mỗi dòng:
 
@@ -77,6 +117,9 @@ Cột đo cho mỗi dòng:
 ## Rủi ro
 
 - Train chủ yếu do LLM gán và sinh: phải nói rõ, báo tỉ lệ nhãn sai ước từ mẫu kiểm tay, và báo điểm riêng trên câu thật.
+- Câu test người viết phải viết trước khi đọc câu LLM sinh. Ngày 19–20/11 một thành viên đã đọc khoảng 70 đoạn sinh
+  thử, nên thành viên còn lại viết câu test `nguoi_viet`; sau đó chạy lại `generate` + `loc_sinh` (dùng cache, không
+  tốn tiền) để loại đoạn sinh gần trùng câu test.
 - Độ trễ mô hình sinh trên thiết bị: nếu 23/11 thấy quá chậm, encoder đa nhiệm làm mô hình chính, Qwen3 làm dòng so sánh.
 - Sức chống né lọc phải chứng minh lại trên C1/C2.
 - Hỏi ban tổ chức sớm: có được đổi bộ nhãn và dùng LLM gán dữ liệu train không.

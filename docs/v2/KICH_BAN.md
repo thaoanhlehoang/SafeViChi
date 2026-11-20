@@ -27,16 +27,24 @@ thế chiều hẹn ở cổng trường t mượn nha
 
 - Một lần gọi LLM cho một **ô** = kịch bản × kênh × giọng × độ lộ (`lo_lieu` | `an_y`) × kiểu lộ, xin 5 đoạn.
 - Kiểu lộ: `ngay_dau` (lộ ngay dòng đầu), `lo_dan` (vài dòng đầu bình thường, lộ ở cuối), `mot_dong` (kênh bình luận
-  và SMS). Kênh hội thoại luân phiên `ngay_dau` / `lo_dan` theo ô, nên tổng số lượt gọi không tăng.
+  và SMS). Kênh hội thoại có **cả hai** kiểu `ngay_dau` và `lo_dan`, kênh một dòng chỉ có `mot_dong`.
 - Mỗi ô nguy hại có một ô **sinh đôi** `AN_TOAN` cùng kênh, giọng, kiểu lộ: đoạn an toàn nhưng dễ nhầm (có chữ
   trông nguy hiểm nhưng ngữ cảnh vô hại, như bạn thân đùa, nhắc nợ trà sữa).
-- Mỗi kịch bản có tối đa 3 kênh × 4 giọng (chọn trong `kich_ban.yaml`) × 2 độ lộ = 24 ô. Số đoạn mục tiêu mỗi
-  nhãn đặt ở `muc_tieu_doan`; nếu cần ít ô hơn, script chọn đều trong 24 ô (LUA_DAO: 16 ô mỗi kịch bản).
+- Mỗi kịch bản có 3 kênh và 4 giọng (`LUA_DAO`, `XUC_PHAM`) hoặc 6 giọng (`DE_DOA`, `QUAY_ROI`); số ô tối đa là
+  (kênh hội thoại × 2 + kênh một dòng) × số giọng × 2 độ lộ, ví dụ DD1: (2 × 2 + 1) × 6 × 2 = 60 ô. Số đoạn mục tiêu
+  mỗi nhãn đặt ở `muc_tieu_doan`; nếu cần ít ô hơn, script chọn đều các ô. Script cảnh báo khi một nhãn thiếu quá
+  10% so với mục tiêu.
 - Kênh: `messenger_zalo`, `nhom_lop`, `chat_game`, `binh_luan` (TikTok/Facebook), `sms`.
 - Giọng: teencode Gen Z, thân mật, không dấu, viết tắt, giọng Bắc, Trung, Nam; kẻ giả danh thêm giọng trang trọng
   giả admin, shop hoặc nhà tuyển dụng.
-- Dự kiến: 800 lượt gọi, khoảng 4.000 đoạn: `LUA_DAO` 160 ô ≈ 800 đoạn; `DE_DOA`, `QUAY_ROI` mỗi nhãn 120 ô ≈ 600
-  đoạn; sinh đôi `AN_TOAN` 400 ô ≈ 2.000 đoạn.
+- Phương án train 15.000 đoạn (chốt 20/11): **2.144 lượt gọi, khoảng 10.720 đoạn**: `LUA_DAO` 376 ô ≈ 1.880 đoạn;
+  `DE_DOA`, `QUAY_ROI` mỗi nhãn 300 ô ≈ 1.500 đoạn; `XUC_PHAM` 96 ô ≈ 480 đoạn (chỉ kênh hội thoại, để mô hình không
+  học mẹo "nhiều dòng = nhãn hiếm" vì câu `XUC_PHAM` thật đều một dòng); sinh đôi `AN_TOAN` 1.072 ô ≈ 5.360 đoạn.
+- Prompt yêu cầu các đoạn trong một ô **khác nhau thật sự** (tình huống, câu mở đầu, độ dài, không lặp cụm đặc trưng)
+  và **giọng tự nhiên**: câu ngắn, viết tắt, gõ sai như tin nhắn thật; không từ sách vở, không giảng đạo lý; người
+  nhận phản ứng như người thật; lời dọa `DE_DOA` phải là dọa thật; đoạn `AN_TOAN` không cố chứng minh mình an toàn.
+  `[SDT]`/`[STK]` chỉ xuất hiện khi người thật sẽ gửi số, kể cả trong đoạn `AN_TOAN`, để mô hình không coi chúng là
+  dấu hiệu lừa đảo.
 - `LD7` để ngoài train (không sinh), dùng làm cột "kịch bản chưa thấy" khi đánh giá.
 
 ## Kiểm tra tự động
@@ -49,7 +57,12 @@ thế chiều hẹn ở cổng trường t mượn nha
 - Bỏ đoạn dưới 3 từ và đoạn có giọng trợ lý ("Dưới đây là", "Lưu ý:", "Tôi không thể"...).
 - Tên miền tự vô hiệu hóa thành dạng `xxx[.]com`.
 - Khử trùng gần đúng trên cả đoạn bằng `src/dataset_builder/dedup.py`, và loại đoạn gần trùng câu test người viết.
-- Ô bị LLM từ chối chỉ ghi log và bỏ qua, không cố lách. Ô lỗi mạng hoặc API được thử lại ở lần chạy sau.
+- Ô bị LLM từ chối chỉ ghi log và bỏ qua, không cố lách. Ô lỗi mạng hoặc API được thử lại ở lần chạy sau. Phản hồi
+  thiếu ngoặc `[ ]` hoặc các object ngăn bằng dấu phẩy vẫn được đọc.
+- **Lọc lại** (`src/v2/labeling/loc_sinh.py`): LLM gán nhãn lại từng đoạn theo hướng dẫn gán nhãn mà không biết nhãn
+  yêu cầu; chỉ giữ đoạn trùng nhãn. Đoạn bị loại ghi ở `sinh_llm_bi_loai.jsonl` kèm lý do; tỉ lệ giữ theo nhãn và kịch
+  bản ở `sinh_llm_loc_stats.json`. Thử ngày 20/11: giữ 18/20; 2 đoạn bị loại là đoạn sinh đôi "chửi đùa" dùng từ nặng,
+  khớp quy tắc "không chắc là đùa thì gán theo nghĩa đen" của hướng dẫn.
 - Câu ví dụ (`vi_du`, tối đa 5 mỗi kịch bản) lấy từ phần mẫu; script dừng nếu ví dụ trùng câu test.
 
 ## Quy tắc an toàn (đưa nguyên vào prompt)
@@ -66,7 +79,7 @@ thế chiều hẹn ở cổng trường t mượn nha
 | Mã | Nhãn | Kịch bản | Sinh đôi an toàn | Ngoài train |
 | --- | --- | --- | --- | --- |
 | LD1 | `LUA_DAO` | Game: nạp thẻ giá rẻ, kim cương/quân huy/Robux miễn phí, gửi mã thẻ cào hoặc đăng nhập link để nhận | Bạn rủ chơi game, khoe vừa nạp thẻ ở kênh chính thức | |
-| LD2 | `LUA_DAO` | Game: mua bán, trao đổi acc; nhận tiền hoặc acc rồi biến mất, đòi "phí xác minh" | Bạn bè bàn chuyện leo rank, mượn acc chơi thử có thỏa thuận rõ | |
+| LD2 | `LUA_DAO` | Game: kẻ lừa là người bán hoặc người nhận acc; mỗi đoạn một chiêu: đòi cọc rồi biến mất, đòi phí mở khóa hoặc phí chuyển acc, giả trung gian uy tín, bán acc rồi lấy lại bằng email gốc, dụ đăng nhập trang giả "kiểm tra acc", nạp kim cương giá rẻ | Bạn bè bàn chuyện leo rank, mượn acc chơi thử có thỏa thuận rõ | |
 | LD3 | `LUA_DAO` | Giveaway giả của idol, streamer, shop: trúng quà, nộp phí ship hoặc đăng nhập để nhận | Giveaway thật, chỉ yêu cầu follow và bình luận | |
 | LD4 | `LUA_DAO` | Việc làm thêm cho học sinh, sinh viên: CTV online, like/đánh giá, gõ chữ tại nhà, phải nộp cọc hoặc nạp tiền làm nhiệm vụ | Tin tuyển part-time thật (quán cà phê, gia sư), không thu cọc | |
 | LD5 | `LUA_DAO` | Nick bạn bè bị hack: hỏi mượn tiền gấp, nhờ nhận mã OTP, nhờ "bình chọn giúp" qua link đăng nhập | Bạn bè hỏi mượn tiền thật, có chuyện chung rõ ràng | |
@@ -86,13 +99,16 @@ thế chiều hẹn ở cổng trường t mượn nha
 | QR3 | `QUAY_ROI` | Bình phẩm ngoại hình, body shaming nhắm vào một bạn trong nhóm lớp | Khen nhau lịch sự | |
 | QR4 | `QUAY_ROI` | Bêu riếu, đăng ảnh chế, rủ cả lớp tẩy chay một bạn | Kể chuyện vui về chính mình | |
 | QR5 | `QUAY_ROI` | Trong game: bám đuôi, spam chat quấy rối một người chơi | Rủ nhau chơi tiếp trận sau | |
+| XP1 | `XUC_PHAM` | Cãi nhau rồi lăng mạ, chửi thẳng, hạ nhục người đang nói chuyện (đầu óc, học lực, gia cảnh); không dọa, không gạ gẫm | Bạn thân chửi đùa, văng tục thân mật, trêu nhau mà cả hai đều vui | |
+| XP2 | `XUC_PHAM` | Miệt thị vùng miền, dân tộc, tôn giáo hoặc một nhóm người ngay trong cuộc trò chuyện, kể cả nói ẩn ý hay dùng biệt danh miệt thị | Nói chuyện vui về giọng nói, món ăn, phong tục các vùng miền, không miệt thị | |
 
 ## Lệnh
 
 ```bash
 python -m src.v2.labeling.generate --dry-run                      # in prompt mẫu, không gọi API
 python -m src.v2.labeling.generate --kich-ban LD1 DD1 --limit-o 2  # thử nhỏ
-python -m src.v2.labeling.generate --workers 4                     # chạy thật; chạy lại để tiếp tục
+python -m src.v2.labeling.generate --workers 8                     # chạy thật; chạy lại để tiếp tục
+python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8     # lọc lại đoạn sinh
 ```
 
 Đầu ra: `data/v2/interim/sinh_llm.jsonl`, thống kê `data/v2/interim/sinh_llm_stats.json`

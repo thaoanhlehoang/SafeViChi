@@ -1,91 +1,96 @@
-# Chạy sinh dữ liệu và gán nhãn sơ bộ bằng LLM (v2)
+# Chạy tạo dữ liệu train v2 bằng LLM
 
-Hướng dẫn cho người chạy trên máy khác. Mọi lệnh chạy ở thư mục gốc repo. Chi phí API tính vào khóa đặt trong `.env`.
+Hướng dẫn cho người chạy lại trên máy khác. Mọi lệnh chạy ở thư mục gốc repo. Quyết định và lý do nằm trong
+`docs/v2/KE_HOACH.md` (mục "Quyết định 19–20/11"); kịch bản sinh trong `docs/v2/KICH_BAN.md`.
+
+## Tóm tắt quy trình
+
+| Bước | Lệnh | Gọi API? | Đầu ra chính |
+| --- | --- | --- | --- |
+| 1. Tải dữ liệu gốc | `python -m src.v2.data.download` | Không (cần `HF_TOKEN`) | `data/raw/vihsd/`, `data/raw/vithsd/`, `data/raw/NGUON_TAI.json` |
+| 2. Gộp 3 bộ | `python -m src.v2.data.merge` | Không | `data/v2/interim/merged.jsonl` (30.580 câu khác nhau) |
+| 3. Ứng viên từ khóa | `python -m src.v2.data.mine_candidates` | Không | `data/v2/interim/ung_vien.jsonl` |
+| 4. Tách kho test, chọn câu cần gán | `python -m src.v2.data.chon_gan_lai` | Không | `kho_test.jsonl` (6.724), `can_gan_lai.jsonl` (10.062) |
+| 5. Gán lại nhãn | `python -m src.v2.labeling.prelabel --batch-size 20 --workers 8` | Có | `data/v2/interim/prelabel/prelabel_*.jsonl` |
+| 6. Sinh hội thoại | `python -m src.v2.labeling.generate --workers 8` | Có | `data/v2/interim/sinh_llm.jsonl` (~10.720 đoạn) |
+| 7. Lọc lại đoạn sinh | `python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8` | Có | `sinh_llm_loc.jsonl`, `sinh_llm_bi_loai.jsonl` |
+| 8. Tổng hợp chi phí | `python -m src.v2.labeling.chi_phi --bat-dau "YYYY-MM-DD HH:MM"` | Không | `results/v2/chi_phi_du_lieu/chi_phi.json` |
+
+Lượt chạy ngày 20/11/2026 (DeepSeek V4.1 Flash, `wafer/us`, 8 luồng): ước tính khoảng 1–1,5 giờ và khoảng
+80.000 đ cho bước 5–7. Số thật ghi ở `results/v2/chi_phi_du_lieu/chi_phi.json`.
 
 ## 1. Chuẩn bị
 
 ```bash
-git fetch origin
-git checkout v2-final
-git pull origin v2-final
+git fetch origin && git checkout v2-final && git pull origin v2-final
 pip install -r requirements-lock.txt
-```
-
-`data/v2/interim/merged.jsonl` đã có trong repo. Nếu thiếu, chạy `git lfs pull` (dữ liệu v1_2 dùng Git LFS, khoảng
-400 MB) rồi `python -m src.v2.data.merge`.
-
-Tạo file `.env` từ mẫu rồi điền nhà cung cấp, model và khóa:
-
-```bash
 cp .env.example .env
 ```
 
+Điền `.env` (**không bao giờ commit**):
+
+```env
+SAFEVICHI_LLM_PROVIDER=openai                         # OpenRouter dùng API tương thích OpenAI
+SAFEVICHI_LLM_MODEL=deepseek/deepseek-v4.1-flash-1017
+SAFEVICHI_LLM_BASE_URL=https://openrouter.ai/api/v1
+OPENAI_API_KEY=sk-or-v1-...                           # khóa OpenRouter
+SAFEVICHI_LLM_REASONING=none                          # BẮT BUỘC: model này bật thinking mặc định
+SAFEVICHI_LLM_PROVIDER_ORDER=wafer/us                 # đúng endpoint Wafer 🇺🇸 0,036/0,50 USD
+SAFEVICHI_LLM_MAX_PRICE=0.04,0.5                      # chặn endpoint đắt hơn (vd. wafer/mxfp4 0,066)
+HF_TOKEN=hf_...                                       # chỉ cần cho bước 1
 ```
-SAFEVICHI_LLM_PROVIDER=anthropic        # hoặc openai, gemini
-SAFEVICHI_LLM_MODEL=<tên model>
-ANTHROPIC_API_KEY=<khóa>                # hoặc OPENAI_API_KEY / GEMINI_API_KEY
-```
 
-**Không bao giờ commit `.env`.**
+Bước 1 cần chấp nhận điều khoản trên trang Hugging Face của `uitnlp/vihsd` và `sonlam1102/vithsd` trước.
 
-## 2. Sinh câu train (generate.py)
-
-Bảng kịch bản và dạng hội thoại: `docs/v2/KICH_BAN.md`. Mỗi **ô** là một lần gọi LLM, sinh 5 đoạn hội thoại cho
-một tổ hợp kịch bản × kênh × giọng × độ lộ × kiểu lộ. Mỗi ô nguy hại có một ô sinh đôi `AN_TOAN`. Tổng 800 ô,
-khoảng 4.000 đoạn (LUA_DAO 800, DE_DOA 600, QUAY_ROI 600, AN_TOAN 2.000; chỉnh ở `muc_tieu_doan` trong
-`src/v2/labeling/kich_ban.yaml`).
+## 2. Thử nhỏ trước khi chạy thật
 
 ```bash
-# (a) Xem prompt, không gọi API, không tốn tiền
-python -m src.v2.labeling.generate --dry-run
-
-# (b) Thử 2 ô: một ô LD1 và ô sinh đôi an toàn của nó (khoảng 10 đoạn hội thoại)
-python -m src.v2.labeling.generate --kich-ban LD1 --limit-o 2
-
-# (c) Chạy hết, 4 lượt gọi song song
-python -m src.v2.labeling.generate --workers 4
+python -m src.v2.labeling.prelabel --dry-run --limit 3           # xem prompt, không gọi API
+python -m src.v2.labeling.prelabel --limit 20 --batch-size 20    # khoảng 20 đồng
+python -m src.v2.labeling.generate --dry-run                     # xem kế hoạch: số ô, số đoạn từng nhãn
+python -m src.v2.labeling.generate --kich-ban XP1 --limit-o 2     # 1 ô và ô sinh đôi của nó
 ```
 
-Sau bước (b), **mở `data/v2/interim/sinh_llm.jsonl` đọc kỹ khoảng 10 đoạn** xem có tự nhiên, các dòng có luân
-phiên hai người, đúng nhãn, đúng bằng chứng không, rồi mới chạy (c). Thống kê nằm ở `data/v2/interim/sinh_llm_stats.json`.
+Dòng cuối mỗi lệnh in số token. **Số token suy luận phải bằng 0**; khác 0 nghĩa là thinking chưa tắt, dừng lại kiểm
+tra `.env`. Đọc kỹ vài đoạn trong `data/v2/interim/sinh_llm.jsonl` trước khi chạy hết.
 
-Ô bị LLM từ chối (hay gặp ở QR1, DD3) được ghi log và liệt kê ở mục `o_bi_tu_choi` trong file thống kê. Không cần
-sửa prompt để lách. Ô lỗi mạng hoặc API (`o_loi_api`) sẽ được thử lại ở lần chạy sau.
+## 3. Chạy thật và lưu log
 
-## 3. Gán nhãn sơ bộ câu thật (prelabel.py)
-
-Gán 5 nhãn mới cho câu ViHSD và ViHOS. Câu trùng text chỉ gọi API một lần.
+Ghi log từng bước vào `logs_v2/` (đã ignore) để bước 8 đọc lại số token:
 
 ```bash
-# Thử 20 câu ViHOS (có cả CLEAN và HATE), xem kết quả trước
-python -m src.v2.labeling.prelabel --nguon vihos --limit 20
-
-# Chạy thật, khuyên dùng: giữ mọi câu OFFENSIVE/HATE, chỉ lấy mẫu 4.000 câu CLEAN (seed 42)
-python -m src.v2.labeling.prelabel --mau-clean 4000
+mkdir -p logs_v2
+python -m src.v2.labeling.prelabel --batch-size 20 --workers 8 > logs_v2/1_prelabel.log 2>&1
+python -m src.v2.labeling.generate --workers 8 > logs_v2/2_generate.log 2>&1
+python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8 > logs_v2/3_loc_sinh.log 2>&1
+python -m src.v2.labeling.chi_phi --bat-dau "2026-11-20 00:30"
 ```
 
-Với `--mau-clean 4000` có khoảng 9.450 text khác nhau, khoảng 950 lượt gọi (10 câu mỗi lượt). Không có cờ này thì
-gán toàn bộ 24.019 text, khoảng 2.400 lượt. Lệnh in số text và số lượt gọi trước khi chạy; thêm `--dry-run` để chỉ
-xem con số mà không gọi API.
-
-Kết quả nằm trong `data/v2/interim/prelabel/`:
-
-- `prelabel_<provider>_<model>_<version>.jsonl`: mỗi câu có `nhan`, `bang_chung`, `llm_do_chac`, `llm_ly_do`,
-  `can_duyet` và `ly_do_duyet` (độ chắc dưới 0,7, lệch nhãn gốc, lỗi đầu ra...).
-- `prelabel_..._stats.json`: phân bố nhãn, số câu cần người duyệt.
+Nếu phải chạy lại một bước, ghi vào log **mới** (ví dụ `1_prelabel_lan2.log`) để không mất số token của lần trước;
+`chi_phi.py` cộng mọi log khớp `1_prelabel*.log`.
 
 ## 4. Bị ngắt giữa chừng
 
-Chạy lại **đúng lệnh cũ**. Cả hai script ghi cache sau mỗi lô và bỏ qua phần đã xong, nên không gọi API lại câu cũ.
-Đổi model hoặc sửa prompt sẽ tạo cache mới (tên file có mã phiên bản prompt).
+Chạy lại **đúng lệnh cũ**. Cả ba script ghi cache sau mỗi lô hoặc mỗi ô và bỏ qua phần đã xong. Lô lỗi (mạng, hết
+tiền, nhà cung cấp ngừng) chỉ bị bỏ qua lượt đó và được báo trong log. Đổi model hoặc sửa prompt tạo cache mới (tên
+file có mã phiên bản prompt).
 
-## 5. Gửi lại kết quả
+## 5. Quy tắc dữ liệu cần nhớ
+
+- **Kho test không bao giờ gửi LLM.** `prelabel.py` tự bỏ mọi câu có trong `kho_test.jsonl`. Câu test/validation do
+  người gán (xem `HUONG_DAN_VIET_TEST.md` và `HUONG_DAN_GAN_NHAN.md`).
+- Câu do LLM sinh chỉ vào train (`nguon=sinh_llm`).
+- Sau khi có câu test người viết (`data/v2/interim/test_nguoi_viet.jsonl`), chạy lại bước 6 và 7: không tốn tiền nhờ
+  cache, và loại đoạn sinh gần trùng câu test.
+
+## 6. Commit gì
 
 | File | Commit? |
 | --- | --- |
-| `.env` | **Không bao giờ** |
-| `data/v2/interim/sinh_llm_cache/`, `data/v2/interim/prelabel/cache_*.jsonl` | Không (đã ignore). Giữ trên máy để chạy tiếp |
-| `data/v2/interim/sinh_llm.jsonl`, `sinh_llm_stats.json` | Gửi qua Drive; commit hay không do nhóm chốt |
-| `data/v2/interim/prelabel/prelabel_*.jsonl`, `*_stats.json` | Gửi qua Drive; commit hay không do nhóm chốt |
+| `.env`, `logs_v2/` | **Không** |
+| `data/raw/vihsd/`, `data/raw/vithsd/` (CSV gốc, bộ gated) | Không (đã ignore); chỉ commit `data/raw/NGUON_TAI.json` |
+| `data/v2/interim/sinh_llm_cache/`, `data/v2/interim/prelabel/cache_*.jsonl` | Không (đã ignore); giữ trên máy để chạy tiếp |
+| `merged.jsonl`, `kho_test.jsonl`, `can_gan_lai.jsonl`, kết quả gán và sinh, file thống kê | Có |
+| `results/v2/chi_phi_du_lieu/`, `results/v2/thu_model/` | Có |
 
-Trước khi `git add`, chạy `git status` để chắc không có `.env` hay cache.
+Trước khi `git add`, chạy `git status` để chắc không có `.env`, log hay cache.

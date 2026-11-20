@@ -111,7 +111,11 @@ Quảng cáo thật (giá rõ, không đòi trả trước bất thường, khô
 2. Tính Cohen's kappa (`src/v2/labeling/agreement.py`). Mục tiêu từ 0,6 trở lên.
 3. Ngồi xem các câu bất đồng, thêm ví dụ vào mục 4 cho đến khi rõ.
 4. Tập test: cả hai cùng gán mọi câu; câu bất đồng thì thảo luận chốt và ghi lại lý do.
-5. Tập train: một người duyệt câu LLM không chắc, câu LLM gán khác nhãn gốc, và mẫu ngẫu nhiên 10–20%.
+5. Tập train: không duyệt tay toàn bộ. Câu thật chỉ được giữ nếu nhãn LLM khớp với ít nhất một người gán gốc
+   (`python -m src.v2.data.dong_thuan`). Để biết nhãn train sai bao nhiêu, hai người gán độc lập mẫu 200 câu trong
+   `data/v2/raw/kiem_nhan_A.csv` và `kiem_nhan_B.csv` (chỉ điền cột `nhan`, có thể thêm `bang_chung`, `ghi_chu`;
+   không mở `data/v2/interim/kiem_nhan_khoa.jsonl` và không bàn với nhau khi đang gán), rồi chạy
+   `python -m src.v2.labeling.agreement`. Mẫu này cũng dùng cho bước 1–2 ở trên.
 
 ## 7. Định dạng lưu
 
