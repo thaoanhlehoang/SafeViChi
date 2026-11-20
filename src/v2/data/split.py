@@ -15,7 +15,10 @@ Kiểm tra trước khi ghi:
   test bị bỏ (không để câu gần trùng giữa train và test). Câu train cùng nhóm với nhau chỉ giữ một câu.
 - Không id nào thuộc kho test; mọi mẫu đúng định dạng v2 (CLAUDE.md), bằng chứng nằm nguyên văn trong một dòng.
 
-Đầu ra: data/v2/train.jsonl, data/v2/train_stats.json, data/v2/CHECKSUMS.json.
+Đầu ra:
+- data/v2/so_sanh.jsonl: bản đủ trường (định dạng v2 + `meta`), dùng để phân tích theo nhóm, ghép với kết quả theo `id`.
+- data/v2/train.jsonl: cùng các dòng, cùng thứ tự, chỉ giữ TRAIN_FIELDS (id, text, nhan, bang_chung) để đưa vào train.
+- data/v2/train_stats.json, data/v2/CHECKSUMS.json (checksum cả hai file).
 
 Chạy:
     python -m src.v2.data.split
@@ -40,6 +43,7 @@ THAT_PATH = INTERIM / "that_gan_lai.jsonl"
 SINH_PATH = INTERIM / "sinh_llm_loc.jsonl"
 KHO_TEST_PATH = INTERIM / "kho_test.jsonl"
 OUT_PATH = DATA_V2 / "train.jsonl"
+FULL_PATH = DATA_V2 / "so_sanh.jsonl"
 SEED = 42
 
 SO_AN_TOAN_THAT = 4000
@@ -49,6 +53,7 @@ SO_XUC_PHAM = 3000
 NHAN = ("AN_TOAN", "XUC_PHAM", "QUAY_ROI", "DE_DOA", "LUA_DAO")
 FIELDS = ("id", "text", "nhan", "bang_chung", "nguon", "nguon_id", "cach_gan", "the", "so_dong", "bien_dang",
           "nhom_trung", "split")
+TRAIN_FIELDS = ("id", "text", "nhan", "bang_chung")
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -166,9 +171,21 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def slim(record: dict) -> dict:
+    """Chỉ giữ các trường cần để train (TRAIN_FIELDS)."""
+    return {k: record[k] for k in TRAIN_FIELDS}
+
+
+def write_jsonl(path: Path, rows: list[dict]) -> None:
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for r in rows:
+            handle.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--out", type=Path, default=OUT_PATH)
+    parser.add_argument("--out", type=Path, default=OUT_PATH, help="file train rút gọn (TRAIN_FIELDS)")
+    parser.add_argument("--full", type=Path, default=FULL_PATH, help="file đủ trường để phân tích")
     args = parser.parse_args(argv)
 
     train, stats = build(read_jsonl(THAT_PATH), read_jsonl(SINH_PATH), read_jsonl(KHO_TEST_PATH))
@@ -177,18 +194,18 @@ def main(argv: list[str] | None = None) -> int:
         for e in errors[:20]:
             print("LỖI:", e)
         raise SystemExit(f"{len(errors)} lỗi, không ghi file.")
-    with args.out.open("w", encoding="utf-8", newline="\n") as handle:
-        for r in train:
-            handle.write(json.dumps(r, ensure_ascii=False) + "\n")
+    write_jsonl(args.full, train)
+    write_jsonl(args.out, [slim(r) for r in train])
     stats["nguon"] = {p.name: sha256(p) for p in (THAT_PATH, SINH_PATH, KHO_TEST_PATH)}
     stats_path = args.out.with_name("train_stats.json")
     stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     checksums = DATA_V2 / "CHECKSUMS.json"
     current = json.loads(checksums.read_text(encoding="utf-8")) if checksums.exists() else {}
-    current[args.out.name] = sha256(args.out)
+    for path in (args.full, args.out):
+        current[path.name] = sha256(path)
     checksums.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: v for k, v in stats.items() if k != "nguon"}, ensure_ascii=False, indent=2))
-    print(f"Đã ghi {args.out} ({len(train)} dòng), {stats_path}, {checksums}")
+    print(f"Đã ghi {args.full} và {args.out} ({len(train)} dòng), {stats_path}, {checksums}")
     return 0
 
 

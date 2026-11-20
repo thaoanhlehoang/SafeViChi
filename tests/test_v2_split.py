@@ -38,6 +38,28 @@ def test_build_respects_rules(monkeypatch):
     assert stats["tong"] == len(train)
 
 
+def test_main_writes_full_and_slim(tmp_path, monkeypatch):
+    import json
+
+    that = [_that(i, "AN_TOAN") for i in range(3)] + [_that(10, "XUC_PHAM")]
+    sinh = [_sinh(1, "DE_DOA")]
+    for name, rows in (("that.jsonl", that), ("sinh.jsonl", sinh), ("kho.jsonl", [])):
+        s.write_jsonl(tmp_path / name, rows)
+    monkeypatch.setattr(s, "THAT_PATH", tmp_path / "that.jsonl")
+    monkeypatch.setattr(s, "SINH_PATH", tmp_path / "sinh.jsonl")
+    monkeypatch.setattr(s, "KHO_TEST_PATH", tmp_path / "kho.jsonl")
+    monkeypatch.setattr(s, "DATA_V2", tmp_path)
+    assert s.main(["--out", str(tmp_path / "train.jsonl"), "--full", str(tmp_path / "so_sanh.jsonl")]) == 0
+
+    full = s.read_jsonl(tmp_path / "so_sanh.jsonl")
+    slim = s.read_jsonl(tmp_path / "train.jsonl")
+    assert [r["id"] for r in full] == [r["id"] for r in slim]          # cùng dòng, cùng thứ tự
+    assert all(set(r) == set(s.TRAIN_FIELDS) for r in slim)
+    assert all("meta" in r and "nhom_trung" in r for r in full)
+    assert set(json.loads((tmp_path / "CHECKSUMS.json").read_text(encoding="utf-8"))) == {"so_sanh.jsonl",
+                                                                                          "train.jsonl"}
+
+
 def test_validate_catches_bad_evidence():
     bad = s.to_v2(_sinh(1, "DE_DOA") | {"bang_chung": ["một\ndòng"]}, {"loai": "sinh"})
     assert s.validate([bad])

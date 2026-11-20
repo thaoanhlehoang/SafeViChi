@@ -7,15 +7,17 @@ xem file đó thay vì số ở đây. Checksum: `data/v2/CHECKSUMS.json`.
 
 | File | Nội dung |
 | --- | --- |
-| `data/v2/train.jsonl` | Tập train, 13.392 dòng, đã trộn thứ tự (seed 42) |
+| `data/v2/train.jsonl` | Tập train, 13.392 dòng, đã trộn thứ tự (seed 42). Chỉ có `id`, `text`, `nhan`, `bang_chung` |
+| `data/v2/so_sanh.jsonl` | Cùng các dòng, cùng thứ tự, đủ mọi trường + `meta`. Dùng để phân tích theo nhóm, ghép theo `id` |
 | `data/v2/train_stats.json` | Phân bố nhãn, nguồn, số dòng; checksum file nguồn |
 | `data/v2/validation.jsonl`, `data/v2/test.jsonl` | **Chưa có.** Bàn giao đợt 2 (21/11) sau khi hai người gán tay kho test |
 
 ## Định dạng mỗi dòng
 
-Theo `CLAUDE.md`: `id`, `text`, `nhan`, `bang_chung`, `nguon`, `nguon_id`, `cach_gan`, `the`, `so_dong`, `bien_dang`
-(hiện chỉ `C0`), `nhom_trung`, `split` (= `train`), cộng trường phụ `meta` (nguồn thật/sinh, nhãn gốc, kịch bản, kênh,
-giọng... dùng để phân tích theo nhóm, **không đưa vào mô hình**).
+`train.jsonl` chỉ có `id`, `text`, `nhan`, `bang_chung`. `so_sanh.jsonl` có đủ định dạng trong `CLAUDE.md`: thêm
+`nguon`, `nguon_id`, `cach_gan`, `the`, `so_dong`, `bien_dang` (hiện chỉ `C0`), `nhom_trung`, `split` (= `train`), cộng
+trường phụ `meta` (nguồn thật/sinh, nhãn gốc, kịch bản, kênh, giọng... dùng để phân tích theo nhóm, **không đưa vào
+mô hình**).
 
 - `text` là đoạn hội thoại 1–8 dòng ngăn bằng `\n`, mỗi dòng là toàn bộ lượt nói của một người, không ghi người nói.
 - Đầu ra mô hình cần học: `{"nhan": ..., "bang_chung": [...]}`. `bang_chung` chép nguyên văn, mỗi cụm nằm trong một
