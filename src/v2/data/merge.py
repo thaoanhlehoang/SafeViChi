@@ -132,6 +132,37 @@ def iter_vihsd(directory: Path = VIHSD_DIR) -> Iterator[dict]:
                 )
 
 
+VIHSD_RAW_DIR = ROOT / "data" / "raw" / "vihsd"
+VIHSD_RAW_FILES = {"train": "train.csv", "validation": "dev.csv", "test": "test.csv"}
+VIHSD_LABELS = {0: "CLEAN", 1: "OFFENSIVE", 2: "HATE"}
+
+
+def vihsd_raw_available(directory: Path = VIHSD_RAW_DIR) -> bool:
+    return all((directory / name).exists() for name in VIHSD_RAW_FILES.values())
+
+
+def iter_vihsd_raw(directory: Path = VIHSD_RAW_DIR) -> Iterator[dict]:
+    """ViHSD đủ 3 split từ CSV gốc (tải bằng src.v2.data.download). nguon_id = '<split>:<số dòng từ 0>',
+    trùng cách đánh số của v1_2 với split train nên id cũ không đổi."""
+    for split, name in VIHSD_RAW_FILES.items():
+        path = directory / name
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if reader.fieldnames != ["free_text", "label_id"]:
+                raise ValueError(f"{path}: cột lạ {reader.fieldnames!r}, cần ['free_text', 'label_id']")
+            for index, row in enumerate(reader):
+                text = row["free_text"] or ""
+                if not text.strip():
+                    continue
+                yield make_record(
+                    text=text,
+                    nguon="vihsd",
+                    nguon_id=f"{split}:{index}",
+                    nhan_goc=VIHSD_LABELS[int(row["label_id"])],
+                    split_goc=split,
+                )
+
+
 # ---------------------------------------------------------------- ViHOS
 
 def mask_to_phrases(words: list[str], span_mask: list[int]) -> list[str]:
@@ -185,7 +216,9 @@ def iter_vihos(directory: Path = VIHOS_DIR) -> Iterator[dict]:
 VITHSD_FILES = {"train": "train.xlsx.csv", "validation": "dev.xlsx.csv", "test": "test.xlsx.csv"}
 TEXT_COLUMNS = ("content", "comment", "text", "free_text", "sentence")
 # Mức độ theo thứ tự tăng dần; dùng để lấy mức nặng nhất trên mọi đối tượng (individual, groups, ...).
-SEVERITY = {"clean": 0, "0": 0, "": 0, "offensive": 1, "1": 1, "hate": 2, "2": 2}
+# Mã số của ViTHSD (sonlam1102/vithsd): 0 = không nhắm tới đối tượng này, 1 = clean, 2 = offensive, 3 = hate.
+# Không nhắm tới đối tượng nào cũng tính là CLEAN.
+SEVERITY = {"clean": 0, "": 0, "offensive": 1, "hate": 2, "0": 0, "1": 0, "2": 1, "3": 2}
 SEVERITY_NAME = {0: "CLEAN", 1: "OFFENSIVE", 2: "HATE"}
 
 
@@ -292,21 +325,65 @@ def merge(
     vihsd_dir: Path = VIHSD_DIR,
     vihos_dir: Path = VIHOS_DIR,
     vithsd_dir: Path = VITHSD_DIR,
+    vihsd_raw_dir: Path = VIHSD_RAW_DIR,
 ) -> tuple[list[dict], list[str]]:
     warnings: list[str] = []
-    records = list(iter_vihsd(vihsd_dir)) + list(iter_vihos(vihos_dir))
+    if vihsd_raw_available(vihsd_raw_dir):
+        records = list(iter_vihsd_raw(vihsd_raw_dir))
+    else:
+        records = list(iter_vihsd(vihsd_dir))
+        warnings.append(
+            f"Chưa có ViHSD gốc trong {vihsd_raw_dir}: chỉ lấy split train từ bộ v1_2. "
+            "Chạy `python -m src.v2.data.download` để có đủ train/dev/test."
+        )
+    records += list(iter_vihos(vihos_dir))
     if vithsd_available(vithsd_dir):
         records += list(iter_vithsd(vithsd_dir))
     else:
         warnings.append(
-            f"Chưa có ViTHSD trong {vithsd_dir} (bộ trên Hugging Face bị gated: cần chấp nhận điều khoản "
-            "và đăng nhập `huggingface-cli login`). Bỏ qua ViTHSD."
+            f"Chưa có ViTHSD trong {vithsd_dir} (bộ trên Hugging Face bị gated: chấp nhận điều khoản, "
+            "đặt HF_TOKEN rồi chạy `python -m src.v2.data.download`). Bỏ qua ViTHSD."
         )
     ids = Counter(r["id"] for r in records)
     clashes = [i for i, c in ids.items() if c > 1]
     if clashes:
         raise RuntimeError(f"Trùng id: {clashes[:5]}")
     return records, warnings
+
+
+NHAN_GOC_MUC = {"CLEAN": 0, "OFFENSIVE": 1, "HATE": 2}
+
+
+def collapse_by_text(records: list[dict]) -> list[dict]:
+    """Mỗi text khác nhau (sau NFC + gộp khoảng trắng) giữ đúng một bản ghi.
+
+    ViHOS và ViTHSD gần như toàn là câu của ViHSD, nên gộp theo text. Bản ghi giữ id và nguon của lần xuất
+    hiện đầu tiên (thứ tự ViHSD, ViHOS, ViTHSD, nên id cũ của ViHSD không đổi). Mọi lần xuất hiện được lưu ở
+    `nguon_goc` (nguon, nguon_id, nhan_goc, split_goc). `nhan_goc` là mức nặng nhất trong các nguồn,
+    `nhan_goc_bat_dong` = True khi có nguồn nói CLEAN và nguồn khác nói OFFENSIVE/HATE.
+    `bang_chung_goi_y` là hợp các cụm gợi ý (từ ViHOS).
+    """
+    by_text: dict[str, dict] = {}
+    for record in records:
+        origin = {k: record[k] for k in ("nguon", "nguon_id", "nhan_goc", "split_goc")}
+        if "nhan_goc_chi_tiet" in record:
+            origin["nhan_goc_chi_tiet"] = record["nhan_goc_chi_tiet"]
+        kept = by_text.get(record["text"])
+        if kept is None:
+            kept = {k: v for k, v in record.items() if k != "nhan_goc_chi_tiet"}
+            kept["bang_chung_goi_y"] = list(record["bang_chung_goi_y"])
+            kept["nguon_goc"] = []
+            by_text[record["text"]] = kept
+        kept["nguon_goc"].append(origin)
+        for phrase in record["bang_chung_goi_y"]:
+            if phrase not in kept["bang_chung_goi_y"]:
+                kept["bang_chung_goi_y"].append(phrase)
+    for kept in by_text.values():
+        levels = {o["nhan_goc"] for o in kept["nguon_goc"]}
+        known = [lv for lv in levels if lv in NHAN_GOC_MUC]
+        kept["nhan_goc"] = max(known, key=NHAN_GOC_MUC.__getitem__) if known else "KHONG_RO"
+        kept["nhan_goc_bat_dong"] = "CLEAN" in levels and bool(levels & {"OFFENSIVE", "HATE"})
+    return list(by_text.values())
 
 
 def write_jsonl(records: Iterable[dict], path: Path) -> None:
@@ -321,12 +398,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--vihsd-dir", type=Path, default=VIHSD_DIR)
     parser.add_argument("--vihos-dir", type=Path, default=VIHOS_DIR)
     parser.add_argument("--vithsd-dir", type=Path, default=VITHSD_DIR)
+    parser.add_argument("--vihsd-raw-dir", type=Path, default=VIHSD_RAW_DIR)
     parser.add_argument("--out", type=Path, default=OUT_PATH)
     args = parser.parse_args(argv)
 
-    records, warnings = merge(args.vihsd_dir, args.vihos_dir, args.vithsd_dir)
+    all_records, warnings = merge(args.vihsd_dir, args.vihos_dir, args.vithsd_dir, args.vihsd_raw_dir)
+    records = collapse_by_text(all_records)
     write_jsonl(records, args.out)
-    stats = compute_stats(records)
+    stats = {"truoc_khi_gop_text": compute_stats(all_records), **compute_stats(records)}
+    stats["so_text_nhan_goc_bat_dong"] = sum(r["nhan_goc_bat_dong"] for r in records)
+    stats["so_text_xuat_hien_o_nhieu_nguon"] = sum(len({o["nguon"] for o in r["nguon_goc"]}) > 1 for r in records)
     stats["canh_bao"] = warnings
     stats_path = args.out.with_name(args.out.stem + "_stats.json")
     stats_path.write_text(json.dumps(stats, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

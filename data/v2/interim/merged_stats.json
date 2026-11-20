@@ -1,36 +1,81 @@
 {
-  "tong": 34857,
+  "truoc_khi_gop_text": {
+    "tong": 54454,
+    "theo_nguon": {
+      "vihos": 11056,
+      "vihsd": 33398,
+      "vithsd": 10000
+    },
+    "theo_nguon_nhan_goc": {
+      "vihos": {
+        "CLEAN": 5696,
+        "HATE": 5360
+      },
+      "vihsd": {
+        "CLEAN": 27623,
+        "HATE": 3514,
+        "OFFENSIVE": 2261
+      },
+      "vithsd": {
+        "CLEAN": 4898,
+        "HATE": 3243,
+        "OFFENSIVE": 1859
+      }
+    },
+    "theo_nguon_split_goc": {
+      "vihos": {
+        "test": 1106,
+        "train": 8844,
+        "validation": 1106
+      },
+      "vihsd": {
+        "test": 6680,
+        "train": 24046,
+        "validation": 2672
+      },
+      "vithsd": {
+        "test": 1799,
+        "train": 7000,
+        "validation": 1201
+      }
+    },
+    "co_bang_chung_goi_y": {
+      "vihos": 5360
+    },
+    "so_text_khac_nhau": 30580,
+    "so_ban_ghi_trung_text_chinh_xac": 23874
+  },
+  "tong": 30580,
   "theo_nguon": {
-    "vihos": 11056,
-    "vihsd": 23801
+    "vihsd": 30579,
+    "vithsd": 1
   },
   "theo_nguon_nhan_goc": {
-    "vihos": {
-      "CLEAN": 5696,
-      "HATE": 5360
-    },
     "vihsd": {
-      "CLEAN": 19759,
-      "HATE": 2497,
-      "OFFENSIVE": 1545
+      "CLEAN": 24577,
+      "HATE": 5604,
+      "OFFENSIVE": 398
+    },
+    "vithsd": {
+      "CLEAN": 1
     }
   },
   "theo_nguon_split_goc": {
-    "vihos": {
-      "test": 1106,
-      "train": 8844,
-      "validation": 1106
-    },
     "vihsd": {
-      "train": 23801
+      "test": 5707,
+      "train": 22543,
+      "validation": 2329
+    },
+    "vithsd": {
+      "train": 1
     }
   },
   "co_bang_chung_goi_y": {
-    "vihos": 5360
+    "vihsd": 5360
   },
-  "so_text_khac_nhau": 24019,
-  "so_ban_ghi_trung_text_chinh_xac": 10838,
-  "canh_bao": [
-    "Chưa có ViTHSD trong D:\\SafeViChi\\data\\raw\\vithsd (bộ trên Hugging Face bị gated: cần chấp nhận điều khoản và đăng nhập `huggingface-cli login`). Bỏ qua ViTHSD."
-  ]
+  "so_text_khac_nhau": 30580,
+  "so_ban_ghi_trung_text_chinh_xac": 0,
+  "so_text_nhan_goc_bat_dong": 1820,
+  "so_text_xuat_hien_o_nhieu_nguon": 13056,
+  "canh_bao": []
 }
