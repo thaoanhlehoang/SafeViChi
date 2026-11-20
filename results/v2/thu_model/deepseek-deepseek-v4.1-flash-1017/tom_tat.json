@@ -1,0 +1,93 @@
+{
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "seed": 42,
+  "reasoning": "none",
+  "provider_order": [
+    "wafer/us"
+  ],
+  "max_price": [
+    0.04,
+    0.5
+  ],
+  "gan_nhan": {
+    "so_cau": 5,
+    "ids": [
+      "v2_37409c2964bd",
+      "v2_b35864a78831",
+      "v2_b68c0927c1d9",
+      "v2_3216d568d2f9",
+      "v2_2b1b50d5537a"
+    ],
+    "so_loi": 0,
+    "giay": 2.6,
+    "token": "1 lượt gọi, 2,917 token vào, 346 token ra (trong đó 0 token suy luận)"
+  },
+  "sinh": {
+    "o": [
+      "DD4-messenger_zalo-teencode-an_y-lo_dan",
+      "DD4-messenger_zalo-teencode-an_y-lo_dan-SD",
+      "LD2-binh_luan-than_mat-lo_lieu-mot_dong",
+      "LD2-binh_luan-than_mat-lo_lieu-mot_dong-SD",
+      "QR1-messenger_zalo-teencode-an_y-ngay_dau",
+      "QR1-messenger_zalo-teencode-an_y-ngay_dau-SD"
+    ],
+    "so_doan_moi_o": 5,
+    "so_doan_hop_le": 30,
+    "giay": 9.4,
+    "thong_ke": {
+      "so_doan": 30,
+      "so_dong_trung_binh": 3.97,
+      "theo_nhan": {
+        "AN_TOAN": 15,
+        "DE_DOA": 5,
+        "LUA_DAO": 5,
+        "QUAY_ROI": 5
+      },
+      "theo_kich_ban": {
+        "DD4": 5,
+        "DD4-SD": 5,
+        "LD2": 5,
+        "LD2-SD": 5,
+        "QR1": 5,
+        "QR1-SD": 5
+      },
+      "theo_kenh": {
+        "binh_luan": 10,
+        "messenger_zalo": 20
+      },
+      "theo_giong": {
+        "teencode": 20,
+        "than_mat": 10
+      },
+      "theo_do_lo": {
+        "an_y": 20,
+        "lo_lieu": 10
+      },
+      "theo_kieu_lo": {
+        "lo_dan": 10,
+        "mot_dong": 10,
+        "ngay_dau": 10
+      },
+      "theo_so_dong": {
+        "1": 10,
+        "4": 1,
+        "5": 10,
+        "6": 8,
+        "7": 1
+      },
+      "can_duyet": 0,
+      "dong_bi_bo_tien_to": 0,
+      "doan_bi_bo": {},
+      "so_o_da_chay": 6,
+      "o_bi_tu_choi": [],
+      "o_loi_api": []
+    }
+  },
+  "token_tong": "7 lượt gọi, 28,343 token vào, 6,129 token ra (trong đó 0 token suy luận)",
+  "token_chi_tiet": {
+    "calls": 7,
+    "prompt": 28343,
+    "completion": 6129,
+    "reasoning": 0
+  }
+}
