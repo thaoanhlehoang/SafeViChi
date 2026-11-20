@@ -25,17 +25,26 @@ import sys
 import time
 import unicodedata
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable
 
 from src.v2.labeling.llm import (  # noqa: F401 - giữ tên cũ cho người gọi
-    KEY_ENV, LLMConfig, call_llm, config_from_env, load_dotenv, safe_name, with_retries,
+    KEY_ENV, USAGE, LLMConfig, call_llm, config_from_env, load_dotenv, safe_name, with_retries,
 )
 
 ROOT = Path(__file__).resolve().parents[3]
 GUIDE_PATH = ROOT / "docs" / "v2" / "HUONG_DAN_GAN_NHAN.md"
-IN_PATH = ROOT / "data" / "v2" / "interim" / "merged.jsonl"
+IN_PATH = ROOT / "data" / "v2" / "interim" / "can_gan_lai.jsonl"  # tạo bằng python -m src.v2.data.chon_gan_lai
+KHO_TEST_PATH = ROOT / "data" / "v2" / "interim" / "kho_test.jsonl"
+
+
+def load_kho_test_ids(path: Path = KHO_TEST_PATH) -> set[str]:
+    """id câu thuộc kho test: KHÔNG bao giờ gửi cho LLM (test do người gán)."""
+    if not path.exists():
+        return set()
+    return {json.loads(line)["id"] for line in path.open(encoding="utf-8") if line.strip()}
 OUT_DIR = ROOT / "data" / "v2" / "interim" / "prelabel"
 
 LABELS = ("AN_TOAN", "XUC_PHAM", "QUAY_ROI", "DE_DOA", "LUA_DAO")
@@ -276,6 +285,7 @@ def run(
     cache_path: Path,
     meta: dict,
     batch_size: int = 10,
+    workers: int = 1,
     log: Callable[[str], None] = print,
 ) -> list[dict]:
     """Gán mọi bản ghi chưa có trong cache; text trùng chỉ gọi API một lần. Trả về bản ghi đã gộp."""
@@ -303,9 +313,12 @@ def run(
         pending = list(unique.values())
         log(f"Cần gọi API cho {len(pending)} text khác nhau ({len(todo)} bản ghi), lô {batch_size}.")
 
-        for start in range(0, len(pending), batch_size):
-            batch = pending[start:start + batch_size]
-            results = label_batch(batch, system, complete)
+        batches = [pending[i:i + batch_size] for i in range(0, len(pending), batch_size)]
+        done = 0
+
+        def save(batch: list[dict], results: dict[str, dict]) -> None:
+            # Chỉ luồng chính ghi file và cache.
+            nonlocal done
             for record in batch:
                 entry = make_cache_entry(record, results[record["id"]], meta)
                 handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -314,7 +327,34 @@ def run(
                     by_text[entry["text_sha256"]] = entry
             handle.flush()
             os.fsync(handle.fileno())
-            log(f"  xong {min(start + batch_size, len(pending))}/{len(pending)}")
+            done += len(batch)
+            log(f"  xong {done}/{len(pending)}")
+
+        failed = 0
+
+        def safe_label(batch: list[dict]) -> dict[str, dict] | None:
+            # Lô lỗi (mạng, hết tiền, nhà cung cấp ngừng) chỉ bị bỏ qua lượt này; chạy lại sẽ gán tiếp.
+            nonlocal failed
+            try:
+                return label_batch(batch, system, complete)
+            except Exception as exc:  # noqa: BLE001
+                failed += 1
+                log(f"  LỖI lô {batch[0]['id']}… ({type(exc).__name__}: {str(exc)[:200]}), bỏ qua, chạy lại để thử tiếp")
+                return None
+
+        if workers <= 1:
+            for batch in batches:
+                results = safe_label(batch)
+                if results is not None:
+                    save(batch, results)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                futures = {pool.submit(safe_label, batch): batch for batch in batches}
+                for future in as_completed(futures):
+                    if future.result() is not None:
+                        save(futures[future], future.result())
+        if failed:
+            log(f"CÓ {failed} lô lỗi chưa gán. Chạy lại cùng lệnh để gán tiếp (cache giữ phần đã xong).")
 
         for record in todo:
             if record["id"] in cache and cache[record["id"]].get("llm_raw") is not None:
@@ -362,12 +402,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mau-clean", type=int, default=None,
                         help="giữ mọi câu OFFENSIVE/HATE, chỉ lấy ngẫu nhiên N câu CLEAN gốc (seed 42)")
     parser.add_argument("--batch-size", type=int, default=10)
+    parser.add_argument("--workers", type=int, default=1, help="số lô gọi API song song")
     parser.add_argument("--dry-run", action="store_true", help="chỉ in prompt của lô đầu, không gọi API")
     args = parser.parse_args(argv)
 
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     records = [r for r in read_jsonl(args.input) if not args.nguon or r["nguon"] in args.nguon]
+    kho_test = load_kho_test_ids()
+    blocked = [r["id"] for r in records if r["id"] in kho_test]
+    if blocked:
+        print(f"Bỏ {len(blocked)} câu thuộc kho test (không gửi LLM): {blocked[:5]}...", file=sys.stderr)
+        records = [r for r in records if r["id"] not in kho_test]
     records = sample_clean(records, args.mau_clean)
     if args.limit is not None:
         records = records[: args.limit]
@@ -388,7 +434,7 @@ def main(argv: list[str] | None = None) -> int:
 
     load_dotenv()
     config = config_from_env()
-    meta = {"provider": config.provider, "model": config.model, "prompt_version": version}
+    meta = {"provider": config.provider, "model": config.model, "prompt_version": version, **config.describe()}
     tag = safe_name(f"{config.provider}_{config.model}_{version}")
     cache_path = args.out_dir / f"cache_{tag}.jsonl"
 
@@ -396,7 +442,8 @@ def main(argv: list[str] | None = None) -> int:
         return with_retries(lambda: call_llm(config, system_prompt, user_prompt))
 
     results = run(records, system=system, complete=complete, cache_path=cache_path,
-                  meta=meta, batch_size=args.batch_size)
+                  meta=meta, batch_size=args.batch_size, workers=args.workers)
+    print(f"Token đã dùng lượt này: {USAGE.summary()}")
     out_path = args.out_dir / f"prelabel_{tag}.jsonl"
     with out_path.open("w", encoding="utf-8", newline="\n") as handle:
         for result in results:

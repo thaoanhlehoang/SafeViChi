@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from src.v2.labeling import prelabel as p
 
 TEXT = "VCB thông báo tài khoản của quý khách sẽ bị khóa, xác minh tại vcb-xacminh.com"
@@ -182,3 +184,42 @@ def test_sample_clean_keeps_all_harmful_and_samples_clean_by_text():
     assert ("câu sạch 3" in texts) == ({"c3", "d0"} <= {r["id"] for r in picked})
     assert [r["id"] for r in picked] == [r["id"] for r in rows if r in picked]  # giữ thứ tự
     assert len({r["text"] for r in p.sample_clean(rows, 100)}) == 11
+
+
+def test_openrouter_body_disables_reasoning_and_pins_provider(monkeypatch):
+    from src.v2.labeling import llm
+    for key, value in {"SAFEVICHI_LLM_PROVIDER": "openai", "SAFEVICHI_LLM_MODEL": "deepseek/x",
+                       "SAFEVICHI_LLM_BASE_URL": "https://openrouter.ai/api/v1", "SAFEVICHI_LLM_API_KEY": "k",
+                       "SAFEVICHI_LLM_REASONING": "none", "SAFEVICHI_LLM_PROVIDER_ORDER": "wafer/us",
+                       "SAFEVICHI_LLM_MAX_PRICE": "0.04,0.5"}.items():
+        monkeypatch.setenv(key, value)
+    config = llm.config_from_env()
+    body = llm.openai_body(config, "sys", "user")
+    assert body["reasoning"] == {"effort": "none", "exclude": True}
+    assert body["provider"] == {"order": ["wafer/us"], "allow_fallbacks": False,
+                                "max_price": {"prompt": 0.04, "completion": 0.5}}
+    # không đặt gì thì không gửi tham số riêng của OpenRouter
+    for key in ("SAFEVICHI_LLM_REASONING", "SAFEVICHI_LLM_PROVIDER_ORDER", "SAFEVICHI_LLM_MAX_PRICE"):
+        monkeypatch.delenv(key)
+    plain = llm.openai_body(llm.config_from_env(), "sys", "user")
+    assert "reasoning" not in plain and "provider" not in plain
+    # dùng với nhà cung cấp khác OpenRouter thì báo lỗi thay vì lặng lẽ bỏ qua
+    monkeypatch.setenv("SAFEVICHI_LLM_BASE_URL", "https://api.deepseek.com")
+    monkeypatch.setenv("SAFEVICHI_LLM_REASONING", "none")
+    with pytest.raises(SystemExit):
+        llm.config_from_env()
+
+
+def test_run_with_workers_matches_sequential(tmp_path):
+    records = [{"id": f"r{i}", "text": f"câu số {i}", "nhan_goc": "CLEAN"} for i in range(7)]
+
+    def complete(system, user):
+        n = user.count("\n") + 1
+        return "\n".join(json.dumps({"stt": i, "nhan": "AN_TOAN", "bang_chung": [], "the": [],
+                                     "do_chac": 0.9, "ly_do": "ok"}) for i in range(1, n + 1))
+
+    seq = p.run(records, system="s", complete=complete, cache_path=tmp_path / "a.jsonl", meta={}, batch_size=2)
+    par = p.run(records, system="s", complete=complete, cache_path=tmp_path / "b.jsonl", meta={}, batch_size=2,
+                workers=3)
+    assert [r["id"] for r in par] == [r["id"] for r in seq]
+    assert [r["nhan"] for r in par] == [r["nhan"] for r in seq] == ["AN_TOAN"] * 7

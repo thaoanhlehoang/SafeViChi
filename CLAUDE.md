@@ -64,6 +64,10 @@ nguyên `"\n"`.
   `llm_nguoi_duyet`; câu người viết có `nguon="nguoi_viet"`, `cach_gan="nguoi"`, xem `docs/v2/HUONG_DAN_VIET_TEST.md`).
   Câu do LLM sinh (`nguon="sinh_llm"`) chỉ được vào train. Câu người viết phải được viết **trước** khi đọc câu LLM sinh,
   để không bắt chước; câu sinh gần trùng câu người viết bị loại khỏi train.
+- **Kho test (`data/v2/interim/kho_test.jsonl`) không bao giờ gửi cho LLM**, kể cả để chạy thử. Kho này gồm các
+  nhóm câu chưa từng nằm trong split train của ViHSD/ViHOS (dữ liệu ViHateT5 của v1 đã học) và chưa từng gửi LLM;
+  tạo bằng `python -m src.v2.data.chon_gan_lai`. `prelabel.py` tự bỏ câu thuộc kho này. Quy trình chạy LLM:
+  `docs/v2/CHAY_SINH_DU_LIEU.md`.
 - **Không dùng nhãn của VOZ-HSD làm nhãn train.** Đó là nhãn do máy gán; tác giả không khuyến nghị dùng để fine-tune
   (xem `data/processed/vietnamese_nonstandard_v1_2/DATASET_CARD.md`). Chỉ dùng làm kho câu thô để LLM và người gán lại.
 - **Khử trùng gần đúng trước khi chia tập**, dùng lại `src/dataset_builder/dedup.py`; cả nhóm trùng vào cùng một split.
