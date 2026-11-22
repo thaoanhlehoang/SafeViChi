@@ -80,7 +80,7 @@ file có mã phiên bản prompt).
 - **Kho test không bao giờ gửi LLM.** `prelabel.py` tự bỏ mọi câu có trong `kho_test.jsonl`. Câu test/validation do
   người gán (xem `HUONG_DAN_VIET_TEST.md` và `HUONG_DAN_GAN_NHAN.md`).
 - Câu do LLM sinh chỉ vào train (`nguon=sinh_llm`).
-- Sau khi có câu test người viết (`data/v2/interim/test_nguoi_viet.jsonl`), chạy lại bước 6 và 7: không tốn tiền nhờ
+- Sau khi có câu test người viết (`data/v2/test_day_du.jsonl`), chạy lại bước 6 và 7: không tốn tiền nhờ
   cache, và loại đoạn sinh gần trùng câu test.
 
 ## 6. Commit gì

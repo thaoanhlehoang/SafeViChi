@@ -87,7 +87,7 @@ kich_ban:
     vi_du: []
   - ma: LD5
     nhan: LUA_DAO
-    mo_ta: "Nick bạn bè bị hack: hỏi mượn tiền gấp, nhờ nhận mã OTP, nhờ \"bình chọn giúp\" qua link đăng nhập"
+    mo_ta: 'Nick bạn bè bị hack: hỏi mượn tiền gấp, nhờ nhận mã OTP, nhờ "bình chọn giúp" qua link đăng nhập'
     sinh_doi: "Bạn bè hỏi mượn tiền thật, có chuyện chung rõ ràng"
     kenh: [messenger_zalo, nhom_lop, chat_game]
     giong: [than_mat, teencode, khong_dau, giong_trung]
@@ -119,7 +119,7 @@ kich_ban:
     vi_du: []
   - ma: LD9
     nhan: LUA_DAO
-    mo_ta: "Rủ rê \"đầu tư\", kiếm tiền nhanh, rủ thêm bạn để nhận hoa hồng"
+    mo_ta: 'Rủ rê "đầu tư", kiếm tiền nhanh, rủ thêm bạn để nhận hoa hồng'
     sinh_doi: "Bạn kể chuyện tiết kiệm tiền tiêu vặt"
     kenh: [messenger_zalo, nhom_lop, binh_luan]
     giong: [trang_trong_gia_danh, than_mat, teencode, giong_bac]
@@ -135,16 +135,24 @@ kich_ban:
     vi_du: []
   - ma: LD11
     nhan: LUA_DAO
-    mo_ta: "Bán khóa học, tài liệu giả: khóa luyện thi, IELTS, \"khóa học kiếm tiền online\" giá sốc, bán đề thi \"lộ\"; chuyển khoản trước rồi biến mất"
+    mo_ta: 'Bán khóa học, tài liệu giả: khóa luyện thi, IELTS, "khóa học kiếm tiền online" giá sốc, bán đề thi "lộ"; chuyển khoản trước rồi biến mất'
     sinh_doi: "Trung tâm thật giới thiệu khóa học, có địa chỉ, học thử, không ép chuyển gấp"
     kenh: [binh_luan, messenger_zalo, nhom_lop]
     giong: [trang_trong_gia_danh, teencode, khong_dau, giong_nam]
     giu_ngoai_train: false
     vi_du: []
 
+  - ma: LD12
+    nhan: LUA_DAO
+    mo_ta: "Giả shop online hoặc shipper: giao hàng thất bại, đơn lỗi cần hoàn tiền, bấm link nhập thông tin hoặc chuyển phí giao lại"
+    sinh_doi: "Shipper thật gọi hẹn giờ giao, shop báo đơn đang giao, không đòi chuyển tiền hay bấm link"
+    kenh: [sms, messenger_zalo, binh_luan]
+    giong: [trang_trong_gia_danh, than_mat, khong_dau, giong_nam]
+    giu_ngoai_train: true # kịch bản chưa thấy, chỉ có trong test (thêm 20/11, sau khi đã sinh train)
+    vi_du: []
   - ma: DD1
     nhan: DE_DOA
-    mo_ta: "Bạo lực học đường: hẹn đánh, chặn đường cổng trường, \"ra sau trường gặp tao\""
+    mo_ta: 'Bạo lực học đường: hẹn đánh, chặn đường cổng trường, "ra sau trường gặp tao"'
     sinh_doi: "Bạn đùa kiểu thân, có dấu hiệu đùa rõ trong câu; hẹn gặp ở cổng trường"
     kenh: [nhom_lop, messenger_zalo, binh_luan]
     giong: [teencode, khong_dau, giong_bac, giong_nam, viet_tat, giong_trung]
@@ -160,7 +168,7 @@ kich_ban:
     vi_du: []
   - ma: DD3
     nhan: DE_DOA
-    mo_ta: "Tống tiền bằng ảnh hoặc clip: \"không chuyển tiền tao gửi cho cả lớp\""
+    mo_ta: 'Tống tiền bằng ảnh hoặc clip: "không chuyển tiền tao gửi cho cả lớp"'
     sinh_doi: "Bạn trêu dọa đăng ảnh dìm hàng kiểu đùa"
     kenh: [messenger_zalo, chat_game, sms]
     giong: [teencode, khong_dau, viet_tat, giong_bac, giong_nam, giong_trung]
@@ -176,13 +184,21 @@ kich_ban:
     vi_du: []
   - ma: DD5
     nhan: DE_DOA
-    mo_ta: "Trong game: dọa hack acc, dọa tìm ra ngoài đời \"tao biết trường mày\""
+    mo_ta: 'Trong game: dọa hack acc, dọa tìm ra ngoài đời "tao biết trường mày"'
     sinh_doi: "Trash talk trong game không nhắm ra đời thực"
     kenh: [chat_game, messenger_zalo, binh_luan]
     giong: [teencode, viet_tat, khong_dau, giong_nam, giong_bac, than_mat]
     giu_ngoai_train: false
     vi_du: []
 
+  - ma: DD6
+    nhan: DE_DOA
+    mo_ta: 'Dọa trả thù vì bị mách thầy cô, phụ huynh hoặc bị report nick: "mày mách cô thì liệu hồn"'
+    sinh_doi: "Bạn khuyên nên báo thầy cô khi bị bắt nạt, hứa đi cùng"
+    kenh: [messenger_zalo, nhom_lop, chat_game]
+    giong: [teencode, than_mat, khong_dau, giong_bac]
+    giu_ngoai_train: true # kịch bản chưa thấy, chỉ có trong test (thêm 20/11, sau khi đã sinh train)
+    vi_du: []
   - ma: QR1
     nhan: QUAY_ROI
     mo_ta: "Người lạ làm quen online rồi xin ảnh riêng tư, rủ gặp riêng, dặn giữ bí mật, đổi quà/thẻ game lấy ảnh"
@@ -222,6 +238,14 @@ kich_ban:
     kenh: [chat_game, binh_luan, messenger_zalo]
     giong: [teencode, viet_tat, khong_dau, giong_bac, giong_trung, than_mat]
     giu_ngoai_train: false
+    vi_du: []
+  - ma: QR6
+    nhan: QUAY_ROI
+    mo_ta: "Kiểm soát, theo dõi bạn hoặc người yêu: đòi xem tin nhắn, bắt bật định vị, cấm chơi với bạn khác, ghen tuông tra hỏi liên tục"
+    sinh_doi: "Bạn bè hỏi han quan tâm, hai bên đồng ý chia sẻ vị trí khi đi chơi tối"
+    kenh: [messenger_zalo, nhom_lop, sms]
+    giong: [than_mat, teencode, viet_tat, giong_trung]
+    giu_ngoai_train: true # kịch bản chưa thấy, chỉ có trong test (thêm 20/11, sau khi đã sinh train)
     vi_du: []
   - ma: XP1
     nhan: XUC_PHAM

@@ -71,7 +71,8 @@ nguyên `"\n"`.
 - **Không dùng nhãn của VOZ-HSD làm nhãn train.** Đó là nhãn do máy gán; tác giả không khuyến nghị dùng để fine-tune
   (xem `data/processed/vietnamese_nonstandard_v1_2/DATASET_CARD.md`). Chỉ dùng làm kho câu thô để LLM và người gán lại.
 - **Khử trùng gần đúng trước khi chia tập**, dùng lại `src/dataset_builder/dedup.py`; cả nhóm trùng vào cùng một split.
-- **Giữ 2 kiểu điểm mù ngoài train** (không sinh vào train) để làm cột "kiểu né lọc chưa thấy" cho yêu cầu 2.
+- **Không đưa câu biến dạng nhân tạo (C1/C2) vào train** (quyết định 20/11), để đo đúng tác dụng của bộ chuẩn hóa.
+  C1/C2 chỉ sinh cho validation và test; C2 (điểm mù) là cột "kiểu né lọc chưa thấy" cho yêu cầu 2.
 - **Ngưỡng dò trên validation rồi đóng băng** trước khi chạm vào test. Không chỉnh gì sau khi đã nhìn điểm test.
 - **Mọi con số trong báo cáo phải sinh từ file kết quả** (`results/v2/...`) bằng script, không gõ tay.
   v1 từng có số trong `docs/` lệch với `results/`; không lặp lại lỗi này.

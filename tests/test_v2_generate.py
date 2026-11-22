@@ -16,15 +16,15 @@ def bang():
 
 def test_kich_ban_yaml_matches_plan(bang):
     codes = [kb.ma for kb in bang.kich_ban]
-    assert codes[:11] == [f"LD{i}" for i in range(1, 12)]
-    assert [c for c in codes if c.startswith("DD")] == [f"DD{i}" for i in range(1, 6)]
-    assert [c for c in codes if c.startswith("QR")] == [f"QR{i}" for i in range(1, 6)]
+    assert codes[:12] == [f"LD{i}" for i in range(1, 13)]
+    assert [c for c in codes if c.startswith("DD")] == [f"DD{i}" for i in range(1, 7)]
+    assert [c for c in codes if c.startswith("QR")] == [f"QR{i}" for i in range(1, 7)]
     assert [c for c in codes if c.startswith("XP")] == ["XP1", "XP2"]
     # XUC_PHAM chỉ sinh hội thoại nhiều dòng (câu XUC_PHAM thật đều là bình luận một dòng)
     for kb in bang.kich_ban:
         if kb.nhan == "XUC_PHAM":
             assert not set(kb.kenh) & set(bang.kenh_mot_dong)
-    assert [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train] == ["LD7"]
+    assert [kb.ma for kb in bang.kich_ban if kb.giu_ngoai_train] == ["LD7", "LD12", "DD6", "QR6"]
     assert set(bang.kenh) == {"messenger_zalo", "nhom_lop", "chat_game", "binh_luan", "sms"}
     assert set(bang.do_lo) == {"lo_lieu", "an_y"}
     assert set(bang.kieu_lo) == {"ngay_dau", "lo_dan", "mot_dong"}

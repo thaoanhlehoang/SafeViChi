@@ -1,0 +1,24 @@
+{
+  "so_cau_test": 289,
+  "so_cau_train": 20116,
+  "kich_ban_giu_ngoai_train": [
+    "DD6",
+    "LD12",
+    "LD7",
+    "QR6"
+  ],
+  "so_cau_train_thuoc_kich_ban_giu_ngoai": 0,
+  "test_theo_muc": {
+    "can_xem": 266,
+    "sach": 23
+  },
+  "so_cap_trung_gan": 0,
+  "so_cap_can_xem": 743,
+  "so_id_train_can_bo": 0,
+  "nguong": {
+    "trung_gan": 0.8,
+    "can_xem": 0.5,
+    "embedding": null
+  },
+  "loi": []
+}
