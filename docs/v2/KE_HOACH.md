@@ -14,9 +14,9 @@ mô hình nhỏ dưới 2 GB trả về nhãn kèm cụm từ bằng chứng, v�
 | --- | --- | --- | --- |
 | T5 19/11 | Chốt `HUONG_DAN_GAN_NHAN.md`; tạo nhánh `v2-final`, tag `v1-vong-loai`; script LLM gán sơ bộ ViHSD, ViHOS, ViTHSD sang 5 nhãn; bắt đầu gom tin lừa đảo thật (đã che thông tin); sửa số lệch của v1 | API, máy riêng | [ ] |
 | T6 20/11 | Hai người gán thử 100 câu, đo Cohen's kappa, sửa hướng dẫn; LLM sinh câu theo kịch bản cho `DE_DOA`, `QUAY_ROI`, `LUA_DAO` | API | [ ] |
-| T7 21/11 | Hai người duyệt độc lập tập test (~150 câu thật mỗi nhãn, kèm bằng chứng); khử trùng, chia tập, sinh biến dạng C1/C2; **đóng băng dataset** | Máy riêng | [ ] |
+| T7 21/11 | Hai người duyệt độc lập tập test (~150 câu thật mỗi nhãn, kèm bằng chứng); khử trùng, chia tập, sinh biến dạng C1/C2 **chỉ cho test**; **đóng băng dataset** | Máy riêng | [ ] |
 | CN 22/11 | Train song song: Qwen3-1.7B QLoRA và encoder đa nhiệm; chạy LLM API làm baseline trên test | Colab, Kaggle, API | [ ] |
-| T2 23/11 | Ablation: bỏ biến dạng, bỏ chuẩn hóa, 4-bit vs 16-bit; zero-shot mô hình nhỏ chưa fine-tune | Colab, Kaggle | [ ] |
+| T2 23/11 | Ablation: bỏ chuẩn hóa, 4-bit vs 16-bit; zero-shot mô hình nhỏ chưa fine-tune | Colab, Kaggle | [ ] |
 | T3 24/11 | Đo chi phí trên laptop và trình duyệt; phân tích lỗi theo nhóm; chọn ví dụ thất bại; gắn mô hình mới vào demo | Máy riêng | [ ] |
 | T4 25/11 | Viết báo cáo, sinh bảng và hình từ `results/v2`; ngày dự phòng | | [ ] |
 | T5 26/11 | Nộp | | [ ] |
@@ -79,9 +79,18 @@ Các bước:
 5. [ ] `src/v2/labeling/agreement.py`: kappa giữa 2 người, danh sách câu bất đồng (script xong 20/11; chờ
    hai người gán `kiem_nhan_A.csv`, `kiem_nhan_B.csv`).
 6. [ ] `src/v2/data/split.py` (phần train xong 20/11: `data/v2/train.jsonl` 13.392 dòng, thẻ `data/v2/DATASET_CARD.md`): chọn test/validation từ kho test, lập train ~15.000 đoạn cân nhãn, giữ 2 kiểu điểm mù
-   ngoài train, loại đoạn sinh gần trùng câu test người viết.
-7. [ ] `src/v2/data/perturb.py`: sinh C1/C2 theo từng từ để vị trí bằng chứng đi theo.
-8. [ ] Thẻ dữ liệu `data/v2/DATASET_CARD.md`, checksum, test tự động.
+   ngoài train, loại đoạn sinh gần trùng câu test người viết. Train không có câu biến dạng nhân tạo.
+7. [x] `src/v2/data/perturb.py`: sinh C1/C2 **chỉ cho test** (và validation), theo từng từ để bằng chứng đi theo.
+   Mỗi câu có 13 bản một kiểu (7 C1, 6 C2) và 4 bản trộn (C1, C2, đã thấy, chưa thấy), biến dạng mạnh (~60% số từ,
+   luôn trúng cụm bằng chứng). "Đã thấy" = kiểu xuất hiện tự nhiên trong >= 1% câu train (script đo bằng `--train`,
+   chỉ đọc). Lệnh: `python -m src.v2.data.perturb data/v2/test_day_du.jsonl --train data/v2/train.jsonl
+   --out data/v2/interim/test_bien_dang.jsonl`.
+8. [x] Test người viết (21/11): `data/v2/test.jsonl` 289 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
+   thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người/LLM.
+   Tạo lại từ 3 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
+   data/v2/raw/test_C.csv --xuat-test`. Còn thiếu: `XUC_PHAM` chỉ 8 câu, `QUAY_ROI` 51 câu.
+   Kiểm tra rò rỉ với train và kho test: `python -m src.v2.data.kiem_tra_ro_ri` (0 trùng id, 0 gần trùng).
+9. [ ] Thẻ dữ liệu `data/v2/DATASET_CARD.md`, checksum, test tự động.
 
 ## Bảng thực nghiệm (yêu cầu 3)
 
@@ -91,19 +100,23 @@ Các bước:
 | 2 | SafeViChi v1 | v2 có hơn vòng trước không (so trên nhị phân nguy hại/an toàn) | Không |
 | 3 | Encoder đa nhiệm (ViSoBERT hoặc PhoBERT) | Mô hình tiếng Việt cơ sở | 1 lượt |
 | 4 | Qwen3-1.7B chưa fine-tune, zero/few-shot | Fine-tune đóng góp bao nhiêu | Không |
-| 5 | Qwen3-1.7B fine-tune chỉ câu sạch | Mốc cho dữ liệu biến dạng | 1 lượt |
-| 6 | #5 + dữ liệu biến dạng | Lợi ích của đối kháng mức dữ liệu | 1 lượt |
-| 7 | #6 + chuẩn hóa đầu vào (v2 đầy đủ) | Lợi ích của chuẩn hóa | Không |
-| 8 | #7 bản 4-bit | Lượng tử hóa mất bao nhiêu, tiết kiệm bao nhiêu | Không |
-| 9 | LLM lớn qua API, zero/few-shot | Trần chất lượng và cái giá | Không |
+| 5 | Qwen3-1.7B fine-tune, train không có câu biến dạng nhân tạo (chỉ teencode tự nhiên trong câu LLM sinh) | Mô hình tự chống né lọc được bao nhiêu | 1 lượt |
+| 6 | #5 + chuẩn hóa đầu vào (v2 đầy đủ) | Lợi ích của chuẩn hóa: #6 − #5 trên C1 | Không |
+| 7 | #6 bản 4-bit | Lượng tử hóa mất bao nhiêu, tiết kiệm bao nhiêu | Không |
+| 8 | LLM lớn qua API, zero/few-shot | Trần chất lượng và cái giá | Không |
 
-**Chưa chốt dòng #9.** Đã bỏ Qwen3.8 27B. Yêu cầu 3 của ban tổ chức có nhắc "LLM lớn qua API"; nếu giữ dòng này thì
+Quyết định 20/11: **không đưa câu biến dạng nhân tạo (C1/C2) vào train**, để phần chống né lọc đo được là của bộ
+chuẩn hóa chứ không lẫn với việc mô hình đã học biến dạng. C1 (12 quy tắc chuẩn hóa xử lý được) đo bộ chuẩn hóa;
+C2 (6 kiểu điểm mù chuẩn hóa không xử lý được) là "kiểu né lọc chưa thấy". Ghi rõ trong báo cáo: câu LLM sinh vốn đã
+có teencode tự nhiên.
+
+**Chưa chốt dòng #8.** Đã bỏ Qwen3.8 27B. Yêu cầu 3 của ban tổ chức có nhắc "LLM lớn qua API"; nếu giữ dòng này thì
 dùng chính DeepSeek V4.1 Flash và ghi rõ trong báo cáo rằng nó cũng là LLM gán sơ bộ dữ liệu train, nên điểm có thể
 cao hơn thực tế.
 
 Cột đo cho mỗi dòng:
 
-- Phân loại: F1 từng nhãn, macro-F1, F1 nhị phân nguy hại/an toàn; trên C0, C1, C2, kiểu điểm mù chưa thấy,
+- Phân loại: F1 từng nhãn, macro-F1, F1 nhị phân nguy hại/an toàn; trên C0, C1, C2 (kiểu né lọc chưa thấy), theo giọng vùng miền (`giong_vung`),
   bộ câu khó (tách theo thẻ `tieng_long`, `vung_mien`, `an_y`, `trich_dan`), câu thật và câu sinh.
 - Bằng chứng: precision, recall, F1 mức từ; tỉ lệ câu `AN_TOAN` bị tô oan; tỉ lệ cụm không có trong câu (mô hình sinh).
 - Chi phí: dung lượng, RAM đỉnh, độ trễ p50/p95 mỗi câu trên laptop CPU và trình duyệt, năng lượng ước tính, tiền/1.000 câu với API.
@@ -111,7 +124,7 @@ Cột đo cho mỗi dòng:
 ## Cắt khỏi bản nộp 26/11
 
 - Nhãn phụ.
-- Các lượt train lại để giữ riêng từng kiểu biến dạng (thay bằng giữ 2 kiểu điểm mù ngoài train ngay khi dựng dữ liệu).
+- Các lượt train có dữ liệu biến dạng nhân tạo (quyết định 20/11: train không có câu biến dạng).
 - Tập test thu riêng từ nền tảng khác (tin lừa đảo thật từ SMS/Zalo đã là nguồn khác với dữ liệu train).
 
 ## Rủi ro

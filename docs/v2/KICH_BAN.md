@@ -45,7 +45,10 @@ thế chiều hẹn ở cổng trường t mượn nha
   nhận phản ứng như người thật; lời dọa `DE_DOA` phải là dọa thật; đoạn `AN_TOAN` không cố chứng minh mình an toàn.
   `[SDT]`/`[STK]` chỉ xuất hiện khi người thật sẽ gửi số, kể cả trong đoạn `AN_TOAN`, để mô hình không coi chúng là
   dấu hiệu lừa đảo.
-- `LD7` để ngoài train (không sinh), dùng làm cột "kịch bản chưa thấy" khi đánh giá.
+- `LD7`, `LD12`, `DD6`, `QR6` để ngoài train (không sinh), dùng làm phần "kịch bản chưa thấy" khi đánh giá: mỗi
+  nhãn `LUA_DAO`, `DE_DOA`, `QUAY_ROI` có ít nhất một kịch bản chưa thấy. `LD12`, `DD6`, `QR6` được thêm ngày 20/11,
+  sau khi đã sinh train, nên chắc chắn không có trong prompt sinh. `XUC_PHAM` chưa có kịch bản chưa thấy (`XP1`, `XP2`
+  đều đã sinh).
 
 ## Kiểm tra tự động
 
@@ -89,16 +92,19 @@ thế chiều hẹn ở cổng trường t mượn nha
 | LD9 | `LUA_DAO` | Rủ rê "đầu tư", kiếm tiền nhanh, rủ thêm bạn để nhận hoa hồng | Bạn kể chuyện tiết kiệm tiền tiêu vặt | |
 | LD10 | `LUA_DAO` | Học bổng, cuộc thi giả: trúng tuyển, đóng phí giữ suất | Thông báo học bổng thật của trường, không thu phí | |
 | LD11 | `LUA_DAO` | Bán khóa học, tài liệu giả: khóa luyện thi, IELTS, "khóa học kiếm tiền online" giá sốc, bán đề thi "lộ"; chuyển khoản trước rồi biến mất | Trung tâm thật giới thiệu khóa học, có địa chỉ, học thử, không ép chuyển gấp | |
+| LD12 | `LUA_DAO` | Giả shop online hoặc shipper: giao hàng thất bại, đơn lỗi cần hoàn tiền, bấm link nhập thông tin hoặc chuyển phí giao lại | Shipper thật hẹn giờ giao, shop báo đơn đang giao, không đòi tiền hay link | Có |
 | DD1 | `DE_DOA` | Bạo lực học đường: hẹn đánh, chặn đường cổng trường, "ra sau trường gặp tao" | Bạn đùa kiểu thân, có dấu hiệu đùa rõ trong câu; hẹn gặp ở cổng trường | |
 | DD2 | `DE_DOA` | Đòi nợ giữa bạn bè hoặc vay nóng: dọa đến nhà, báo nhà trường, đăng lên nhóm lớp | Nhắc trả tiền trà sữa, tiền quỹ lịch sự | |
 | DD3 | `DE_DOA` | Tống tiền bằng ảnh hoặc clip: "không chuyển tiền tao gửi cho cả lớp" | Bạn trêu dọa đăng ảnh dìm hàng kiểu đùa | |
 | DD4 | `DE_DOA` | Dọa tung tin, bêu xấu lên confession, nhóm lớp nếu không làm theo | Nhắc nhau đừng đăng ảnh người khác khi chưa hỏi | |
 | DD5 | `DE_DOA` | Trong game: dọa hack acc, dọa tìm ra ngoài đời "tao biết trường mày" | Trash talk trong game không nhắm ra đời thực | |
+| DD6 | `DE_DOA` | Dọa trả thù vì bị mách thầy cô, phụ huynh hoặc bị report nick: "mày mách cô thì liệu hồn" | Bạn khuyên nên báo thầy cô khi bị bắt nạt, hứa đi cùng | Có |
 | QR1 | `QUAY_ROI` | Người lạ làm quen online rồi xin ảnh riêng tư, rủ gặp riêng, dặn giữ bí mật, đổi quà/thẻ game lấy ảnh | Làm quen lịch sự, rủ đi chơi nhóm | |
 | QR2 | `QUAY_ROI` | Nhắn dồn dập sau khi bị từ chối, lập nick khác khi bị chặn | Hỏi lại một lần vì chưa thấy trả lời | |
 | QR3 | `QUAY_ROI` | Bình phẩm ngoại hình, body shaming nhắm vào một bạn trong nhóm lớp | Khen nhau lịch sự | |
 | QR4 | `QUAY_ROI` | Bêu riếu, đăng ảnh chế, rủ cả lớp tẩy chay một bạn | Kể chuyện vui về chính mình | |
 | QR5 | `QUAY_ROI` | Trong game: bám đuôi, spam chat quấy rối một người chơi | Rủ nhau chơi tiếp trận sau | |
+| QR6 | `QUAY_ROI` | Kiểm soát, theo dõi bạn hoặc người yêu: đòi xem tin nhắn, bắt bật định vị, cấm chơi với bạn khác, ghen tuông tra hỏi liên tục | Bạn bè hỏi han quan tâm, hai bên đồng ý chia sẻ vị trí khi đi chơi tối | Có |
 | XP1 | `XUC_PHAM` | Cãi nhau rồi lăng mạ, chửi thẳng, hạ nhục người đang nói chuyện (đầu óc, học lực, gia cảnh); không dọa, không gạ gẫm | Bạn thân chửi đùa, văng tục thân mật, trêu nhau mà cả hai đều vui | |
 | XP2 | `XUC_PHAM` | Miệt thị vùng miền, dân tộc, tôn giáo hoặc một nhóm người ngay trong cuộc trò chuyện, kể cả nói ẩn ý hay dùng biệt danh miệt thị | Nói chuyện vui về giọng nói, món ăn, phong tục các vùng miền, không miệt thị | |
 
