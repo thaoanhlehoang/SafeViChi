@@ -88,6 +88,9 @@ Các bước:
    Bản gọn dùng khi chạy mô hình (23/11): `--nhom C1 --so-ban 2` và `--nhom C2 --so-ban 2` trên `data/v2/test.jsonl` ra
    `data/v2/test_perturb_C1.jsonl`, `test_perturb_C2.jsonl` (mỗi câu 2 dòng bốc ngẫu nhiên theo kiểu, 668 dòng mỗi file,
    không giữ bản gốc; `goc_id` trỏ về câu gốc).
+   `python -m src.v2.data.tach_test_bien_dang` gắn `giong_vung`, `phan_test` từ `test_day_du.jsonl` (theo `goc_id`) và
+   tách ra `data/v2/test_perturb/`: C0/C1/C2 theo giọng `bac`/`trung`/`nam` và theo kịch bản `da_thay`/`chua_thay`
+   (C0 là câu gốc, làm mốc để báo độ tụt C1 − C0, C2 − C0 trên từng nhóm).
 8. [x] Test người viết (21–23/11): `data/v2/test.jsonl` 334 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
    thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người/LLM.
    Tạo lại từ 4 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
