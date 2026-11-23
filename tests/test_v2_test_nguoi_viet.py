@@ -172,7 +172,7 @@ def test_nguon_cach_gan_and_xuat_test(tmp_path, monkeypatch):
 def test_bo_test_ban_giao_khop_csv():
     """data/v2/test.jsonl phải tạo lại được đúng từ 3 file CSV trong data/v2/raw."""
     raw = ROOT / "data" / "v2" / "raw"
-    records, errors, _ = t.load([raw / "test_A.csv", raw / "test_B.csv", raw / "test_C.csv"])
+    records, errors, _ = t.load([raw / f"test_{k}.csv" for k in "ABCD"])
     assert errors == []
     expected = [{k: r[k] for k in t.MODEL_FIELDS} for r in records]
     lines = (ROOT / "data" / "v2" / "test.jsonl").read_text(encoding="utf-8").splitlines()

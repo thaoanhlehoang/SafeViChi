@@ -1,24 +1,25 @@
 {
-  "so_cau": 289,
+  "so_cau": 334,
   "theo_nhan": {
     "AN_TOAN": 96,
     "LUA_DAO": 72,
     "DE_DOA": 62,
-    "QUAY_ROI": 51,
-    "XUC_PHAM": 8
+    "XUC_PHAM": 53,
+    "QUAY_ROI": 51
   },
   "theo_nguoi_viet": {
     "B": 132,
     "A": 118,
+    "D": 45,
     "C": 39
   },
   "theo_nguon_va_cach_gan": {
     "nguoi_viet/llm_nguoi_duyet": 9,
-    "nguoi_viet/nguoi": 280
+    "nguoi_viet/nguoi": 325
   },
   "theo_nhan_chon_theo": {
     "llm": 9,
-    "nguoi": 7,
+    "nguoi": 52,
     "trung": 273
   },
   "theo_kich_ban": {
@@ -46,6 +47,7 @@
     "QR4": 8,
     "QR5": 8,
     "QR6": 30,
+    "XP1": 45,
     "an_toan_chung": 10,
     "moi": 31
   },
@@ -54,17 +56,17 @@
     "bac/DE_DOA": 22,
     "bac/LUA_DAO": 24,
     "bac/QUAY_ROI": 14,
-    "bac/XUC_PHAM": 4,
+    "bac/XUC_PHAM": 19,
     "nam/AN_TOAN": 31,
     "nam/DE_DOA": 23,
     "nam/LUA_DAO": 22,
     "nam/QUAY_ROI": 18,
-    "nam/XUC_PHAM": 2,
+    "nam/XUC_PHAM": 17,
     "trung/AN_TOAN": 32,
     "trung/DE_DOA": 17,
     "trung/LUA_DAO": 26,
     "trung/QUAY_ROI": 19,
-    "trung/XUC_PHAM": 2
+    "trung/XUC_PHAM": 17
   },
   "theo_phan_va_nhan": {
     "chua_thay/AN_TOAN": 46,
@@ -76,7 +78,7 @@
     "trong_phan_phoi/DE_DOA": 30,
     "trong_phan_phoi/LUA_DAO": 30,
     "trong_phan_phoi/QUAY_ROI": 25,
-    "trong_phan_phoi/XUC_PHAM": 5
+    "trong_phan_phoi/XUC_PHAM": 50
   },
   "so_cau_co_nhan_nguoi_kia": 0,
   "cohen_kappa": null,

@@ -85,10 +85,12 @@ Các bước:
    luôn trúng cụm bằng chứng). "Đã thấy" = kiểu xuất hiện tự nhiên trong >= 1% câu train (script đo bằng `--train`,
    chỉ đọc). Lệnh: `python -m src.v2.data.perturb data/v2/test_day_du.jsonl --train data/v2/train.jsonl
    --out data/v2/interim/test_bien_dang.jsonl`.
-8. [x] Test người viết (21/11): `data/v2/test.jsonl` 289 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
+8. [x] Test người viết (21–23/11): `data/v2/test.jsonl` 334 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
    thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người/LLM.
-   Tạo lại từ 3 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
-   data/v2/raw/test_C.csv --xuat-test`. Còn thiếu: `XUC_PHAM` chỉ 8 câu, `QUAY_ROI` 51 câu.
+   Tạo lại từ 4 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
+   data/v2/raw/test_C.csv data/v2/raw/test_D.csv --xuat-test`. 23/11: thêm `test_D.csv` 45 câu `XUC_PHAM`
+   chửi rủa, lăng mạ người đối diện và gia đình họ (XP1, 3 giọng vùng, không có đe dọa hay quấy rối), vì 8 câu
+   `XUC_PHAM` cũ đều là ca ranh giới (mỉa mai, bình phẩm ngoại hình). Nay `XUC_PHAM` 53 câu, `QUAY_ROI` 51 câu.
    Kiểm tra rò rỉ với train và kho test: `python -m src.v2.data.kiem_tra_ro_ri` (0 trùng id, 0 gần trùng).
 9. [ ] Thẻ dữ liệu `data/v2/DATASET_CARD.md`, checksum, test tự động.
 

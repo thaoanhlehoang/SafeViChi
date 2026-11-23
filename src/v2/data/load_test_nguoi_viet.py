@@ -15,7 +15,7 @@ Dòng lỗi được in ra kèm số dòng; chỉ ghi file đầu ra khi không 
 
 Tạo tập test cho mô hình (bàn giao):
     python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv data/v2/raw/test_C.csv \
-        --xuat-test
+        data/v2/raw/test_D.csv --xuat-test
 ghi `data/v2/test.jsonl` (chỉ id, text, nhan, bang_chung như train), `data/v2/test_day_du.jsonl` (đủ trường, có
 giong_vung, phan_test để tính điểm theo vùng miền và kịch bản chưa thấy) và `data/v2/test_stats.json`.
 """

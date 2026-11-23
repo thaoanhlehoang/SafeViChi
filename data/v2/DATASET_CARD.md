@@ -10,7 +10,7 @@ xem file đó thay vì số ở đây. Checksum: `data/v2/CHECKSUMS.json`.
 | `data/v2/train.jsonl` | Tập train, 13.392 dòng, đã trộn thứ tự (seed 42). Chỉ có `id`, `text`, `nhan`, `bang_chung` |
 | `data/v2/so_sanh.jsonl` | Cùng các dòng, cùng thứ tự, đủ mọi trường + `meta`. Dùng để phân tích theo nhóm, ghép theo `id` |
 | `data/v2/train_stats.json` | Phân bố nhãn, nguồn, số dòng; checksum file nguồn |
-| `data/v2/test.jsonl` | Test người viết, 289 đoạn, cùng 4 trường như train. Tạo lại từ `data/v2/raw/test_A.csv`, `test_B.csv`, `test_C.csv` bằng `python -m src.v2.data.load_test_nguoi_viet ... --xuat-test` |
+| `data/v2/test.jsonl` | Test người viết, 334 đoạn (289 đoạn đợt 1, 45 đoạn `XUC_PHAM` chửi rủa thêm 23/11), cùng 4 trường như train. Tạo lại từ `data/v2/raw/test_A.csv`…`test_D.csv` bằng `python -m src.v2.data.load_test_nguoi_viet ... --xuat-test` |
 | `data/v2/test_day_du.jsonl` | Cùng các dòng test, thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người và nhãn LLM. Dùng để tính điểm theo vùng miền và kịch bản chưa thấy |
 | `data/v2/validation.jsonl` | **Chưa có.** Chọn từ kho test, do người gán |
 

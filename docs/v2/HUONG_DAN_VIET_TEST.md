@@ -95,7 +95,7 @@ Bằng chứng theo mục 5 của `HUONG_DAN_GAN_NHAN.md`: cụm ngắn nhất �
 4. Chạy lại script với `--xuat-test` để ghi `data/v2/test.jsonl` (id, text, nhan, bang_chung như train) và
    `data/v2/test_day_du.jsonl` (mỗi câu có thêm `giong_vung`, `phan_test` là `trong_phan_phoi` hoặc `chua_thay`):
    ```
-   python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv data/v2/raw/test_C.csv --xuat-test
+   python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv data/v2/raw/test_C.csv data/v2/raw/test_D.csv --xuat-test
    ```
    Câu lấy nhãn theo LLM khi người và LLM bất đồng ghi `cach_gan=llm_nguoi_duyet`. Sau đó mới được đọc câu LLM sinh.
 5. Kiểm tra rò rỉ với train:
