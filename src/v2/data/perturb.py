@@ -24,6 +24,12 @@ script đo tỉ lệ câu train có dấu hiệu của từng kiểu (chỉ đ�
 Chạy:
     python -m src.v2.data.perturb data/v2/test_day_du.jsonl \\
         --train data/v2/train.jsonl --out data/v2/interim/test_bien_dang.jsonl
+
+Bản gọn (mỗi câu 2 dòng bốc ngẫu nhiên trong một nhóm, không giữ bản gốc):
+    python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl --nhom C1 --so-ban 2 \\
+        --out data/v2/test_perturb_C1.jsonl
+    python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl --nhom C2 --so-ban 2 \\
+        --out data/v2/test_perturb_C2.jsonl
 """
 
 from __future__ import annotations
@@ -337,6 +343,47 @@ def classify(coverage: dict[str, float] | None, nguong: float, mac_dinh: tuple[s
     return groups
 
 
+def build_chon(records: list[dict], nhom: str, so_ban: int, groups: dict[str, str], seed: int = SEED,
+               ti_le: float = 0.6) -> tuple[list[dict], dict]:
+    """Mỗi câu gốc lấy ngẫu nhiên `so_ban` kiểu trong nhóm `nhom` (C1 hoặc C2), mỗi kiểu một dòng, không giữ bản
+    gốc. Kiểu bốc ngẫu nhiên theo (seed, id câu) nên chạy lại ra đúng kết quả cũ; kiểu không áp được vào câu
+    thì bốc kiểu khác."""
+    kieu_nhom = list(C1_KIEU if nhom == "C1" else C2_KIEU)
+    out: list[dict] = []
+    thieu: Counter = Counter()
+    for record in records:
+        rng = random.Random(f"{seed}|{nhom}|{record['id']}")
+        order = kieu_nhom[:]
+        rng.shuffle(order)
+        got = 0
+        for ten in order:
+            if got == so_ban:
+                break
+            res = perturb_record(record, [ten], ten, seed, ti_le)
+            if res is None:
+                continue
+            rec, _ = res
+            rec["bien_dang"] = nhom
+            rec["nhom_bien_dang"] = groups[ten]
+            out.append(rec)
+            got += 1
+        if got < so_ban:
+            thieu[record["id"]] = so_ban - got
+    stats = {
+        "nhom": nhom,
+        "so_ban_moi_cau": so_ban,
+        "so_cau_goc": len(records),
+        "so_ban_ghi": len(out),
+        "so_cau_khong_du_ban": len(thieu),
+        "theo_kieu": dict(sorted(Counter(r["kieu_bien_dang"] for r in out).items())),
+        "theo_nhom": dict(sorted(Counter(r["nhom_bien_dang"] for r in out).items())),
+        "nhom_kieu": {k: v for k, v in groups.items() if k in kieu_nhom},
+        "ti_le_tu_bien_dang": ti_le,
+        "seed": seed,
+    }
+    return out, stats
+
+
 def build(records: list[dict], groups: dict[str, str], seed: int = SEED, ti_le: float = 0.6) -> tuple[list[dict], dict]:
     plans: list[tuple[str, list[str], str]] = []
     for name in C1_KIEU:
@@ -399,6 +446,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="kiểu không đo được tự động mà coi là đã thấy")
     parser.add_argument("--ti-le", type=float, default=0.6, help="tỉ lệ từ bị biến dạng mỗi câu (mạnh: 0,6)")
     parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--nhom", choices=("C1", "C2"), default=None,
+                        help="chỉ sinh nhóm này, mỗi câu --so-ban dòng bốc ngẫu nhiên theo kiểu, không giữ bản gốc")
+    parser.add_argument("--so-ban", type=int, default=2, help="số dòng mỗi câu gốc khi dùng --nhom (mặc định 2)")
     args = parser.parse_args(argv)
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -412,7 +462,10 @@ def main(argv: list[str] | None = None) -> int:
         rows = [r for p in args.train for r in read_jsonl(p)]
         coverage = train_coverage(rows)
     groups = classify(coverage, args.nguong_da_thay, tuple(args.da_thay_mac_dinh))
-    out, stats = build(records, groups, args.seed, args.ti_le)
+    if args.nhom:
+        out, stats = build_chon(records, args.nhom, args.so_ban, groups, args.seed, args.ti_le)
+    else:
+        out, stats = build(records, groups, args.seed, args.ti_le)
     stats["do_phu_train"] = coverage
     stats["nguong_da_thay"] = args.nguong_da_thay
     args.out.parent.mkdir(parents=True, exist_ok=True)

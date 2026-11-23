@@ -1,0 +1,45 @@
+{
+  "nhom": "C1",
+  "so_ban_moi_cau": 2,
+  "so_cau_goc": 334,
+  "so_ban_ghi": 668,
+  "so_cau_khong_du_ban": 0,
+  "theo_kieu": {
+    "bo_dau": 102,
+    "chen_ky_tu": 81,
+    "dinh_tu": 96,
+    "go_sai": 104,
+    "keo_dai": 89,
+    "so_thay_chu": 93,
+    "teencode": 103
+  },
+  "theo_nhom": {
+    "chua_thay": 270,
+    "da_thay": 398
+  },
+  "nhom_kieu": {
+    "teencode": "da_thay",
+    "bo_dau": "da_thay",
+    "keo_dai": "da_thay",
+    "go_sai": "da_thay",
+    "chen_ky_tu": "chua_thay",
+    "so_thay_chu": "chua_thay",
+    "dinh_tu": "chua_thay"
+  },
+  "ti_le_tu_bien_dang": 0.6,
+  "seed": 42,
+  "do_phu_train": {
+    "teencode": 0.6718,
+    "bo_dau": 0.1016,
+    "keo_dai": 0.0152,
+    "chen_ky_tu": 0.0025,
+    "so_thay_chu": 0.0004,
+    "cyrillic_homoglyph": 0.0001,
+    "zero_width": 0.0013,
+    "exotic_separator": 0.0092,
+    "space_injection": 0.0001,
+    "double_elongation": 0.0,
+    "fullwidth": 0.0
+  },
+  "nguong_da_thay": 0.01
+}

@@ -85,6 +85,9 @@ Các bước:
    luôn trúng cụm bằng chứng). "Đã thấy" = kiểu xuất hiện tự nhiên trong >= 1% câu train (script đo bằng `--train`,
    chỉ đọc). Lệnh: `python -m src.v2.data.perturb data/v2/test_day_du.jsonl --train data/v2/train.jsonl
    --out data/v2/interim/test_bien_dang.jsonl`.
+   Bản gọn dùng khi chạy mô hình (23/11): `--nhom C1 --so-ban 2` và `--nhom C2 --so-ban 2` trên `data/v2/test.jsonl` ra
+   `data/v2/test_perturb_C1.jsonl`, `test_perturb_C2.jsonl` (mỗi câu 2 dòng bốc ngẫu nhiên theo kiểu, 668 dòng mỗi file,
+   không giữ bản gốc; `goc_id` trỏ về câu gốc).
 8. [x] Test người viết (21–23/11): `data/v2/test.jsonl` 334 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
    thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người/LLM.
    Tạo lại từ 4 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv

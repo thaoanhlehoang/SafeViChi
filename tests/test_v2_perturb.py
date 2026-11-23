@@ -67,3 +67,28 @@ def test_deterministic_and_refuses_train(tmp_path):
     src.write_text(json.dumps(REC, ensure_ascii=False) + "\n", encoding="utf-8")
     assert p.main([str(src), "--out", str(tmp_path / "o.jsonl")]) == 0
     assert (tmp_path / "o_stats.json").exists()
+
+
+def test_build_chon_two_random_kinds_per_sentence_no_original():
+    groups = p.classify(None, 0.01, ("go_sai",))
+    for nhom, kieu in (("C1", p.C1_KIEU), ("C2", p.C2_KIEU)):
+        out, stats = p.build_chon([REC, SAFE], nhom, 2, groups)
+        assert len(out) == 4 and stats["so_cau_khong_du_ban"] == 0
+        for gid in ("v2_x", "v2_y"):
+            rows = [r for r in out if r["goc_id"] == gid]
+            assert len(rows) == 2 and len({r["kieu_bien_dang"] for r in rows}) == 2
+            assert all(r["bien_dang"] == nhom and r["kieu_bien_dang"] in kieu for r in rows)
+            assert all(r["text"] != (REC if gid == "v2_x" else SAFE)["text"] for r in rows)
+        for r in out:
+            for ev in r["bang_chung"]:
+                assert ev in r["text"]
+        assert out == p.build_chon([REC, SAFE], nhom, 2, groups)[0]
+
+
+def test_main_nhom_option(tmp_path):
+    src = tmp_path / "in.jsonl"
+    src.write_text(json.dumps(REC, ensure_ascii=False) + "\n", encoding="utf-8")
+    out = tmp_path / "c2.jsonl"
+    assert p.main([str(src), "--nhom", "C2", "--so-ban", "2", "--out", str(out)]) == 0
+    rows = [json.loads(x) for x in out.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 2 and {r["bien_dang"] for r in rows} == {"C2"}
