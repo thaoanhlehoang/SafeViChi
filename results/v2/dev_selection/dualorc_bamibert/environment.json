@@ -1,0 +1,27 @@
+{
+  "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+  "torch": "2.14.1+cu130",
+  "cuda": "13.0",
+  "device": "NVIDIA L4",
+  "capability": [
+    8,
+    9
+  ],
+  "gpu_gib": 22.03,
+  "native_bf16": true,
+  "dtype": "torch.bfloat16",
+  "fp16_scaler": false,
+  "backbone": "Qualcomm-AI-Research/BamiBERT",
+  "backbone_rev": "57bc1340debbe4e348ec549047a763caebe4a977",
+  "llrd_effective": 0.92,
+  "data_scheme": "dev_80_10_10",
+  "numpy": "2.4.6",
+  "scipy": "1.16.3",
+  "pandas": "2.2.3",
+  "requests": "2.32.4",
+  "transformers": "4.57.6",
+  "tokenizers": "0.22.2",
+  "huggingface-hub": "0.36.0",
+  "safetensors": "0.6.2",
+  "scikit-learn": "1.9.1"
+}

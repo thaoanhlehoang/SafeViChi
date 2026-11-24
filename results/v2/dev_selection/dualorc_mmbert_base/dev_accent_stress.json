@@ -1,0 +1,8 @@
+{
+  "n": 1216,
+  "seen_in_train": true,
+  "original_f1": 0.9211279117697287,
+  "stripped_f1": 0.8811566352767779,
+  "flip_rate": 0.12006578947368421,
+  "newly_missed_harm": 41
+}

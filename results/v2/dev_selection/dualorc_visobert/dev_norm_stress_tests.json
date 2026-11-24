@@ -1,0 +1,65 @@
+{
+  "clean_c0": {
+    "suite": "clean_c0",
+    "seen_in_train": true,
+    "n": 1340,
+    "perturbed_raw_f1": 0.9289026469375161,
+    "perturbed_norm_f1": 0.9334001627893389,
+    "gain_vs_raw_f1": 0.0044975158518227865,
+    "perturbed_norm_binary_f1": 0.9383886255924171,
+    "fpr_an_toan": 0.06711409395973154,
+    "evidence_f1": 0.6856479914922415,
+    "evidence_f1_theo_y": 0.7078581248399295,
+    "gain_vs_raw_ev_theo_y": 0.0015246886419361116
+  },
+  "accent_strip": {
+    "suite": "accent_strip",
+    "seen_in_train": true,
+    "n": 1216,
+    "perturbed_raw_f1": 0.9105014584430382,
+    "perturbed_norm_f1": 0.9107069959887093,
+    "gain_vs_raw_f1": 0.00020553754567109728,
+    "perturbed_norm_binary_f1": 0.91005291005291,
+    "newly_missed_harm": 27
+  },
+  "c1_in_dist": {
+    "suite": "c1_in_dist",
+    "seen_in_train": true,
+    "n": 1255,
+    "perturbed_raw_f1": 0.9053900395648935,
+    "perturbed_norm_f1": 0.9269769728096963,
+    "gain_vs_raw_f1": 0.021586933244802764,
+    "perturbed_norm_binary_f1": 0.9322990126939351,
+    "newly_missed_harm": 18
+  },
+  "c1_heldout_controlled": {
+    "suite": "c1_heldout_controlled",
+    "seen_in_train": false,
+    "n": 1153,
+    "perturbed_raw_f1": 0.9360541940709108,
+    "perturbed_norm_f1": 0.9276979830278982,
+    "gain_vs_raw_f1": -0.008356211043012651,
+    "perturbed_norm_binary_f1": 0.9368968077208611,
+    "newly_missed_harm": 8
+  },
+  "blindspot_homoglyph": {
+    "suite": "blindspot_homoglyph",
+    "seen_in_train": false,
+    "n": 1203,
+    "perturbed_raw_f1": 0.911734913904971,
+    "perturbed_norm_f1": 0.9094158485241712,
+    "gain_vs_raw_f1": -0.002319065380799734,
+    "perturbed_norm_binary_f1": 0.9247009148486981,
+    "newly_missed_harm": 20
+  },
+  "blindspot_zero_width": {
+    "suite": "blindspot_zero_width",
+    "seen_in_train": false,
+    "n": 1330,
+    "perturbed_raw_f1": 0.90945333286878,
+    "perturbed_norm_f1": 0.9092186732766419,
+    "gain_vs_raw_f1": -0.00023465959213819776,
+    "perturbed_norm_binary_f1": 0.9069148936170213,
+    "newly_missed_harm": 27
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "n": 100,
+  "batch": 1,
+  "model_and_collate_p50_ms": 82.31337999995958,
+  "model_and_collate_p95_ms": 86.57400615007873,
+  "prepare_p50_ms": 0.4128699999910168,
+  "model_weights_cuda_MiB": 1177.43,
+  "inference_baseline_cuda_MiB": 1193.97,
+  "session_peak_cuda_MiB": 1205.2,
+  "activation_overhead_cuda_MiB": 11.22
+}
