@@ -12,6 +12,9 @@ xem file đó thay vì số ở đây. Checksum: `data/v2/CHECKSUMS.json`.
 | `data/v2/train_stats.json` | Phân bố nhãn, nguồn, số dòng; checksum file nguồn |
 | `data/v2/test.jsonl` | Test người viết, 334 đoạn (289 đoạn đợt 1, 45 đoạn `XUC_PHAM` chửi rủa thêm 23/11), cùng 4 trường như train. Tạo lại từ `data/v2/raw/test_A.csv`…`test_D.csv` bằng `python -m src.v2.data.load_test_nguoi_viet ... --xuat-test` |
 | `data/v2/test_day_du.jsonl` | Cùng các dòng test, thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người và nhãn LLM. Dùng để tính điểm theo vùng miền và kịch bản chưa thấy |
+| `data/v2/test_perturb_C1.jsonl` | Test biến dạng C1 bản gọn (668 dòng = 334 × 2 kiểu C1 ngẫu nhiên, seed 42), đã gắn sẵn `giong_vung`, `phan_test`, `kich_ban` |
+| `data/v2/test_perturb_C2.jsonl` | Test biến dạng C2 điểm mù bản gọn (668 dòng = 334 × 2 kiểu C2 ngẫu nhiên, seed 42), 100% kiểu né lọc chưa thấy |
+| `data/v2/test_stats.json` | Thống kê tổng hợp tập test gốc `C0`, `bien_dang_C1`, `bien_dang_C2`, và 15 lát cắt `lat_cat_C0_C1_C2` (các file lát cắt rời trong `data/v2/test_perturb/` được bỏ khỏi git; `src/v2/eval/evaluate.py` lọc trực tiếp in-memory hoặc tái tạo cục bộ bằng `src/v2/data/tach_test_bien_dang.py`) |
 | `data/v2/validation.jsonl` | **Chưa có.** Chọn từ kho test, do người gán |
 
 ## Định dạng mỗi dòng
@@ -56,6 +59,7 @@ mô hình**).
   dòng không (so điểm theo `so_dong` trên validation).
 - `QUAY_ROI` ít hơn mục tiêu (~1.450) vì kịch bản `QR3` (bình phẩm ngoại hình) bị bộ lọc gán thành `XUC_PHAM`;
   hướng dẫn gán nhãn đang chưa thống nhất chỗ này.
-- Train **không có** biến dạng nhân tạo C1/C2 (quyết định 20/11), chỉ có teencode tự nhiên trong câu thật và câu sinh.
-  C1/C2 chỉ sinh cho test bằng `src/v2/data/perturb.py`, để đo riêng tác dụng của bộ chuẩn hóa.
+- Tệp `data/v2/train.jsonl` lưu bản gốc sạch (`C0`, có teencode tự nhiên trong câu thật và câu sinh). Quá trình
+  huấn luyện được phép tăng cường trực tuyến (bỏ dấu, C1 đơn nghĩa phi điểm mù), nhưng **bắt buộc giữ các kiểu
+  điểm mù C2 và tập C1 held-out ngoài train** để đo "kiểu né lọc chưa thấy" trên test (`src/v2/data/perturb.py`).
 - Chưa có validation thật: nếu cần gỡ lỗi, tạm tách một phần train theo `nhom_trung`, **không dùng để dò ngưỡng**.

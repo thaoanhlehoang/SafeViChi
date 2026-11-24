@@ -5,8 +5,8 @@
 SafeViChi phát hiện tin nhắn tiếng Việt nguy hại, kể cả khi bị viết biến dạng để lách bộ lọc
 (teencode, bỏ dấu, chèn ký tự, homoglyph). Hệ thống chạy trên thiết bị người dùng, không gửi tin nhắn ra ngoài.
 
-- **v1 (vòng loại, nhánh `main`, tag `v1-vong-loai`):** chuẩn hóa 5 tầng → ViHateT5 fine-tune đối kháng (FGM)
-  → occlusion để tô sáng. Nhãn HATE/CLEAN. Kết quả nằm trong `results/step3`, `results/step4`.
+- **v1 (vòng loại, nhánh `main`, tag `v1-vongloai`, lưu trữ tại `v1/`):** chuẩn hóa 5 tầng → ViHateT5 fine-tune đối kháng (FGM)
+  → occlusion để tô sáng. Nhãn HATE/CLEAN. Kết quả nằm trong `v1/results/step3`, `v1/results/step4`.
 - **v2 (vòng chung kết, nhánh `v2-final`):** đổi sang 5 nhãn theo tình huống và một mô hình ngôn ngữ nhỏ
   (dưới 2 GB khi lượng tử hóa) trả về nhãn kèm cụm từ bằng chứng.
 - **Hạn nộp: 26/11/2026.** Lịch từng ngày nằm trong `docs/v2/KE_HOACH.md`. Ưu tiên giữ lịch hơn làm đẹp code.
@@ -59,7 +59,7 @@ nguyên `"\n"`.
 
 ## Quy tắc bắt buộc
 
-- **Không sửa gì trong `results/step3`, `results/step4`, `data/data_final`, `models/`** của v1. v1 là một dòng baseline.
+- **Không sửa gì trong `v1/results/step3`, `v1/results/step4`, `v1/data/data_final`, `models/`** của v1. v1 là một dòng baseline.
 - **Test chỉ chứa câu thật do người duyệt hoặc câu do người trong nhóm tự viết** (`cach_gan` là `nguoi` hoặc
   `llm_nguoi_duyet`; câu người viết có `nguon="nguoi_viet"`, `cach_gan="nguoi"`, xem `docs/v2/HUONG_DAN_VIET_TEST.md`).
   Câu do LLM sinh (`nguon="sinh_llm"`) chỉ được vào train. Câu người viết phải được viết **trước** khi đọc câu LLM sinh,
@@ -71,8 +71,9 @@ nguyên `"\n"`.
 - **Không dùng nhãn của VOZ-HSD làm nhãn train.** Đó là nhãn do máy gán; tác giả không khuyến nghị dùng để fine-tune
   (xem `data/processed/vietnamese_nonstandard_v1_2/DATASET_CARD.md`). Chỉ dùng làm kho câu thô để LLM và người gán lại.
 - **Khử trùng gần đúng trước khi chia tập**, dùng lại `src/dataset_builder/dedup.py`; cả nhóm trùng vào cùng một split.
-- **Không đưa câu biến dạng nhân tạo (C1/C2) vào train** (quyết định 20/11), để đo đúng tác dụng của bộ chuẩn hóa.
-  C1/C2 chỉ sinh cho validation và test; C2 (điểm mù) là cột "kiểu né lọc chưa thấy" cho yêu cầu 2.
+- **Giữ các kiểu điểm mù (C2) và tập biến dạng C1 held-out ngoài train** để làm cột "kiểu né lọc chưa thấy"
+  cho yêu cầu 2. Tệp `data/v2/train.jsonl` lưu bản gốc `C0`; quá trình huấn luyện được phép tăng cường trực tuyến
+  (bỏ dấu, C1 đơn nghĩa phi điểm mù) và đo ablation bật/tắt tăng cường cùng bộ chuẩn hóa.
 - **Ngưỡng dò trên validation rồi đóng băng** trước khi chạm vào test. Không chỉnh gì sau khi đã nhìn điểm test.
 - **Mọi con số trong báo cáo phải sinh từ file kết quả** (`results/v2/...`) bằng script, không gõ tay.
   v1 từng có số trong `docs/` lệch với `results/`; không lặp lại lỗi này.
@@ -94,15 +95,15 @@ results/v2/   # mỗi cấu hình một thư mục: config.yaml, metrics.json, p
 docs/v2/      # kế hoạch, hướng dẫn gán nhãn, báo cáo
 ```
 
-Tái sử dụng từ v1: `src/normalization/` (chuẩn hóa), `src/variant_generator/` (sinh biến dạng),
-`src/dataset_builder/dedup.py` (khử trùng), `src/baselines/stats.py` (kiểm định), `src/reporting/` (vẽ hình), `scripts/checksums.py`.
+Tái sử dụng từ v1 (đặt tại `src/shared/` và `v1/`): `src/shared/normalization/` (chuẩn hóa), `src/shared/variant_generator/` (sinh biến dạng),
+`v1/src/dataset_builder/dedup.py` (khử trùng), `v1/src/baselines/stats.py` (kiểm định), `src/shared/reporting/` (vẽ hình), `v1/scripts/checksums.py`.
 
 ## Lệnh thường dùng
 
 ```bash
 pip install -r requirements-lock.txt
 pytest -q                      # phải pass trước khi commit
-python -m scripts.checksums     # kiểm tra toàn vẹn dữ liệu v1
+python -m v1.scripts.checksums # kiểm tra toàn vẹn dữ liệu v1
 ```
 
 ## Cách làm việc

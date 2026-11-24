@@ -65,10 +65,13 @@ Thumbs.db
 *.toc
 *.fls
 *.fdb_latexmk
-# ...nhưng GIỮ log bằng chứng của Bước 3
-!results/step3/logs/*.log
+# ...nhưng GIỮ log bằng chứng của Bước 3 (v1)
+!v1/results/step3/logs/*.log
 wandb/
 runs/
 
 # Log chạy pipeline dữ liệu v2 (không commit)
 logs_v2/
+
+# Các file cắt lát test C0/C1/C2 theo nhóm (tái tạo nhanh bằng src.v2.data.tach_test_bien_dang; eval lọc in-memory)
+data/v2/test_perturb/

@@ -44,7 +44,7 @@ from typing import Callable
 
 import yaml
 
-from src.dataset_builder.dedup import group_near_duplicates
+from v1.src.dataset_builder.dedup import group_near_duplicates
 from src.v2.data.merge import make_record, normalize_lines, normalize_text
 from src.v2.labeling import llm, prelabel
 

@@ -30,7 +30,7 @@ from pathlib import Path
 
 import yaml
 
-from src.dataset_builder.dedup import _dedup_form, _shingles
+from v1.src.dataset_builder.dedup import _dedup_form, _shingles
 
 ROOT = Path(__file__).resolve().parents[3]
 KICH_BAN_PATH = ROOT / "src" / "v2" / "labeling" / "kich_ban.yaml"

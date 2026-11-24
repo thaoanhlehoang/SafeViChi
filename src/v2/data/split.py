@@ -34,7 +34,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from types import SimpleNamespace
 
-from src.dataset_builder.dedup import group_near_duplicates
+from v1.src.dataset_builder.dedup import group_near_duplicates
 
 ROOT = Path(__file__).resolve().parents[3]
 DATA_V2 = ROOT / "data" / "v2"

@@ -32,8 +32,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from types import SimpleNamespace
 
-from src.baselines.blacklist import predict as blacklist_predict
-from src.dataset_builder.dedup import group_near_duplicates
+from v1.src.baselines.blacklist import predict as blacklist_predict
+from v1.src.dataset_builder.dedup import group_near_duplicates
 
 ROOT = Path(__file__).resolve().parents[3]
 INTERIM = ROOT / "data" / "v2" / "interim"

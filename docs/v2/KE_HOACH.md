@@ -78,8 +78,8 @@ Các bước:
    Chi phí cả bước 3–4: `results/v2/chi_phi_du_lieu/chi_phi.json`.
 5. [ ] `src/v2/labeling/agreement.py`: kappa giữa 2 người, danh sách câu bất đồng (script xong 20/11; chờ
    hai người gán `kiem_nhan_A.csv`, `kiem_nhan_B.csv`).
-6. [ ] `src/v2/data/split.py` (phần train xong 20/11: `data/v2/train.jsonl` 13.392 dòng, thẻ `data/v2/DATASET_CARD.md`): chọn test/validation từ kho test, lập train ~15.000 đoạn cân nhãn, giữ 2 kiểu điểm mù
-   ngoài train, loại đoạn sinh gần trùng câu test người viết. Train không có câu biến dạng nhân tạo.
+6. [ ] `src/v2/data/split.py` (phần train xong 20/11: `data/v2/train.jsonl` 13.392 dòng, thẻ `data/v2/DATASET_CARD.md`): chọn test/validation từ kho test, lập train ~15.000 đoạn cân nhãn, giữ các kiểu điểm mù C2
+   ngoài train, loại đoạn sinh gần trùng câu test người viết. Tệp train lưu bản gốc `C0`; huấn luyện được phép tăng cường trực tuyến phi điểm mù.
 7. [x] `src/v2/data/perturb.py`: sinh C1/C2 **chỉ cho test** (và validation), theo từng từ để bằng chứng đi theo.
    Mỗi câu có 13 bản một kiểu (7 C1, 6 C2) và 4 bản trộn (C1, C2, đã thấy, chưa thấy), biến dạng mạnh (~60% số từ,
    luôn trúng cụm bằng chứng). "Đã thấy" = kiểu xuất hiện tự nhiên trong >= 1% câu train (script đo bằng `--train`,
@@ -88,9 +88,9 @@ Các bước:
    Bản gọn dùng khi chạy mô hình (23/11): `--nhom C1 --so-ban 2` và `--nhom C2 --so-ban 2` trên `data/v2/test.jsonl` ra
    `data/v2/test_perturb_C1.jsonl`, `test_perturb_C2.jsonl` (mỗi câu 2 dòng bốc ngẫu nhiên theo kiểu, 668 dòng mỗi file,
    không giữ bản gốc; `goc_id` trỏ về câu gốc).
-   `python -m src.v2.data.tach_test_bien_dang` gắn `giong_vung`, `phan_test` từ `test_day_du.jsonl` (theo `goc_id`) và
-   tách ra `data/v2/test_perturb/`: C0/C1/C2 theo giọng `bac`/`trung`/`nam` và theo kịch bản `da_thay`/`chua_thay`
-   (C0 là câu gốc, làm mốc để báo độ tụt C1 − C0, C2 − C0 trên từng nhóm).
+   `python -m src.v2.data.tach_test_bien_dang` gắn `giong_vung`, `phan_test` từ `test_day_du.jsonl` (theo `goc_id`) vào
+   `test_perturb_C1/C2.jsonl` và có thể sinh cục bộ 15 file trong `data/v2/test_perturb/` (đã đưa vào `.gitignore` để gọn
+   repo; thống kê gộp trong `data/v2/test_stats.json` và `python -m src.v2.eval.evaluate` tự cắt lát in-memory).
 8. [x] Test người viết (21–23/11): `data/v2/test.jsonl` 334 câu (cùng định dạng train), `data/v2/test_day_du.jsonl`
    thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người/LLM.
    Tạo lại từ 4 file CSV: `python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv data/v2/raw/test_B.csv
@@ -108,15 +108,15 @@ Các bước:
 | 2 | SafeViChi v1 | v2 có hơn vòng trước không (so trên nhị phân nguy hại/an toàn) | Không |
 | 3 | Encoder đa nhiệm (ViSoBERT hoặc PhoBERT) | Mô hình tiếng Việt cơ sở | 1 lượt |
 | 4 | Qwen3-1.7B chưa fine-tune, zero/few-shot | Fine-tune đóng góp bao nhiêu | Không |
-| 5 | Qwen3-1.7B fine-tune, train không có câu biến dạng nhân tạo (chỉ teencode tự nhiên trong câu LLM sinh) | Mô hình tự chống né lọc được bao nhiêu | 1 lượt |
+| 5 | Mô hình fine-tune (tăng cường trực tuyến bỏ dấu / C1 đơn nghĩa phi điểm mù; kèm ablation tắt tăng cường) | Mô hình tự chống né lọc được bao nhiêu | 1 lượt |
 | 6 | #5 + chuẩn hóa đầu vào (v2 đầy đủ) | Lợi ích của chuẩn hóa: #6 − #5 trên C1 | Không |
-| 7 | #6 bản 4-bit | Lượng tử hóa mất bao nhiêu, tiết kiệm bao nhiêu | Không |
+| 7 | #6 bản lượng tử hóa (INT8/4-bit) | Lượng tử hóa mất bao nhiêu, tiết kiệm bao nhiêu | Không |
 | 8 | LLM lớn qua API, zero/few-shot | Trần chất lượng và cái giá | Không |
 
-Quyết định 20/11: **không đưa câu biến dạng nhân tạo (C1/C2) vào train**, để phần chống né lọc đo được là của bộ
-chuẩn hóa chứ không lẫn với việc mô hình đã học biến dạng. C1 (12 quy tắc chuẩn hóa xử lý được) đo bộ chuẩn hóa;
-C2 (6 kiểu điểm mù chuẩn hóa không xử lý được) là "kiểu né lọc chưa thấy". Ghi rõ trong báo cáo: câu LLM sinh vốn đã
-có teencode tự nhiên.
+Quy tắc tăng cường dữ liệu (đã gỡ bỏ giới hạn chỉ học câu sạch): tệp `data/v2/train.jsonl` vẫn lưu bản gốc `C0`,
+còn quá trình huấn luyện được phép tăng cường trực tuyến (bỏ dấu, tập C1 đơn nghĩa phi điểm mù) và đo ablation khi
+bật/tắt. **Bắt buộc giữ hoàn toàn C2 (6 kiểu điểm mù) và tập C1 held-out ngoài train** để làm cột "kiểu né lọc
+chưa thấy" cho yêu cầu 2.
 
 **Chưa chốt dòng #8.** Đã bỏ Qwen3.8 27B. Yêu cầu 3 của ban tổ chức có nhắc "LLM lớn qua API"; nếu giữ dòng này thì
 dùng chính DeepSeek V4.1 Flash và ghi rõ trong báo cáo rằng nó cũng là LLM gán sơ bộ dữ liệu train, nên điểm có thể
@@ -132,7 +132,6 @@ Cột đo cho mỗi dòng:
 ## Cắt khỏi bản nộp 26/11
 
 - Nhãn phụ.
-- Các lượt train có dữ liệu biến dạng nhân tạo (quyết định 20/11: train không có câu biến dạng).
 - Tập test thu riêng từ nền tảng khác (tin lừa đảo thật từ SMS/Zalo đã là nguồn khác với dữ liệu train).
 
 ## Rủi ro

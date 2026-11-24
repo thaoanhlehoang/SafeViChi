@@ -45,8 +45,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Callable
 
-from src.normalization.normalizer import TEENCODE_MAP
-from src.variant_generator import blindspot
+from src.shared.normalization.normalizer import TEENCODE_MAP
+from src.shared.variant_generator import blindspot
 
 ROOT = Path(__file__).resolve().parents[3]
 SEED = 42
