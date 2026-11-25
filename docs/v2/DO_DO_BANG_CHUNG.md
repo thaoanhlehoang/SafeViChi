@@ -1,68 +1,82 @@
-# Độ đo bằng chứng: F1 theo ý
+# Độ đo bằng chứng: F1 theo ý (mệnh đề)
 
 > Đo xem phần mô hình tô có **đúng ý** với phần người gán tô hay không, không bắt bẻ từng chữ ở mép cụm.
+> Mã: `src/v2/eval/evidence.py`. Test tự động: `tests/v2/test_v2_eval.py`.
 
 ## 1. Vì sao cần độ đo này
 
-F1 mức từ (đếm từng từ trùng nhau) quá khắt khe. Với câu "mày ngu như bò", người gán tô `ngu như bò`:
+F1 mức từ (đếm từng từ trùng nhau) quá khắt khe. Với câu "sao m ngu như bò thế", người gán tô `ngu như bò`:
 
-- Mô hình tô `mày ngu` chỉ được **0,40**, dù đã bắt đúng chữ quan trọng nhất là "ngu".
-- Mô hình tô `như bò` lại được **0,80**, dù đã bỏ mất chữ "ngu", tức là mất ý.
+- Mô hình tô cả mệnh đề `sao m ngu như bò thế` chỉ được **0,67**, dù đã tô đúng chỗ.
+- Mô hình tô `như bò` được **0,80**, mô hình tô `ngu` chỉ được **0,50**.
 
-F1 theo ý sửa hai chỗ này:
+Thống kê ngày 24/11/2026 cho thấy khoảng 70% cụm bằng chứng trong test trùng ranh giới dấu câu, tức là người gán
+tô theo ý. Vì vậy độ đo lấy **mệnh đề** làm đơn vị: tô lệch mép trong cùng một ý thì không bị trừ, chỉ trừ khi
+sót ý hoặc tô lan sang ý khác. Người gán không phải đánh dấu thêm gì.
 
-- Tô **trúng từ mang ý** là được điểm.
-- Chỉ trừ điểm khi **tô lố ra xa**. Lố một chút ngay cạnh cụm thì không bị trừ.
+## 2. Cách tính
 
-## 2. Người gán cần làm thêm gì
-
-1. Tô cụm bằng chứng như bình thường (mục 5 của `HUONG_DAN_GAN_NHAN.md`).
-2. Đặt ngoặc `[ ]` quanh **từ mang ý**, tức là từ mà nếu bỏ đi thì cụm hết nguy hại:
-   - `[ngu] như bò`
-   - `mình [biết] bạn học [trường nào] rồi đấy` (được đặt nhiều chỗ)
-   - Không chọn được từ nào thì để trống. Khi đó mọi từ trong cụm được tính như nhau.
-
-## 3. Cách tính (6 bước)
-
-1. **Tách từ và mệnh đề.** Mỗi dòng tách thành từ theo dấu cách. Mệnh đề được cắt tại các dấu `, . ! ? ; : …`.
+1. **Tách từ và mệnh đề.** Mỗi dòng tách thành từ theo dấu cách. Mệnh đề được cắt tại các dấu `, . ! ? ; : …`
+   (dấu chấm giữa từ như `xxx[.]com` không cắt). Xuống dòng luôn là ranh giới.
 2. **Tìm phần mô hình tô.** Tìm từng cụm mô hình trả về trong tin nhắn, khớp nguyên văn. Cụm xuất hiện nhiều lần
-   thì tô hết, giống cách ứng dụng hiển thị. Cụm không có trong tin nhắn thì bỏ.
-3. **Điểm "bắt được ý" (Recall, R).** Với mỗi cụm người gán, tính tỉ lệ từ trong `[ ]` mà mô hình tô trúng.
-   Cụm không có ngoặc thì tính trên mọi từ của cụm. R là trung bình của các cụm.
-4. **Vùng cho phép.** Gồm cụm người gán, cộng **tối đa 2 từ mỗi bên**. Vùng này không vượt ra ngoài mệnh đề
-   và không sang dòng khác.
-5. **Điểm "không tô lố" (Precision, P).** P = số từ mô hình tô nằm trong vùng cho phép / tổng số từ mô hình tô.
-6. **Gộp lại:** F1 = 2 × P × R / (P + R). Tính cho từng đoạn, rồi lấy trung bình trên các đoạn.
+   thì tô hết, giống cách ứng dụng hiển thị. Cụm không có trong tin nhắn thì bỏ và đếm vào tỉ lệ non-verbatim.
+3. **Ý gán.** Mỗi cụm người gán được tìm nguyên văn (ký hiệu che như `[STK]`, `[SDT]` giữ nguyên). Phần cụm
+   nằm trong một mệnh đề là một **ý gán**; cụm vắt qua hai mệnh đề thành hai ý gán. Cụm gán xuất hiện nhiều lần
+   thì lấy lần được tô nhiều nhất.
+4. **Recall (bắt được ý).** Mỗi ý gán được `min(1; 1,5 × số từ của ý được tô / số từ của ý)`. Tô trúng từ 2/3
+   số từ trở lên là đủ điểm, ít hơn thì được theo tỉ lệ. R là trung bình các ý gán trong đoạn.
+5. **Precision (không tô lố).** P = số từ mô hình tô nằm trong các mệnh đề có ý gán / tổng số từ mô hình tô.
+6. **Gộp lại:** F1 = 2 × P × R / (P + R). Tính cho từng đoạn nguy hại có bằng chứng gán, rồi lấy trung bình.
 
-Lưu ý: chấm theo **vị trí** từ, không theo chữ. Tô đúng chữ "ngu" nhưng ở dòng khác thì vẫn được 0.
+### Đoạn nào được tính
 
-## 4. Ví dụ
+Phân loại và bằng chứng được đo riêng. Mô hình báo `AN_TOAN` thì không xuất bằng chứng, nên đoạn nguy hại bị đoán
+`AN_TOAN` **không có cơ hội tô** và không tính vào điểm bằng chứng (lỗi đó đã nằm ở điểm phân loại). Số đoạn bị loại
+ghi ở `n_harmful_skipped_pred_safe` trong `metrics.json`.
+
+| Nhãn đúng | Mô hình đoán | Điểm bằng chứng |
+| --- | --- | --- |
+| `AN_TOAN` | bất kỳ | Không tính F1. Nếu mô hình có tô thì cộng vào tỉ lệ tô oan |
+| Nguy hại | `AN_TOAN` | Không tính (loại khỏi trung bình) |
+| Nguy hại | Nhãn nguy hại, không trả cụm nào | **F1 = 0**, có tính vào trung bình |
+| Nguy hại | Nhãn nguy hại, có cụm | Chấm P/R/F1 theo ý như trên (kể cả khi sai loại nguy hại) |
+
+Hệ số 1,5 (`HE_SO_PHU_MAC_DINH`) chốt ngày 24/11/2026, trước khi nhìn điểm test, và không được chỉnh sau đó.
+
+## 3. Ví dụ
 
 ### Ví dụ 1: câu ngắn
 
-Tin nhắn: `sao m ngu như bò thế. t đã nói nhiều lần rồi mà`. Người gán: `[ngu] như bò`.
-Vùng cho phép: `sao m ngu như bò thế.` (dừng ở dấu chấm).
+Tin nhắn: `sao m ngu như bò thế. t đã nói nhiều lần rồi mà`. Người gán: `ngu như bò`.
+Mệnh đề có ý gán: `sao m ngu như bò thế.`
 
-| Mô hình tô | F1 theo ý | F1 mức từ (cũ) | Vì sao |
+| Mô hình tô | F1 theo ý | F1 mức từ | Vì sao |
 | --- | --- | --- | --- |
-| ngu | **1,00** | 0,50 | Trúng từ mang ý là đủ |
-| m ngu | **1,00** | 0,40 | "m" nằm sát cụm, không bị trừ |
-| sao m ngu như bò thế | **1,00** | 0,67 | Lố nhưng vẫn trong cùng mệnh đề |
-| ngu như bò thế. t đã | 0,80 | 0,67 | "t đã" lố sang câu sau nên bị trừ |
-| cả câu (13 từ) | 0,63 | 0,38 | Lố 7 từ nên bị trừ nhiều |
-| như bò | **0** | 0,80 | Mất "ngu" là mất ý |
+| ngu như bò | **1,00** | 1,00 | Đúng y |
+| sao m ngu như bò thế | **1,00** | 0,67 | Tô trọn mệnh đề, không bị trừ |
+| như bò | 1,00 | 0,80 | Trúng 2/3 từ là đủ điểm |
+| ngu | 0,67 | 0,50 | Trúng 1/3 từ: R = 0,5 |
+| ngu như bò thế. t đã | 0,80 | 0,67 | "t đã" lố sang mệnh đề sau |
+| cả tin nhắn | 0,63 | 0,38 | Lố 6/11 từ |
+| t đã nói | **0** | 0 | Sai chỗ |
 
-### Ví dụ 2: câu không có một từ lõi duy nhất
+### Ví dụ 2: hai dòng, hai ý
 
-Tin nhắn: `mình biết bạn học trường nào rồi đấy`. Người gán: `mình [biết] bạn học [trường nào] rồi đấy`.
+```
+sao mày ngu như bò thế. t đã nói nhiều lần rồi mà
+mai ra cổng sau gặp tao, không thì biết tay
+```
 
-| Mô hình tô | F1 theo ý | F1 mức từ (cũ) | Vì sao |
+Người gán: `ngu như bò` · `mai ra cổng sau gặp tao`. Mệnh đề có ý gán: `sao mày ngu như bò thế.` và
+`mai ra cổng sau gặp tao,`.
+
+| Mô hình tô | R | P | F1 theo ý |
 | --- | --- | --- | --- |
-| biết bạn học trường nào | **1,00** | 0,77 | Phủ đủ 3 từ mang ý |
-| trường nào | 0,80 | 0,40 | Phủ 2/3 từ mang ý |
-| rồi đấy | **0** | 0,40 | Chỉ có từ đệm, không có ý |
+| `ngu như bò thế` · `ra cổng sau gặp tao, không thì biết tay` | 1 | 9/13 = 0,69 | 0,82 |
+| `gặp tao` | (0 + 0,5)/2 = 0,25 | 1 | 0,40 |
+| `mày ngu` · `không thì biết tay` | (0,5 + 0)/2 = 0,25 | 2/6 = 0,33 | 0,29 |
 
-### Ví dụ 3: hội thoại dài (8 dòng, 69 từ, nhãn `DE_DOA`)
+### Ví dụ 3: hội thoại dài (8 dòng, nhãn `DE_DOA`)
 
 ```
 1 ê m là đứa đăng bài nói xấu t trên group lớp à
@@ -75,31 +89,26 @@ Tin nhắn: `mình biết bạn học trường nào rồi đấy`. Người gá
 8 ừ để xem
 ```
 
-Người gán: `[ngu] như bò` · `ra thì biết` · `t [đăng hết ảnh] của m lên [confession]`
+Người gán: `ngu như bò` · `ra thì biết` · `t đăng hết ảnh của m lên confession`
 
-| Mô hình tô | F1 theo ý | F1 mức từ (cũ) | Vì sao |
-| --- | --- | --- | --- |
-| Gọn, đủ 3 ý | **1,00** | 0,88 | Đúng cả 3 ý, không lố |
-| Đủ ý, lố nhẹ ("mày ngu như bò thế", "ko ra thì t đăng…") | 0,97 | 0,85 | Chỉ "ko" vượt quá 2 từ, bị trừ rất ít |
-| Thiếu một phần ý ("ngu", "đăng hết ảnh") | 0,74 | 0,44 | Sót "ra thì biết" và "confession" |
-| Chỉ bắt câu chửi, sót lời dọa | 0,50 | 0,33 | Mất đúng phần làm nên nhãn `DE_DOA` |
-| Tô cả dòng 3 và dòng 7 | 0,77 | 0,65 | Đủ ý nhưng lố 10 từ |
-| Tô cả đoạn 8 dòng | **0,41** | 0,34 | Tô bừa thì không được lợi |
-| Tô sai chỗ (dòng 1, dòng 5) | **0** | 0 | Không trúng ý nào |
+| Mô hình tô | F1 theo ý | F1 mức từ |
+| --- | --- | --- |
+| Gọn, đủ 3 ý | **1,00** | 0,96 |
+| Đủ ý, tô rộng trong mệnh đề ("mày ngu như bò thế", "ko ra thì t đăng…") | **1,00** | 0,85 |
+| Sót "ra thì biết", trúng một phần hai ý còn lại ("ngu", "đăng hết ảnh") | 0,52 | 0,44 |
+| Tô cả đoạn 8 dòng | **0,43** | 0,34 |
+| Tô sai chỗ (dòng 1, dòng 5) | **0** | 0 |
 
-## 5. Nhớ nhanh
+## 4. Chỉ số phụ (báo cạnh F1 theo ý)
 
-- **Trúng ý** thì điểm cao, kể cả khi thiếu từ phụ.
-- **Lố gần** (trong cùng mệnh đề, cách cụm tối đa 2 từ) thì không bị trừ.
-- **Lố xa** (sang câu khác, dòng khác, cả đoạn) thì bị trừ dần theo số từ lố.
-- **Sót ý** thì mất điểm, dù tô trúng các từ khác.
-- **Tô sai chỗ** thì được 0.
+- **F1 mức từ** (khớp từng từ chặt), để người đọc thấy nhóm không tự nới độ đo cho điểm đẹp.
+- **Tỉ lệ AN_TOAN bị tô oan:** đoạn `AN_TOAN` không tính F1, chỉ đếm đoạn mô hình có tô.
+- **Tỉ lệ đoạn nguy hại không tô gì** (trong các đoạn mô hình đã báo nguy hại).
+- **Tỉ lệ cụm non-verbatim:** cụm mô hình trả về không có nguyên văn trong tin nhắn.
+- **Tỉ lệ độ dài:** tổng số từ mô hình tô / tổng số từ người gán trên các đoạn nguy hại.
 
-## 6. Lưu ý khi dùng
+## 5. Giới hạn
 
-- Con số 2 (số từ được lố mỗi bên) phải chốt **trước** khi nhìn test, không chỉnh sau.
-- Trong báo cáo, đặt F1 theo ý **cạnh** F1 mức từ, để người đọc thấy nhóm không tự nới độ đo cho điểm đẹp.
-- Chỉ tính trên đoạn nguy hại có bằng chứng người gán. Đoạn `AN_TOAN` không tính F1 mà đo riêng tỉ lệ bị tô oan.
-- Nếu cụm người gán xuất hiện nhiều lần trong một đoạn, người gán cần ghi thêm số dòng.
-- Các số trong mục 4 được tính bằng bản chạy thử của độ đo. Khi viết `src/v2/eval/bang_chung.py`, các ví dụ này
-  sẽ trở thành test tự động.
+- Không có dấu từ mang ý, nên mọi từ trong cụm gán tính như nhau: tô `như bò` (mất chữ "ngu") vẫn đủ điểm
+  như tô `ngu như`. Cần nêu rõ điều này trong báo cáo.
+- Mệnh đề dài không có dấu câu thì tô lan trong mệnh đề đó không bị trừ. F1 mức từ đặt cạnh để thấy phần này.

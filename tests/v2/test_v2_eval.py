@@ -28,32 +28,44 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_evidence_example_1_from_spec():
     """Ví dụ 1 trong docs/v2/DO_DO_BANG_CHUNG.md (mục 4)."""
     text = "sao m ngu như bò thế. t đã nói nhiều lần rồi mà"
-    gold = ["[ngu] như bò"]
+    gold = ["ngu như bò"]
     cases = [
-        (["ngu"], 1.00, 0.50),
-        (["m ngu"], 1.00, 0.40),
-        (["sao m ngu như bò thế"], 1.00, 0.67),
-        (["ngu như bò thế. t đã"], 0.80, 0.67),
+        (["ngu như bò"], 1.00, 1.00),
+        (["sao m ngu như bò thế"], 1.00, 0.67),  # tô trọn mệnh đề không bị trừ
+        (["như bò"], 1.00, 0.80),  # trúng 2/3 từ = đủ điểm với hệ số 1,5
+        (["ngu"], 0.67, 0.50),  # trúng 1/3 từ -> R = 1,5 × 1/3 = 0,5
+        (["m ngu"], 0.67, 0.40),
+        (["ngu như bò thế. t đã"], 0.80, 0.67),  # "t đã" lố sang mệnh đề sau
         ([text], 0.63, 0.38),
-        (["như bò"], 0.00, 0.80),
+        (["t đã nói"], 0.00, 0.00),
     ]
     for pred, want_intent, want_word in cases:
-        res = score_evidence_item(text, gold, pred, margin=2)
+        res = score_evidence_item(text, gold, pred)
         assert round(res["f1_theo_y"]["f1"], 2) == want_intent, f"pred={pred}: {res}"
         assert round(res["f1_muc_tu"]["f1"], 2) == want_word, f"pred={pred}: {res}"
 
 
+def test_evidence_placeholder_brackets_are_literal():
+    """[STK], xxx[.]com là ký hiệu che thông tin: cụm gán chứa chúng vẫn được chấm."""
+    text = "Chuyển trước 99k vào [STK] rồi tui gửi file. Vào xxx[.]com đăng nhập nhận quà"
+    gold = ["Chuyển trước 99k vào [STK]", "Vào xxx[.]com đăng nhập nhận quà"]
+    res = score_evidence_item(text, gold, gold)
+    assert res["n_gold_words"] == 11
+    assert res["f1_theo_y"]["f1"] == 1.0
+    assert res["f1_muc_tu"]["f1"] == 1.0
+
+
 def test_evidence_example_2_from_spec():
-    """Ví dụ 2 trong docs/v2/DO_DO_BANG_CHUNG.md (mục 4): nhiều từ lõi trong một cụm."""
+    """Ví dụ 2 trong docs/v2/DO_DO_BANG_CHUNG.md (mục 4): cụm dài, mọi từ tính như nhau."""
     text = "mình biết bạn học trường nào rồi đấy"
-    gold = ["mình [biết] bạn học [trường nào] rồi đấy"]
+    gold = ["mình biết bạn học trường nào rồi đấy"]
     cases = [
-        (["biết bạn học trường nào"], 1.00, 0.77),
-        (["trường nào"], 0.80, 0.40),
-        (["rồi đấy"], 0.00, 0.40),
+        (["biết bạn học trường nào"], 0.97, 0.77),
+        (["trường nào"], 0.55, 0.40),
+        (["rồi đấy"], 0.55, 0.40),
     ]
     for pred, want_intent, want_word in cases:
-        res = score_evidence_item(text, gold, pred, margin=2)
+        res = score_evidence_item(text, gold, pred)
         assert round(res["f1_theo_y"]["f1"], 2) == want_intent, f"pred={pred}: {res}"
         assert round(res["f1_muc_tu"]["f1"], 2) == want_word, f"pred={pred}: {res}"
 
@@ -72,23 +84,27 @@ def test_evidence_example_3_multiline_from_spec():
             "ừ để xem",
         ]
     )
-    gold = ["[ngu] như bò", "ra thì biết", "t [đăng hết ảnh] của m lên [confession]"]
+    gold = ["ngu như bò", "ra thì biết", "t đăng hết ảnh của m lên confession"]
 
     # Gọn, đủ 3 ý -> 1.00
     r_full = score_evidence_item(text, gold, ["ngu như bò", "ra thì biết", "đăng hết ảnh của m lên confession"])
     assert round(r_full["f1_theo_y"]["f1"], 2) == 1.00
 
-    # Đủ ý, lố nhẹ (chỉ "ko" vượt quá 2 từ) -> ~0.97
+    # Đủ ý, tô rộng nhưng vẫn trong các mệnh đề có gán -> 1.00
     r_slight = score_evidence_item(
         text,
         gold,
         ["mày ngu như bò thế", "ra thì biết", "ko ra thì t đăng hết ảnh của m lên confession"],
     )
-    assert r_slight["f1_theo_y"]["f1"] >= 0.90
+    assert round(r_slight["f1_theo_y"]["f1"], 2) == 1.00
+
+    # Sót một ý ("ra thì biết") và chỉ trúng một phần hai ý còn lại
+    r_part = score_evidence_item(text, gold, ["ngu", "đăng hết ảnh"])
+    assert round(r_part["f1_theo_y"]["f1"], 2) == 0.52
 
     # Tô cả đoạn 8 dòng -> bị phạt nặng (< 0.50)
     r_all = score_evidence_item(text, gold, [text])
-    assert round(r_all["f1_theo_y"]["f1"], 2) == 0.41
+    assert round(r_all["f1_theo_y"]["f1"], 2) == 0.43
 
     # Tô sai chỗ (dòng 1, dòng 5) -> 0
     r_wrong = score_evidence_item(text, gold, ["nói xấu t", "ra cổng sau trường"])
@@ -116,6 +132,26 @@ def test_evidence_dataset_metrics_non_verbatim_and_safe_false_highlight():
     assert ev["total_pred_phrases"] == 3
     assert ev["total_non_verbatim_phrases"] == 1
     assert ev["non_verbatim_phrase_rate"] == round(1 / 3, 4)
+
+
+def test_evidence_skips_harmful_predicted_safe():
+    """Đoạn nguy hại bị đoán AN_TOAN không có cơ hội tô nên không tính điểm bằng chứng;
+    đoán nhãn nguy hại mà không trả cụm nào vẫn tính 0."""
+    records = [
+        {"id": "1", "text": "mày ngu như bò", "nhan": "XUC_PHAM", "bang_chung": ["ngu như bò"]},
+        {"id": "2", "text": "t sẽ đăng ảnh của m", "nhan": "DE_DOA", "bang_chung": ["đăng ảnh của m"]},
+        {"id": "3", "text": "tao biết nhà mày", "nhan": "DE_DOA", "bang_chung": ["biết nhà mày"]},
+    ]
+    preds = [
+        {"id": "1", "nhan": "XUC_PHAM", "bang_chung": ["ngu như bò"]},  # đúng -> 1,0
+        {"id": "2", "nhan": "AN_TOAN", "bang_chung": []},  # bị loại
+        {"id": "3", "nhan": "DE_DOA", "bang_chung": []},  # có cơ hội mà không tô -> 0
+    ]
+    ev = evaluate_evidence(records, preds)
+    assert ev["n_harmful_evaluated"] == 2
+    assert ev["n_harmful_skipped_pred_safe"] == 1
+    assert ev["f1_theo_y"]["f1"] == 0.5
+    assert ev["harmful_empty_evidence_rate"] == 0.5
 
 
 def test_classification_llm_refusal_and_calibration():

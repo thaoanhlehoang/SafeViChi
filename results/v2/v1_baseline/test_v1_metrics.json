@@ -1,0 +1,641 @@
+{
+  "system": "SafeViChi_v1_baseline",
+  "tier": "C0",
+  "generated_at_utc": "2026-11-25T13:11:35.880955+00:00",
+  "seed": 42,
+  "input": {
+    "file": "data/v2/test_day_du.jsonl",
+    "sha256_raw": "1b02cebf860588f89c2e0fe8601dd112465c79c982e041e65842abcbd5c2d4c3",
+    "sha256_lf": "7652e102a6e8b6b9ce9c99633333afe639642e65f41f2d6edc005a8e75085463",
+    "samples": 334
+  },
+  "prediction_source": {
+    "file": "results/v2/v1_baseline/test_v1_predictions.jsonl",
+    "sha256": "0061709f689cc5911fa136d8c3e24af59103c7445c125111d3281094b3ceb8cb"
+  },
+  "evaluation_sources_sha256": {
+    "src/v2/eval/metrics.py": "b3baba60bacf91681331abfe6557d4c50cad8c57b9aac209a49a7a4df11855e1",
+    "src/v2/eval/evidence.py": "401c84c209afac3aa375b5a5ac56c189d19869f94318a370c2cd04a5a7e5d82b"
+  },
+  "note": "SafeViChi v1 chỉ có đầu ra nhị phân HATE/CLEAN (không phân 5 nhãn, không xuất bằng chứng JSON v2). Chỉ số đối chiếu công bằng là binary_harmful_vs_safe (HATE = 4 nhãn nguy hại, CLEAN = AN_TOAN) kèm phân rã tỷ lệ gắn cờ HATE theo từng lớp v2.",
+  "binary_harmful_vs_safe": {
+    "precision": 1.0,
+    "recall": 0.1849,
+    "f1": 0.3121,
+    "fpr_an_toan": 0.0,
+    "fnr_nguy_hai": 0.8151,
+    "tp": 44,
+    "fp": 0,
+    "fn": 194,
+    "tn": 96
+  },
+  "binary_accuracy": 0.4192,
+  "bootstrap_95_binary_f1": {
+    "low": 0.2435,
+    "high": 0.3778,
+    "halfwidth": 0.0671
+  },
+  "hate_rate_by_v2_class": {
+    "AN_TOAN": {
+      "flagged_hate": 0,
+      "support": 96,
+      "rate": 0.0
+    },
+    "XUC_PHAM": {
+      "flagged_hate": 39,
+      "support": 53,
+      "rate": 0.7358
+    },
+    "QUAY_ROI": {
+      "flagged_hate": 0,
+      "support": 51,
+      "rate": 0.0
+    },
+    "DE_DOA": {
+      "flagged_hate": 5,
+      "support": 62,
+      "rate": 0.0806
+    },
+    "LUA_DAO": {
+      "flagged_hate": 0,
+      "support": 72,
+      "rate": 0.0
+    }
+  },
+  "slices": {
+    "giong_vung": {
+      "bac": {
+        "n": 112,
+        "binary_f1": 0.3191,
+        "binary_precision": 1.0,
+        "binary_recall": 0.1899,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.8101,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 33,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 13,
+            "support": 19,
+            "rate": 0.6842
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 14,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 2,
+            "support": 22,
+            "rate": 0.0909
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 24,
+            "rate": 0.0
+          }
+        }
+      },
+      "nam": {
+        "n": 111,
+        "binary_f1": 0.3673,
+        "binary_precision": 1.0,
+        "binary_recall": 0.225,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.775,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 31,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 15,
+            "support": 17,
+            "rate": 0.8824
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 18,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 3,
+            "support": 23,
+            "rate": 0.1304
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 22,
+            "rate": 0.0
+          }
+        }
+      },
+      "trung": {
+        "n": 111,
+        "binary_f1": 0.2444,
+        "binary_precision": 1.0,
+        "binary_recall": 0.1392,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.8608,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 32,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 11,
+            "support": 17,
+            "rate": 0.6471
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 19,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 0,
+            "support": 17,
+            "rate": 0.0
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 26,
+            "rate": 0.0
+          }
+        }
+      },
+      "worst_group_binary_f1": 0.2444,
+      "region_gap_max_min": 0.1229
+    },
+    "phan_test": {
+      "chua_thay": {
+        "n": 149,
+        "binary_f1": 0.0566,
+        "binary_precision": 1.0,
+        "binary_recall": 0.0291,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.9709,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 46,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 0,
+            "support": 3,
+            "rate": 0.0
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 26,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 3,
+            "support": 32,
+            "rate": 0.0938
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 42,
+            "rate": 0.0
+          }
+        }
+      },
+      "trong_phan_phoi": {
+        "n": 185,
+        "binary_f1": 0.4659,
+        "binary_precision": 1.0,
+        "binary_recall": 0.3037,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.6963,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 50,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 39,
+            "support": 50,
+            "rate": 0.78
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 25,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 2,
+            "support": 30,
+            "rate": 0.0667
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 30,
+            "rate": 0.0
+          }
+        }
+      }
+    },
+    "so_luot": {
+      "1_luot": {
+        "n": 108,
+        "binary_f1": 0.1772,
+        "binary_precision": 1.0,
+        "binary_recall": 0.0972,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.9028,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 36,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 6,
+            "support": 8,
+            "rate": 0.75
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 18,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 1,
+            "support": 14,
+            "rate": 0.0714
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 32,
+            "rate": 0.0
+          }
+        }
+      },
+      "nhieu_luot": {
+        "n": 226,
+        "binary_f1": 0.3645,
+        "binary_precision": 1.0,
+        "binary_recall": 0.2229,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.7771,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 60,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 33,
+            "support": 45,
+            "rate": 0.7333
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 33,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 4,
+            "support": 48,
+            "rate": 0.0833
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 40,
+            "rate": 0.0
+          }
+        }
+      }
+    },
+    "do_lo": {
+      "an_y": {
+        "n": 104,
+        "binary_f1": 0.0561,
+        "binary_precision": 1.0,
+        "binary_recall": 0.0288,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.9712,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 3,
+            "support": 11,
+            "rate": 0.2727
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 24,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 0,
+            "support": 30,
+            "rate": 0.0
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 39,
+            "rate": 0.0
+          }
+        }
+      },
+      "lo_lieu": {
+        "n": 134,
+        "binary_f1": 0.4686,
+        "binary_precision": 1.0,
+        "binary_recall": 0.306,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.694,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 36,
+            "support": 42,
+            "rate": 0.8571
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 27,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 5,
+            "support": 32,
+            "rate": 0.1562
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 33,
+            "rate": 0.0
+          }
+        }
+      }
+    },
+    "kenh": {
+      "binh_luan": {
+        "n": 63,
+        "binary_f1": 0.28,
+        "binary_precision": 1.0,
+        "binary_recall": 0.1628,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.8372,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 20,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 6,
+            "support": 8,
+            "rate": 0.75
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 9,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 1,
+            "support": 9,
+            "rate": 0.1111
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 17,
+            "rate": 0.0
+          }
+        }
+      },
+      "chat_game": {
+        "n": 35,
+        "binary_f1": 0.2963,
+        "binary_precision": 1.0,
+        "binary_recall": 0.1739,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.8261,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 12,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 3,
+            "support": 3,
+            "rate": 1.0
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 6,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 1,
+            "support": 9,
+            "rate": 0.1111
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 5,
+            "rate": 0.0
+          }
+        }
+      },
+      "messenger_zalo": {
+        "n": 127,
+        "binary_f1": 0.377,
+        "binary_precision": 1.0,
+        "binary_recall": 0.2323,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.7677,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 28,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 21,
+            "support": 26,
+            "rate": 0.8077
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 19,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 2,
+            "support": 24,
+            "rate": 0.0833
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 30,
+            "rate": 0.0
+          }
+        }
+      },
+      "nhom_lop": {
+        "n": 63,
+        "binary_f1": 0.3704,
+        "binary_precision": 1.0,
+        "binary_recall": 0.2273,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.7727,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 19,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 9,
+            "support": 16,
+            "rate": 0.5625
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 8,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 1,
+            "support": 15,
+            "rate": 0.0667
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 5,
+            "rate": 0.0
+          }
+        }
+      },
+      "sms": {
+        "n": 46,
+        "binary_f1": 0.0,
+        "binary_precision": 0.0,
+        "binary_recall": 0.0,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 1.0,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 17,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 9,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 0,
+            "support": 5,
+            "rate": 0.0
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 15,
+            "rate": 0.0
+          }
+        }
+      }
+    },
+    "cach_gan": {
+      "llm_nguoi_duyet": {
+        "n": 9,
+        "binary_f1": 0.0,
+        "binary_precision": 0.0,
+        "binary_recall": 0.0,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 1.0,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 0,
+            "support": 8,
+            "rate": 0.0
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 0,
+            "support": 1,
+            "rate": 0.0
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 0,
+            "rate": 0.0
+          }
+        }
+      },
+      "nguoi": {
+        "n": 325,
+        "binary_f1": 0.3223,
+        "binary_precision": 1.0,
+        "binary_recall": 0.1921,
+        "fpr_an_toan": 0.0,
+        "fnr_nguy_hai": 0.8079,
+        "hate_rate_by_v2_class": {
+          "AN_TOAN": {
+            "flagged_hate": 0,
+            "support": 96,
+            "rate": 0.0
+          },
+          "XUC_PHAM": {
+            "flagged_hate": 39,
+            "support": 45,
+            "rate": 0.8667
+          },
+          "QUAY_ROI": {
+            "flagged_hate": 0,
+            "support": 51,
+            "rate": 0.0
+          },
+          "DE_DOA": {
+            "flagged_hate": 5,
+            "support": 61,
+            "rate": 0.082
+          },
+          "LUA_DAO": {
+            "flagged_hate": 0,
+            "support": 72,
+            "rate": 0.0
+          }
+        }
+      }
+    }
+  }
+}

@@ -22,7 +22,7 @@ from sklearn.metrics import (
     precision_recall_fscore_support,
 )
 
-from src.v2.eval.evidence import SAFE_LABEL, evaluate_evidence
+from src.v2.eval.evidence import HE_SO_PHU_MAC_DINH, SAFE_LABEL, evaluate_evidence
 
 LABELS: tuple[str, ...] = ("AN_TOAN", "XUC_PHAM", "QUAY_ROI", "DE_DOA", "LUA_DAO")
 LABEL_TO_IDX: dict[str, int] = {lbl: idx for idx, lbl in enumerate(LABELS)}
@@ -266,14 +266,14 @@ def evaluate_bundle(
     records: Sequence[dict[str, Any]],
     predictions: Sequence[dict[str, Any]],
     n_bootstrap: int = 1000,
-    margin: int = 2,
+    he_so_phu: float = HE_SO_PHU_MAC_DINH,
     seed: int = SEED_DEFAULT,
     include_slices: bool = True,
 ) -> dict[str, Any]:
     """Chạy đánh giá đầy đủ (phân loại + bằng chứng + độ ổn định đầu ra + toàn bộ lát cắt in-memory)."""
     summary: dict[str, Any] = {
         "classification": evaluate_classification(records, predictions, n_bootstrap=n_bootstrap, seed=seed),
-        "evidence": evaluate_evidence(records, predictions, margin=margin),
+        "evidence": evaluate_evidence(records, predictions, he_so_phu=he_so_phu),
         "output_reliability": evaluate_output_reliability(predictions),
     }
     if not include_slices:
@@ -283,7 +283,7 @@ def evaluate_bundle(
         sub_r = [records[i] for i in indices]
         sub_p = [predictions[i] for i in indices]
         cls = evaluate_classification(sub_r, sub_p, n_bootstrap=0, seed=seed)
-        ev = evaluate_evidence(sub_r, sub_p, margin=margin)
+        ev = evaluate_evidence(sub_r, sub_p, he_so_phu=he_so_phu)
         return {
             "n": len(indices),
             "macro_f1": cls["macro_f1"],

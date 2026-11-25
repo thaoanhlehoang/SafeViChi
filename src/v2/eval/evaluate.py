@@ -22,6 +22,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from src.v2.eval.evidence import HE_SO_PHU_MAC_DINH
 from src.v2.eval.metrics import SEED_DEFAULT, compare_systems, evaluate_bundle
 
 
@@ -82,7 +83,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--meta", type=Path, default=None, help="File test_day_du.jsonl để bổ sung metadata nếu gold thiếu")
     parser.add_argument("--reference-pred", type=Path, default=None, help="File dự đoán mốc đối chiếu để chạy McNemar")
     parser.add_argument("--out", type=Path, default=None, help="Đường dẫn ghi metrics.json")
-    parser.add_argument("--margin", type=int, default=2, help="Số từ lố cho phép mỗi bên trong F1 theo ý (mặc định 2)")
+    parser.add_argument(
+        "--he-so-phu", type=float, default=HE_SO_PHU_MAC_DINH,
+        help="Hệ số recall F1 theo ý: tô trúng 1/he_so_phu số từ của ý gán là đủ điểm (mặc định 1,5)",
+    )
     parser.add_argument("--n-bootstrap", type=int, default=1000, help="Số lần bootstrap CI 95% (0 để tắt)")
     parser.add_argument("--seed", type=int, default=SEED_DEFAULT)
     args = parser.parse_args(argv)
@@ -101,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
         records,
         preds,
         n_bootstrap=args.n_bootstrap,
-        margin=args.margin,
+        he_so_phu=args.he_so_phu,
         seed=args.seed,
         include_slices=True,
     )
