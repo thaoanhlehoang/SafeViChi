@@ -1,0 +1,15 @@
+% Sinh tự động bằng `python -m src.v2.eval.xuat_so_lieu_bao_cao`. Không sửa tay.
+\begin{tikzpicture}
+\begin{axis}[width=0.75\linewidth, height=5.8cm, ymin=0, ymax=100,
+  symbolic x coords={C0,C1,C2}, xtick=data, enlarge x limits=0.15, ylabel={F1 bằng chứng (theo ý)},
+  axis x line*=bottom, axis y line*=left, ymajorgrids, grid style={draw=black!12},
+  tick label style={font=\small}, label style={font=\small}, clip=false,
+  xticklabels={C0 (gốc),C1 (biến dạng thường),C2 (điểm mù)}]
+\addplot[mauvhai, line width=2pt, mark=*, mark size=3pt] coordinates {(C0,83.0) (C1,76.5) (C2,75.3)};
+\addplot[maullm, line width=2pt, mark=*, mark size=3pt] coordinates {(C0,70.7) (C1,56.1) (C2,32.2)};
+\node[anchor=west,font=\small] at (axis cs:C2,75.3) {\ v2: 75,3};
+\node[anchor=west,font=\small] at (axis cs:C2,32.2) {\ gpt-oss-120b: 32,2};
+\node[anchor=south,font=\small] at (axis cs:C0,83.0) {83,0};
+\node[anchor=north,font=\small] at (axis cs:C0,70.7) {70,7};
+\end{axis}
+\end{tikzpicture}
