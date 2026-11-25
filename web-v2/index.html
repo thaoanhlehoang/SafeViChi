@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2f6b3a" />
+  <title>SafeViChi – Mỗi tin nhắn, một vòng tay bảo vệ</title>
+  <meta name="description" content="SafeViChi phát hiện tin nhắn xúc phạm, quấy rối, đe dọa, lừa đảo tiếng Việt ngay trên máy bạn." />
+</head>
+<body>
+  <!-- Phông nền cố định: tán lá, khoảng trời và vòng người (vẽ bằng SVG). -->
+  <svg id="ring" class="ring-art" aria-hidden="true" focusable="false"></svg>
+  <div id="art-layers" class="art-layers" aria-hidden="true"></div>
+
+  <!-- Ba màn xếp chồng: Trang chủ (cuộn xuống xem thông tin) → Đăng nhập → Thử nghiệm -->
+  <div class="track" id="track" data-step="0">
+
+    <!-- 1. Trang chủ -->
+    <div class="panel panel-home" id="panel-home" aria-label="Trang chủ" data-pos="current">
+      <section class="landing" aria-labelledby="hero-title">
+        <div class="hero">
+          <p class="eyebrow">Phát hiện tin nhắn nguy hại tiếng Việt</p>
+          <h1 id="hero-title">SafeViChi</h1>
+          <p class="tagline">Mỗi tin nhắn, một vòng tay bảo vệ.</p>
+          <p class="lede">Nhận ra tin nhắn xúc phạm, quấy rối, đe dọa và lừa đảo. Mọi phân tích chạy ngay trên máy bạn.</p>
+          <button id="start" class="btn-start" type="button">Bắt đầu</button>
+        </div>
+        <a class="scroll-down" href="#thong-tin">
+          <span>Tìm hiểu thêm</span>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </section>
+
+      <div class="info" id="thong-tin">
+        <section class="info-block" aria-labelledby="hd-title">
+          <h2 id="hd-title">Dùng SafeViChi trong 3 bước</h2>
+          <ol class="steps">
+            <li><span class="step-no">1</span><div><h3>Dán đoạn hội thoại</h3><p>Mỗi dòng là một lượt nói, tối đa 8 dòng gần nhất. Hoặc bấm một câu mẫu để thử nhanh.</p></div></li>
+            <li><span class="step-no">2</span><div><h3>Bấm Kiểm tra</h3><p>SafeViChi cho biết tin thuộc loại nào và tô những chữ là bằng chứng, để bạn biết vì sao.</p></div></li>
+            <li><span class="step-no">3</span><div><h3>Chạy ngay trên máy bạn</h3><p>Lần đầu cần tải mô hình nên chờ một lúc. Sau đó tắt mạng vẫn dùng được.</p></div></li>
+          </ol>
+        </section>
+
+        <section class="info-block" aria-labelledby="nhan-title">
+          <h2 id="nhan-title">5 loại tin nhắn SafeViChi nhận ra</h2>
+          <ul class="labels" id="label-list"></ul>
+        </section>
+
+        <section class="info-block" aria-labelledby="rieng-tu-title">
+          <h2 id="rieng-tu-title">Phân tích ngay trên máy bạn</h2>
+          <ul class="facts">
+            <li><h3>Mô hình chạy trong trình duyệt</h3><p>Việc phân loại và tô bằng chứng không cần máy chủ. Tin bạn dán vào để kiểm tra không được gửi đi.</p></li>
+            <li><h3>Không lưu lại</h3><p>Tin dán vào để kiểm tra không được lưu. Đóng trang là mọi thứ biến mất.</p></li>
+            <li><h3>Tự kiểm chứng được</h3><p>Mở F12, tab Network: sau khi tải xong mô hình, bấm Kiểm tra sẽ không thấy request nào.</p></li>
+          </ul>
+        </section>
+
+        <footer class="info-foot">
+          <button class="btn-start" type="button" data-go="1">Bắt đầu thử</button>
+          <p>SafeViChi · AI2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- 2. Đăng nhập: các ô nằm thẳng trên nền lá đã làm mờ -->
+    <div class="panel panel-chat" id="panel-app" aria-label="Trò chuyện" data-pos="after" inert>
+      <main class="chat-shell" id="chat-shell">
+        <!-- Cột trái: danh sách cuộc trò chuyện -->
+        <aside class="col-contacts" aria-label="Cuộc trò chuyện">
+          <header class="contacts-head">
+            <h2>Tin nhắn</h2>
+            <button class="text-btn" type="button" data-go="0">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trang chủ
+            </button>
+          </header>
+          <label class="search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+            <input id="contact-search" type="search" placeholder="Tìm cuộc trò chuyện" aria-label="Tìm cuộc trò chuyện">
+          </label>
+          <ul class="contact-list" id="contact-list"></ul>
+        </aside>
+
+        <!-- Cột giữa: khung chat -->
+        <section class="col-chat" aria-label="Khung chat">
+          <header class="chat-head">
+            <span class="avatar" id="chat-avatar"></span>
+            <div class="chat-who"><h3 id="chat-name"></h3><p id="chat-sub"></p></div>
+            <button class="ai-toggle" id="ai-toggle" type="button" aria-pressed="true" aria-controls="ai-panel" title="Phân tích AI">
+              <svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3.5"/><path d="M12 8V4.5"/><circle cx="12" cy="3.6" r="1.1"/><circle cx="9" cy="13.2" r="1.3" class="eye-dot"/><circle cx="15" cy="13.2" r="1.3" class="eye-dot"/><path d="M2 12.5v3M22 12.5v3"/></svg>
+              <span>Phân tích</span>
+            </button>
+          </header>
+          <ol class="messages" id="messages" aria-live="polite"></ol>
+          <div class="send-warn" id="send-warn" role="alertdialog" aria-labelledby="warn-title" aria-describedby="warn-desc" hidden>
+            <svg viewBox="0 0 24 24" class="warn-icon" aria-hidden="true"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.3" r=".6"/></svg>
+            <div class="warn-body">
+              <h4 id="warn-title"></h4>
+              <p id="warn-desc">Bạn có muốn sửa trước khi gửi không?</p>
+            </div>
+            <div class="warn-actions">
+              <button type="button" class="warn-send" id="warn-send">Vẫn gửi</button>
+              <button type="button" class="warn-edit" id="warn-edit">Chỉnh sửa</button>
+            </div>
+          </div>
+          <form class="composer" id="composer" autocomplete="off">
+            <div class="sender-switch" role="group" aria-label="Gửi với tư cách">
+              <button type="button" data-from="me" aria-pressed="true">Tôi</button>
+              <button type="button" data-from="them" aria-pressed="false">Người kia</button>
+            </div>
+            <input id="composer-input" maxlength="300" placeholder="Nhập tin nhắn…" aria-label="Nội dung tin nhắn">
+            <button class="send" type="submit">Gửi <kbd>↵</kbd></button>
+          </form>
+        </section>
+
+        <!-- Cột phải: AI phân tích -->
+        <aside class="col-ai" id="ai-panel" aria-label="Phân tích AI">
+          <div class="ai-inner">
+            <header class="ai-head">
+              <h3>Phân tích AI realtime</h3>
+              <span class="ai-engine" id="ai-engine">Đang tải…</span>
+            </header>
+            <p class="ai-target-kicker" id="ai-kicker"></p>
+            <div class="ai-summary" id="ai-summary"></div>
+
+            <section class="ai-step">
+              <h4><span>01</span>Đoạn hội thoại gửi vào mô hình</h4>
+              <ol class="ctx-list" id="ai-context"></ol>
+            </section>
+            <section class="ai-step">
+              <h4><span>02</span>Độ tin cậy</h4>
+              <ul class="probs" id="ai-probs"></ul>
+              <div class="verdict-wrap" id="ai-verdict"></div>
+            </section>
+            <section class="ai-step">
+              <h4><span>03</span>Bằng chứng</h4>
+              <ul class="evidence" id="ai-evidence"></ul>
+            </section>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
