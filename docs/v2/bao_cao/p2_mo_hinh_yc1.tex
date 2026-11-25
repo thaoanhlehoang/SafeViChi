@@ -240,9 +240,10 @@ Câu đầu là tin OTP thật: nó không đòi gì, chỉ bảo nhập mã và
 dọa. Cả hai đều bị báo với độ tin cậy cao, nên chỉ hạ ngưỡng chung không đủ sửa.
 
 \textbf{Tiếng lóng.} Câu tiếng lóng dễ bị báo nhầm vì chứa từ tục mà không nhắm ai. Trên dev, ở lát câu có thẻ tiếng
-lóng (n = \so{dev.tieng.n}), mô hình chốt có FPR \so{dev.mmbert.tieng.fpr} ở lát này, thấp nhất trong 4 ứng viên (ViSoBERT
-\so{dev.visobert.tieng.fpr}, BamiBERT \so{dev.bamibert.tieng.fpr}, GuardMerge \so{dev.guard.tieng.fpr}). Đây là một lý do
-chọn mmBERT-base, nhưng mức này vẫn cao.
+lóng (n = \so{dev.tieng.n}), mô hình chốt có FPR \so{dev.mmbert.tieng.fpr} ở lát này, ngang BamiBERT
+(\so{dev.bamibert.tieng.fpr}), thấp hơn GuardMerge (\so{dev.guard.tieng.fpr}) nhưng cao hơn ViSoBERT
+(\so{dev.visobert.tieng.fpr}). Bù lại, Macro-F1 của nó trên lát này cao nhất trong 4 ứng viên (\so{dev.mmbert.tieng} so với
+\so{dev.visobert.tieng} của ViSoBERT), nên tổng thể vẫn là một lý do chọn mmBERT-base. Dù vậy, mức báo nhầm này vẫn cao.
 
 \subsection{Bỏ sót câu nguy hại}
 

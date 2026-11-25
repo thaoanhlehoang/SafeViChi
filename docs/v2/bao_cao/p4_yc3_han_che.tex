@@ -58,8 +58,9 @@ Kiểm định McNemar trên từng câu dev cho thấy:
 \end{itemize}
 
 Khi điểm tổng hòa nhau, nhóm chọn theo những lát cắt gần mục tiêu của v2 nhất. mmBERT-base dẫn đầu ở hội thoại nhiều lượt,
-câu tiếng lóng (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT), tỉ lệ tô oan thấp nhất
-(\so{dev.mmbert.toan}) và chênh lệch giữa các vùng nhỏ nhất (\so{dev.mmbert.gap}).
+câu tiếng lóng (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT) và chênh lệch giữa các vùng nhỏ nhất
+(\so{dev.mmbert.gap}). Tỉ lệ tô oan câu an toàn của nó (\so{dev.mmbert.toan}) cao hơn ViSoBERT (\so{dev.visobert.toan})
+và BamiBERT (\so{dev.bamibert.toan}), nhưng thấp hơn GuardMerge (\so{dev.guard.toan}).
 Lợi thế nhỏ của ViSoBERT nằm chủ yếu ở câu bình luận một dòng, gần với dữ liệu nó được huấn luyện trước, chứ không ở hội thoại.
 Cái giá của mmBERT-base là nặng hơn khoảng ba lần và chậm hơn khoảng hai lần so với hai bộ mã hóa tiếng Việt, nhưng vẫn dưới
 mức 2~GB mà đề bài đặt ra. BamiBERT là phương án dự phòng cho máy yếu.
@@ -100,8 +101,9 @@ Ký tự vô hình            & Không & \so{cn.blindspotzerowidth.n}  & \so{cn.
 \end{tabular}
 \end{table}
 
-Kết quả rõ ràng: chuẩn hóa chỉ giúp ở các biến dạng C1 đã biết (\so{cn.c1indist.gain} điểm), gần như không đổi gì ở kiểu
-chưa thấy, và làm hại nhẹ câu sạch (\so{cn.cleanc0.gain}) cùng câu bỏ dấu (\so{cn.accentstrip.gain}).
+Kết quả rõ ràng: chuẩn hóa chỉ giúp ở các biến dạng C1 đã biết (\so{cn.c1indist.gain} điểm), không giúp ở kiểu
+chưa thấy (C1 giữ ngoài train \so{cn.c1heldoutcontrolled.gain}, chữ đồng dạng \so{cn.blindspothomoglyph.gain}, ký tự vô hình
+\so{cn.blindspotzerowidth.gain}), và làm hại nhẹ câu sạch (\so{cn.cleanc0.gain}) cùng câu bỏ dấu (\so{cn.accentstrip.gain}).
 Lý do: bộ chuẩn hóa đôi khi ``sửa'' sai một từ không dấu mà mô hình vốn đã đọc đúng.
 Vì vậy bản v2 mặc định \textbf{tắt} chuẩn hóa; có thể bật chọn lọc cho vài kiểu như chèn ký tự, kéo dài chữ.
 Đây là thay đổi so với v1: khả năng chống né lọc giờ nằm chủ yếu trong mô hình, không còn trong bộ luật.
