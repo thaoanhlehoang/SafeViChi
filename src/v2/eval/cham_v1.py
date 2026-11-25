@@ -66,6 +66,12 @@ def evaluate(rows: list[dict[str, Any]], meta: dict[str, dict[str, Any]]) -> dic
         by_region[reg] = binary_metrics([gold_harm[i] for i in idx], [pred_harm[i] for i in idx])
     f1s = [by_region[r]["f1"] for r in REGIONS if by_region[r]["n"]]
 
+    kinds = [meta.get(str(r["id"]), {}).get("kieu_bien_dang") for r in rows]
+    by_kind = {}
+    for kind in sorted({k for k in kinds if k}):
+        idx = [i for i, v in enumerate(kinds) if v == kind]
+        by_kind[kind] = binary_metrics([gold_harm[i] for i in idx], [pred_harm[i] for i in idx])
+
     return {
         "he_thong": "SafeViChi v1 (ViHateT5 FGM, nhị phân HATE/CLEAN)",
         "ghi_chu": "v1 không có 5 nhãn và bằng chứng: chỉ chấm nhị phân nguy hại/an toàn.",
@@ -77,6 +83,7 @@ def evaluate(rows: list[dict[str, Any]], meta: dict[str, dict[str, Any]]) -> dic
             "region_gap_binary_f1": round(max(f1s) - min(f1s), 4) if f1s else 0.0,
             "khong_ro_vung": sum(v is None for v in regions),
         },
+        "kieu_bien_dang": by_kind,
     }
 
 

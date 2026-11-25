@@ -71,5 +71,6 @@
     "worst_group_binary_f1": 0.2444,
     "region_gap_binary_f1": 0.1229,
     "khong_ro_vung": 0
-  }
+  },
+  "kieu_bien_dang": {}
 }
