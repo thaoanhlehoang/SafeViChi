@@ -25,7 +25,7 @@ results/v2/
 │   └── guardmerge_v6/                 # Hier-BidirLM-0.6B GuardMerge (Schema v6) — 13 tệp nhẹ
 │
 └── official_eval/                     # Phần 2 — Mô hình chốt (mmBERT-base) & đánh giá trên bộ test khóa (1.670 mẫu)
-    ├── README.md                      # Báo cáo kết quả chính thức C0/C1/C2, chuẩn hóa (#6−#5), lát cắt & danh mục tệp
+    ├── README.md                      # Báo cáo kết quả chính thức C0/C1/C2, lát cắt, lượng tử hóa INT8 & danh mục tệp
     └── dualorc_mmbert_base/           # Hồ sơ đầy đủ của mô hình chốt (13 tệp cấu hình/hiệu chuẩn/dev + thư mục test/)
         └── test/                      # Trọn bộ tệp xuất thô của phiên chấm test khóa & báo cáo tái kiểm chứng CLI
 ```
@@ -37,7 +37,7 @@ results/v2/
 | Phần | Thư mục | Mục đích | Điểm nhấn chính |
 | :--- | :--- | :--- | :--- |
 | **Phần 1 — Huấn luyện & Chọn mô hình** | [`dev_selection/`](dev_selection/) | Lưu trọn bộ đầu ra train + đánh giá trên `dev` (`1.340` mẫu) và `cal` (`1.339` mẫu) của 4 ứng viên song song, cùng quy trình chốt mô hình trước khi chạm test | 3 biến thể `SafeVi-DualORC-CRF` vượt có ý nghĩa thống kê `GuardMerge` (McNemar `p ≤ 0,023`) và nhanh hơn `2,1×–4,4×`. Giữa 3 backbone DualORC hòa thống kê trên Macro-F1 gộp (`p ≥ 0,290`), chốt **`mmBERT-base`** vì dẫn đầu toàn diện hội thoại nhiều lượt (`0,9801`, `+27,08 pp` ngữ cảnh), ẩn ý (`0,9702`, `FPR 1,00%`), tiếng lóng (`0,7478`), Word Evidence F1 (`0,7060`), công bằng vùng miền (`worst_group = 0,9850`, `region_gap = 0,0150`) và năng lực khái quát đa ngôn ngữ trong trần `< 2 GB`. |
-| **Phần 2 — Mô hình chốt & Chấm test** | [`official_eval/`](official_eval/) | Tập trung vào mô hình chốt **`SafeVi-DualORC-CRF (mmBERT-base)`**, lưu hồ sơ đóng băng, kết quả chấm test khóa (`1.670` mẫu), bản **ONNX Hybrid INT8** (`#7`) và benchmark Laptop CPU | Dòng `#5` (thô): **`C0 = 0,8647`**, **`C1 = 0,7859`** (`+4,16 pp` lên **`0,8275`** với `#6`), **`C2 = 0,7708`**. Dòng `#7` (**ONNX Hybrid INT8**, **`300,69 MiB`**, nén `3,91×`): giữ **`99,43%`** Macro-F1 `C0` (`0,8598`, McNemar `p = 1,00`), **`98,71%`** toàn bộ `1.670` mẫu (`p = 0,073`), độ trễ Laptop CPU **`24,68 ms` p50 / `31,54 ms` p95** (`41,3 tin/s`), RAM đỉnh **`986 MiB`** (giảm `4,85×` so với PyTorch). |
+| **Phần 2 — Mô hình chốt & Chấm test** | [`official_eval/`](official_eval/) | Tập trung vào mô hình chốt **`SafeVi-DualORC-CRF (mmBERT-base)`**, lưu hồ sơ đóng băng, kết quả chấm test khóa (`1.670` mẫu), bản **ONNX Hybrid INT8** (`#7`) và benchmark Laptop CPU | Dòng `#5` (suy luận trực tiếp trên văn bản gốc): **`C0 = 0,8647`**, **`C1 = 0,7859`**, **`C2 = 0,7708`** (`Binary-F1 = 0,9287 / 0,9029 / 0,9087`). Dòng `#7` (**ONNX Hybrid INT8**, **`300,69 MiB`**, nén `3,91×`): giữ **`99,43%`** Macro-F1 `C0` (`0,8598`, McNemar `p = 1,00`), **`98,71%`** toàn bộ `1.670` mẫu (`p = 0,073`), độ trễ Laptop CPU **`24,68 ms` p50 / `31,54 ms` p95** (`41,3 tin/s`), RAM đỉnh **`986 MiB`** (giảm `4,85×` so với PyTorch). |
 
 ---
 

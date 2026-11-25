@@ -1,7 +1,14 @@
-"""
-Bộ chuẩn hóa tiếng Việt chống né lọc (rule-based kết hợp từ điển teencode).
+"""[DEPRECATED / Lỗi thời] Bộ chuẩn hóa tiếng Việt 5 bước kế thừa từ SafeViChi v1.
 
-Xử lý 5 bước:
+Cảnh báo lỗi thời:
+    Sản phẩm SafeViChi v2 (SafeVi-DualORC-CRF / mmBERT-base) suy luận trực tiếp
+    trên văn bản gốc mà KHÔNG dùng bộ chuẩn hóa. Thực nghiệm cho thấy bộ quy tắc
+    này làm giảm độ chính xác trên câu sạch (C0) và các kiểu điểm mù (C2).
+    Mô-đun chỉ còn được giữ lại cho tương thích ngược v1, kiểm thử điểm mù
+    (`variant_generator/blindspot.py`), đối chiếu ablation và tùy chọn CLI lỗi thời
+    (`safevichi --legacy-normalize`).
+
+Xử lý 5 bước (v1):
 1. Chuẩn hóa Unicode NFC
 2. Ánh xạ ký tự đồng dạng (lookalike)
 3. Xóa ký tự phân cách xen kẽ chữ cái (.-_~·)
@@ -15,6 +22,13 @@ import json
 import re
 import unicodedata
 from pathlib import Path
+
+DEPRECATED = True
+DEPRECATION_NOTICE = (
+    "Bộ chuẩn hóa v1 đã lỗi thời và không còn được sử dụng trong sản phẩm SafeViChi v2 "
+    "(mô hình v2 suy luận trực tiếp trên văn bản gốc; bộ chuẩn hóa v1 có thể làm giảm độ chính xác "
+    "trên câu sạch C0 và điểm mù C2)."
+)
 
 _DICT_DIR = Path(__file__).parent
 _TEENCODE_DICT_PATH = _DICT_DIR / "teencode_dict.json"
