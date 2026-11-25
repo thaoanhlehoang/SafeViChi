@@ -28,6 +28,19 @@ sót ý hoặc tô lan sang ý khác. Người gán không phải đánh dấu t
 5. **Precision (không tô lố).** P = số từ mô hình tô nằm trong các mệnh đề có ý gán / tổng số từ mô hình tô.
 6. **Gộp lại:** F1 = 2 × P × R / (P + R). Tính cho từng đoạn nguy hại có bằng chứng gán, rồi lấy trung bình.
 
+### Đoạn nào được tính
+
+Phân loại và bằng chứng được đo riêng. Mô hình báo `AN_TOAN` thì không xuất bằng chứng, nên đoạn nguy hại bị đoán
+`AN_TOAN` **không có cơ hội tô** và không tính vào điểm bằng chứng (lỗi đó đã nằm ở điểm phân loại). Số đoạn bị loại
+ghi ở `n_harmful_skipped_pred_safe` trong `metrics.json`.
+
+| Nhãn đúng | Mô hình đoán | Điểm bằng chứng |
+| --- | --- | --- |
+| `AN_TOAN` | bất kỳ | Không tính F1. Nếu mô hình có tô thì cộng vào tỉ lệ tô oan |
+| Nguy hại | `AN_TOAN` | Không tính (loại khỏi trung bình) |
+| Nguy hại | Nhãn nguy hại, không trả cụm nào | **F1 = 0**, có tính vào trung bình |
+| Nguy hại | Nhãn nguy hại, có cụm | Chấm P/R/F1 theo ý như trên (kể cả khi sai loại nguy hại) |
+
 Hệ số 1,5 (`HE_SO_PHU_MAC_DINH`) chốt ngày 24/11/2026, trước khi nhìn điểm test, và không được chỉnh sau đó.
 
 ## 3. Ví dụ
@@ -90,7 +103,7 @@ Người gán: `ngu như bò` · `ra thì biết` · `t đăng hết ảnh của
 
 - **F1 mức từ** (khớp từng từ chặt), để người đọc thấy nhóm không tự nới độ đo cho điểm đẹp.
 - **Tỉ lệ AN_TOAN bị tô oan:** đoạn `AN_TOAN` không tính F1, chỉ đếm đoạn mô hình có tô.
-- **Tỉ lệ đoạn nguy hại không tô gì.**
+- **Tỉ lệ đoạn nguy hại không tô gì** (trong các đoạn mô hình đã báo nguy hại).
 - **Tỉ lệ cụm non-verbatim:** cụm mô hình trả về không có nguyên văn trong tin nhắn.
 - **Tỉ lệ độ dài:** tổng số từ mô hình tô / tổng số từ người gán trên các đoạn nguy hại.
 

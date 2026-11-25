@@ -134,6 +134,26 @@ def test_evidence_dataset_metrics_non_verbatim_and_safe_false_highlight():
     assert ev["non_verbatim_phrase_rate"] == round(1 / 3, 4)
 
 
+def test_evidence_skips_harmful_predicted_safe():
+    """Đoạn nguy hại bị đoán AN_TOAN không có cơ hội tô nên không tính điểm bằng chứng;
+    đoán nhãn nguy hại mà không trả cụm nào vẫn tính 0."""
+    records = [
+        {"id": "1", "text": "mày ngu như bò", "nhan": "XUC_PHAM", "bang_chung": ["ngu như bò"]},
+        {"id": "2", "text": "t sẽ đăng ảnh của m", "nhan": "DE_DOA", "bang_chung": ["đăng ảnh của m"]},
+        {"id": "3", "text": "tao biết nhà mày", "nhan": "DE_DOA", "bang_chung": ["biết nhà mày"]},
+    ]
+    preds = [
+        {"id": "1", "nhan": "XUC_PHAM", "bang_chung": ["ngu như bò"]},  # đúng -> 1,0
+        {"id": "2", "nhan": "AN_TOAN", "bang_chung": []},  # bị loại
+        {"id": "3", "nhan": "DE_DOA", "bang_chung": []},  # có cơ hội mà không tô -> 0
+    ]
+    ev = evaluate_evidence(records, preds)
+    assert ev["n_harmful_evaluated"] == 2
+    assert ev["n_harmful_skipped_pred_safe"] == 1
+    assert ev["f1_theo_y"]["f1"] == 0.5
+    assert ev["harmful_empty_evidence_rate"] == 0.5
+
+
 def test_classification_llm_refusal_and_calibration():
     records = [
         {"id": "a", "text": "tốt lắm", "nhan": "AN_TOAN", "bang_chung": []},
