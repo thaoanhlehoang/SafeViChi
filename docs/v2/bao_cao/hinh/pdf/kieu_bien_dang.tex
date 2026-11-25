@@ -1,0 +1,21 @@
+\documentclass[border=6pt]{standalone}
+% Sinh tự động. Biên dịch: pdflatex <ten>.tex (trong thư mục hinh/pdf/)
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{navy}{HTML}{17365D}
+\definecolor{mauvmot}{HTML}{257DE0}
+\definecolor{maullm}{HTML}{F47230}
+\definecolor{mauvhai}{HTML}{00B894}
+\newcommand{\nhan}[1]{\texttt{\detokenize{#1}}}
+\setlength{\textwidth}{16.3cm}
+\begin{document}
+\setlength{\linewidth}{\textwidth}
+\input{../kieu_bien_dang.tex}
+\end{document}
