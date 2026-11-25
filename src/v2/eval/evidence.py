@@ -1,10 +1,12 @@
-"""Độ đo bằng chứng SafeViChi v2: F1 theo ý (docs/v2/DO_DO_BANG_CHUNG.md) song song F1 mức từ.
+"""Độ đo bằng chứng SafeViChi v2: F1 theo ý (mệnh đề), song song F1 mức từ (docs/v2/DO_DO_BANG_CHUNG.md).
 
 Nguyên tắc (tách riêng hoàn toàn khỏi phân loại nhãn):
 - Chỉ tính F1 trên các đoạn nguy hại có cụm bằng chứng người gán.
 - Đoạn AN_TOAN không tính F1 mà đo riêng tỉ lệ bị tô oan (safe_false_highlight_rate).
-- Báo song song F1 theo ý (chấm trúng từ mang ý trong [ ] và vùng cho phép ±2 từ trong cùng mệnh đề)
-  cạnh F1 mức từ (khớp từng từ chặt), kèm tỉ lệ cụm không có nguyên văn trong câu (non-verbatim),
+- F1 theo ý: đơn vị là mệnh đề (đoạn giữa các dấu , . ! ? ; : … trong một dòng).
+  Recall: mỗi phần cụm gán nằm trong một mệnh đề được min(1, he_so_phu × tỉ lệ từ của nó được tô).
+  Precision: tỉ lệ từ mô hình tô nằm trong các mệnh đề có cụm gán.
+- Báo kèm F1 mức từ (khớp từng từ chặt), tỉ lệ cụm không có nguyên văn trong câu (non-verbatim),
   tỉ lệ phình độ dài (word_length_ratio), và tỉ lệ câu nguy hại nhưng trắng bằng chứng.
 """
 
@@ -15,11 +17,12 @@ from dataclasses import dataclass
 from typing import Any, Sequence
 
 SAFE_LABEL = "AN_TOAN"
+# Tô trúng 1/1,5 ≈ 67% số từ của một ý gán là đủ điểm recall cho ý đó (chốt 24/11/2026, trước khi nhìn điểm test).
+HE_SO_PHU_MAC_DINH = 1.5
 
-# Dấu ngắt mệnh đề theo mục 3 của docs/v2/DO_DO_BANG_CHUNG.md (, . ! ? ; : …),
-# kể cả khi đứng trước ngoặc kép/ngoặc đơn đóng hoặc emoticon cuối từ, nhưng không tách giữa từ (vd. "thế.u").
+# Dấu ngắt mệnh đề (, . ! ? ; : …), kể cả khi đứng trước ngoặc kép/ngoặc đơn đóng hoặc emoticon cuối từ,
+# nhưng không tách giữa từ (vd. "thế.u", "xxx[.]com").
 _CLAUSE_END_RE = re.compile(r"(?:[,!?;:…]|\.)(?=(?:[\"”’')\]}>]*)(?:$|\s|(?![a-zA-ZÀ-ỹ0-9])))")
-_BRACKET_RE = re.compile(r"\[([^\[\]]+)\]")
 
 
 @dataclass(frozen=True)
@@ -59,48 +62,8 @@ def tokenize_words_and_clauses(text: str) -> list[WordToken]:
     return tokens
 
 
-def _parse_gold_phrase(raw: str | dict[str, Any]) -> tuple[str, list[tuple[int, int]], int | None]:
-    """Tách cụm người gán có thể chứa ngoặc [từ mang ý] thành:
-    (cụm_sạch_không_ngoặc, danh_sách_vị_trí_ký_tự_từ_mang_ý, dòng_chỉ_định_nếu_có).
-    """
-    line_filter: int | None = None
-    if isinstance(raw, dict):
-        phrase = str(raw.get("text", ""))
-        if raw.get("line") is not None:
-            line_filter = int(raw["line"])
-    else:
-        phrase = str(raw)
-
-    clean_parts: list[str] = []
-    core_spans: list[tuple[int, int]] = []
-    cursor = 0
-    clean_len = 0
-    for m in _BRACKET_RE.finditer(phrase):
-        before = phrase[cursor : m.start()]
-        clean_parts.append(before)
-        clean_len += len(before)
-        inner = m.group(1)
-        core_spans.append((clean_len, clean_len + len(inner)))
-        clean_parts.append(inner)
-        clean_len += len(inner)
-        cursor = m.end()
-    clean_parts.append(phrase[cursor:])
-    return "".join(clean_parts), core_spans, line_filter
-
-
-def _char_span_to_word_indices(
-    tokens: Sequence[WordToken],
-    start: int,
-    end: int,
-    line_filter: int | None = None,
-) -> set[int]:
-    out: set[int] = set()
-    for tok in tokens:
-        if line_filter is not None and tok.line != line_filter:
-            continue
-        if tok.start < end and start < tok.end:
-            out.add(tok.index)
-    return out
+def _char_span_to_word_indices(tokens: Sequence[WordToken], start: int, end: int) -> set[int]:
+    return {tok.index for tok in tokens if tok.start < end and start < tok.end}
 
 
 def _find_all_occurrences(text: str, phrase: str) -> list[tuple[int, int]]:
@@ -108,12 +71,11 @@ def _find_all_occurrences(text: str, phrase: str) -> list[tuple[int, int]]:
         return []
     spans: list[tuple[int, int]] = []
     pos = 0
-    step = len(phrase)
     while True:
         idx = text.find(phrase, pos)
         if idx < 0:
             break
-        spans.append((idx, idx + step))
+        spans.append((idx, idx + len(phrase)))
         pos = idx + 1
     return spans
 
@@ -146,78 +108,48 @@ def find_pred_word_indices(
 
 def score_evidence_item(
     text: str,
-    gold_phrases: Sequence[str | dict[str, Any]],
+    gold_phrases: Sequence[str],
     pred_phrases: Sequence[str],
-    margin: int = 2,
+    he_so_phu: float = HE_SO_PHU_MAC_DINH,
 ) -> dict[str, Any]:
-    """Chấm song song F1 theo ý và F1 mức từ cho một đoạn hội thoại."""
+    """Chấm song song F1 theo ý (mệnh đề) và F1 mức từ cho một đoạn hội thoại.
+
+    Cụm gán được tìm nguyên văn trong tin nhắn (ký hiệu che như [STK], xxx[.]com giữ nguyên).
+    Cụm gán xuất hiện nhiều lần thì lấy lần được tô nhiều nhất.
+    """
     tokens = tokenize_words_and_clauses(text)
     pred_words, total_pred_phrases, non_verbatim = find_pred_word_indices(text, tokens, pred_phrases)
 
-    gold_union: set[int] = set()
-    allowed_union: set[int] = set()
-    phrase_recalls: list[float] = []
+    gold_union: set[int] = set()  # mọi từ thuộc cụm gán (cho F1 mức từ)
+    gold_clauses: set[int] = set()  # các mệnh đề có cụm gán (vùng cho phép của precision)
+    piece_scores: list[float] = []  # điểm recall của từng ý gán = phần cụm gán nằm trong một mệnh đề
 
     for raw in gold_phrases:
-        clean_phrase, core_char_spans, line_filter = _parse_gold_phrase(raw)
-        clean_phrase = clean_phrase.strip()
-        if not clean_phrase:
-            continue
-        hits = _find_all_occurrences(text, clean_phrase)
-        if line_filter is not None:
-            filtered_hits: list[tuple[int, int]] = []
-            for a, b in hits:
-                if _char_span_to_word_indices(tokens, a, b, line_filter=line_filter):
-                    filtered_hits.append((a, b))
-            hits = filtered_hits
-        if not hits:
-            continue
-
-        # Chọn lần khớp đầu tiên nếu người gán không chỉ định dòng (khớp hành vi thực tế từng cụm)
-        best_recall = 0.0
-        for a, b in hits:
-            span_words = _char_span_to_word_indices(tokens, a, b, line_filter=line_filter)
-            if not span_words:
+        phrase = str(raw).strip()
+        best: tuple[float, list[float], dict[int, set[int]]] | None = None
+        for a, b in _find_all_occurrences(text, phrase):
+            words = _char_span_to_word_indices(tokens, a, b)
+            if not words:
                 continue
-            gold_union |= span_words
+            by_clause: dict[int, set[int]] = {}
+            for w in words:
+                by_clause.setdefault(tokens[w].clause, set()).add(w)
+            scores = [min(1.0, he_so_phu * len(ws & pred_words) / len(ws)) for ws in by_clause.values()]
+            if best is None or sum(scores) > best[0]:
+                best = (sum(scores), scores, by_clause)
+        if best is None:
+            continue
+        _, scores, by_clause = best
+        piece_scores.extend(scores)
+        gold_clauses |= set(by_clause)
+        for ws in by_clause.values():
+            gold_union |= ws
 
-            # Vùng cho phép: cụm người gán + tối đa `margin` từ mỗi bên trong CÙNG mệnh đề và CÙNG dòng
-            min_idx = min(span_words)
-            max_idx = max(span_words)
-            left_tok = tokens[min_idx]
-            right_tok = tokens[max_idx]
-            allowed_union |= span_words
-            for d in range(1, margin + 1):
-                li = min_idx - d
-                if li >= 0 and tokens[li].line == left_tok.line and tokens[li].clause == left_tok.clause:
-                    allowed_union.add(li)
-                else:
-                    break
-            for d in range(1, margin + 1):
-                ri = max_idx + d
-                if ri < len(tokens) and tokens[ri].line == right_tok.line and tokens[ri].clause == right_tok.clause:
-                    allowed_union.add(ri)
-                else:
-                    break
-
-            # Từ mang ý trong [ ]; nếu không có ngoặc thì mọi từ trong cụm tính như nhau
-            core_words: set[int] = set()
-            if core_char_spans:
-                for ca, cb in core_char_spans:
-                    core_words |= _char_span_to_word_indices(tokens, a + ca, a + cb, line_filter=line_filter)
-            if not core_words:
-                core_words = span_words
-            rec = len(core_words & pred_words) / len(core_words)
-            if rec > best_recall:
-                best_recall = rec
-        phrase_recalls.append(best_recall)
-
-    # F1 theo ý
-    if phrase_recalls:
-        r_intent = sum(phrase_recalls) / len(phrase_recalls)
-    else:
-        r_intent = 0.0
-    p_intent = (len(pred_words & allowed_union) / len(pred_words)) if pred_words else 0.0
+    # F1 theo ý (mệnh đề)
+    r_intent = sum(piece_scores) / len(piece_scores) if piece_scores else 0.0
+    p_intent = (
+        sum(1 for w in pred_words if tokens[w].clause in gold_clauses) / len(pred_words) if pred_words else 0.0
+    )
     f1_intent = (2 * p_intent * r_intent / (p_intent + r_intent)) if (p_intent + r_intent) > 0 else 0.0
 
     # F1 mức từ (chặt)
@@ -239,7 +171,7 @@ def score_evidence_item(
 def evaluate_evidence(
     records: Sequence[dict[str, Any]],
     predictions: Sequence[dict[str, Any]],
-    margin: int = 2,
+    he_so_phu: float = HE_SO_PHU_MAC_DINH,
 ) -> dict[str, Any]:
     """Tổng hợp toàn bộ chỉ số bằng chứng trên một tập dữ liệu."""
     if len(records) != len(predictions):
@@ -269,7 +201,7 @@ def evaluate_evidence(
         if not isinstance(pred_ev, list):
             pred_ev = []
 
-        item = score_evidence_item(text, gold_ev, pred_ev, margin=margin)
+        item = score_evidence_item(text, gold_ev, pred_ev, he_so_phu=he_so_phu)
         total_pred_phrases += item["n_pred_phrases"]
         total_non_verbatim += item["n_non_verbatim_phrases"]
 
@@ -298,7 +230,7 @@ def evaluate_evidence(
     return {
         "n_harmful_evaluated": n_harmful_with_gold,
         "n_safe_evaluated": n_safe,
-        "margin_words": margin,
+        "he_so_phu": he_so_phu,
         "f1_theo_y": {
             "precision": _mean(intent_p),
             "recall": _mean(intent_r),
