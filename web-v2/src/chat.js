@@ -1,10 +1,13 @@
 // Màn trò chuyện 3 cột: danh sách | khung chat | AI phân tích.
-// Khung chat chỉ tô đỏ bằng chứng; toàn bộ kết quả pipeline nằm ở cột AI.
-// Mọi chữ người dùng gõ đều đi qua textContent / text node, không dùng innerHTML.
+// - Luồng phân tích 2 tầm nhìn (cửa sổ 1–8 lượt + tách riêng tin mới nhất chống pha loãng lượt gộp cho cả 2 phía).
+// - Luồng nhận tin (Người kia): chỉ tô bằng chứng verbatim và hiện dải cảnh báo (chưa thực thi hành động bảo vệ).
+// - Mọi chữ người dùng gõ đều đi qua textContent / text node, không dùng innerHTML.
+
 import { LABELS, MAX_LINES } from './labels.js';
 import { SHIRTS, HAIR, SKIN } from './landing.js';
+import { stripInvisibles } from './engine/dualorc.js';
 
-// Hội thoại mẫu để thiết kế, tự viết mới (không lấy từ tập dữ liệu).
+// Hội thoại mẫu để thử nghiệm trực tiếp với mô hình thật (không lấy từ tập dữ liệu).
 const CONVERSATIONS = [
   {
     id: 'toan12a', name: 'Nhóm học Toán 12A', group: true, sub: '5 thành viên',
@@ -64,7 +67,6 @@ const CONVERSATIONS = [
   },
 ];
 
-const AVATAR_TONES = ['#2f6b38', '#4a8233', '#5f7f3a', '#3c7262', '#6a8f4e', '#2d5a4a'];
 const ORDER = ['AN_TOAN', 'XUC_PHAM', 'QUAY_ROI', 'DE_DOA', 'LUA_DAO'];
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -74,73 +76,303 @@ const el = (tag, cls, text) => {
   return n;
 };
 
-export function setupChat({ classify, onEngineStatus }) {
+export function setupChat({ classify, onEngineStatus, retryLoad }) {
   let current = CONVERSATIONS[0];
-  let view = null; // {conv, msg} tin đang xem ở cột AI
+  let view = null; // { conv, msg } tin đang xem ở cột AI
   let sender = 'me';
-  let draft = null; // tin đang bị giữ lại chờ bạn chọn: {conv, text, from, analysis}
+  let draft = null; // { conv, text, from, ctxAnalysis, warnAnalysis, source: 'context'|'standalone' }
   let ready = false;
+  let busy = false;
+  let engineError = null;
+  let customCount = 0;
+  const inflightMsg = new WeakMap();
 
   const shell = $('chat-shell');
   const list = $('contact-list');
   const box = $('messages');
   const input = $('composer-input');
+  const sendBtn = $('composer-send');
+  const composer = $('composer');
+  const warn = $('send-warn');
+  const safetyBar = $('safety-bar');
   const aiOpen = () => !shell.classList.contains('ai-closed');
-
-  onEngineStatus((s) => {
-    $('ai-engine').textContent = s.text;
-    $('ai-engine').dataset.kind = s.kind;
-    if (s.kind !== 'loading' && !ready) { ready = true; analyzeAll(); }
-  });
 
   const who = (conv, m) => (m.from === 'me' ? 'Bạn' : m.author || conv.name);
 
-  // Mô hình không xét một tin riêng lẻ: mỗi lần gửi vào tối đa 8 tin gần nhất (cả hai phía),
-  // trả về MỘT nhãn cho cả đoạn và bằng chứng có thể nằm ở bất kỳ tin nào trong đoạn.
-  async function analyze(conv, idx, draftText) {
-    const rows = conv.messages.slice(0, idx).map((m, i) => ({ i, m, text: m.text }));
-    if (draftText != null) rows.push({ i: -1, m: { from: sender, author: sender === 'them' && conv.group ? 'Thành viên' : undefined, time: 'chưa gửi' }, text: draftText });
-    else rows.push({ i: idx, m: conv.messages[idx], text: conv.messages[idx].text });
-    const win = rows.slice(-MAX_LINES);
-    const out = await classify(win.map((r) => r.text));
+  // Đúng quy ước dữ liệu SafeViChi v2 (CLAUDE.md):
+  // gộp các tin liên tiếp theo phe ('me' vs 'them') để luôn luân phiên 2 phía (word_turn % 2),
+  // giữ tối đa 8 lượt gần nhất và lưu vị trí từng bóng tin gốc để tô bằng chứng chính xác.
+  // Nếu trong cùng một lượt gộp đã có tin bị đánh dấu độc hại đơn lẻ (soloFlag), cắt bỏ các tin an toàn
+  // đứng trước nó trong cùng lượt đó để tránh tiếp tục pha loãng lượt ở các bước suy luận sau.
+  function buildTurnWindow(conv, idx, draftText) {
+    const rawItems = conv.messages.slice(0, idx).map((m, i) => ({ i, m }));
+    if (draftText != null) {
+      rawItems.push({
+        i: -1,
+        m: {
+          from: sender,
+          author: sender === 'them' && conv.group ? 'Thành viên' : undefined,
+          time: 'chưa gửi',
+          text: draftText,
+        },
+      });
+    } else if (conv.messages[idx]) {
+      rawItems.push({ i: idx, m: conv.messages[idx] });
+    }
+
+    const turns = [];
+    for (const item of rawItems) {
+      const party = item.m.from === 'me' ? 'me' : 'them';
+      const authorLabel = who(conv, item.m);
+      const prev = turns[turns.length - 1];
+      if (prev && prev.party === party) {
+        const start = prev.text.length + 1;
+        prev.text += ` ${item.m.text}`;
+        prev.time = item.m.time;
+        if (!prev.authors.includes(authorLabel)) prev.authors.push(authorLabel);
+        prev.who = prev.authors.join(', ');
+        prev.parts.push({ i: item.i, m: item.m, start, end: prev.text.length });
+      } else {
+        turns.push({
+          party,
+          authors: [authorLabel],
+          who: authorLabel,
+          time: item.m.time,
+          text: item.m.text,
+          parts: [{ i: item.i, m: item.m, start: 0, end: item.m.text.length }],
+        });
+      }
+    }
+
+    const win = turns.slice(-MAX_LINES);
+    for (const t of win) {
+      let cutAt = -1;
+      for (let k = t.parts.length - 1; k >= 0; k--) {
+        if (t.parts[k].m.soloFlag) cutAt = k;
+      }
+      if (cutAt > 0) {
+        const kept = t.parts.slice(cutAt);
+        let text = '';
+        const authors = [];
+        const newParts = [];
+        for (const p of kept) {
+          const start = text ? text.length + 1 : 0;
+          text = text ? `${text} ${p.m.text}` : p.m.text;
+          const label = who(conv, p.m);
+          if (!authors.includes(label)) authors.push(label);
+          newParts.push({ ...p, start, end: text.length });
+        }
+        t.text = text;
+        t.authors = authors;
+        t.who = authors.join(', ');
+        t.parts = newParts;
+      }
+    }
+    return win;
+  }
+
+  function packAnalysis(turns, out, extras = {}) {
+    const bubbleSpans = new Map();
+    for (const t of turns) {
+      for (const p of t.parts) bubbleSpans.set(p.i, []);
+    }
+
+    const rows = turns.map((t, dong) => {
+      const spans = out.bang_chung.filter((b) => b.dong === dong);
+      for (const sp of spans) {
+        for (const p of t.parts) {
+          const ovStart = Math.max(sp.start, p.start);
+          const ovEnd = Math.min(sp.end, p.end);
+          if (ovEnd > ovStart) {
+            const localStart = ovStart - p.start;
+            const localEnd = ovEnd - p.start;
+            bubbleSpans.get(p.i).push({
+              start: localStart,
+              end: localEnd,
+              text: p.m.text.slice(localStart, localEnd),
+            });
+          }
+        }
+      }
+      return {
+        who: t.who,
+        time: t.time,
+        text: t.text,
+        msgIndices: t.parts.map((p) => p.i),
+        spans,
+      };
+    });
+
     return {
       nhan: out.nhan,
       xac_suat: out.xac_suat,
+      rui_ro: out.rui_ro,
       ms: out.ms,
-      rows: win.map((r, dong) => ({
-        i: r.i,
-        who: who(conv, r.m),
-        time: r.m.time,
-        text: r.text,
-        norm: out.chuan_hoa?.[dong] ?? r.text,
-        spans: out.bang_chung.filter((b) => b.dong === dong),
-      })),
+      scope: 'context',
+      rows,
+      bubbleSpans,
+      ...extras,
     };
   }
 
-  // Lần phân tích mới nhất có chứa một tin sẽ quyết định chỗ tô đỏ trong tin đó,
-  // vì một câu có thể chỉ độc hại khi đặt cạnh các câu trước.
-  function applySpans(conv, res) {
-    for (const r of res.rows) if (r.i >= 0) conv.messages[r.i].spans = r.spans;
+  // Kết hợp kết quả kiểm tra đơn câu vào cấu trúc cửa sổ ngữ cảnh khi tin mới nhất bị pha loãng bởi
+  // các tin an toàn trước đó (cả khi đứng sau nhiều lượt an toàn lẫn khi bị gộp chung vào 1 lượt).
+  function elevateWithStandalone(ctxRes, soloOut, targetPart) {
+    const soloSpansInMsg = soloOut.bang_chung
+      .filter((b) => b.dong === 0)
+      .map((b) => ({
+        start: b.start,
+        end: b.end,
+        text: targetPart.m.text.slice(b.start, b.end),
+      }));
+
+    const rows = ctxRes.rows.map((r, i) => {
+      if (i !== ctxRes.rows.length - 1) return r;
+      const shifted = soloSpansInMsg.map((s) => ({
+        dong: i,
+        start: targetPart.start + s.start,
+        end: targetPart.start + s.end,
+        text: r.text.slice(targetPart.start + s.start, targetPart.start + s.end),
+      }));
+      return { ...r, spans: shifted };
+    });
+
+    const bubbleSpans = new Map(ctxRes.bubbleSpans);
+    bubbleSpans.set(targetPart.i, soloSpansInMsg);
+
+    return {
+      nhan: soloOut.nhan,
+      xac_suat: soloOut.xac_suat,
+      rui_ro: soloOut.rui_ro,
+      ms: ctxRes.ms + soloOut.ms,
+      scope: 'message',
+      rows,
+      bubbleSpans,
+    };
   }
 
-  async function analyzeAll() {
-    for (const conv of [current, ...CONVERSATIONS.filter((c) => c !== current)]) {
-      for (let i = 0; i < conv.messages.length; i++) {
-        if (!conv.messages[i].analysis) {
-          conv.messages[i].analysis = await analyze(conv, i);
-          applySpans(conv, conv.messages[i].analysis);
+  async function analyze(conv, idx, draftText = null, { priority = false } = {}) {
+    const turns = buildTurnWindow(conv, idx, draftText);
+    const ctxOut = await classify(turns.map((t) => t.text), { priority });
+    const ctxRes = packAnalysis(turns, ctxOut);
+
+    // Chống pha loãng cho CẢ 2 phía (Tôi & Người kia):
+    // Nếu ngữ cảnh gộp trả AN_TOAN nhưng cửa sổ có > 1 tin nhắn (nhiều lượt HOẶC nhiều tin cùng phía
+    // bị gộp thành 1 lượt), kiểm tra thêm riêng tin mới nhất (~20–45 ms).
+    const windowMsgCount = turns.reduce((sum, t) => sum + t.parts.length, 0);
+    if (ctxRes.nhan === 'AN_TOAN' && windowMsgCount > 1) {
+      const lastTurn = turns[turns.length - 1];
+      const targetPart = lastTurn.parts[lastTurn.parts.length - 1];
+      if (targetPart?.m?.text && stripInvisibles(targetPart.m.text).trim()) {
+        const soloOut = await classify([targetPart.m.text], { priority });
+        if (soloOut.nhan !== 'AN_TOAN') {
+          return elevateWithStandalone(ctxRes, soloOut, targetPart);
         }
       }
-      renderContacts();
-      if (conv === current) { if (!view) view = { conv, msg: latestFlagged(conv) }; renderMessages(); renderView(); }
+    }
+
+    return ctxRes;
+  }
+
+  function applySpans(conv, res) {
+    for (const [msgIdx, spans] of res.bubbleSpans.entries()) {
+      if (msgIdx >= 0 && conv.messages[msgIdx]) {
+        const msg = conv.messages[msgIdx];
+        msg.spans = spans.length > 0 ? spans : (msg.soloSpans || []);
+      }
     }
   }
 
-  const latestFlagged = (conv) => [...conv.messages].reverse().find((m) => m.analysis && m.analysis.nhan !== 'AN_TOAN') || conv.messages.at(-1);
-  const flagged = (conv) => conv.messages.some((m) => m.spans?.length);
+  async function ensureAnalyzed(conv, idx, { priority = false, updateSpans = false } = {}) {
+    const m = conv.messages[idx];
+    if (!m) return null;
+    if (m.analysis) return m.analysis;
+    if (inflightMsg.has(m)) return inflightMsg.get(m);
 
-  // Chân dung nhỏ vẽ cùng kiểu người ở trang đầu: áo, mặt, tóc theo tên.
+    const task = analyze(conv, idx, null, { priority })
+      .then((res) => {
+        m.analysis = res;
+        if (res.scope === 'message') {
+          m.soloFlag = true;
+          m.soloSpans = res.bubbleSpans.get(idx) || [];
+        }
+        if (updateSpans || idx === conv.messages.length - 1) applySpans(conv, res);
+        return res;
+      })
+      .finally(() => {
+        inflightMsg.delete(m);
+      });
+
+    inflightMsg.set(m, task);
+    return task;
+  }
+
+  async function analyzeLatestConversations() {
+    const order = [current, ...CONVERSATIONS.filter((c) => c !== current)];
+    for (let k = 0; k < order.length; k++) {
+      const conv = order[k];
+      const lastIdx = conv.messages.length - 1;
+      if (lastIdx < 0) continue;
+      try {
+        await ensureAnalyzed(conv, lastIdx, { priority: k === 0, updateSpans: true });
+      } catch {
+        continue;
+      }
+      renderContacts();
+      if (conv === current) {
+        if (!view || view.conv !== current) view = { conv, msg: conv.messages[lastIdx] };
+        renderMessages();
+        renderSafetyBar();
+        renderView();
+      }
+    }
+  }
+
+  function syncComposerState() {
+    composer.classList.toggle('busy', busy);
+    input.readOnly = busy;
+    const disabled = !ready || busy;
+    sendBtn.setAttribute('aria-disabled', String(disabled));
+
+    if (!ready) {
+      input.placeholder = engineError ? 'Không nạp được mô hình ONNX…' : 'Đang nạp mô hình ONNX…';
+      sendBtn.textContent = engineError ? 'Chưa sẵn sàng' : 'Đang tải…';
+    } else if (busy) {
+      sendBtn.textContent = 'Đang kiểm tra…';
+    } else {
+      input.placeholder = sender === 'me' ? 'Nhập tin nhắn với tư cách Tôi…' : `Nhập tin nhắn giả lập từ ${current.name}…`;
+      sendBtn.replaceChildren('Gửi ', el('kbd', '', '↵'));
+    }
+  }
+
+  onEngineStatus((s) => {
+    const badge = $('ai-engine');
+    badge.textContent = s.text;
+    badge.dataset.kind = s.kind;
+    if (s.kind === 'error') {
+      engineError = s.message || 'Không thể nạp mô hình ONNX.';
+      syncComposerState();
+      renderView();
+      return;
+    }
+    engineError = null;
+    if (s.kind === 'real' && !ready) {
+      ready = true;
+      syncComposerState();
+      analyzeLatestConversations();
+    } else if (s.kind === 'loading' && !ready) {
+      syncComposerState();
+      renderAI(null, s.text);
+    }
+  });
+
+  // Trả về nhãn nguy hại hiện hành dựa trên kết quả phân tích mới nhất của hội thoại (tránh kẹt chấm cũ).
+  const activeThreatLabel = (conv) => {
+    const last = conv.messages.at(-1);
+    const nhan = last?.analysis?.nhan;
+    return nhan && nhan !== 'AN_TOAN' ? nhan : null;
+  };
+
   function avatar(name) {
     let h = 0;
     for (const ch of name) h = (h * 31 + ch.codePointAt(0)) >>> 0;
@@ -151,7 +383,11 @@ export function setupChat({ classify, onEngineStatus }) {
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 40 40');
     svg.setAttribute('aria-hidden', 'true');
-    const add = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); svg.append(n); };
+    const add = (tag, attrs) => {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]);
+      svg.append(n);
+    };
     add('rect', { width: 40, height: 40, fill: '#cddbbd' });
     add('path', { d: 'M5 42c1-9 7-13 15-13s14 4 15 13z', fill: shirt });
     add('rect', { x: 17, y: 23, width: 6, height: 7, rx: 2, fill: skin });
@@ -166,9 +402,9 @@ export function setupChat({ classify, onEngineStatus }) {
 
   function renderContacts() {
     const q = $('contact-search').value.trim().toLowerCase();
-    list.replaceChildren(...CONVERSATIONS.map((conv, i) => [conv, i])
-      .filter(([conv]) => !q || conv.name.toLowerCase().includes(q))
-      .map(([conv, i]) => {
+    list.replaceChildren(...CONVERSATIONS
+      .filter((conv) => !q || conv.name.toLowerCase().includes(q))
+      .map((conv) => {
         const li = el('li');
         const b = el('button', 'contact');
         b.type = 'button';
@@ -176,27 +412,91 @@ export function setupChat({ classify, onEngineStatus }) {
         const last = conv.messages.at(-1);
         const body = el('span', 'contact-body');
         const top = el('span', 'contact-top');
-        top.append(el('span', 'contact-name', conv.name), el('span', 'contact-time', last.time));
-        const prev = el('span', 'contact-preview', (last.from === 'me' ? 'Bạn: ' : last.author ? last.author + ': ' : '') + last.text);
+        top.append(el('span', 'contact-name', conv.name), el('span', 'contact-time', last ? last.time : 'Mới'));
+        const prevText = last
+          ? (last.from === 'me' ? 'Bạn: ' : last.author ? `${last.author}: ` : '') + last.text
+          : 'Chưa có tin nhắn nào';
+        const prev = el('span', 'contact-preview', prevText);
         body.append(top, prev);
         b.append(avatar(conv.name), body);
-        if (flagged(conv)) b.append(el('span', 'contact-flag'));
+
+        const threat = activeThreatLabel(conv);
+        if (threat) {
+          const info = LABELS[threat];
+          const dot = el('span', 'contact-flag');
+          dot.style.setProperty('--c', info.mau);
+          dot.setAttribute('aria-hidden', 'true');
+          b.append(dot, el('span', 'visually-hidden', `Cảnh báo: ${info.ten}`));
+        }
         b.onclick = () => openConversation(conv);
         li.append(b);
         return li;
       }));
   }
 
+  function createNewConversation() {
+    customCount++;
+    const conv = {
+      id: `custom-${customCount}`,
+      name: customCount === 1 ? 'Hội thoại mới' : `Hội thoại mới ${customCount}`,
+      sub: 'Thử nghiệm tự do (1–8 lượt)',
+      custom: true,
+      messages: [],
+    };
+    CONVERSATIONS.unshift(conv);
+    openConversation(conv);
+    input.focus();
+  }
+
+  function selectMessage(conv, idx) {
+    const m = conv.messages[idx];
+    if (!m) return;
+    // Bấm xem tin cũ sẽ ẩn cảnh báo nháp để cột AI phản hồi ngay đúng tin vừa chọn.
+    if (draft) clearDraft();
+    view = { conv, msg: m };
+    document.querySelector('.ai-inner').scrollTop = 0;
+    openAI(true);
+    renderSafetyBar();
+    renderView();
+    if (ready && !m.analysis) {
+      ensureAnalyzed(conv, idx, { priority: true, updateSpans: idx === conv.messages.length - 1 })
+        .then(() => {
+          if (conv === current) {
+            renderMessages();
+            renderSafetyBar();
+            renderView();
+          }
+          renderContacts();
+        })
+        .catch(() => {});
+    }
+  }
+
   function openConversation(conv) {
     current = conv;
     input.value = '';
     clearDraft();
-    view = { conv, msg: latestFlagged(conv) };
+    const lastIdx = conv.messages.length - 1;
+    view = lastIdx >= 0 ? { conv, msg: conv.messages[lastIdx] } : null;
     document.querySelector('.ai-inner').scrollTop = 0;
     renderContacts();
     renderHeader();
+    syncComposerState();
     renderMessages();
+    renderSafetyBar();
     renderView();
+    if (ready && lastIdx >= 0 && !conv.messages[lastIdx].analysis) {
+      ensureAnalyzed(conv, lastIdx, { priority: true, updateSpans: true })
+        .then(() => {
+          if (conv === current) {
+            renderMessages();
+            renderSafetyBar();
+            renderView();
+          }
+          renderContacts();
+        })
+        .catch(() => {});
+    }
   }
 
   function renderHeader() {
@@ -205,7 +505,7 @@ export function setupChat({ classify, onEngineStatus }) {
     $('chat-sub').textContent = current.sub;
   }
 
-  // Chèn chữ thường và <mark> bằng chứng xen kẽ, theo vị trí trên câu gốc.
+  // Chèn chữ thường và <mark> bằng chứng xen kẽ, theo vị trí trên câu gốc (100% text node, chống XSS).
   function highlighted(text, spans) {
     const frag = document.createDocumentFragment();
     let pos = 0;
@@ -219,14 +519,28 @@ export function setupChat({ classify, onEngineStatus }) {
     return frag;
   }
 
-  // Các tin nằm trong đoạn mà cột AI đang hiển thị.
   function windowSet() {
-    const res = draft ? draft.analysis : view?.msg.analysis;
+    const res = draft ? draft.analysis : view?.msg?.analysis;
     if (!res) return null;
-    return new Set(res.rows.filter((r) => r.i >= 0).map((r) => r.i));
+    const set = new Set();
+    for (const r of res.rows) {
+      for (const idx of r.msgIndices) if (idx >= 0) set.add(idx);
+    }
+    return set;
   }
 
   function renderMessages() {
+    if (current.messages.length === 0) {
+      const empty = el('li', 'messages-empty');
+      empty.append(
+        el('p', 'messages-empty-title', 'Hội thoại trống'),
+        el('p', 'messages-empty-desc', 'Nhập tin nhắn bên dưới để kiểm tra trực tiếp bằng SafeViChi v2. Bạn có thể chuyển đổi giữa "Tôi" và "Người kia" để thử hội thoại nhiều lượt.'),
+      );
+      box.replaceChildren(empty);
+      box.dataset.conv = current.id;
+      return;
+    }
+
     const win = aiOpen() ? windowSet() : null;
     const items = [];
     let prevAuthor = null;
@@ -239,7 +553,7 @@ export function setupChat({ classify, onEngineStatus }) {
       bubble.type = 'button';
       bubble.append(highlighted(m.text, m.spans || []));
       bubble.setAttribute('aria-pressed', !draft && view?.msg === m ? 'true' : 'false');
-      bubble.onclick = () => { view = { conv: current, msg: m }; document.querySelector('.ai-inner').scrollTop = 0; openAI(true); renderView(); };
+      bubble.onclick = () => selectMessage(current, i);
       li.append(bubble, el('span', 'msg-time', m.time));
       items.push(li);
     });
@@ -249,37 +563,76 @@ export function setupChat({ classify, onEngineStatus }) {
     if (keep) box.scrollTop = box.scrollHeight;
   }
 
-  function renderView() {
-    if (draft) renderAI(draft.analysis, 'Tin chưa gửi');
-    else if (view) renderAI(view.msg.analysis, `Khi ${view.msg.from === 'me' ? 'bạn gửi' : 'nhận'} tin lúc ${view.msg.time}`);
-  }
+  // Chỉ hiện dải cảnh báo gọn khi hội thoại có dấu hiệu nguy hại (chưa thực thi hành động bảo vệ).
+  function renderSafetyBar() {
+    const last = current.messages.at(-1);
+    const analysis = last?.analysis;
+    const nhan = analysis?.nhan;
+    const dismissedAt = current.dismissedSafetyAt ?? -1;
 
-  // So từng từ câu gốc với câu chuẩn hóa (LCS) để đánh dấu chỗ đã đổi.
-  function wordDiff(a, b) {
-    const A = a.split(/\s+/).filter(Boolean);
-    const B = b.split(/\s+/).filter(Boolean);
-    const dp = Array.from({ length: A.length + 1 }, () => new Array(B.length + 1).fill(0));
-    for (let i = A.length - 1; i >= 0; i--) for (let j = B.length - 1; j >= 0; j--) dp[i][j] = A[i] === B[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
-    const keepB = new Set();
-    let changedA = 0;
-    for (let i = 0, j = 0; i < A.length || j < B.length;) {
-      if (i < A.length && j < B.length && A[i] === B[j]) { keepB.add(j); i++; j++; }
-      else if (j >= B.length || (i < A.length && dp[i + 1][j] >= dp[i][j + 1])) { i++; changedA++; }
-      else j++;
+    if (draft || !analysis || !nhan || nhan === 'AN_TOAN' || dismissedAt === current.messages.length) {
+      safetyBar.hidden = true;
+      safetyBar.replaceChildren();
+      return;
     }
-    return { changedA, B: B.map((w, i) => [w, !keepB.has(i)]) };
+
+    const info = LABELS[nhan];
+    safetyBar.hidden = false;
+    safetyBar.dataset.label = nhan;
+    safetyBar.style.setProperty('--c', info.mau);
+
+    const warnCopy = {
+      XUC_PHAM: 'Phát hiện nội dung có dấu hiệu xúc phạm trong hội thoại.',
+      QUAY_ROI: 'Phát hiện nội dung có dấu hiệu quấy rối trong hội thoại.',
+      DE_DOA: 'Phát hiện nội dung có dấu hiệu đe dọa / tống tiền trong hội thoại.',
+      LUA_DAO: 'Phát hiện nội dung có dấu hiệu lừa đảo (dụ OTP, link lạ) trong hội thoại.',
+    };
+
+    const body = el('div', 'safety-body');
+    const title = el('p', 'safety-title');
+    title.append(el('strong', 'safety-label', info.ten), ` · ${warnCopy[nhan]}`);
+    body.append(title);
+
+    const closeBtn = el('button', 'safety-close', '×');
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', 'Ẩn cảnh báo');
+    closeBtn.onclick = () => {
+      current.dismissedSafetyAt = current.messages.length;
+      renderSafetyBar();
+    };
+
+    safetyBar.replaceChildren(body, closeBtn);
   }
 
-  // Câu chuẩn hóa, gộp các từ đổi liền nhau thành một khối ("trả lời").
-  function normLine(pairs) {
-    const p = el('p', 'ctx-norm');
-    let run = null;
-    pairs.forEach(([w, changed], i) => {
-      if (changed && run) { run.textContent += ' ' + w; return; }
-      if (i) p.append(' ');
-      if (changed) { run = el('span', 'w-new', w); p.append(run); } else { run = null; p.append(w); }
-    });
-    return p;
+  function renderView() {
+    if (engineError && !ready) {
+      renderError(engineError);
+      return;
+    }
+    if (draft) {
+      renderAI(draft.analysis, 'Tin chưa gửi');
+    } else if (view?.msg) {
+      renderAI(view.msg.analysis, `Khi ${view.msg.from === 'me' ? 'bạn gửi' : 'nhận'} tin lúc ${view.msg.time}`);
+    } else {
+      renderAI(null, ready ? 'Hội thoại trống · Nhập tin để phân tích' : 'Đang khởi động mô hình ONNX…');
+    }
+  }
+
+  function renderError(message) {
+    $('ai-kicker').textContent = 'Không thể khởi tạo mô hình ONNX';
+    $('ai-summary').replaceChildren();
+    const errItem = el('li', 'ai-empty');
+    errItem.append(el('p', 'ai-error-msg', message));
+    if (typeof retryLoad === 'function') {
+      const btn = el('button', 'ai-retry', 'Thử tải lại');
+      btn.type = 'button';
+      btn.onclick = () => retryLoad();
+      errItem.append(btn);
+    }
+    $('ai-context').replaceChildren(errItem);
+    $('ai-verdict').replaceChildren();
+    $('ai-probs').replaceChildren();
+    $('ai-evidence').replaceChildren();
   }
 
   function renderAI(res, kicker) {
@@ -290,18 +643,24 @@ export function setupChat({ classify, onEngineStatus }) {
     const ev = $('ai-evidence');
     if (!res) {
       $('ai-summary').replaceChildren();
-      ctx.replaceChildren(el('li', 'ai-empty', 'Đang phân tích…'));
-      verdict.replaceChildren(); probs.replaceChildren(); ev.replaceChildren();
+      const emptyMsg = !ready
+        ? 'Đang nạp mô hình ONNX trên máy…'
+        : current.messages.length === 0
+          ? 'Gửi tin nhắn đầu tiên để xem kết quả phân tích ONNX realtime.'
+          : 'Đang phân tích…';
+      ctx.replaceChildren(el('li', 'ai-empty', emptyMsg));
+      verdict.replaceChildren();
+      probs.replaceChildren();
+      ev.replaceChildren();
       return;
     }
+
     const n = res.rows.length;
-    // Tóm tắt luôn nằm trên cùng: nhãn của cả đoạn.
     const top = LABELS[res.nhan];
     const sChip = el('span', 'label-chip', top.ten);
     sChip.style.setProperty('--c', top.mau);
     $('ai-summary').replaceChildren(sChip, el('span', 'summary-pct', `${(100 * res.xac_suat[res.nhan]).toFixed(1)}%`));
 
-    // 1. Đoạn hội thoại gửi vào mô hình, mỗi tin kèm bản chuẩn hóa nếu có sửa.
     ctx.replaceChildren(...res.rows.map((r, k) => {
       const li = el('li', 'ctx-row');
       if (k === n - 1) li.classList.add('is-new');
@@ -311,16 +670,17 @@ export function setupChat({ classify, onEngineStatus }) {
       const orig = el('p', 'ctx-text');
       orig.append(highlighted(r.text, r.spans));
       li.append(head, orig);
-      const d = wordDiff(r.text, r.norm);
-      if (d.changedA || d.B.some(([, c]) => c)) {
-        li.append(normLine(d.B));
-      }
       return li;
     }));
 
-    // 2. Một nhãn cho cả đoạn.
     const info = LABELS[res.nhan];
-    verdict.replaceChildren(el('p', 'verdict-action', `Gợi ý xử lý: ${info.hanh_dong}`));
+    const riskText = typeof res.rui_ro === 'number' ? `Rủi ro ${res.rui_ro.toFixed(1)}/100` : '';
+    const msText = typeof res.ms === 'number' ? `${Math.round(res.ms)} ms` : '';
+    const metaText = [riskText, msText].filter(Boolean).join(' · ');
+    const verdictNodes = [el('p', 'verdict-action', `Gợi ý xử lý: ${info.hanh_dong}`)];
+    if (metaText) verdictNodes.push(el('p', 'verdict-meta', metaText));
+    verdict.replaceChildren(...verdictNodes);
+
     probs.replaceChildren(...ORDER.map((k) => {
       const li = el('li');
       li.style.setProperty('--c', LABELS[k].mau);
@@ -332,7 +692,6 @@ export function setupChat({ classify, onEngineStatus }) {
       return li;
     }));
 
-    // 3. Bằng chứng, ghi rõ nằm ở tin nào.
     const evs = res.rows.flatMap((r, k) => r.spans.map((s) => ({ s, r, k })));
     ev.replaceChildren(...(evs.length
       ? evs.map(({ s, r, k }) => {
@@ -340,28 +699,53 @@ export function setupChat({ classify, onEngineStatus }) {
         li.append(el('mark', 'evidence-mark', s.text), el('span', 'ev-where', `${String(k + 1).padStart(2, '0')} · ${r.who}`));
         return li;
       })
-      : [el('li', 'ai-empty', 'Không thấy dấu hiệu độc hại trong đoạn này.')]));
-
+      : [el('li', 'ai-empty', res.nhan === 'AN_TOAN'
+        ? 'Không thấy dấu hiệu độc hại trong đoạn này.'
+        : 'Mô hình cảnh báo theo ngữ cảnh chung, không khoanh cụm từ rời rạc.')]));
   }
 
-  // Chỉ phân tích khi bấm gửi. Tin của bạn có dấu hiệu độc hại thì dừng lại hỏi trước.
-  const warn = $('send-warn');
-  const nowTime = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  const nowTime = () => {
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
 
-  function clearDraft() { draft = null; warn.hidden = true; }
+  function clearDraft() {
+    draft = null;
+    warn.hidden = true;
+    $('warn-send').hidden = false;
+    $('warn-edit').textContent = 'Chỉnh sửa';
+  }
 
   function commit(conv, text, from, analysis) {
     const m = { from, text, time: nowTime() };
     if (from === 'them' && conv.group) m.author = 'Thành viên';
     conv.messages.push(m);
-    // Dòng cuối của lần phân tích là tin vừa gửi: gắn nó vào đúng tin trong cuộc trò chuyện.
-    const rows = analysis.rows.slice();
-    rows[rows.length - 1] = { ...rows.at(-1), i: conv.messages.length - 1, time: m.time, who: who(conv, m) };
-    analysis = { ...analysis, rows };
-    m.analysis = analysis;
-    applySpans(conv, analysis);
+    const newIdx = conv.messages.length - 1;
+
+    const rows = analysis.rows.map((r, i) => (
+      i === analysis.rows.length - 1
+        ? { ...r, time: m.time, msgIndices: r.msgIndices.map((idx) => (idx === -1 ? newIdx : idx)) }
+        : r
+    ));
+    const bubbleSpans = new Map();
+    for (const [k, v] of analysis.bubbleSpans.entries()) {
+      bubbleSpans.set(k === -1 ? newIdx : k, v);
+    }
+
+    const finalAnalysis = { ...analysis, rows, bubbleSpans };
+    m.analysis = finalAnalysis;
+    if (finalAnalysis.scope === 'message') {
+      m.soloFlag = true;
+      m.soloSpans = bubbleSpans.get(newIdx) || [];
+    }
+    applySpans(conv, finalAnalysis);
     view = { conv, msg: m };
-    if (conv === current) { renderMessages(); renderView(); box.scrollTop = box.scrollHeight; }
+    if (conv === current) {
+      renderMessages();
+      renderSafetyBar();
+      renderView();
+      box.scrollTop = box.scrollHeight;
+    }
     renderContacts();
   }
 
@@ -370,43 +754,105 @@ export function setupChat({ classify, onEngineStatus }) {
     const label = el('strong', 'warn-label', info.ten);
     label.style.setProperty('--c', info.mau);
     $('warn-title').replaceChildren('Tin nhắn này có dấu hiệu ', label);
+
+    const desc = $('warn-desc');
+    const draftSpans = res.bubbleSpans.get(-1) || [];
+    if (draftSpans.length > 0) {
+      desc.replaceChildren('Cụm từ bị đánh dấu: ');
+      draftSpans.slice(0, 3).forEach((sp, i) => {
+        if (i > 0) desc.append(', ');
+        desc.append(el('mark', 'evidence-mark', sp.text));
+      });
+      desc.append('. Bạn có muốn sửa trước khi gửi không?');
+    } else {
+      desc.textContent = 'Bạn có muốn sửa trước khi gửi không?';
+    }
+    $('warn-send').hidden = false;
+    $('warn-edit').textContent = 'Chỉnh sửa';
     warn.hidden = false;
+    renderSafetyBar();
+    $('warn-edit').focus();
+  }
+
+  function showSubmitError(errMsg) {
+    $('warn-title').textContent = 'Không thể phân tích tin nhắn';
+    $('warn-desc').textContent = errMsg;
+    $('warn-send').hidden = true;
+    $('warn-edit').textContent = 'Đóng';
+    warn.hidden = false;
+    renderSafetyBar();
     $('warn-edit').focus();
   }
 
   input.addEventListener('input', () => {
-    // Sửa lại tin thì bỏ cảnh báo cũ, lần gửi sau sẽ phân tích lại.
-    if (draft) { clearDraft(); renderMessages(); renderView(); }
+    if (draft || !warn.hidden) {
+      clearDraft();
+      renderMessages();
+      renderSafetyBar();
+      renderView();
+    }
   });
 
-  $('composer').addEventListener('submit', async (e) => {
+  composer.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!ready || busy) return;
+
     const text = input.value.trim().slice(0, 300);
-    if (!text || !ready || $('composer').classList.contains('busy')) return;
+    if (!text || !stripInvisibles(text).trim()) return;
+
+    // Nếu người dùng nhấn Enter lại trên chính bản nháp đang bị cảnh báo, không chạy lại ONNX thừa.
+    if (draft && draft.conv === current && draft.text === text && draft.from === sender) {
+      $('warn-edit').focus();
+      return;
+    }
+
     const conv = current;
     const from = sender;
-    $('composer').classList.add('busy');
-    const res = await analyze(conv, conv.messages.length, text);
-    $('composer').classList.remove('busy');
+    const prevNhan = conv.messages.at(-1)?.analysis?.nhan || 'AN_TOAN';
+
+    busy = true;
+    syncComposerState();
+
+    let res;
+    try {
+      res = await analyze(conv, conv.messages.length, text, { priority: true });
+    } catch (err) {
+      busy = false;
+      syncComposerState();
+      if (conv === current) showSubmitError(String(err?.message || err));
+      return;
+    }
+
+    busy = false;
+    syncComposerState();
     if (conv !== current) return;
-    const harmful = from === 'me' && res.nhan !== 'AN_TOAN' && res.rows.at(-1).spans.length > 0;
+
+    const draftHasSpan = (res.bubbleSpans.get(-1)?.length || 0) > 0;
+    const harmful = from === 'me' && res.nhan !== 'AN_TOAN'
+      && (res.scope === 'message' || draftHasSpan || prevNhan === 'AN_TOAN');
+
     if (!harmful) {
       input.value = '';
+      clearDraft();
       commit(conv, text, from, res);
       return;
     }
+
     draft = { conv, text, from, analysis: res };
     renderMessages();
     renderView();
-    openAI(aiOpen());
     showWarning(res);
   });
 
   $('warn-edit').onclick = () => {
-    clearDraft(); renderMessages(); renderView();
+    clearDraft();
+    renderMessages();
+    renderSafetyBar();
+    renderView();
     input.focus();
     input.setSelectionRange(input.value.length, input.value.length);
   };
+
   $('warn-send').onclick = () => {
     const d = draft;
     if (!d) return;
@@ -415,13 +861,25 @@ export function setupChat({ classify, onEngineStatus }) {
     commit(d.conv, d.text, d.from, d.analysis);
     input.focus();
   };
-  warn.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('warn-edit').click(); });
+
+  warn.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') $('warn-edit').click();
+  });
 
   for (const b of document.querySelectorAll('.sender-switch button')) {
     b.onclick = () => {
+      if (busy) return;
       sender = b.dataset.from;
-      for (const o of document.querySelectorAll('.sender-switch button')) o.setAttribute('aria-pressed', String(o === b));
-      if (draft) { clearDraft(); renderMessages(); renderView(); }
+      for (const o of document.querySelectorAll('.sender-switch button')) {
+        o.setAttribute('aria-pressed', String(o === b));
+      }
+      if (draft) {
+        clearDraft();
+        renderMessages();
+        renderSafetyBar();
+        renderView();
+      }
+      syncComposerState();
       input.focus();
     };
   }
@@ -433,9 +891,19 @@ export function setupChat({ classify, onEngineStatus }) {
   }
   $('ai-toggle').onclick = () => openAI(!aiOpen());
   $('contact-search').addEventListener('input', renderContacts);
+  $('new-chat').onclick = createNewConversation;
 
+  // Trên màn hình hẹp (< 1024px), tự thu cột AI để ưu tiên khung chat rộng rãi; người dùng vẫn bấm mở được.
+  if (window.innerWidth < 1024) {
+    shell.classList.add('ai-closed');
+    $('ai-toggle').setAttribute('aria-pressed', 'false');
+  }
+
+  view = current.messages.length ? { conv: current, msg: current.messages.at(-1) } : null;
   renderContacts();
   renderHeader();
+  syncComposerState();
   renderMessages();
-  renderAI(null, 'Đang tải mô hình');
+  renderSafetyBar();
+  renderAI(null, 'Đang khởi động mô hình ONNX…');
 }
