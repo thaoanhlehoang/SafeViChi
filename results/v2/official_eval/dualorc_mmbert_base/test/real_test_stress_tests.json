@@ -1,0 +1,72 @@
+{
+  "accent_strip": {
+    "suite": "accent_strip",
+    "seen_in_train": true,
+    "n": 334,
+    "original_f1": 0.8646764634114144,
+    "perturbed_f1": 0.747339259208152,
+    "delta_f1": -0.11733720420326232,
+    "original_f1_4main": 0.8455514616172093,
+    "perturbed_f1_4main": 0.7250831649192809,
+    "original_binary_f1": 0.9287257019438445,
+    "perturbed_binary_f1": 0.9070796460176991,
+    "flip_rate": 0.17964071856287425,
+    "newly_missed_harm": 18
+  },
+  "c1_in_dist": {
+    "suite": "c1_in_dist",
+    "seen_in_train": true,
+    "n": 332,
+    "original_f1": 0.8642204018677233,
+    "perturbed_f1": 0.7788577855756607,
+    "delta_f1": -0.08536261629206265,
+    "original_f1_4main": 0.8449813846875953,
+    "perturbed_f1_4main": 0.7606092690066129,
+    "original_binary_f1": 0.928416485900217,
+    "perturbed_binary_f1": 0.8942731277533039,
+    "flip_rate": 0.14759036144578314,
+    "newly_missed_harm": 19
+  },
+  "c1_heldout_controlled": {
+    "suite": "c1_heldout_controlled",
+    "seen_in_train": false,
+    "n": 330,
+    "original_f1": 0.8684842650247167,
+    "perturbed_f1": 0.8475088375878481,
+    "delta_f1": -0.020975427436868532,
+    "original_f1_4main": 0.8509114537298755,
+    "perturbed_f1_4main": 0.8270628146615779,
+    "original_binary_f1": 0.9321663019693655,
+    "perturbed_binary_f1": 0.9274725274725275,
+    "flip_rate": 0.048484848484848485,
+    "newly_missed_harm": 5
+  },
+  "blindspot_homoglyph": {
+    "suite": "blindspot_homoglyph",
+    "seen_in_train": false,
+    "n": 333,
+    "original_f1": 0.8644411692937674,
+    "perturbed_f1": 0.8223458869967238,
+    "delta_f1": -0.04209528229704351,
+    "original_f1_4main": 0.8455514616172093,
+    "perturbed_f1_4main": 0.7993609301744763,
+    "original_binary_f1": 0.928416485900217,
+    "perturbed_binary_f1": 0.9135254988913526,
+    "flip_rate": 0.09309309309309309,
+    "newly_missed_harm": 13
+  },
+  "blindspot_zero_width": {
+    "suite": "blindspot_zero_width",
+    "seen_in_train": false,
+    "n": 334,
+    "original_f1": 0.8646764634114144,
+    "perturbed_f1": 0.8561213664877265,
+    "delta_f1": -0.008555096923687833,
+    "original_f1_4main": 0.8455514616172093,
+    "perturbed_f1_4main": 0.8374784407829254,
+    "original_binary_f1": 0.9287257019438445,
+    "perturbed_binary_f1": 0.9330453563714903,
+    "flip_rate": 0.04790419161676647,
+    "newly_missed_harm": 4
+  }
+}
