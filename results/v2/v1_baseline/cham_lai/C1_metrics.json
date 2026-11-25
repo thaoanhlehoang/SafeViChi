@@ -1,0 +1,161 @@
+{
+  "he_thong": "SafeViChi v1 (ViHateT5 FGM, nhị phân HATE/CLEAN)",
+  "ghi_chu": "v1 không có 5 nhãn và bằng chứng: chỉ chấm nhị phân nguy hại/an toàn.",
+  "binary_harmful_vs_safe": {
+    "n": 668,
+    "precision": 0.967,
+    "recall": 0.1849,
+    "f1": 0.3104,
+    "fpr_an_toan": 0.0156,
+    "fnr_nguy_hai": 0.8151,
+    "tp": 88,
+    "fp": 3,
+    "fn": 388,
+    "tn": 189
+  },
+  "recall_theo_nhan": {
+    "XUC_PHAM": {
+      "n": 106,
+      "recall": 0.6792
+    },
+    "QUAY_ROI": {
+      "n": 102,
+      "recall": 0.0196
+    },
+    "DE_DOA": {
+      "n": 124,
+      "recall": 0.1048
+    },
+    "LUA_DAO": {
+      "n": 144,
+      "recall": 0.0069
+    }
+  },
+  "giong_vung": {
+    "bac": {
+      "n": 224,
+      "precision": 1.0,
+      "recall": 0.1772,
+      "f1": 0.3011,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.8228,
+      "tp": 28,
+      "fp": 0,
+      "fn": 130,
+      "tn": 66
+    },
+    "trung": {
+      "n": 222,
+      "precision": 0.9091,
+      "recall": 0.1266,
+      "f1": 0.2222,
+      "fpr_an_toan": 0.0312,
+      "fnr_nguy_hai": 0.8734,
+      "tp": 20,
+      "fp": 2,
+      "fn": 138,
+      "tn": 62
+    },
+    "nam": {
+      "n": 222,
+      "precision": 0.9756,
+      "recall": 0.25,
+      "f1": 0.398,
+      "fpr_an_toan": 0.0161,
+      "fnr_nguy_hai": 0.75,
+      "tp": 40,
+      "fp": 1,
+      "fn": 120,
+      "tn": 61
+    },
+    "worst_group_binary_f1": 0.2222,
+    "region_gap_binary_f1": 0.1758,
+    "khong_ro_vung": 0
+  },
+  "kieu_bien_dang": {
+    "bo_dau": {
+      "n": 102,
+      "precision": 0.9474,
+      "recall": 0.2368,
+      "f1": 0.3789,
+      "fpr_an_toan": 0.0385,
+      "fnr_nguy_hai": 0.7632,
+      "tp": 18,
+      "fp": 1,
+      "fn": 58,
+      "tn": 25
+    },
+    "chen_ky_tu": {
+      "n": 81,
+      "precision": 1.0,
+      "recall": 0.1475,
+      "f1": 0.2571,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.8525,
+      "tp": 9,
+      "fp": 0,
+      "fn": 52,
+      "tn": 20
+    },
+    "dinh_tu": {
+      "n": 96,
+      "precision": 1.0,
+      "recall": 0.1642,
+      "f1": 0.2821,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.8358,
+      "tp": 11,
+      "fp": 0,
+      "fn": 56,
+      "tn": 29
+    },
+    "go_sai": {
+      "n": 104,
+      "precision": 0.8667,
+      "recall": 0.1831,
+      "f1": 0.3023,
+      "fpr_an_toan": 0.0606,
+      "fnr_nguy_hai": 0.8169,
+      "tp": 13,
+      "fp": 2,
+      "fn": 58,
+      "tn": 31
+    },
+    "keo_dai": {
+      "n": 89,
+      "precision": 1.0,
+      "recall": 0.0968,
+      "f1": 0.1765,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.9032,
+      "tp": 6,
+      "fp": 0,
+      "fn": 56,
+      "tn": 27
+    },
+    "so_thay_chu": {
+      "n": 93,
+      "precision": 1.0,
+      "recall": 0.2121,
+      "f1": 0.35,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.7879,
+      "tp": 14,
+      "fp": 0,
+      "fn": 52,
+      "tn": 27
+    },
+    "teencode": {
+      "n": 103,
+      "precision": 1.0,
+      "recall": 0.2329,
+      "f1": 0.3778,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.7671,
+      "tp": 17,
+      "fp": 0,
+      "fn": 56,
+      "tn": 30
+    }
+  }
+}

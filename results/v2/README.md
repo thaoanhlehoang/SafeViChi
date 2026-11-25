@@ -16,6 +16,10 @@ results/v2/
 ├── kiem_tra_ro_ri/                    # Xác minh 0 rò rỉ giữa train và test người viết
 ├── thu_model/                         # Thử nghiệm chọn LLM sinh dữ liệu
 │
+├── SO_SANH_BASELINE.md                # So sánh gpt-oss-120b và v1 trên test (sinh bằng src.v2.eval.bao_cao_baseline)
+├── llm_api/                           # Baseline LLM lớn qua API (gpt-oss-120b); cham_lai/ = chấm lại bằng bộ chấm hiện tại
+├── v1_baseline/                       # Baseline SafeViChi v1 (nhị phân); cham_lai/ = metrics từ src.v2.eval.cham_v1
+│
 ├── dev_selection/                     # Phần 1 — Huấn luyện, so sánh 4 ứng viên trên dev & quyết định chọn mô hình
 │   ├── README.md                      # So sánh toàn diện trên dev, kiểm định McNemar & luận giải chọn mmBERT-base
 │   ├── dev_summary.json               # Số liệu tổng hợp máy đọc sinh tự động từ 4 thư mục ứng viên
