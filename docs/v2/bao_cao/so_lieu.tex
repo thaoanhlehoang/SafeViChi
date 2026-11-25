@@ -9,18 +9,18 @@
 %   data/v2/train_stats.json  042c72f18f5a
 %   demo/model-manifest.json  bb7db6c14f3f
 %   results/v2/chi_phi_du_lieu/chi_phi.json  444438f46f07
-%   results/v2/dev_selection/dev_summary.json  fc8f6ef5ae2e
+%   results/v2/dev_selection/dev_summary.json  eba74eff750a
 %   results/v2/dong_thuan_nhan/metrics.json  c5192197b320
 %   results/v2/kiem_tra_ro_ri/bao_cao.json  bb7cb1685f9b
-%   results/v2/llm_api/test_metrics.json  84968fe98a38
-%   results/v2/llm_api/test_perturb_C1_metrics.json  dd8ec8ed1723
-%   results/v2/llm_api/test_perturb_C2_metrics.json  d7c85c372f60
-%   results/v2/official_eval/dualorc_mmbert_base/benchmark.json  9b05ea3ecd2c
-%   results/v2/official_eval/dualorc_mmbert_base/calibration.json  3c7e28f52b06
+%   results/v2/llm_api/test_metrics.json  1cbf24b234aa
+%   results/v2/llm_api/test_perturb_C1_metrics.json  c80bed6119a6
+%   results/v2/llm_api/test_perturb_C2_metrics.json  d38aa545db56
+%   results/v2/official_eval/dualorc_mmbert_base/benchmark.json  766a6fdfbc94
+%   results/v2/official_eval/dualorc_mmbert_base/calibration.json  a882c90cc1d8
 %   results/v2/official_eval/dualorc_mmbert_base/config.json  64528aa5e799
-%   results/v2/official_eval/dualorc_mmbert_base/dev_context_checks.json  034f902ac194
-%   results/v2/official_eval/dualorc_mmbert_base/dev_norm_stress_tests.json  78d8fd973c2f
-%   results/v2/official_eval/dualorc_mmbert_base/dev_stress_tests.json  9a261f6950a1
+%   results/v2/official_eval/dualorc_mmbert_base/dev_context_checks.json  fdabcedaed97
+%   results/v2/official_eval/dualorc_mmbert_base/dev_norm_stress_tests.json  bc069a3ad5e7
+%   results/v2/official_eval/dualorc_mmbert_base/dev_stress_tests.json  0c118a4879fa
 %   results/v2/official_eval/dualorc_mmbert_base/environment.json  6e296cee27b3
 %   results/v2/official_eval/dualorc_mmbert_base/test/real_test_all_predictions.jsonl  dfe1d08a9b8a
 %   results/v2/so_sanh_3_he/metrics.json  4437476f71f5
@@ -2059,13 +2059,13 @@
 \soset{api.C2.p95}{4,85}
 \soset{api.C2.usd1000}{0,085}
 \soset{api.tong.usd}{0,14}
-\soset{v2.p50}{38,0}
-\soset{v2.p95}{41,4}
+\soset{v2.p50}{39,4}
+\soset{v2.p95}{42,7}
 \soset{v2.trongso}{1.177}
 \soset{v2.dinh}{1.218}
-\soset{v2.T}{1,18}
-\soset{v2.nguongbc}{0,40}
-\soset{v2.nguongmottu}{0,58}
+\soset{v2.T}{1,22}
+\soset{v2.nguongbc}{0,30}
+\soset{v2.nguongmottu}{0,40}
 \soset{v2.maxtok}{512}
 \soset{v2.epoch}{5}
 \soset{v2.accent}{30,0\%}
@@ -2079,17 +2079,17 @@
 \soset{dev.chia.dev}{1.340}
 \soset{dev.chia.cal}{1.339}
 \soset{dev.mmbert.macro}{92,3}
-\soset{dev.mmbert.bin}{92,7}
-\soset{dev.mmbert.fpr}{8,2\%}
-\soset{dev.mmbert.bcf}{68,6}
-\soset{dev.mmbert.toan}{5,0\%}
-\soset{dev.mmbert.gap}{1,7}
-\soset{dev.mmbert.tieng}{77,6}
-\soset{dev.mmbert.tieng.fpr}{10,6\%}
+\soset{dev.mmbert.bin}{92,6}
+\soset{dev.mmbert.fpr}{8,4\%}
+\soset{dev.mmbert.bcf}{69,7}
+\soset{dev.mmbert.toan}{7,2\%}
+\soset{dev.mmbert.gap}{1,5}
+\soset{dev.mmbert.tieng}{74,8}
+\soset{dev.mmbert.tieng.fpr}{14,2\%}
 \soset{dev.mmbert.trongso}{1.177}
-\soset{dev.mmbert.p50}{38,0}
-\soset{dev.mmbert.trainphut}{43}
-\soset{dev.mmbert.trainvram}{9.292}
+\soset{dev.mmbert.p50}{39,4}
+\soset{dev.mmbert.trainphut}{44}
+\soset{dev.mmbert.trainvram}{9.283}
 \soset{dev.bamibert.macro}{92,2}
 \soset{dev.bamibert.bin}{93,3}
 \soset{dev.bamibert.fpr}{8,6\%}
@@ -2127,48 +2127,48 @@
 \soset{dev.guard.trainphut}{21}
 \soset{dev.guard.trainvram}{7.303}
 \soset{dev.tieng.n}{178}
-\soset{dev.mc.guard}{0,024}
+\soset{dev.mc.guard}{0,023}
 \soset{dev.mc.visobert}{0,29}
-\soset{dev.mc.bamibert}{0,68}
+\soset{dev.mc.bamibert}{0,69}
 \soset{ctx.n}{587}
-\soset{ctx.full}{97,8}
-\soset{ctx.last}{72,5}
-\soset{ctx.gain}{+25,2}
+\soset{ctx.full}{98,0}
+\soset{ctx.last}{70,9}
+\soset{ctx.gain}{+27,1}
 \soset{ctx.lenonly}{30,2}
 \soset{cn.cleanc0.n}{1.340}
 \soset{cn.cleanc0.raw}{92,3}
-\soset{cn.cleanc0.norm}{91,9}
-\soset{cn.cleanc0.gain}{$-$0,4}
+\soset{cn.cleanc0.norm}{91,6}
+\soset{cn.cleanc0.gain}{$-$0,8}
 \soset{cn.accentstrip.n}{1.216}
-\soset{cn.accentstrip.raw}{88,1}
-\soset{cn.accentstrip.norm}{86,7}
-\soset{cn.accentstrip.gain}{$-$1,4}
-\soset{cn.accentstrip.goc}{92,1}
-\soset{cn.accentstrip.tut}{$-$4,0}
+\soset{cn.accentstrip.raw}{87,5}
+\soset{cn.accentstrip.norm}{87,2}
+\soset{cn.accentstrip.gain}{$-$0,3}
+\soset{cn.accentstrip.goc}{92,0}
+\soset{cn.accentstrip.tut}{$-$4,6}
 \soset{cn.c1indist.n}{1.255}
-\soset{cn.c1indist.raw}{88,7}
-\soset{cn.c1indist.norm}{90,6}
-\soset{cn.c1indist.gain}{+1,8}
-\soset{cn.c1indist.goc}{92,2}
+\soset{cn.c1indist.raw}{88,8}
+\soset{cn.c1indist.norm}{90,4}
+\soset{cn.c1indist.gain}{+1,6}
+\soset{cn.c1indist.goc}{92,3}
 \soset{cn.c1indist.tut}{$-$3,5}
 \soset{cn.c1heldoutcontrolled.n}{1.153}
-\soset{cn.c1heldoutcontrolled.raw}{91,8}
-\soset{cn.c1heldoutcontrolled.norm}{91,8}
-\soset{cn.c1heldoutcontrolled.gain}{0,0}
-\soset{cn.c1heldoutcontrolled.goc}{92,6}
-\soset{cn.c1heldoutcontrolled.tut}{$-$0,8}
+\soset{cn.c1heldoutcontrolled.raw}{92,6}
+\soset{cn.c1heldoutcontrolled.norm}{91,3}
+\soset{cn.c1heldoutcontrolled.gain}{$-$1,3}
+\soset{cn.c1heldoutcontrolled.goc}{92,7}
+\soset{cn.c1heldoutcontrolled.tut}{$-$0,1}
 \soset{cn.blindspothomoglyph.n}{1.203}
-\soset{cn.blindspothomoglyph.raw}{90,2}
-\soset{cn.blindspothomoglyph.norm}{90,3}
-\soset{cn.blindspothomoglyph.gain}{+0,1}
-\soset{cn.blindspothomoglyph.goc}{92,9}
-\soset{cn.blindspothomoglyph.tut}{$-$2,6}
+\soset{cn.blindspothomoglyph.raw}{91,0}
+\soset{cn.blindspothomoglyph.norm}{91,0}
+\soset{cn.blindspothomoglyph.gain}{0,0}
+\soset{cn.blindspothomoglyph.goc}{93,1}
+\soset{cn.blindspothomoglyph.tut}{$-$2,0}
 \soset{cn.blindspotzerowidth.n}{1.330}
-\soset{cn.blindspotzerowidth.raw}{90,5}
-\soset{cn.blindspotzerowidth.norm}{89,9}
-\soset{cn.blindspotzerowidth.gain}{$-$0,6}
+\soset{cn.blindspotzerowidth.raw}{90,1}
+\soset{cn.blindspotzerowidth.norm}{89,3}
+\soset{cn.blindspotzerowidth.gain}{$-$0,7}
 \soset{cn.blindspotzerowidth.goc}{92,4}
-\soset{cn.blindspotzerowidth.tut}{$-$1,9}
+\soset{cn.blindspotzerowidth.tut}{$-$2,3}
 \soset{v1goc.C0}{85,3}
 \soset{v1goc.C1}{82,7}
 \soset{v1goc.C2}{66,5}
