@@ -1,0 +1,231 @@
+% Phần 3 -- Yêu cầu 2: khái quát trước kiểu né lọc mới. Mọi số lấy qua \so{} (so_lieu.tex).
+\section{Yêu cầu 2: khái quát trước kiểu né lọc mới}
+\label{sec:yc2}
+
+Một mô hình chỉ tốt trên câu giống dữ liệu train thì chưa đủ. Người gửi tin nguy hại luôn đổi cách viết và đổi chiêu.
+Vì vậy chúng tôi đo khái quát theo ba hướng, đều trên bộ test do người viết:
+
+\begin{enumerate}
+  \item \textbf{Kiểu né lọc chưa thấy.} Tập C2 gồm \so{te.C2.sokieu} kiểu biến dạng không hề có trong train.
+        Trong C1 (\so{te.C1.sokieu} kiểu), một phần kiểu đã xuất hiện tự nhiên trong câu train (``đã thấy''),
+        phần còn lại chưa (``chưa thấy''). Mỗi câu bị biến dạng khoảng \so{te.C1.tiletu} số từ và luôn trúng cụm bằng chứng.
+  \item \textbf{Kịch bản chưa thấy.} Các kịch bản \so{rr.kichban} được giữ hẳn ngoài train, cộng thêm các tình huống
+        người viết tự nghĩ ra (\tep{kich_ban = moi}). Tổng cộng \so{te.chuathay} câu C0 thuộc phần này.
+  \item \textbf{Giọng vùng miền.} Câu test chia đều ba giọng Bắc, Trung, Nam, viết đúng cách người mỗi miền nhắn tin.
+\end{enumerate}
+
+Để các con số trên có nghĩa, train và test không được gần trùng nhau. Script \tep{src.v2.data.kiem_tra_ro_ri}
+so từng đoạn test với toàn bộ train bằng điểm trùng 3-gram: có \so{rr.trunggan} cặp gần trùng ở ngưỡng \so{rr.nguong},
+và \so{rr.trainkichban} câu train thuộc các kịch bản giữ ngoài.
+
+\textbf{C1 và C2 khác nhau thế nào.} C1 làm hỏng chính con chữ: bỏ dấu, teencode, gõ sai, số thay chữ.
+Thông tin mất thật, ví dụ ``đánh'' và ``dành'' bỏ dấu đều thành ``danh''. C2 giữ nguyên chữ, chỉ đổi lớp ký tự
+Unicode: chữ toàn khổ, ký tự vô hình, chữ Cyrillic trông giống chữ Latin, chèn dấu cách giữa các chữ.
+``Chưa thấy'' nghĩa là nằm ngoài train, không có nghĩa là khó hơn. Vì thế v2 đạt Binary-F1 \so{C2.v2.bin} trên C2,
+không thấp hơn C1 (\so{C1.v2.bin}); Macro-F1 hai tập cũng gần nhau (\so{C1.v2.macro} và \so{C2.v2.macro}).
+Một lý do có thể là mô hình có nhánh đọc từng byte nên vẫn nhận ra chữ bị đổi mã.
+
+\subsection{Theo từng kiểu biến dạng}
+
+Hình~\ref{fig:p3-kieu} so Macro-F1 của v2 và gpt-oss-120b trên từng kiểu; Bảng~\ref{tab:p3-kieu} có đủ số.
+Cột ``Train'' cho biết kiểu đó đã có trong dữ liệu train hay chưa.
+
+\begin{figure}[H]
+\centering
+\input{hinh/kieu_bien_dang.tex}
+\caption{Macro-F1 5 nhãn theo từng kiểu biến dạng, sắp theo điểm v2. Mỗi hàng nối điểm của gpt-oss-120b (cam) và v2
+(xanh); đoạn nối càng dài, v2 hơn càng nhiều. Chèn dấu cách là kiểu khó nhất với cả hai.}
+\label{fig:p3-kieu}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Kết quả theo kiểu biến dạng (n: số câu; FPR: tỉ lệ câu an toàn bị báo nguy hại; BC: F1 bằng chứng theo ý)}
+\label{tab:p3-kieu}
+\begin{tabularx}{\linewidth}{@{}Y c c c c c c c c c@{}}
+\toprule
+ & & & v1 & \multicolumn{2}{c}{gpt-oss-120b} & \multicolumn{4}{c}{v2} \\
+\cmidrule(lr){4-4}\cmidrule(lr){5-6}\cmidrule(l){7-10}
+Kiểu biến dạng & Train & n & Bin-F1 & Macro & Bin-F1 & Macro & Bin-F1 & FPR & BC \\
+\midrule
+\multicolumn{10}{@{}l}{\textit{C1: hỏng chữ}} \\
+Bỏ dấu & đã thấy & \so{kieu.C1.bodau.n} & \so{kieu.C1.bodau.v1.bin} & \so{kieu.C1.bodau.llm.macro} & \so{kieu.C1.bodau.llm.bin} & \so{kieu.C1.bodau.v2.macro} & \so{kieu.C1.bodau.v2.bin} & \so{kieu.C1.bodau.v2.fpr} & \so{kieu.C1.bodau.v2.bcf} \\
+Teencode & đã thấy & \so{kieu.C1.teencode.n} & \so{kieu.C1.teencode.v1.bin} & \so{kieu.C1.teencode.llm.macro} & \so{kieu.C1.teencode.llm.bin} & \so{kieu.C1.teencode.v2.macro} & \so{kieu.C1.teencode.v2.bin} & \so{kieu.C1.teencode.v2.fpr} & \so{kieu.C1.teencode.v2.bcf} \\
+Gõ sai & đã thấy & \so{kieu.C1.gosai.n} & \so{kieu.C1.gosai.v1.bin} & \so{kieu.C1.gosai.llm.macro} & \so{kieu.C1.gosai.llm.bin} & \so{kieu.C1.gosai.v2.macro} & \so{kieu.C1.gosai.v2.bin} & \so{kieu.C1.gosai.v2.fpr} & \so{kieu.C1.gosai.v2.bcf} \\
+Kéo dài ký tự & đã thấy & \so{kieu.C1.keodai.n} & \so{kieu.C1.keodai.v1.bin} & \so{kieu.C1.keodai.llm.macro} & \so{kieu.C1.keodai.llm.bin} & \so{kieu.C1.keodai.v2.macro} & \so{kieu.C1.keodai.v2.bin} & \so{kieu.C1.keodai.v2.fpr} & \so{kieu.C1.keodai.v2.bcf} \\
+Chèn ký tự & chưa & \so{kieu.C1.chenkytu.n} & \so{kieu.C1.chenkytu.v1.bin} & \so{kieu.C1.chenkytu.llm.macro} & \so{kieu.C1.chenkytu.llm.bin} & \so{kieu.C1.chenkytu.v2.macro} & \so{kieu.C1.chenkytu.v2.bin} & \so{kieu.C1.chenkytu.v2.fpr} & \so{kieu.C1.chenkytu.v2.bcf} \\
+Số thay chữ & chưa & \so{kieu.C1.sothaychu.n} & \so{kieu.C1.sothaychu.v1.bin} & \so{kieu.C1.sothaychu.llm.macro} & \so{kieu.C1.sothaychu.llm.bin} & \so{kieu.C1.sothaychu.v2.macro} & \so{kieu.C1.sothaychu.v2.bin} & \so{kieu.C1.sothaychu.v2.fpr} & \so{kieu.C1.sothaychu.v2.bcf} \\
+Dính từ & chưa & \so{kieu.C1.dinhtu.n} & \so{kieu.C1.dinhtu.v1.bin} & \so{kieu.C1.dinhtu.llm.macro} & \so{kieu.C1.dinhtu.llm.bin} & \so{kieu.C1.dinhtu.v2.macro} & \so{kieu.C1.dinhtu.v2.bin} & \so{kieu.C1.dinhtu.v2.fpr} & \so{kieu.C1.dinhtu.v2.bcf} \\
+\midrule
+\multicolumn{10}{@{}l}{\textit{C2: đổi lớp ký tự (điểm mù)}} \\
+Chữ toàn khổ {\scriptsize(fullwidth)} & chưa & \so{kieu.C2.fullwidth.n} & \so{kieu.C2.fullwidth.v1.bin} & \so{kieu.C2.fullwidth.llm.macro} & \so{kieu.C2.fullwidth.llm.bin} & \so{kieu.C2.fullwidth.v2.macro} & \so{kieu.C2.fullwidth.v2.bin} & \so{kieu.C2.fullwidth.v2.fpr} & \so{kieu.C2.fullwidth.v2.bcf} \\
+Ký tự vô hình {\scriptsize(zero-width)} & chưa & \so{kieu.C2.zerowidth.n} & \so{kieu.C2.zerowidth.v1.bin} & \so{kieu.C2.zerowidth.llm.macro} & \so{kieu.C2.zerowidth.llm.bin} & \so{kieu.C2.zerowidth.v2.macro} & \so{kieu.C2.zerowidth.v2.bin} & \so{kieu.C2.zerowidth.v2.fpr} & \so{kieu.C2.zerowidth.v2.bcf} \\
+Chèn dấu cách {\scriptsize(space injection)} & chưa & \so{kieu.C2.spaceinjection.n} & \so{kieu.C2.spaceinjection.v1.bin} & \so{kieu.C2.spaceinjection.llm.macro} & \so{kieu.C2.spaceinjection.llm.bin} & \so{kieu.C2.spaceinjection.v2.macro} & \so{kieu.C2.spaceinjection.v2.bin} & \so{kieu.C2.spaceinjection.v2.fpr} & \so{kieu.C2.spaceinjection.v2.bcf} \\
+Dấu phân cách lạ {\scriptsize(exotic separator)} & chưa & \so{kieu.C2.exoticseparator.n} & \so{kieu.C2.exoticseparator.v1.bin} & \so{kieu.C2.exoticseparator.llm.macro} & \so{kieu.C2.exoticseparator.llm.bin} & \so{kieu.C2.exoticseparator.v2.macro} & \so{kieu.C2.exoticseparator.v2.bin} & \so{kieu.C2.exoticseparator.v2.fpr} & \so{kieu.C2.exoticseparator.v2.bcf} \\
+Chữ Cyrillic giống Latin {\scriptsize(homoglyph)} & chưa & \so{kieu.C2.cyrillichomoglyph.n} & \so{kieu.C2.cyrillichomoglyph.v1.bin} & \so{kieu.C2.cyrillichomoglyph.llm.macro} & \so{kieu.C2.cyrillichomoglyph.llm.bin} & \so{kieu.C2.cyrillichomoglyph.v2.macro} & \so{kieu.C2.cyrillichomoglyph.v2.bin} & \so{kieu.C2.cyrillichomoglyph.v2.fpr} & \so{kieu.C2.cyrillichomoglyph.v2.bcf} \\
+Kéo dài kép {\scriptsize(double elongation)} & chưa & \so{kieu.C2.doubleelongation.n} & \so{kieu.C2.doubleelongation.v1.bin} & \so{kieu.C2.doubleelongation.llm.macro} & \so{kieu.C2.doubleelongation.llm.bin} & \so{kieu.C2.doubleelongation.v2.macro} & \so{kieu.C2.doubleelongation.v2.bin} & \so{kieu.C2.doubleelongation.v2.fpr} & \so{kieu.C2.doubleelongation.v2.bcf} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Ba điều rút ra:
+\begin{itemize}
+  \item \textbf{v2 không phụ thuộc vào việc đã thấy kiểu né lọc.} Trong C1, nhóm chưa thấy đạt Macro-F1
+        \so{nhom.C1.chuathay.v2.macro}, còn nhóm đã thấy chỉ \so{nhom.C1.dathay.v2.macro}. Bin-F1 của v2 trên mọi kiểu
+        đều cao hơn v1 và gpt-oss-120b.
+  \item \textbf{Cái giá là báo nhầm.} Ba kiểu làm v2 báo nhầm câu an toàn nhiều nhất là chèn dấu cách
+        (FPR \so{kieu.C2.spaceinjection.v2.fpr}), gõ sai (\so{kieu.C1.gosai.v2.fpr}) và ký tự vô hình
+        (\so{kieu.C2.zerowidth.v2.fpr}). Văn bản bị băm nát khiến mô hình nghiêng về nhãn nguy hại.
+        Mỗi kiểu chỉ có vài chục câu an toàn (ví dụ \so{kieu.C2.spaceinjection.nat} câu với chèn dấu cách),
+        nên một câu sai đã đổi FPR vài điểm.
+  \item \textbf{LLM lớn hiểu câu nhưng mất bằng chứng.} Với chữ toàn khổ và ký tự vô hình, gpt-oss-120b vẫn phân loại khá,
+        nhưng F1 bằng chứng chỉ còn \so{kieu.C2.fullwidth.llm.bcf} và \so{kieu.C2.zerowidth.llm.bcf}
+        (v2: \so{kieu.C2.fullwidth.v2.bcf} và \so{kieu.C2.zerowidth.v2.bcf}). LLM hiểu câu nhưng không chép lại đúng
+        chuỗi ký tự lạ, nên cụm nó trả về không khớp nguyên văn tin nhắn: trên C2, \so{C2.llm.khongnguyenvan} số cụm
+        của LLM không có nguyên văn trong tin, của v2 là \so{C2.v2.khongnguyenvan}. v2 gán nhãn trực tiếp trên từng
+        vị trí của văn bản gốc nên không gặp lỗi này.
+\end{itemize}
+
+\subsection{Kịch bản chưa thấy: điểm yếu lớn nhất}
+
+\begin{figure}[H]
+\centering
+\input{hinh/kich_ban_chua_thay.tex}
+\caption{Macro-F1 trên kịch bản đã có trong train (màu đậm) và kịch bản chưa thấy (màu nhạt). Cả hai hệ đều tụt mạnh
+ở kịch bản chưa thấy; v2 vẫn cao hơn gpt-oss-120b ở cả hai phần.}
+\label{fig:p3-kichban}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Kịch bản trong phân phối train và kịch bản chưa thấy}
+\label{tab:p3-kichban}
+\begin{tabular}{@{}l l c c c c c c@{}}
+\toprule
+ & & & \multicolumn{4}{c}{v2} & gpt-oss-120b \\
+\cmidrule(lr){4-7}\cmidrule(l){8-8}
+Tập & Phần & n & Macro-F1 & Bin-F1 & FPR & BC & Macro-F1 \\
+\midrule
+\multirow{2}{*}{C0} & trong phân phối & \so{phan.C0.trongphanphoi.n} & \so{phan.C0.trongphanphoi.v2.macro} & \so{phan.C0.trongphanphoi.v2.bin} & \so{phan.C0.trongphanphoi.v2.fpr} & \so{phan.C0.trongphanphoi.v2.bcf} & \so{phan.C0.trongphanphoi.llm.macro} \\
+ & chưa thấy & \so{phan.C0.chuathay.n} & \so{phan.C0.chuathay.v2.macro} & \so{phan.C0.chuathay.v2.bin} & \so{phan.C0.chuathay.v2.fpr} & \so{phan.C0.chuathay.v2.bcf} & \so{phan.C0.chuathay.llm.macro} \\
+\midrule
+\multirow{2}{*}{C1} & trong phân phối & \so{phan.C1.trongphanphoi.n} & \so{phan.C1.trongphanphoi.v2.macro} & \so{phan.C1.trongphanphoi.v2.bin} & \so{phan.C1.trongphanphoi.v2.fpr} & \so{phan.C1.trongphanphoi.v2.bcf} & \so{phan.C1.trongphanphoi.llm.macro} \\
+ & chưa thấy & \so{phan.C1.chuathay.n} & \so{phan.C1.chuathay.v2.macro} & \so{phan.C1.chuathay.v2.bin} & \so{phan.C1.chuathay.v2.fpr} & \so{phan.C1.chuathay.v2.bcf} & \so{phan.C1.chuathay.llm.macro} \\
+\midrule
+\multirow{2}{*}{C2} & trong phân phối & \so{phan.C2.trongphanphoi.n} & \so{phan.C2.trongphanphoi.v2.macro} & \so{phan.C2.trongphanphoi.v2.bin} & \so{phan.C2.trongphanphoi.v2.fpr} & \so{phan.C2.trongphanphoi.v2.bcf} & \so{phan.C2.trongphanphoi.llm.macro} \\
+ & chưa thấy & \so{phan.C2.chuathay.n} & \so{phan.C2.chuathay.v2.macro} & \so{phan.C2.chuathay.v2.bin} & \so{phan.C2.chuathay.v2.fpr} & \so{phan.C2.chuathay.v2.bcf} & \so{phan.C2.chuathay.llm.macro} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Đây là chỗ v2 yếu nhất. Trên C0, Macro-F1 tụt từ \so{phan.C0.trongphanphoi.v2.macro} xuống
+\so{phan.C0.chuathay.v2.macro}, còn FPR tăng từ \so{phan.C0.trongphanphoi.v2.fpr} lên \so{phan.C0.chuathay.v2.fpr}.
+Mức tụt lặp lại ở C1 và C2. Binary-F1 giảm ít hơn nhiều (\so{phan.C0.trongphanphoi.v2.bin} xuống
+\so{phan.C0.chuathay.v2.bin}): phần lớn câu nguy hại vẫn bị bắt, nhưng tên tình huống hay bị gọi sai.
+
+Ba điểm giúp đọc đúng bảng này:
+\begin{itemize}
+  \item gpt-oss-120b cũng tụt mạnh ở phần chưa thấy (\so{phan.C0.trongphanphoi.llm.macro} $\to$
+        \so{phan.C0.chuathay.llm.macro}). Vậy đây là các kịch bản khó thật, không chỉ do v2 học thuộc train.
+  \item Lỗi chủ yếu là lẫn \nhan{DE_DOA}, \nhan{QUAY_ROI} với \nhan{AN_TOAN}. Lời dọa trả thù vì bị mách
+        thầy cô (DD6) hay hành vi kiểm soát người yêu (QR6) thường nói vòng, không có từ nặng. Ngược lại, tin bạn bè
+        khuyên nhau ``nói với cô'' lại bị báo nhầm là đe dọa.
+  \item Phần chưa thấy của C0 chỉ có \so{te.chuathay.xp} câu \nhan{XUC_PHAM}, nên Macro-F1 ở đây dao động mạnh theo
+        vài câu.
+\end{itemize}
+
+\subsection{Theo giọng vùng miền}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Kết quả theo giọng vùng trên C0, kèm FPR của v2 trên C1 và C2}
+\label{tab:p3-vung}
+\begin{tabular}{@{}l c c c c c c c c c@{}}
+\toprule
+ & & \multicolumn{3}{c}{v2 (C0)} & \multicolumn{3}{c}{gpt-oss-120b (C0)} & \multicolumn{2}{c}{FPR v2} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(l){9-10}
+Giọng & n & Macro & Bin-F1 & FPR & Macro & Bin-F1 & FPR & C1 & C2 \\
+\midrule
+Bắc & \so{C0.bac.v2.n} & \so{C0.bac.v2.macro} & \so{C0.bac.v2.bin} & \so{C0.bac.v2.fpr} & \so{C0.bac.llm.macro} & \so{C0.bac.llm.bin} & \so{C0.bac.llm.fpr} & \so{C1.bac.v2.fpr} & \so{C2.bac.v2.fpr} \\
+Trung & \so{C0.trung.v2.n} & \so{C0.trung.v2.macro} & \so{C0.trung.v2.bin} & \so{C0.trung.v2.fpr} & \so{C0.trung.llm.macro} & \so{C0.trung.llm.bin} & \so{C0.trung.llm.fpr} & \so{C1.trung.v2.fpr} & \so{C2.trung.v2.fpr} \\
+Nam & \so{C0.nam.v2.n} & \so{C0.nam.v2.macro} & \so{C0.nam.v2.bin} & \so{C0.nam.v2.fpr} & \so{C0.nam.llm.macro} & \so{C0.nam.llm.bin} & \so{C0.nam.llm.fpr} & \so{C1.nam.v2.fpr} & \so{C2.nam.v2.fpr} \\
+\midrule
+Chênh lệch & & \so{C0.v2.gap.macro} & \so{C0.v2.gap.bin} & \so{C0.v2.gap.fpr} & \so{C0.llm.gap.macro} & \so{C0.llm.gap.bin} & \so{C0.llm.gap.fpr} & \so{C1.v2.gap.fpr} & \so{C2.v2.gap.fpr} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Khả năng phát hiện nguy hại của v2 đều giữa ba giọng: Binary-F1 chỉ chênh \so{C0.v2.gap.bin} điểm, Macro-F1 chênh
+\so{C0.v2.gap.macro} điểm (gpt-oss-120b chênh \so{C0.llm.gap.macro}). Điểm chưa đều là báo nhầm: FPR vùng Nam
+(\so{C0.nam.v2.fpr}) cao hơn rõ vùng Trung (\so{C0.trung.v2.fpr}), và xu hướng này lặp lại ở C1, C2.
+Tuy vậy mỗi vùng chỉ có ít câu an toàn (Bắc \so{C0.bac.v2.at.n}, Trung \so{C0.trung.v2.at.n}, Nam
+\so{C0.nam.v2.at.n} câu ở C0), nên một câu sai đã đổi FPR vài điểm. Cần thêm câu an toàn giọng Nam trước khi kết luận
+chắc chắn.
+
+\subsection{Các lát cắt khác}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Một số lát cắt khác trên C0}
+\label{tab:p3-latcat}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Lát cắt & n & v2 Macro-F1 & v2 Bin-F1 & gpt-oss-120b Macro-F1 \\
+\midrule
+Hội thoại 1 dòng & \so{luot.C0.1dong.n} & \so{luot.C0.1dong.v2.macro} & \so{luot.C0.1dong.v2.bin} & \so{luot.C0.1dong.llm.macro} \\
+Hội thoại 2--8 dòng & \so{luot.C0.nhieudong.n} & \so{luot.C0.nhieudong.v2.macro} & \so{luot.C0.nhieudong.v2.bin} & \so{luot.C0.nhieudong.llm.macro} \\
+Câu nguy hại lộ liễu & \so{dolo.C0.lolieu.n} & \so{dolo.C0.lolieu.v2.macro} & \so{dolo.C0.lolieu.v2.bin} & \so{dolo.C0.lolieu.llm.macro} \\
+Câu nguy hại ẩn ý & \so{dolo.C0.any.n} & \so{dolo.C0.any.v2.macro} & \so{dolo.C0.any.v2.bin} & \so{dolo.C0.any.llm.macro} \\
+Kênh SMS & \so{kenh.C0.sms.n} & \so{kenh.C0.sms.v2.macro} & \so{kenh.C0.sms.v2.bin} & \so{kenh.C0.sms.llm.macro} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+v2 làm tốt hơn khi có ngữ cảnh: hội thoại nhiều dòng đạt Macro-F1 \so{luot.C0.nhieudong.v2.macro}, câu một dòng
+\so{luot.C0.1dong.v2.macro}. Câu ẩn ý khó hơn câu lộ liễu nhưng Binary-F1 vẫn giữ \so{dolo.C0.any.v2.bin}.
+Kênh SMS là chỗ v2 thua gpt-oss-120b (\so{kenh.C0.sms.v2.macro} so với \so{kenh.C0.sms.llm.macro}):
+tin SMS ngắn, ít ngữ cảnh, và nhiều tin thông báo thật (OTP, giao hàng) trông giống tin lừa đảo. Lát này nhỏ
+(\so{kenh.C0.sms.n} câu) nên chỉ là tín hiệu cần xem tiếp.
+
+\subsection{Ví dụ mô hình vẫn thất bại}
+
+Bảng~\ref{tab:p3-vidu} là bốn câu C0 v2 bỏ sót. Cả bốn đều thuộc kịch bản chưa thấy hoặc chiêu mới.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Bốn câu nguy hại v2 đoán là an toàn (mỗi dòng trong ô là một lượt nói)}
+\label{tab:p3-vidu}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.42\linewidth} >{\raggedright\arraybackslash}p{0.17\linewidth} Y@{}}
+\toprule
+Tin nhắn & Nhãn & Vì sao khó \\
+\midrule
+\so{vd.ghiam.text} &
+Đúng: \so{vd.ghiam.gold}\newline v2: \so{vd.ghiam.pred}\newline LLM: \so{vd.ghiam.llm} &
+Kịch bản \so{vd.ghiam.kichban} (dọa trả thù vì bị mách cô). Lời dọa nằm trong hàm ý ``nhớ đi đường đông người'', không có từ nặng nào. Cả LLM cũng bỏ sót. \\
+\midrule
+\so{vd.vay.text} &
+Đúng: \so{vd.vay.gold}\newline v2: \so{vd.vay.pred}\newline LLM: \so{vd.vay.llm} &
+Kịch bản \so{vd.vay.kichban} (vay online chỉ cần căn cước) không có trong train. Câu không đòi tiền ngay mà đòi giấy tờ, nên v2 không nhận ra. \\
+\midrule
+\so{vd.nham.text} &
+Đúng: \so{vd.nham.gold}\newline v2: \so{vd.nham.pred}\newline LLM: \so{vd.nham.llm} &
+Chiêu ``chuyển nhầm tiền'' do người viết tự nghĩ ra. Giọng lịch sự, giống nhờ vả bình thường. \\
+\midrule
+\so{vd.kiemsoat.text} &
+Đúng: \so{vd.kiemsoat.gold}\newline v2: \so{vd.kiemsoat.pred}\newline LLM: \so{vd.kiemsoat.llm} &
+Kịch bản \so{vd.kiemsoat.kichban} (kiểm soát người yêu). Không chửi, không dọa thẳng; cái hại nằm ở việc đòi quyền theo dõi. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\ghinho{\textbf{Tóm lại.} v2 chống né lọc tốt, kể cả với kiểu biến dạng chưa từng thấy, và đều giữa ba giọng vùng
+miền. Điểm yếu là \emph{tình huống} mới: khi ý đồ nằm ở hàm ý, hoặc khi chiêu lừa chưa có trong train, mô hình dễ đoán
+an toàn. Hướng sửa là bổ sung kịch bản (kiểm soát, dọa trả thù, vay online, chuyển nhầm tiền), thêm tin thật đã che
+thông tin, và thêm câu an toàn ``sinh đôi'' cho các tình huống khuyên báo thầy cô để giảm báo nhầm.}

@@ -1,0 +1,20 @@
+% Sinh tự động bằng `python -m src.v2.eval.xuat_so_lieu_bao_cao`. Không sửa tay.
+\begin{tikzpicture}
+\begin{axis}[ybar=2pt, bar width=13pt, width=\linewidth, height=6cm, ymin=0, ymax=100,
+  symbolic x coords={C0,C1,C2}, xtick=data, enlarge x limits=0.22, ylabel={Macro-F1 5 nhãn},
+  axis x line*=bottom, axis y line*=left, ymajorgrids, grid style={draw=black!12},
+  tick label style={font=\small}, label style={font=\small},
+  nodes near coords={\pgfmathprintnumber[fixed,fixed zerofill,precision=1,use comma]{\pgfplotspointmeta}},
+  every node near coord/.append style={font=\tiny, color=black!75}, legend cell align=left,
+  legend style={at={(0.5,1.03)}, anchor=south, legend columns=2, draw=none, font=\footnotesize,
+    /tikz/every even column/.append style={column sep=0.5cm}}]
+\addplot[fill=mauvhai, draw=white, area legend] coordinates {(C0,93.0) (C1,86.7) (C2,86.0)};
+\addlegendentry{v2, kịch bản đã có trong train}
+\addplot[fill=mauvhai!35, draw=mauvhai, area legend] coordinates {(C0,62.1) (C1,54.4) (C2,53.2)};
+\addlegendentry{v2, kịch bản chưa thấy}
+\addplot[fill=maullm, draw=white, area legend] coordinates {(C0,84.8) (C1,63.3) (C2,67.6)};
+\addlegendentry{gpt-oss-120b, kịch bản đã có trong train v2}
+\addplot[fill=maullm!35, draw=maullm, area legend] coordinates {(C0,53.0) (C1,39.0) (C2,45.5)};
+\addlegendentry{gpt-oss-120b, kịch bản chưa thấy}
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,316 @@
+% Phần 2: Mô hình v2, cách đánh giá, kết quả chung, Yêu cầu 1.
+% Mọi con số lấy qua \so{...} (so_lieu.tex, sinh tự động). Không gõ số tay.
+
+\section{Mô hình v2}
+\label{sec:p2-mo-hinh}
+
+\subsection{Vì sao chọn encoder thay cho mô hình sinh}
+
+Kế hoạch ban đầu là fine-tune một mô hình sinh nhỏ (Qwen3-1.7B, QLoRA) để viết ra JSON. Khi làm thật, nhóm huấn luyện
+song song 4 ứng viên trên cùng dữ liệu và cùng seed, rồi chọn trên tập dev (so sánh đầy đủ ở phần Yêu cầu 3). Ứng viên
+dựa trên LLM 0,6B (GuardMerge) thua encoder có ý nghĩa thống kê (kiểm định McNemar, $p = \so{dev.mc.guard}$) và chậm
+gấp hơn hai lần (\so{dev.guard.p50} ms so với \so{dev.mmbert.p50} ms mỗi câu trên GPU). Vì vậy v2 dùng encoder.
+
+\subsection{Cấu trúc}
+
+Mô hình chốt có tên nội bộ \textbf{SafeVi-DualORC-CRF}, xây trên \textbf{mmBERT-base} (encoder đa ngôn ngữ). Nó đọc
+\emph{cả đoạn hội thoại} một lần (tối đa \so{v2.maxtok} token), không chỉ dòng cuối, và có hai đầu ra:
+
+\begin{enumerate}
+  \item \textbf{Đầu phân loại:} trả xác suất cho 5 nhãn. Nhãn có xác suất cao nhất là kết quả.
+  \item \textbf{Đầu gắn thẻ:} gán cho từng token một thẻ B (bắt đầu cụm), I (trong cụm) hoặc O (ngoài cụm), dùng thêm
+        tầng CRF để các thẻ nối với nhau hợp lệ. Các đoạn B--I liền nhau là cụm bằng chứng.
+\end{enumerate}
+
+Vì cụm bằng chứng được \emph{cắt ra từ chính văn bản}, nó luôn khớp nguyên văn. Trên test C0, tỉ lệ cụm không có
+nguyên văn trong tin nhắn của v2 là \so{C0.v2.khongnguyenvan}; của gpt-oss-120b (LLM viết lại cụm bằng lời) là
+\so{C0.llm.khongnguyenvan}. Ngoài encoder, mô hình có thêm một nhánh CNN đọc từng byte của văn bản, nhằm nhận ra chữ
+bị thay bằng ký tự lạ mà bộ tách từ không quen. Hai đầu ra được ghép thành JSON \texttt{\{"nhan": ..., "bang\_chung":
+[...]\}} đúng định dạng đã nêu ở phần nhãn.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  hop/.style={draw=navy, rounded corners=2pt, fill=nenxanh, align=center, text width=2.5cm, minimum height=1.1cm},
+  tuychon/.style={hop, dashed, fill=nenxam},
+  mui/.style={-{Stealth[length=2mm]}, thick, navy}
+]
+  \node[hop] (vao) {Đoạn hội thoại\\(1--8 dòng)};
+  \node[tuychon, right=0.5cm of vao] (chuan) {Chuẩn hóa\\(tùy chọn)};
+  \node[hop, right=0.5cm of chuan, text width=2.7cm] (enc) {mmBERT-base\\+ CNN đọc byte};
+  \node[hop, right=0.7cm of enc, yshift=0.8cm, text width=3.0cm] (pl) {Đầu phân loại\\xác suất 5 nhãn};
+  \node[hop, right=0.7cm of enc, yshift=-0.8cm, text width=3.0cm] (gt) {Đầu gắn thẻ\\BIO + CRF $\to$ cụm};
+  \node[hop, below=0.9cm of enc, text width=5.6cm, xshift=1.9cm] (ra) {JSON: \texttt{nhan} + \texttt{bang\_chung}};
+  \draw[mui] (vao) -- (chuan);
+  \draw[mui] (chuan) -- (enc);
+  \draw[mui] (enc.east) -- ++(0.3,0) |- (pl.west);
+  \draw[mui] (enc.east) -- ++(0.3,0) |- (gt.west);
+  \draw[mui] (pl.east) -- ++(0.3,0) |- (ra.east);
+  \draw[mui] (gt.east) -- ++(0.3,0) |- (ra.east);
+\end{tikzpicture}
+\caption{Luồng xử lý của v2. Hai đầu ra dùng chung encoder nhưng có ngưỡng và cách chấm riêng.}
+\label{fig:p2-luong}
+\end{figure}
+
+\subsection{Huấn luyện}
+
+Tệp train lưu bản gốc C0. Khi huấn luyện, mỗi câu được biến dạng ngẫu nhiên ngay lúc đọc: bỏ dấu với xác suất
+\so{v2.accent}, biến dạng bề mặt thường gặp (kiểu C1 đã thấy) với xác suất \so{v2.surface}. Mô hình còn được phạt nếu dự
+đoán trên bản gốc và bản biến dạng khác nhau, và được huấn luyện đối kháng FGM như v1 (cộng nhiễu nhỏ vào embedding,
+$\varepsilon = \so{v2.fgm}$). Các kiểu điểm mù C2 và nhóm C1 giữ ngoài train \emph{không} được dùng ở bước này.
+Huấn luyện \so{v2.epoch} epoch, seed 42.
+
+\subsection{Chia dữ liệu nội bộ và đóng băng ngưỡng}
+
+Tập train được chia thành ba phần: \textbf{fit} (\so{dev.chia.fit} mẫu) để học, \textbf{dev} (\so{dev.chia.dev} mẫu) để
+chọn mô hình và checkpoint, \textbf{cal} (\so{dev.chia.cal} mẫu) để hiệu chỉnh. Dev và cal tách từ train nên nhãn của
+chúng cũng do LLM gán; không câu test nào được dùng ở đây. Trên cal, nhóm dò và khóa ba tham số:
+
+\begin{itemize}
+  \item nhiệt độ $T = \so{v2.T}$ để xác suất phân loại sát với tỉ lệ đúng thật (chia logit cho $T$ trước softmax);
+  \item ngưỡng bằng chứng \so{v2.nguongbc}: token có xác suất thuộc cụm từ ngưỡng này trở lên mới được tô;
+  \item ngưỡng riêng \so{v2.nguongmottu} cho cụm chỉ có một từ, cao hơn để tránh tô lẻ tẻ.
+\end{itemize}
+
+Cả ba được ghi vào \tep{calibration.json} và đóng băng \emph{trước} khi chạy test. Sau khi thấy điểm test, nhóm không
+chỉnh lại gì.
+
+% ---------------------------------------------------------------------------
+\section{Cách đánh giá và kết quả chung}
+\label{sec:p2-danh-gia}
+
+\subsection{Ba hệ được so sánh}
+
+\begin{itemize}
+  \item \textbf{v1:} SafeViChi vòng loại (ViHateT5, HATE/CLEAN). Chỉ có nhãn nhị phân, không có bằng chứng, nên chỉ chấm
+        được phần nguy hại/an toàn. HATE được tính là ``nguy hại'', CLEAN là \nhan{AN_TOAN}.
+  \item \textbf{gpt-oss-120b qua API:} LLM lớn, zero-shot. Prompt chính là hướng dẫn gán nhãn của nhóm (định nghĩa 5 nhãn,
+        thứ tự quyết định, ví dụ, quy tắc bằng chứng). Mức suy luận \texttt{\so{api.reasoning}}.
+  \item \textbf{v2:} mô hình ở Mục~\ref{sec:p2-mo-hinh}, không bật chuẩn hóa đầu vào.
+\end{itemize}
+
+Cả ba chạy trên cùng bộ test: C0 (\so{C0.v2.n} đoạn gốc do người viết), C1 (\so{C1.v2.n} bản biến dạng thường gặp như
+bỏ dấu, teencode, gõ sai) và C2 (\so{C2.v2.n} bản biến dạng ``điểm mù'' chưa từng xuất hiện khi train v2).
+
+\subsection{Độ đo}
+
+\begin{itemize}
+  \item \textbf{Macro-F1:} trung bình F1 của 5 nhãn, mỗi nhãn nặng như nhau. Đo khả năng gọi \emph{đúng tên} tình huống.
+  \item \textbf{Binary-F1:} gộp 4 nhãn nguy hại thành một, đo khả năng phân biệt nguy hại với an toàn.
+  \item \textbf{FPR:} tỉ lệ câu \nhan{AN_TOAN} bị báo nguy hại (báo nhầm). Càng thấp càng tốt.
+  \item \textbf{BC P/R/F1 theo ý:} chấm bằng chứng. Mỗi cụm người gán là một ``ý''; precision là phần cụm mô hình tô
+        trúng ý đúng, recall là phần ý đúng được tô ra.
+\end{itemize}
+
+Trong toàn báo cáo, F1, precision và recall được nhân 100 (ví dụ 86,5); các tỉ lệ ghi kèm dấu \%. Khoảng tin cậy 95\%
+tính bằng bootstrap 1.000 lần, seed 42.
+
+\subsection{Kết quả}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Kết quả chính trên bộ test. ``--'': hệ không có đầu ra tương ứng.}
+\label{tab:p2-chinh}
+\begin{tabular}{llccccc}
+\toprule
+Tập & Hệ & Macro-F1 & KTC 95\% Macro-F1 & Binary-F1 & FPR & BC F1 theo ý \\
+\midrule
+\multirow{3}{*}{C0} & v1 & -- & -- & \so{C0.v1.bin} & \so{C0.v1.fpr} & -- \\
+ & gpt-oss-120b & \so{C0.llm.macro} & \so{C0.llm.macro.lo} -- \so{C0.llm.macro.hi} & \so{C0.llm.bin} & \so{C0.llm.fpr} & \so{C0.llm.bcf} \\
+ & \textbf{v2} & \textbf{\so{C0.v2.macro}} & \so{C0.v2.macro.lo} -- \so{C0.v2.macro.hi} & \textbf{\so{C0.v2.bin}} & \so{C0.v2.fpr} & \textbf{\so{C0.v2.bcf}} \\
+\midrule
+\multirow{3}{*}{C1} & v1 & -- & -- & \so{C1.v1.bin} & \so{C1.v1.fpr} & -- \\
+ & gpt-oss-120b & \so{C1.llm.macro} & \so{C1.llm.macro.lo} -- \so{C1.llm.macro.hi} & \so{C1.llm.bin} & \so{C1.llm.fpr} & \so{C1.llm.bcf} \\
+ & \textbf{v2} & \textbf{\so{C1.v2.macro}} & \so{C1.v2.macro.lo} -- \so{C1.v2.macro.hi} & \textbf{\so{C1.v2.bin}} & \so{C1.v2.fpr} & \textbf{\so{C1.v2.bcf}} \\
+\midrule
+\multirow{3}{*}{C2} & v1 & -- & -- & \so{C2.v1.bin} & \so{C2.v1.fpr} & -- \\
+ & gpt-oss-120b & \so{C2.llm.macro} & \so{C2.llm.macro.lo} -- \so{C2.llm.macro.hi} & \so{C2.llm.bin} & \so{C2.llm.fpr} & \so{C2.llm.bcf} \\
+ & \textbf{v2} & \textbf{\so{C2.v2.macro}} & \so{C2.v2.macro.lo} -- \so{C2.v2.macro.hi} & \textbf{\so{C2.v2.bin}} & \so{C2.v2.fpr} & \textbf{\so{C2.v2.bcf}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\input{hinh/binary_ba_he.tex}
+\caption{Binary-F1 (nguy hại/an toàn) của ba hệ trên C0, C1, C2. Số đầy đủ ở Bảng~\ref{tab:p2-chinh}.}
+\label{fig:p2-binary}
+\end{figure}
+
+\textbf{Nhận xét.}
+\begin{itemize}
+  \item \textbf{v2 tốt nhất trên cả ba tập.} Khoảng tin cậy 95\% của Macro-F1 giữa v2 và gpt-oss-120b không chồng nhau ở
+        cả C0, C1 và C2, nên khoảng cách không phải do may rủi của mẫu.
+  \item \textbf{v2 giữ điểm khi chữ bị biến dạng.} Binary-F1 của v2 đi từ \so{C0.v2.bin} (C0) xuống \so{C2.v2.bin} (C2);
+        của gpt-oss-120b từ \so{C0.llm.bin} xuống \so{C2.llm.bin}.
+  \item \textbf{v1 gần như chỉ bắt được xúc phạm.} Ở C0, v1 báo HATE cho \so{C0.v1.xp.r} câu \nhan{XUC_PHAM}, nhưng chỉ
+        \so{C0.v1.dd.r} câu \nhan{DE_DOA}, \so{C0.v1.qr.r} câu \nhan{QUAY_ROI} và \so{C0.v1.ld.r} câu \nhan{LUA_DAO}.
+        Precision \so{C0.v1.p} của v1 chỉ phản ánh việc nó hiếm khi báo. Đây là lý do phải đổi bộ nhãn.
+  \item \textbf{Đổi lại, v2 báo nhầm nhiều hơn.} Ở C0, FPR của v2 là \so{C0.v2.fpr}, của gpt-oss-120b là
+        \so{C0.llm.fpr}. gpt-oss-120b thận trọng hơn: precision nguy hại \so{C0.llm.p} nhưng recall chỉ \so{C0.llm.r}
+        (v2: \so{C0.v2.p} và \so{C0.v2.r}).
+\end{itemize}
+
+% ---------------------------------------------------------------------------
+\section{Yêu cầu 1: giảm kiểm duyệt sai và giải thích sai}
+\label{sec:p2-yc1}
+
+\subsection{Tách kết quả phân loại khỏi bằng chứng}
+
+Ở v1, bằng chứng tìm bằng occlusion \emph{sau} khi đã phân loại: che từng cụm rồi xem điểm giảm bao nhiêu. Cách này phải
+chạy lại mô hình nhiều lần và chất lượng bằng chứng gắn chặt với bộ phân loại. v2 tách hẳn hai việc:
+
+\begin{itemize}
+  \item \textbf{Hai đầu ra riêng}, mỗi đầu có hàm mất mát riêng khi train.
+  \item \textbf{Hai ngưỡng riêng:} nhiệt độ $T$ cho xác suất nhãn; ngưỡng \so{v2.nguongbc} và \so{v2.nguongmottu} cho
+        cụm bằng chứng. Đổi ngưỡng bằng chứng không làm đổi nhãn.
+  \item \textbf{Hai bộ độ đo riêng:} nhãn chấm bằng P/R/F1 theo nhãn; bằng chứng chấm bằng P/R/F1 theo ý.
+  \item \textbf{Vai trò khác nhau trong ứng dụng:} nhãn quyết định ứng dụng làm gì (làm mờ, cảnh báo, gợi ý chặn); bằng
+        chứng chỉ để người dùng hiểu vì sao, nên chỉ có nghĩa khi nhãn là nguy hại.
+\end{itemize}
+
+\subsection{Kết quả theo từng nhãn}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Kết quả theo nhãn trên C0. n: số câu có nhãn đúng là nhãn đó.}
+\label{tab:p2-theo-nhan}
+\begin{tabular}{lcccccccc}
+\toprule
+ & & \multicolumn{4}{c}{v2} & \multicolumn{2}{c}{gpt-oss-120b} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-8}
+Nhãn & n & P & R & F1 & BC F1 & F1 & BC F1 \\
+\midrule
+\nhan{AN_TOAN}  & \so{C0.v2.at.n} & \so{C0.v2.at.p} & \so{C0.v2.at.r} & \so{C0.v2.at.f} & -- & \so{C0.llm.at.f} & -- \\
+\nhan{XUC_PHAM} & \so{C0.v2.xp.n} & \so{C0.v2.xp.p} & \so{C0.v2.xp.r} & \so{C0.v2.xp.f} & \so{C0.v2.xp.bcf} & \so{C0.llm.xp.f} & \so{C0.llm.xp.bcf} \\
+\nhan{QUAY_ROI} & \so{C0.v2.qr.n} & \so{C0.v2.qr.p} & \so{C0.v2.qr.r} & \so{C0.v2.qr.f} & \so{C0.v2.qr.bcf} & \so{C0.llm.qr.f} & \so{C0.llm.qr.bcf} \\
+\nhan{DE_DOA}   & \so{C0.v2.dd.n} & \so{C0.v2.dd.p} & \so{C0.v2.dd.r} & \so{C0.v2.dd.f} & \so{C0.v2.dd.bcf} & \so{C0.llm.dd.f} & \so{C0.llm.dd.bcf} \\
+\nhan{LUA_DAO}  & \so{C0.v2.ld.n} & \so{C0.v2.ld.p} & \so{C0.v2.ld.r} & \so{C0.v2.ld.f} & \so{C0.v2.ld.bcf} & \so{C0.llm.ld.f} & \so{C0.llm.ld.bcf} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\nhan{LUA_DAO} và \nhan{XUC_PHAM} là hai nhãn tốt nhất. \nhan{QUAY_ROI} yếu nhất, chủ yếu do recall thấp: mô hình bỏ sót
+khá nhiều câu quấy rối. So với gpt-oss-120b, v2 hơn rõ ở \nhan{XUC_PHAM}, \nhan{QUAY_ROI}, \nhan{DE_DOA} và ngang ở
+\nhan{LUA_DAO}; bằng chứng của v2 tốt hơn ở cả bốn nhãn nguy hại.
+
+\begin{figure}[H]
+\centering
+\input{hinh/ma_tran_nham.tex}
+\caption{Ma trận nhầm lẫn của v2 trên C0. Số trong ô là số câu; màu đậm theo tỉ lệ trong hàng. Ngoài đường chéo,
+lỗi dồn vào cột \nhan{AN_TOAN} (bỏ sót) và cột \nhan{DE_DOA} (báo nhầm, lẫn quấy rối với đe dọa).}
+\label{fig:p2-nham-lan}
+\end{figure}
+
+Ngoài nhầm với \nhan{AN_TOAN}, lỗi lớn nhất là lẫn \nhan{QUAY_ROI} thành \nhan{DE_DOA} (\so{C0.v2.cm.qr.dd} câu).
+Hai nhãn này giáp nhau thật: câu bám riết thường kèm một lời ép (``không gửi ảnh thì\dots''), nên ranh giới giữa
+``quấy rối'' và ``dọa'' khó cả với người gán.
+
+\subsection{Báo nhầm câu an toàn}
+
+Ở C0, \so{C0.v2.fp.tong} trên \so{C0.at.n} câu \nhan{AN_TOAN} bị báo nguy hại: \so{C0.v2.cm.at.dd} câu thành
+\nhan{DE_DOA}, \so{C0.v2.cm.at.ld} câu thành \nhan{LUA_DAO}, \so{C0.v2.cm.at.qr} câu thành \nhan{QUAY_ROI}. Xem các câu
+này, mô hình thường bám vào \emph{từ khóa của tình huống nguy hại} mà bỏ qua ý của cả câu: chữ ``OTP'', ``phí ship'',
+``báo cô'', ``chặn đường''. Bảng~\ref{tab:p2-bao-nham} là hai ví dụ.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Hai câu an toàn bị v2 báo nhầm (C0).}
+\label{tab:p2-bao-nham}
+\begin{tabularx}{\linewidth}{>{\hsize=1.45\hsize}Y >{\hsize=0.55\hsize}Y}
+\toprule
+Tin nhắn & Kết quả \\
+\midrule
+\so{vd.otp.text} &
+Đúng: \so{vd.otp.gold}\newline v2: \so{vd.otp.pred} (\so{vd.otp.tincay})\newline gpt-oss-120b: \so{vd.otp.llm}\newline v2 tô: \so{vd.otp.bc} \\
+\midrule
+\so{vd.baoco.text} &
+Đúng: \so{vd.baoco.gold}\newline v2: \so{vd.baoco.pred} (\so{vd.baoco.tincay})\newline gpt-oss-120b: \so{vd.baoco.llm}\newline v2 tô: \so{vd.baoco.bc} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Câu đầu là tin OTP thật: nó không đòi gì, chỉ bảo nhập mã vào ứng dụng. Hướng dẫn gán nhãn ghi rõ loại tin này là
+\nhan{AN_TOAN}, nhưng trong train, chữ ``OTP'' gần như chỉ xuất hiện ở đoạn lừa đảo. Câu sau là bạn bè khuyên nhau
+\emph{báo cô giáo}, tức là cách xử lý đúng khi bị bắt nạt; mô hình lại thấy ``gửi cho cô'', ``gặp nhóm kia'' và đoán
+dọa. Cả hai đều bị báo với độ tin cậy cao, nên chỉ hạ ngưỡng chung không đủ sửa.
+
+\textbf{Tiếng lóng.} Câu tiếng lóng dễ bị báo nhầm vì chứa từ tục mà không nhắm ai. Trên dev, ở lát câu có thẻ tiếng
+lóng (n = \so{dev.tieng.n}), mô hình chốt có FPR \so{dev.mmbert.tieng.fpr} ở lát này, thấp nhất trong 4 ứng viên (ViSoBERT
+\so{dev.visobert.tieng.fpr}, BamiBERT \so{dev.bamibert.tieng.fpr}, GuardMerge \so{dev.guard.tieng.fpr}). Đây là một lý do
+chọn mmBERT-base, nhưng mức này vẫn cao.
+
+\subsection{Bỏ sót câu nguy hại}
+
+Ở C0, \so{C0.v2.fn.tong} câu nguy hại bị đoán \nhan{AN_TOAN}: \so{C0.v2.cm.dd.at} câu \nhan{DE_DOA}, \so{C0.v2.cm.qr.at}
+câu \nhan{QUAY_ROI}, \so{C0.v2.cm.ld.at} câu \nhan{LUA_DAO} và \so{C0.v2.cm.xp.at} câu \nhan{XUC_PHAM}. Hơn nửa là câu
+\emph{ẩn ý}: lời dọa nói tránh (``mai đi đường đông người nhé''), kiểm soát người yêu bằng giọng quan tâm. Phần lớn
+thuộc kịch bản chưa có trong train; ví dụ cụ thể ở phần Yêu cầu 2.
+
+\subsection{Hiệu chỉnh ngưỡng: đã làm gì, chưa làm gì}
+
+\begin{itemize}
+  \item \textbf{Đã làm:} dò nhiệt độ $T$ và hai ngưỡng bằng chứng trên tập cal, khóa trước khi chạy test
+        (Mục~\ref{sec:p2-mo-hinh}).
+  \item \textbf{Chưa làm:} dò ngưỡng riêng cho từng nhãn (ví dụ đòi xác suất \nhan{DE_DOA} cao hơn mới báo). Đây là cách
+        trực tiếp nhất để hạ FPR, và là việc tiếp theo. Cần một tập validation do người gán; dò trên cal (nhãn LLM) có
+        nguy cơ khớp theo lỗi của LLM.
+\end{itemize}
+
+Nói thẳng: FPR của v2 ở C0 (\so{C0.v2.fpr}) cao hơn gpt-oss-120b (\so{C0.llm.fpr}). Theo vùng, FPR cao nhất ở giọng Nam
+(\so{C0.nam.v2.fpr}), so với Bắc \so{C0.bac.v2.fpr} và Trung \so{C0.trung.v2.fpr}. Mỗi vùng chỉ có khoảng
+\so{C0.nam.v2.at.n}--\so{C0.bac.v2.at.n} câu an toàn, nên một câu sai làm FPR của vùng đổi vài điểm phần trăm; chênh lệch
+vùng cần đọc kèm cỡ mẫu này.
+
+\subsection{Chất lượng bằng chứng}
+
+\begin{figure}[H]
+\centering
+\input{hinh/bang_chung_bien_dang.tex}
+\caption{F1 bằng chứng (theo ý) khi tin nhắn bị biến dạng dần. gpt-oss-120b vẫn đoán được nhãn nhưng không còn chỉ
+đúng chỗ; v2 cắt cụm ngay trên văn bản gốc nên giữ được.}
+\label{fig:p2-bc-bien-dang}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bằng chứng tô sáng của v2 và gpt-oss-120b. n BC: số câu nguy hại được chấm bằng chứng. Tô oan: câu
+\nhan{AN_TOAN} bị tô ít nhất một cụm. Rỗng: câu nguy hại được báo đúng là nguy hại nhưng không có cụm nào. Sai chữ:
+cụm không có nguyên văn trong tin nhắn.}
+\label{tab:p2-bang-chung}
+\footnotesize
+\begin{tabular}{llccccccc}
+\toprule
+Tập & Hệ & n BC & BC P & BC R & BC F1 & Tô oan & Rỗng & Sai chữ \\
+\midrule
+\multirow{2}{*}{C0} & gpt-oss-120b & \so{C0.llm.nbc} & \so{C0.llm.bcp} & \so{C0.llm.bcr} & \so{C0.llm.bcf} & \so{C0.llm.toan} & \so{C0.llm.rong} & \so{C0.llm.khongnguyenvan} \\
+ & v2 & \so{C0.v2.nbc} & \so{C0.v2.bcp} & \so{C0.v2.bcr} & \so{C0.v2.bcf} & \so{C0.v2.toan} & \so{C0.v2.rong} & \so{C0.v2.khongnguyenvan} \\
+\midrule
+\multirow{2}{*}{C1} & gpt-oss-120b & \so{C1.llm.nbc} & \so{C1.llm.bcp} & \so{C1.llm.bcr} & \so{C1.llm.bcf} & \so{C1.llm.toan} & \so{C1.llm.rong} & \so{C1.llm.khongnguyenvan} \\
+ & v2 & \so{C1.v2.nbc} & \so{C1.v2.bcp} & \so{C1.v2.bcr} & \so{C1.v2.bcf} & \so{C1.v2.toan} & \so{C1.v2.rong} & \so{C1.v2.khongnguyenvan} \\
+\midrule
+\multirow{2}{*}{C2} & gpt-oss-120b & \so{C2.llm.nbc} & \so{C2.llm.bcp} & \so{C2.llm.bcr} & \so{C2.llm.bcf} & \so{C2.llm.toan} & \so{C2.llm.rong} & \so{C2.llm.khongnguyenvan} \\
+ & v2 & \so{C2.v2.nbc} & \so{C2.v2.bcp} & \so{C2.v2.bcr} & \so{C2.v2.bcf} & \so{C2.v2.toan} & \so{C2.v2.rong} & \so{C2.v2.khongnguyenvan} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item Trên C0, bằng chứng của v2 vừa đúng hơn vừa đủ hơn gpt-oss-120b: P/R/F1 theo ý \so{C0.v2.bcp}/\so{C0.v2.bcr}/%
+        \so{C0.v2.bcf} so với \so{C0.llm.bcp}/\so{C0.llm.bcr}/\so{C0.llm.bcf}.
+  \item Khi chữ bị biến dạng, gpt-oss-120b gần như không trả được bằng chứng dùng được: ở C2, BC F1 chỉ còn
+        \so{C2.llm.bcf} và \so{C2.llm.khongnguyenvan} số cụm không có nguyên văn trong tin. Lý do: LLM đọc hiểu được chữ
+        lạ nhưng khi chép lại thì ``sửa'' chúng thành chữ thường, nên cụm không còn khớp tin gốc và không tô được.
+        v2 cắt cụm từ chính văn bản nên vẫn giữ \so{C2.v2.bcf}.
+  \item Điểm yếu của v2: \so{C0.v2.toan} câu an toàn bị tô oan (cao hơn \so{C0.llm.toan} của gpt-oss-120b). Con số này
+        đi theo FPR: hễ câu an toàn bị báo nguy hại thì gần như luôn có cụm được tô.
+\end{itemize}
+
+\ghinho{\textbf{Cách chấm bằng chứng.} Điểm bằng chứng chỉ tính trên câu nguy hại mà hệ đã báo là nguy hại; câu nguy hại
+bị đoán \nhan{AN_TOAN} đã bị phạt ở phần phân loại. Vì v2 có recall cao hơn, nó được chấm bằng chứng trên nhiều câu hơn
+(C0: \so{C0.v2.nbc} so với \so{C0.llm.nbc} câu của gpt-oss-120b), tức là trên cả những câu khó mà LLM bỏ qua.}

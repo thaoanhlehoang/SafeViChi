@@ -1,0 +1,233 @@
+% Phần 4: Yêu cầu 3 (so sánh phương pháp, chi phí), hạn chế, phụ lục lệnh tái hiện.
+% Mọi con số lấy qua \so{...} từ so_lieu.tex.
+
+\section{Yêu cầu 3: so sánh phương pháp và chi phí}
+\label{sec:yc3}
+
+Phần này trả lời ba câu hỏi: vì sao chọn mô hình hiện tại, từng mô-đun đóng góp bao nhiêu, và chạy hệ thống tốn bao nhiêu.
+So sánh với v1 và với LLM lớn qua API về chất lượng đã nằm ở các mục trước; ở đây tập trung vào lựa chọn mô hình và chi phí.
+
+\subsection{Chọn mô hình: bốn ứng viên trên tập dev}
+\label{sec:yc3-chon}
+
+Nhóm huấn luyện song song bốn ứng viên trên cùng dữ liệu, cùng cách chia (\so{dev.chia.fit} mẫu train,
+\so{dev.chia.dev} mẫu dev, \so{dev.chia.cal} mẫu hiệu chỉnh), cùng seed 42 và cùng tiêu chí chọn checkpoint.
+Ba ứng viên dùng chung kiến trúc DualORC-CRF (một đầu ra phân loại, một đầu ra gắn thẻ bằng chứng), chỉ khác bộ mã hóa nền:
+mmBERT-base (đa ngôn ngữ), BamiBERT và ViSoBERT (tiếng Việt).
+Ứng viên thứ tư, GuardMerge, dựa trên một mô hình ngôn ngữ khoảng 0,6 tỉ tham số, tinh chỉnh bằng LoRA.
+Toàn bộ việc chọn mô hình làm trên dev, trước khi mở tập test.
+
+\begin{figure}[H]
+\centering
+\input{hinh/ung_vien_dev.tex}
+\caption{Bốn ứng viên trên dev: Macro-F1 theo độ trễ, kèm dung lượng trọng số. Ba bộ mã hóa DualORC-CRF hòa nhau về
+chất lượng và đều nhanh hơn GuardMerge rõ rệt.}
+\label{fig:p4-ung-vien}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bốn ứng viên trên tập dev. F1 nhân 100. ``Tô oan'': tỉ lệ câu an toàn bị tô bằng chứng.
+``Chênh vùng'': Macro-F1 vùng cao nhất trừ vùng thấp nhất. Độ trễ đo trên GPU \so{v2.gpu}, batch 1.}
+\label{tab:p4-ung-vien}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+Chỉ số & mmBERT-base & BamiBERT & ViSoBERT & GuardMerge \\
+\midrule
+Macro-F1 (5 nhãn)            & \so{dev.mmbert.macro}   & \so{dev.bamibert.macro}   & \so{dev.visobert.macro}   & \so{dev.guard.macro} \\
+Binary-F1 (nguy hại/an toàn) & \so{dev.mmbert.bin}     & \so{dev.bamibert.bin}     & \so{dev.visobert.bin}     & \so{dev.guard.bin} \\
+FPR câu an toàn              & \so{dev.mmbert.fpr}     & \so{dev.bamibert.fpr}     & \so{dev.visobert.fpr}     & \so{dev.guard.fpr} \\
+Bằng chứng: F1 theo ý        & \so{dev.mmbert.bcf}     & \so{dev.bamibert.bcf}     & \so{dev.visobert.bcf}     & \so{dev.guard.bcf} \\
+Tô oan câu an toàn           & \so{dev.mmbert.toan}    & \so{dev.bamibert.toan}    & \so{dev.visobert.toan}    & \so{dev.guard.toan} \\
+Chênh vùng (Macro-F1)        & \so{dev.mmbert.gap}     & \so{dev.bamibert.gap}     & \so{dev.visobert.gap}     & \so{dev.guard.gap} \\
+Macro-F1 câu tiếng lóng (n=\so{dev.tieng.n}) & \so{dev.mmbert.tieng} & \so{dev.bamibert.tieng} & \so{dev.visobert.tieng} & \so{dev.guard.tieng} \\
+\midrule
+Trọng số FP32 (MiB)          & \so{dev.mmbert.trongso} & \so{dev.bamibert.trongso} & \so{dev.visobert.trongso} & \so{dev.guard.trongso} \\
+Độ trễ p50 (ms)              & \so{dev.mmbert.p50}     & \so{dev.bamibert.p50}     & \so{dev.visobert.p50}     & \so{dev.guard.p50} \\
+Thời gian train (phút)       & \so{dev.mmbert.trainphut} & \so{dev.bamibert.trainphut} & \so{dev.visobert.trainphut} & \so{dev.guard.trainphut} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kiểm định McNemar trên từng câu dev cho thấy:
+\begin{itemize}
+  \item mmBERT-base hơn GuardMerge có ý nghĩa thống kê ($p = \so{dev.mc.guard}$), lại nhanh hơn. Hướng dựa trên mô hình ngôn ngữ sinh bị loại.
+  \item Ba bộ mã hóa DualORC-CRF hòa nhau về thống kê (mmBERT-base so với ViSoBERT: $p = \so{dev.mc.visobert}$; so với BamiBERT: $p = \so{dev.mc.bamibert}$).
+\end{itemize}
+
+Khi điểm tổng hòa nhau, nhóm chọn theo những lát cắt gần mục tiêu của v2 nhất. mmBERT-base dẫn đầu ở hội thoại nhiều lượt,
+câu tiếng lóng (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT), tỉ lệ tô oan thấp nhất
+(\so{dev.mmbert.toan}) và chênh lệch giữa các vùng nhỏ nhất (\so{dev.mmbert.gap}).
+Lợi thế nhỏ của ViSoBERT nằm chủ yếu ở câu bình luận một dòng, gần với dữ liệu nó được huấn luyện trước, chứ không ở hội thoại.
+Cái giá của mmBERT-base là nặng hơn khoảng ba lần và chậm hơn khoảng hai lần so với hai bộ mã hóa tiếng Việt, nhưng vẫn dưới
+mức 2~GB mà đề bài đặt ra. BamiBERT là phương án dự phòng cho máy yếu.
+
+\subsection{Đóng góp của từng mô-đun (ablation)}
+\label{sec:yc3-ablation}
+
+Các phép thử dưới đây đo trên tập dev, bằng chính mô hình đã chọn.
+
+\paragraph{Đọc cả đoạn hội thoại.}
+Trên \so{ctx.n} đoạn nhiều dòng, mô hình đạt Macro-F1 \so{ctx.full} khi đọc cả đoạn, nhưng chỉ \so{ctx.last} khi chỉ đọc
+dòng cuối (chênh \so{ctx.gain} điểm). Nghĩa là ngữ cảnh các dòng trước thật sự được dùng: nhiều lời dọa, lời dụ dỗ chỉ rõ
+nghĩa khi biết hai bên đang nói chuyện gì.
+Một bộ đoán chỉ dựa vào độ dài đoạn đạt Macro-F1 \so{ctx.lenonly}, nên mô hình không ``ăn gian'' bằng cách đếm số dòng
+(đoạn LLM sinh thường dài hơn câu thật).
+
+\paragraph{Bộ chuẩn hóa đầu vào.}
+v1 dựa nhiều vào bộ chuẩn hóa 5 tầng. Ở v2, mô hình đã học trực tiếp trên văn bản biến dạng, nên nhóm đo lại xem chuẩn hóa
+còn giúp không (Bảng~\ref{tab:p4-chuan-hoa}).
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bật và tắt bộ chuẩn hóa trên các bộ thử của dev (Macro-F1, nhân 100). ``Mức tụt'': Macro-F1 trên bản biến dạng
+trừ bản gốc khi chưa chuẩn hóa.}
+\label{tab:p4-chuan-hoa}
+\begin{tabular}{lcccccc}
+\toprule
+Bộ thử & Đã thấy? & n & Bản gốc & Mức tụt & Tắt chuẩn hóa & Bật chuẩn hóa \\
+\midrule
+Câu sạch                 & --    & \so{cn.cleanc0.n}             & --                             & --                             & \so{cn.cleanc0.raw}             & \so{cn.cleanc0.norm} (\so{cn.cleanc0.gain}) \\
+Bỏ dấu                   & Có    & \so{cn.accentstrip.n}         & \so{cn.accentstrip.goc}        & \so{cn.accentstrip.tut}        & \so{cn.accentstrip.raw}         & \so{cn.accentstrip.norm} (\so{cn.accentstrip.gain}) \\
+C1 đã thấy               & Có    & \so{cn.c1indist.n}            & \so{cn.c1indist.goc}           & \so{cn.c1indist.tut}           & \so{cn.c1indist.raw}            & \so{cn.c1indist.norm} (\so{cn.c1indist.gain}) \\
+C1 giữ ngoài train       & Không & \so{cn.c1heldoutcontrolled.n} & \so{cn.c1heldoutcontrolled.goc} & \so{cn.c1heldoutcontrolled.tut} & \so{cn.c1heldoutcontrolled.raw} & \so{cn.c1heldoutcontrolled.norm} (\so{cn.c1heldoutcontrolled.gain}) \\
+Chữ đồng dạng & Không & \so{cn.blindspothomoglyph.n} & \so{cn.blindspothomoglyph.goc} & \so{cn.blindspothomoglyph.tut} & \so{cn.blindspothomoglyph.raw}  & \so{cn.blindspothomoglyph.norm} (\so{cn.blindspothomoglyph.gain}) \\
+Ký tự vô hình            & Không & \so{cn.blindspotzerowidth.n}  & \so{cn.blindspotzerowidth.goc} & \so{cn.blindspotzerowidth.tut} & \so{cn.blindspotzerowidth.raw}  & \so{cn.blindspotzerowidth.norm} (\so{cn.blindspotzerowidth.gain}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kết quả rõ ràng: chuẩn hóa chỉ giúp ở các biến dạng C1 đã biết (\so{cn.c1indist.gain} điểm), gần như không đổi gì ở kiểu
+chưa thấy, và làm hại nhẹ câu sạch (\so{cn.cleanc0.gain}) cùng câu bỏ dấu (\so{cn.accentstrip.gain}).
+Lý do: bộ chuẩn hóa đôi khi ``sửa'' sai một từ không dấu mà mô hình vốn đã đọc đúng.
+Vì vậy bản v2 mặc định \textbf{tắt} chuẩn hóa; có thể bật chọn lọc cho vài kiểu như chèn ký tự, kéo dài chữ.
+Đây là thay đổi so với v1: khả năng chống né lọc giờ nằm chủ yếu trong mô hình, không còn trong bộ luật.
+
+\paragraph{Bộ mã hóa nền.} Chính là Bảng~\ref{tab:p4-ung-vien}: cùng kiến trúc, đổi bộ mã hóa chỉ làm điểm tổng đổi trong
+khoảng hòa thống kê, nhưng làm thay đổi rõ ở câu tiếng lóng và ở chi phí.
+
+\paragraph{Chưa làm kịp.} Ba ablation trong kế hoạch chưa có kết quả:
+(1) mô hình sinh nhỏ (Qwen3-1.7B) chạy zero-shot, chưa tinh chỉnh;
+(2) lượng tử hóa 4-bit so với 16-bit;
+(3) tắt tăng cường dữ liệu trực tuyến khi train.
+Phép bật/tắt chuẩn hóa trên tập test cũng đã chạy nhưng tệp kết quả chưa được lưu vào repo, nên báo cáo không dùng số đó.
+
+\subsection{Chi phí vận hành}
+\label{sec:yc3-chi-phi}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Chi phí của ba hệ. ``--'': chưa đo hoặc không đo được.}
+\label{tab:p4-chi-phi}
+\begin{tabularx}{\linewidth}{lYYY}
+\toprule
+ & v1 (ViHateT5) & gpt-oss-120b qua API & v2 (mmBERT-base) \\
+\midrule
+Chạy ở đâu & Trình duyệt (ONNX) & Máy chủ bên ngoài & Thiết bị người dùng (mục tiêu) \\
+Dung lượng mô hình & \so{v1.onnx} MiB (ONNX FP32) & -- & \so{v2.trongso} MiB (FP32, chưa lượng tử hóa) \\
+Bộ nhớ khi chạy & -- & Không đo được từ phía client & Đỉnh \so{v2.dinh} MiB VRAM \\
+Độ trễ mỗi câu & -- & p50 \so{api.C0.p50} s, p95 \so{api.C0.p95} s (\so{api.songsong} yêu cầu song song) & p50 \so{v2.p50} ms, p95 \so{v2.p95} ms (GPU \so{v2.gpu}) \\
+Tiền & 0 & \so{api.C0.usd1000} USD / 1.000 câu & 0 \\
+Gửi tin nhắn ra ngoài & Không & \textbf{Có} & Không \\
+Chi phí train & (vòng loại) & Không train & \so{dev.mmbert.trainphut} phút, đỉnh \so{dev.mmbert.trainvram} MiB VRAM \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Một số điểm cần đọc kèm bảng:
+\begin{itemize}
+  \item \textbf{LLM qua API rẻ nhưng không hợp mục tiêu.} Chạy cả ba tập test chỉ tốn \so{api.tong.usd} USD, nhưng mỗi
+  tin nhắn phải gửi lên máy chủ bên ngoài và chờ vài giây. Điều này trái với cam kết của SafeViChi là tin nhắn không rời
+  khỏi máy. Năng lượng và RAM phía máy chủ cũng không đo được.
+  \item \textbf{v2 đủ nhỏ.} Trọng số \so{v2.trongso} MiB đã dưới mức 2~GB ngay ở dạng FP32. Lượng tử hóa INT8 sẽ còn nhỏ hơn
+  nhưng chưa đo nên chưa ghi số.
+  \item \textbf{Dữ liệu rẻ.} Toàn bộ việc gán lại nhãn, sinh và lọc đoạn hội thoại bằng LLM tốn \so{cp.tong.usd} USD
+  (Mục~\ref{sec:p1-dulieu}).
+\end{itemize}
+
+\ghinho{\textbf{Phần còn thiếu của yêu cầu 3.} Nhóm \textbf{chưa đo v2 trên laptop CPU, trong trình duyệt và chưa đo
+năng lượng}. Bản web v2 hiện vẫn dùng mô hình giả để làm giao diện; mô hình thật chưa được xuất sang ONNX. Số độ trễ ở trên
+đo trên GPU nên chưa đại diện cho máy người dùng. Kế hoạch đo: xuất ONNX và bản INT8, chạy bằng onnxruntime-web trong
+trình duyệt và onnxruntime trên laptop CPU, ghi độ trễ p50/p95 mỗi câu, RAM đỉnh, dung lượng tải về và so khớp nhãn với
+bản PyTorch trên toàn bộ tập test.}
+
+\subsection{Tái hiện kết quả}
+\label{sec:yc3-tai-hien}
+
+\begin{itemize}
+  \item Seed cố định 42 cho chia dữ liệu, huấn luyện và bootstrap.
+  \item Dữ liệu train/test khóa ở commit \texttt{\so{v2.datarev}}; tập test được kiểm tra không rò rỉ sang train.
+  \item Môi trường train: GPU \so{v2.gpu}, PyTorch \texttt{\so{v2.torch}}, Transformers \texttt{\so{v2.transformers}}.
+  \item Mỗi cấu hình có một thư mục trong \tep{results/v2/} gồm cấu hình, môi trường, ngưỡng đã đóng băng, dự đoán và chỉ số.
+  \item Chấm lại cả ba hệ trên C0/C1/C2 bằng một lệnh: \tep{python -m src.v2.eval.so_sanh_3_he}.
+  \item Mọi số trong báo cáo sinh lại bằng: \tep{python -m src.v2.eval.xuat_so_lieu_bao_cao}.
+\end{itemize}
+Hạn chế về tái hiện: mã huấn luyện DualORC-CRF chạy trên môi trường GPU riêng và chưa được đưa vào \tep{src/v2/train/};
+repo hiện chỉ giữ cấu hình đầy đủ (\tep{config.json}) và đầu ra của lượt train.
+
+\section{Hạn chế và việc tiếp theo}
+\label{sec:han-che}
+
+\paragraph{Hạn chế.}
+\begin{itemize}
+  \item \textbf{Nhãn train chủ yếu do LLM gán hoặc sinh.} Chưa có hệ số kappa giữa hai người gán: mẫu kiểm tra nhãn train
+  được gán bởi một mô hình thứ hai, không phải người. Tỉ lệ nhãn sai thật của train vì vậy chưa biết chính xác.
+  \item \textbf{Tập test nhỏ và do nhóm tự viết} (\so{te.tong} đoạn). Cách viết của vài người có thể khác tin nhắn thật;
+  các lát cắt nhỏ (theo vùng, kênh) dao động mạnh.
+  \item \textbf{Báo nhầm câu an toàn còn cao.} Ngưỡng hiện chỉ dò chung cho cả mô hình, chưa dò riêng từng nhãn.
+  \item \textbf{Kịch bản chưa thấy khi train vẫn là điểm yếu lớn nhất} (Mục~\ref{sec:yc2}).
+  \item \textbf{Chưa đo chi phí trên laptop CPU, trình duyệt và năng lượng} (Mục~\ref{sec:yc3-chi-phi}).
+  \item README trong \tep{results/v2/official_eval/} ghi số của lượt chấm trước khi sửa tập test; báo cáo này dùng lượt
+  chấm lại mới nhất.
+\end{itemize}
+
+\paragraph{Việc tiếp theo.}
+\begin{itemize}
+  \item Xuất mô hình sang ONNX và INT8, gắn vào bản web, đo trên laptop và trình duyệt.
+  \item Lập tập validation do người gán, dò ngưỡng riêng cho từng nhãn để giảm báo nhầm.
+  \item Thêm kịch bản mới và tin nhắn thật (đã che thông tin cá nhân), nhất là tin vay tiền, giả shipper, kiểm soát người yêu.
+  \item Cho hai người gán độc lập một mẫu train để đo kappa và tỉ lệ nhãn sai thật.
+\end{itemize}
+
+\appendix
+\section{Lệnh tái hiện}
+\label{sec:phu-luc-lenh}
+
+Chạy từ thư mục gốc của repo, sau \tep{pip install -r requirements-lock.txt}. Các bước gọi LLM cần khóa API trong biến
+môi trường và có cache; chạy lại sẽ đọc cache, không tốn thêm tiền.
+
+\paragraph{Dữ liệu.}
+{\footnotesize\begin{verbatim}
+python -m src.v2.data.download
+python -m src.v2.data.merge
+python -m src.v2.data.chon_gan_lai          # tách kho test, chọn câu cần gán lại
+python -m src.v2.labeling.prelabel --batch-size 20 --workers 8
+python -m src.v2.data.dong_thuan            # giữ câu nhãn LLM khớp người gán gốc
+python -m src.v2.labeling.generate --workers 8
+python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8
+python -m src.v2.labeling.chi_phi           # tổng hợp chi phí API
+python -m src.v2.data.split                 # ghép data/v2/train.jsonl
+python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv \
+    data/v2/raw/test_B.csv data/v2/raw/test_C.csv data/v2/raw/test_D.csv --xuat-test
+python -m src.v2.data.kiem_tra_ro_ri --test data/v2/test_day_du.jsonl \
+    --train data/v2/so_sanh.jsonl data/v2/interim/kho_test.jsonl
+python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
+    --nhom C1 --so-ban 2 --out data/v2/test_perturb_C1.jsonl
+python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
+    --nhom C2 --so-ban 2 --out data/v2/test_perturb_C2.jsonl
+python -m src.v2.data.tach_test_bien_dang
+\end{verbatim}}
+
+\paragraph{Chấm điểm và báo cáo.}
+{\footnotesize\begin{verbatim}
+python -m src.v2.eval.bao_cao_baseline      # v1 và gpt-oss-120b, chấm lại
+python -m src.v2.eval.so_sanh_3_he          # so sánh v1, LLM API, v2 trên C0/C1/C2
+python -m src.v2.eval.xuat_so_lieu_bao_cao  # sinh docs/v2/bao_cao/so_lieu.tex
+cd docs/v2/bao_cao
+pdflatex bao_cao_v2.tex
+pdflatex bao_cao_v2.tex                     # lần 2 để có mục lục
+\end{verbatim}}
