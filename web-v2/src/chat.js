@@ -1,47 +1,16 @@
 // Màn trò chuyện 3 cột: danh sách | khung chat | AI phân tích.
-// - Luồng phân tích 2 tầm nhìn (cửa sổ 1–8 lượt + tách riêng tin mới nhất chống pha loãng lượt gộp cho cả 2 phía).
+// - Luồng phân tích đa tầm nhìn (cửa sổ 1–8 lượt + ngữ cảnh gần + tin đơn có điều kiện + quét tin dài
+//   + trí nhớ cửa sổ 8 lượt) chạy ngầm qua src/engine/flow.js.
 // - Luồng nhận tin (Người kia): chỉ tô bằng chứng verbatim và hiện dải cảnh báo (chưa thực thi hành động bảo vệ).
 // - Mọi chữ người dùng gõ đều đi qua textContent / text node, không dùng innerHTML.
 
 import { LABELS, MAX_LINES } from './labels.js';
 import { SHIRTS, HAIR, SKIN } from './landing.js';
 import { stripInvisibles } from './engine/dualorc.js';
+import { buildTurnWindow, analyzeWindow } from './engine/flow.js';
 
 // Hội thoại mẫu để thử nghiệm trực tiếp với mô hình thật (không lấy từ tập dữ liệu).
 const CONVERSATIONS = [
-  {
-    id: 'toan12a', name: 'Nhóm học Toán 12A', group: true, sub: '5 thành viên',
-    messages: [
-      { from: 'them', author: 'Lan', text: 'Mai kiểm tra 15 phút chương 3 nha mọi người', time: '09:12' },
-      { from: 'them', author: 'Huy', text: 'ok, ai có đề cương k gửi mình vs', time: '09:14' },
-      { from: 'me', text: 'Để tối mình chụp gửi nhóm nhé', time: '09:20' },
-      { from: 'them', author: 'Lan', text: 'cảm ơn bà nhiều 😊', time: '09:21' },
-    ],
-  },
-  {
-    id: 'tuan', name: 'Tuấn (lớp bên)', sub: 'Hoạt động 5 phút trước',
-    messages: [
-      { from: 'them', text: 'chào e, a là Tuấn lớp 11A2', time: '20:15' },
-      { from: 'me', text: 'dạ chào anh', time: '20:20' },
-      { from: 'them', text: 'a đọc bài văn của e trên trang trường, hay ghê', time: '20:22' },
-      { from: 'me', text: 'dạ em cảm ơn anh ạ', time: '20:30' },
-      { from: 'them', text: 'hôm nào a mời e trà sữa nhé', time: '20:31' },
-      { from: 'them', text: 'e ơi tối nay rảnh k', time: '21:02' },
-      { from: 'me', text: 'em bận học rồi ạ', time: '21:05' },
-      { from: 'them', text: 'sao ko rep anh nhanh thế', time: '21:30' },
-      { from: 'them', text: 'gửi ảnh cho a xem đi, a k nói ai đâu', time: '21:31' },
-      { from: 'them', text: 'đi chơi với anh 1 hôm thôi mà', time: '21:40' },
-    ],
-  },
-  {
-    id: 'hoamai', name: 'Shop Hoa Mai', sub: 'Trang bán hàng',
-    messages: [
-      { from: 'them', text: 'Chúc mừng quý khách đã trúng thưởng điện thoại từ chương trình tri ân', time: '14:03' },
-      { from: 'them', text: 'Vui lòng bấm vào link http://hoamai-tri-an.example để nhận quà', time: '14:03' },
-      { from: 'me', text: 'thật ạ? em phải làm gì', time: '14:10' },
-      { from: 'them', text: 'Bạn đọc giúp shop mã OTP vừa gửi về điện thoại để xác nhận nhé', time: '14:11' },
-    ],
-  },
   {
     id: 'nguoila', name: 'Người lạ', sub: 'Không có trong danh bạ',
     messages: [
@@ -51,25 +20,81 @@ const CONVERSATIONS = [
     ],
   },
   {
+    id: 'tuan', name: 'Tuấn (lớp bên)', sub: 'Hoạt động 5 phút trước',
+    messages: [
+      { from: 'them', text: 'chào e, a là Tuấn lớp 11A2', time: '20:15' },
+      { from: 'me', text: 'dạ chào anh', time: '20:20' },
+      { from: 'them', text: 'a đọc bài văn của e trên trang trường, hay ghê', time: '20:22' },
+      { from: 'me', text: 'dạ em cảm ơn anh ạ', time: '20:30' },
+      { from: 'them', text: 'hôm nào rảnh a mời đi trà sữa nha', time: '20:31' },
+      { from: 'me', text: 'dạ em bận học ôn thi rồi ạ', time: '20:45' },
+      { from: 'them', text: 'sao seen mà ko rep anh nhanh thế', time: '21:30' },
+      { from: 'them', text: 'gửi tấm ảnh riêng cho a xem đi, a hứa k nói ai đâu', time: '21:31' },
+      { from: 'them', text: 'đi chơi riêng với anh 1 buổi tối thôi mà', time: '21:40' },
+    ],
+  },
+  {
+    id: 'giaohang', name: 'Giao Hàng Nhanh 24h', sub: 'Tài khoản lạ',
+    messages: [
+      { from: 'them', text: 'Chào bạn, đơn hàng tai nghe của bạn giao không thành công do sai địa chỉ', time: '14:02' },
+      { from: 'me', text: 'ủa mình có đặt đâu nhỉ, kiểm tra lại giúp mình', time: '14:05' },
+      { from: 'them', text: 'Hệ thống đang tự động trừ phí lưu kho, bạn bấm link http://hoan-don-24h.example nhập mã OTP để hủy đơn ngay trong 15 phút nhé', time: '14:06' },
+    ],
+  },
+  {
     id: 'minh', name: 'Minh', sub: 'Đang hoạt động',
     messages: [
-      { from: 'me', text: 'hôm nay t quên mang vở, cho t mượn chép bài nhé', time: '16:20' },
-      { from: 'them', text: 'lại quên à, đồ n.g.u', time: '16:24' },
-      { from: 'them', text: 'óc chó thật sự 🙄', time: '16:24' },
+      { from: 'me', text: 'Minh ơi phần slide nhóm mình làm xong chưa gửi t ghép bài với', time: '16:18' },
+      { from: 'them', text: 't bận rồi tự làm đi, có mỗi việc cỏn con cũng phải nhờ', time: '16:22' },
+      { from: 'me', text: 'nhưng phần này hôm qua nhóm chia cho cậu mà', time: '16:23' },
+      { from: 'them', text: 'lải nhải hoài, đúng đồ n.g.u học dốt còn lắm chuyện', time: '16:24' },
+      { from: 'them', text: 'óc ch0 ăn hại thật sự 🙄', time: '16:24' },
+    ],
+  },
+  {
+    id: 'trucnhat', name: 'Nhóm trực nhật 12A', group: true, sub: '6 thành viên',
+    messages: [
+      { from: 'them', author: 'Trang', text: 'Chiều nay đến phiên tổ 2 trực nhật nha mọi người', time: '11:30' },
+      { from: 'me', text: 'Ok tầm 5h tan học mình ở lại quét lớp nhé', time: '11:32' },
+      { from: 'them', author: 'Hùng', text: 'Để mình lau bảng với đóng cửa sổ cho', time: '11:33' },
+      { from: 'me', text: 'Còn đổ rác thì ai phụ một tay nhỉ', time: '11:34' },
+      { from: 'them', author: 'Lâm', text: 'mày là đồ ngu óc chó, lúc nào cũng trốn việc', time: '11:35' },
+      { from: 'me', text: 'Thôi mọi người bớt nóng, để mình làm luôn cho xong', time: '11:36' },
+      { from: 'them', author: 'Trang', text: 'Ừ mọi người chia nhau làm nhanh rồi về ăn cơm nha', time: '11:38' },
+      { from: 'me', text: 'Ok chiều gặp ở lớp nhé', time: '11:39' },
+    ],
+  },
+  {
+    id: 'leorank', name: 'Hội leo rank', group: true, sub: '4 thành viên',
+    messages: [
+      { from: 'them', author: 'Đức', text: 'tối nay vào làm ván liên quân không mấy đứa', time: '20:01' },
+      { from: 'me', text: 'ok vào đi, nay tao cầm rừng gánh team cho', time: '20:03' },
+      { from: 'them', author: 'Nam', text: 'thôi mày bắn gà vãi, pha nãy tao giết mày luôn giờ 😂', time: '20:05' },
+      { from: 'me', text: 'haha mạng lag thôi bro, trận sau t cân cả bản đồ', time: '20:06' },
     ],
   },
   {
     id: 'me', name: 'Mẹ', sub: 'Đang hoạt động',
     messages: [
-      { from: 'them', text: 'Con nhớ ăn sáng rồi hẵng đi học nhé', time: '06:40' },
-      { from: 'me', text: 'dạ con biết rồi ạ', time: '06:42' },
+      { from: 'me', text: 'Mẹ ơi hôm nay trên trường thầy cô mới nhắc vụ lừa đảo giả shipper kêu bấm link nhập mã OTP ấy', time: '18:10' },
+      { from: 'them', text: 'Ừ dạo này nhiều lắm, con nhớ tuyệt đối đừng bấm link lạ hay đọc mã OTP cho ai nhé', time: '18:12' },
+      { from: 'me', text: 'Dạ con biết rồi ạ, tối nay con về ăn cơm đúng giờ', time: '18:13' },
+    ],
+  },
+  {
+    id: 'toan12a', name: 'Nhóm học Toán 12A', group: true, sub: '5 thành viên',
+    messages: [
+      { from: 'them', author: 'Lan', text: 'Mai kiểm tra 15 phút chương 3 nha mọi người', time: '09:12' },
+      { from: 'them', author: 'Huy', text: 'ok, bài này khó chết đi được, ai có đề cương k gửi mình vs', time: '09:14' },
+      { from: 'me', text: 'Để tối mình chụp vở ghi chép gửi nhóm nhé', time: '09:20' },
+      { from: 'them', author: 'Lan', text: 'cảm ơn bà nhiều 😊', time: '09:21' },
     ],
   },
 ];
 
 // Mốc thời gian để xếp danh sách chat: tin mới nhất lên đầu.
 // Hội thoại mẫu rải ở mấy ngày trước (giờ theo tin cuối); tin gửi trong buổi demo mang giờ thật.
-const SEED_DAYS_AGO = { nguoila: 1, tuan: 1, minh: 2, hoamai: 3, toan12a: 4, me: 5 };
+const SEED_DAYS_AGO = { nguoila: 1, tuan: 1, giaohang: 1, minh: 2, trucnhat: 2, leorank: 3, me: 4, toan12a: 5 };
 for (const conv of CONVERSATIONS) {
   const d = new Date();
   d.setDate(d.getDate() - (SEED_DAYS_AGO[conv.id] ?? 1));
@@ -103,7 +128,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   let current = CONVERSATIONS[0];
   let view = null; // { conv, msg } tin đang xem ở cột AI
   let sender = 'me';
-  let draft = null; // { conv, text, from, ctxAnalysis, warnAnalysis, source: 'context'|'standalone' }
+  let draft = null; // { conv, text, from, pkg }
   let ready = false;
   let busy = false;
   let engineError = null;
@@ -122,189 +147,90 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
 
   const who = (conv, m) => (m.from === 'me' ? 'Bạn' : m.author || conv.name);
 
-  // Đúng quy ước dữ liệu SafeViChi v2 (CLAUDE.md):
-  // gộp các tin liên tiếp theo phe ('me' vs 'them') để luôn luân phiên 2 phía (word_turn % 2),
-  // giữ tối đa 8 lượt gần nhất và lưu vị trí từng bóng tin gốc để tô bằng chứng chính xác.
-  // Nếu trong cùng một lượt gộp đã có tin bị đánh dấu độc hại đơn lẻ (soloFlag), cắt bỏ các tin an toàn
-  // đứng trước nó trong cùng lượt đó để tránh tiếp tục pha loãng lượt ở các bước suy luận sau.
-  function buildTurnWindow(conv, idx, draftText) {
-    const rawItems = conv.messages.slice(0, idx).map((m, i) => ({ i, m }));
-    if (draftText != null) {
-      rawItems.push({
-        i: -1,
-        m: {
+  function makeTurns(conv, idx, draftText) {
+    const draftMsg = draftText != null
+      ? {
           from: sender,
           author: sender === 'them' && conv.group ? 'Thành viên' : undefined,
           time: 'chưa gửi',
           text: draftText,
-        },
-      });
-    } else if (conv.messages[idx]) {
-      rawItems.push({ i: idx, m: conv.messages[idx] });
-    }
-
-    const turns = [];
-    for (const item of rawItems) {
-      const party = item.m.from === 'me' ? 'me' : 'them';
-      const authorLabel = who(conv, item.m);
-      const prev = turns[turns.length - 1];
-      if (prev && prev.party === party) {
-        const start = prev.text.length + 1;
-        prev.text += ` ${item.m.text}`;
-        prev.time = item.m.time;
-        if (!prev.authors.includes(authorLabel)) prev.authors.push(authorLabel);
-        prev.who = prev.authors.join(', ');
-        prev.parts.push({ i: item.i, m: item.m, start, end: prev.text.length });
-      } else {
-        turns.push({
-          party,
-          authors: [authorLabel],
-          who: authorLabel,
-          time: item.m.time,
-          text: item.m.text,
-          parts: [{ i: item.i, m: item.m, start: 0, end: item.m.text.length }],
-        });
-      }
-    }
-
-    const win = turns.slice(-MAX_LINES);
-    for (const t of win) {
-      let cutAt = -1;
-      for (let k = t.parts.length - 1; k >= 0; k--) {
-        if (t.parts[k].m.soloFlag) cutAt = k;
-      }
-      if (cutAt > 0) {
-        const kept = t.parts.slice(cutAt);
-        let text = '';
-        const authors = [];
-        const newParts = [];
-        for (const p of kept) {
-          const start = text ? text.length + 1 : 0;
-          text = text ? `${text} ${p.m.text}` : p.m.text;
-          const label = who(conv, p.m);
-          if (!authors.includes(label)) authors.push(label);
-          newParts.push({ ...p, start, end: text.length });
         }
-        t.text = text;
-        t.authors = authors;
-        t.who = authors.join(', ');
-        t.parts = newParts;
-      }
-    }
-    return win;
+      : null;
+    return buildTurnWindow(conv.messages, idx, {
+      draftMsg,
+      whoOf: (m) => who(conv, m),
+      maxLines: MAX_LINES,
+    });
   }
 
-  function packAnalysis(turns, out, extras = {}) {
-    const bubbleSpans = new Map();
+  function collectPriorAlerts(conv, turns, excludeIdx) {
+    const alerts = [];
     for (const t of turns) {
-      for (const p of t.parts) bubbleSpans.set(p.i, []);
-    }
-
-    const rows = turns.map((t, dong) => {
-      const spans = out.bang_chung.filter((b) => b.dong === dong);
-      for (const sp of spans) {
-        for (const p of t.parts) {
-          const ovStart = Math.max(sp.start, p.start);
-          const ovEnd = Math.min(sp.end, p.end);
-          if (ovEnd > ovStart) {
-            const localStart = ovStart - p.start;
-            const localEnd = ovEnd - p.start;
-            bubbleSpans.get(p.i).push({
-              start: localStart,
-              end: localEnd,
-              text: p.m.text.slice(localStart, localEnd),
-              nhan: out.nhan,
-            });
-          }
+      for (const p of t.parts) {
+        if (p.i < 0 || p.i === excludeIdx) continue;
+        const a = conv.messages[p.i]?.msgAlert;
+        if (a && a.nhan && a.nhan !== 'AN_TOAN') {
+          alerts.push({ msgIdx: p.i, ...a });
         }
       }
-      return {
-        who: t.who,
-        time: t.time,
-        text: t.text,
-        msgIndices: t.parts.map((p) => p.i),
-        // Vị trí từng tin gốc trong lượt gộp, để cột phân tích tách mỗi tin một dòng (chỉ hiển thị).
-        partRanges: t.parts.map((p) => [p.start, p.end]),
-        spans,
-      };
-    });
-
-    return {
-      nhan: out.nhan,
-      xac_suat: out.xac_suat,
-      rui_ro: out.rui_ro,
-      ms: out.ms,
-      scope: 'context',
-      rows,
-      bubbleSpans,
-      ...extras,
-    };
-  }
-
-  // Kết hợp kết quả kiểm tra đơn câu vào cấu trúc cửa sổ ngữ cảnh khi tin mới nhất bị pha loãng bởi
-  // các tin an toàn trước đó (cả khi đứng sau nhiều lượt an toàn lẫn khi bị gộp chung vào 1 lượt).
-  function elevateWithStandalone(ctxRes, soloOut, targetPart) {
-    const soloSpansInMsg = soloOut.bang_chung
-      .filter((b) => b.dong === 0)
-      .map((b) => ({
-        start: b.start,
-        end: b.end,
-        text: targetPart.m.text.slice(b.start, b.end),
-      }));
-
-    const rows = ctxRes.rows.map((r, i) => {
-      if (i !== ctxRes.rows.length - 1) return r;
-      const shifted = soloSpansInMsg.map((s) => ({
-        dong: i,
-        start: targetPart.start + s.start,
-        end: targetPart.start + s.end,
-        text: r.text.slice(targetPart.start + s.start, targetPart.start + s.end),
-      }));
-      return { ...r, spans: shifted };
-    });
-
-    const bubbleSpans = new Map(ctxRes.bubbleSpans);
-    bubbleSpans.set(targetPart.i, soloSpansInMsg.map((sp) => ({ ...sp, nhan: soloOut.nhan })));
-
-    return {
-      nhan: soloOut.nhan,
-      xac_suat: soloOut.xac_suat,
-      rui_ro: soloOut.rui_ro,
-      ms: ctxRes.ms + soloOut.ms,
-      scope: 'message',
-      rows,
-      bubbleSpans,
-    };
+    }
+    return alerts;
   }
 
   async function analyze(conv, idx, draftText = null, { priority = false } = {}) {
-    const turns = buildTurnWindow(conv, idx, draftText);
-    const ctxOut = await classify(turns.map((t) => t.text), { priority });
-    const ctxRes = packAnalysis(turns, ctxOut);
+    const isDraft = draftText != null;
+    const turns = makeTurns(conv, idx, draftText);
+    const excludeIdx = isDraft ? -1 : idx;
+    const priorActiveAlerts = collectPriorAlerts(conv, turns, excludeIdx);
+    return analyzeWindow({
+      turns,
+      classify,
+      priority,
+      isDraft,
+      draftParty: isDraft ? sender : null,
+      priorActiveAlerts,
+    });
+  }
 
-    // Chống pha loãng cho CẢ 2 phía (Tôi & Người kia):
-    // Nếu ngữ cảnh gộp trả AN_TOAN nhưng cửa sổ có > 1 tin nhắn (nhiều lượt HOẶC nhiều tin cùng phía
-    // bị gộp thành 1 lượt), kiểm tra thêm riêng tin mới nhất (~20–45 ms).
-    const windowMsgCount = turns.reduce((sum, t) => sum + t.parts.length, 0);
-    if (ctxRes.nhan === 'AN_TOAN' && windowMsgCount > 1) {
-      const lastTurn = turns[turns.length - 1];
-      const targetPart = lastTurn.parts[lastTurn.parts.length - 1];
-      if (targetPart?.m?.text && stripInvisibles(targetPart.m.text).trim()) {
-        const soloOut = await classify([targetPart.m.text], { priority });
-        if (soloOut.nhan !== 'AN_TOAN') {
-          return elevateWithStandalone(ctxRes, soloOut, targetPart);
-        }
+  function applyClearedAlerts(conv, clearedIndices) {
+    for (const ci of clearedIndices || []) {
+      if (ci >= 0 && conv.messages[ci]) {
+        conv.messages[ci].msgAlert = null;
+        conv.messages[ci].spans = [];
       }
     }
+  }
 
-    return ctxRes;
+  // Ghi nhận cảnh báo nguồn cho các tin cũ trong hội thoại mẫu khi lần đầu được phân tích gộp
+  // để bằng chứng và cảnh báo không bị mất khi người dùng nhắn tiếp các câu an toàn.
+  function backfillSpanAlerts(conv, res, skipIdx) {
+    if (!res || res.nhan === 'AN_TOAN') return;
+    for (const [msgIdx, spans] of res.bubbleSpans.entries()) {
+      if (msgIdx < 0 || msgIdx === skipIdx || !spans?.length) continue;
+      const msg = conv.messages[msgIdx];
+      if (!msg || msg.msgAlert !== undefined) continue;
+      msg.msgAlert = {
+        nhan: res.nhan,
+        xac_suat: res.xac_suat,
+        rui_ro: res.rui_ro,
+        spans,
+        prob: res.xac_suat?.[res.nhan] ?? 0,
+        wasTurnZero: false,
+      };
+    }
   }
 
   function applySpans(conv, res) {
     for (const [msgIdx, spans] of res.bubbleSpans.entries()) {
       if (msgIdx >= 0 && conv.messages[msgIdx]) {
         const msg = conv.messages[msgIdx];
-        msg.spans = spans.length > 0 ? spans : (msg.soloSpans || []);
+        if (spans.length > 0) {
+          msg.spans = spans;
+        } else if (msg.msgAlert && msg.msgAlert.spans?.length > 0) {
+          msg.spans = msg.msgAlert.spans;
+        } else {
+          msg.spans = [];
+        }
       }
     }
   }
@@ -316,13 +242,15 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     if (inflightMsg.has(m)) return inflightMsg.get(m);
 
     const task = analyze(conv, idx, null, { priority })
-      .then((res) => {
+      .then((pkg) => {
+        const res = pkg.analysis;
         m.analysis = res;
-        if (res.scope === 'message') {
-          m.soloFlag = true;
-          m.soloSpans = res.bubbleSpans.get(idx) || [];
+        if (m.msgAlert === undefined) m.msgAlert = pkg.msgAlert;
+        if (updateSpans || idx === conv.messages.length - 1) {
+          applyClearedAlerts(conv, pkg.clearedIndices);
+          backfillSpanAlerts(conv, res, idx);
+          applySpans(conv, res);
         }
-        if (updateSpans || idx === conv.messages.length - 1) applySpans(conv, res);
         return res;
       })
       .finally(() => {
@@ -581,7 +509,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   }
 
   function windowSet() {
-    const res = draft ? draft.analysis : view?.msg?.analysis;
+    const res = draft ? draft.pkg.draftAnalysis : view?.msg?.analysis;
     if (!res) return null;
     const set = new Set();
     for (const r of res.rows) {
@@ -667,7 +595,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
 
   function renderView() {
     if (draft) {
-      renderAI(draft.analysis);
+      renderAI(draft.pkg.draftAnalysis);
     } else if (view?.msg) {
       renderAI(view.msg.analysis);
     } else {
@@ -763,13 +691,16 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     $('warn-edit').textContent = 'Chỉnh sửa';
   }
 
-  function commit(conv, text, from, analysis) {
+  function commit(conv, text, from, pkg) {
+    applyClearedAlerts(conv, pkg.clearedIndices);
+
     const m = { from, text, time: nowTime() };
     if (from === 'them' && conv.group) m.author = 'Thành viên';
     conv.messages.push(m);
     conv.lastAt = Date.now();
     const newIdx = conv.messages.length - 1;
 
+    const analysis = pkg.analysis;
     const rows = analysis.rows.map((r, i) => (
       i === analysis.rows.length - 1
         ? { ...r, time: m.time, msgIndices: r.msgIndices.map((idx) => (idx === -1 ? newIdx : idx)) }
@@ -782,10 +713,8 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
 
     const finalAnalysis = { ...analysis, rows, bubbleSpans };
     m.analysis = finalAnalysis;
-    if (finalAnalysis.scope === 'message') {
-      m.soloFlag = true;
-      m.soloSpans = bubbleSpans.get(newIdx) || [];
-    }
+    m.msgAlert = pkg.msgAlert || null;
+    backfillSpanAlerts(conv, finalAnalysis, newIdx);
     applySpans(conv, finalAnalysis);
     view = { conv, msg: m };
     if (conv === current) {
@@ -856,14 +785,16 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
 
     const conv = current;
     const from = sender;
-    const prevNhan = conv.messages.at(-1)?.analysis?.nhan || 'AN_TOAN';
 
     busy = true;
     syncComposerState();
 
-    let res;
+    let pkg;
     try {
-      res = await analyze(conv, conv.messages.length, text, { priority: true });
+      if (conv.messages.length > 0 && !conv.messages.at(-1).analysis) {
+        await ensureAnalyzed(conv, conv.messages.length - 1, { priority: true, updateSpans: true });
+      }
+      pkg = await analyze(conv, conv.messages.length, text, { priority: true });
     } catch (err) {
       busy = false;
       syncComposerState();
@@ -875,21 +806,19 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     syncComposerState();
     if (conv !== current) return;
 
-    const draftHasSpan = (res.bubbleSpans.get(-1)?.length || 0) > 0;
-    const harmful = from === 'me' && res.nhan !== 'AN_TOAN'
-      && (res.scope === 'message' || draftHasSpan || prevNhan === 'AN_TOAN');
+    const harmful = from === 'me' && pkg.draftHarmful;
 
     if (!harmful) {
       input.value = '';
       clearDraft();
-      commit(conv, text, from, res);
+      commit(conv, text, from, pkg);
       return;
     }
 
-    draft = { conv, text, from, analysis: res };
+    draft = { conv, text, from, pkg };
     renderMessages();
     renderView();
-    showWarning(res);
+    showWarning(pkg.draftAnalysis);
   });
 
   $('warn-edit').onclick = () => {
@@ -906,7 +835,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     if (!d) return;
     clearDraft();
     input.value = '';
-    commit(d.conv, d.text, d.from, d.analysis);
+    commit(d.conv, d.text, d.from, d.pkg);
     input.focus();
   };
 
