@@ -78,9 +78,9 @@
           <div class="sec-inner">
             <div class="prod-top">
               <div>
-                <div class="sec-head reveal"><h3 id="ab-san-pham-h">SafeViChi 2.0</h3></div>
+                <div class="sec-head reveal"><h3 id="ab-san-pham-h">SafeViChi v2</h3></div>
                 <p class="prod-tag reveal">Thấu hiểu ngữ cảnh, chủ động nhận diện nguy cơ.</p>
-                <p class="sec-lede reveal">SafeViChi 2.0 là mô hình AI chuyên nhận diện nội dung nguy hại trong giao tiếp tiếng Việt, hướng tới bảo vệ trẻ em và người trẻ trên môi trường số.</p>
+                <p class="sec-lede reveal">SafeViChi v2 là mô hình AI chuyên nhận diện nội dung nguy hại trong giao tiếp tiếng Việt, hướng tới bảo vệ trẻ em và người trẻ trên môi trường số.</p>
               </div>
             </div>
             <div class="prod-cols">
@@ -94,11 +94,11 @@
               </div>
               <div class="prod-col">
                 <h4 class="col-h reveal">Phạm vi nhận diện</h4>
-                <p class="col-sub reveal">SafeViChi 2.0 phân loại nội dung hội thoại thành 5 nhóm:</p>
+                <p class="col-sub reveal">SafeViChi v2 phân loại nội dung hội thoại thành 5 nhóm:</p>
                 <ul class="scope-list">
                   <li class="reveal" style="--c: var(--at)"><b>An toàn</b><span>Nội dung giao tiếp bình thường, không mang dấu hiệu nguy hại.</span></li>
                   <li class="reveal" style="--c: var(--xp)"><b>Xúc phạm</b><span>Chửi bới, lăng mạ, miệt thị cá nhân hoặc nhóm người (kể cả vùng miền).</span></li>
-                  <li class="reveal" style="--c: var(--qr)"><b>Quấy rối</b><span>Gạ gẫm không mong muốn, bám riết, kiểm soát hoặc bêu riếu đời tư.</span></li>
+                  <li class="reveal" style="--c: var(--qr)"><b>Quấy rối</b><span>Gạ gẫm không mong muốn, bám riết, kiểm soát hoặc bêu rếu đời tư.</span></li>
                   <li class="reveal" style="--c: var(--dd)"><b>Đe dọa</b><span>Uy hiếp gây tổn hại thân thể, tài sản, danh dự hoặc cưỡng ép, tống tiền.</span></li>
                   <li class="reveal" style="--c: var(--ld)"><b>Lừa đảo</b><span>Dùng thông tin giả để dụ chuyển tiền, lộ OTP/mật khẩu hoặc bấm liên kết lạ.</span></li>
                 </ul>
@@ -153,7 +153,7 @@
             <div class="res-head">
               <div>
                 <div class="sec-head reveal"><h3 id="ab-ket-qua-h">Kết quả thực nghiệm</h3></div>
-                <p class="sec-lede reveal">Đánh giá SafeViChi 2.0 cùng SafeViChi 1.0 và gpt-oss-120b (API) trên tập kiểm thử hội thoại biên soạn độc lập.</p>
+                <p class="sec-lede reveal">Đánh giá SafeViChi v2 cùng SafeViChi v1 và gpt-oss-120b (API) trên tập kiểm thử hội thoại biên soạn độc lập.</p>
               </div>
               <dl class="sets reveal">
                 <div><dt>C0</dt><dd>334 đoạn gốc</dd></div>
@@ -166,34 +166,50 @@
                 <table class="tbl">
                   <thead><tr><th>Tập</th><th class="sys">Hệ</th><th>Macro-F1</th><th>Binary-F1</th><th>Báo nhầm (FPR)</th><th>Bằng chứng F1</th></tr></thead>
                   <tbody>
-                    <tr class="grp"><td rowspan="3">C0</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>31,2</td><td>0,0%</td><td>–</td></tr>
+                    <tr class="grp"><td rowspan="3">C0</td><td class="sys">SafeViChi v1</td><td>–</td><td>31,2</td><td>0,0%</td><td>–</td></tr>
                     <tr><td class="sys">gpt-oss-120b</td><td>77,2</td><td>89,2</td><td>3,1%</td><td>70,7</td></tr>
-                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>86,5</td><td>92,9</td><td>10,4%</td><td>83,0</td></tr>
-                    <tr class="grp"><td rowspan="3">C1</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>31,0</td><td>1,6%</td><td>–</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi v2</td><td>86,5</td><td>92,9</td><td>10,4%</td><td>83,0</td></tr>
+                    <tr class="grp"><td rowspan="3">C1</td><td class="sys">SafeViChi v1</td><td>–</td><td>31,0</td><td>1,6%</td><td>–</td></tr>
                     <tr><td class="sys">gpt-oss-120b</td><td>58,5</td><td>74,5</td><td>10,9%</td><td>56,1</td></tr>
-                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>78,6</td><td>90,3</td><td>10,9%</td><td>76,5</td></tr>
-                    <tr class="grp"><td rowspan="3">C2</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>39,5</td><td>4,2%</td><td>–</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi v2</td><td>78,6</td><td>90,3</td><td>10,9%</td><td>76,5</td></tr>
+                    <tr class="grp"><td rowspan="3">C2</td><td class="sys">SafeViChi v1</td><td>–</td><td>39,5</td><td>4,2%</td><td>–</td></tr>
                     <tr><td class="sys">gpt-oss-120b</td><td>62,7</td><td>77,9</td><td>4,2%</td><td>32,2</td></tr>
-                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>77,1</td><td>90,9</td><td>10,4%</td><td>75,3</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi v2</td><td>77,1</td><td>90,9</td><td>10,4%</td><td>75,3</td></tr>
                   </tbody>
                 </table>
-                <p class="note">F1 × 100. Binary-F1: gộp 4 nhãn nguy hại; FPR: tỉ lệ đoạn an toàn bị báo nhầm; Bằng chứng F1 tính theo cụm. Số SafeViChi 2.0 đo trên bản FP32 (bản INT8 trên web tương đương); SafeViChi 1.0 chỉ có nhãn nhị phân, không xuất cụm bằng chứng.</p>
+                <p class="note">F1 × 100. Binary-F1: gộp 4 nhãn nguy hại; FPR: tỉ lệ đoạn an toàn bị báo nhầm; Bằng chứng F1 tính theo cụm. Số SafeViChi v2 đo trên bản FP32 (bản INT8 trên web tương đương); SafeViChi v1 chỉ có nhãn nhị phân, không xuất cụm bằng chứng.</p>
               </div>
             </div>
           </div>
           <button class="sec-next" type="button" aria-label="Tới mục tiếp theo"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
         </section>
 
-        <!-- Kết thúc -->
+        <!-- Kết thúc: nền cỏ xanh như trang chủ -->
         <section class="about-sec about-end" id="ab-ket-thuc" aria-labelledby="ab-ket-thuc-h">
+          <svg class="end-field" id="art-closing" aria-hidden="true"></svg>
           <div class="sec-inner end-inner">
-            <svg class="art art-end reveal" id="art-closing"></svg>
-            <h3 class="reveal" id="ab-ket-thuc-h">Thử ngay với hội thoại mẫu</h3>
-            <div class="foot-actions reveal">
-              <button class="btn-start" type="button" data-about-start>Bắt đầu thử</button>
-              <a class="btn-ghost" href="https://github.com/thaoanhlehoang/SafeViChi/blob/v2-final/docs/v2/bao_cao/bao_cao_v2.pdf" target="_blank" rel="noopener">Đọc báo cáo đầy đủ</a>
+            <div class="end-copy">
+              <h3 class="reveal" id="ab-ket-thuc-h">Thử ngay với<br>hội thoại mẫu</h3>
+              <button class="btn-end reveal" type="button" data-about-start>Trải nghiệm ngay</button>
+              <p class="end-foot reveal"><b> AI26C0007 ● OneUET ● SafeViChi</b><span>© 2026 Cuộc thi Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo</span></p>
             </div>
-            <p class="end-foot">SafeViChi · AI2026</p>
+            <figure class="end-demo reveal" aria-label="Ví dụ giao diện: khung chat bên trái, cột AI phân tích bên phải nhận diện một tin nhắn tống tiền bằng ảnh riêng tư và tô bằng chứng">
+              <div class="ed-chatcol">
+                <div class="ed-head"><span class="ed-av" aria-hidden="true">A</span><div><b>Anh A khóa trên</b></div></div>
+                <div class="ed-chat">
+                  <p class="ed-msg them">Ảnh hôm trước em gửi anh vẫn giữ đấy</p>
+                  <p class="ed-msg me">Anh xoá đi mà, em xin anh</p>
+                  <p class="ed-msg them flag"><mark>Chuyển 2 triệu trước 9h tối nay</mark>, <mark>không thì anh gửi cho cả lớp em xem</mark>.</p>
+                </div>
+                <div class="ed-input" aria-hidden="true"><span>Nhập tin nhắn…</span><i>Gửi</i></div>
+              </div>
+              <div class="ed-ai">
+                <div class="ed-ai-head"><b>Phân tích AI</b><span>Trên thiết bị</span></div>
+                <div class="ed-sum"><span class="ed-label">Đe dọa</span></div>
+                <div class="ed-box"><h6>Bằng chứng</h6><p class="ed-ev">“Chuyển 2 triệu trước 9h tối nay”</p><p class="ed-ev">“không thì anh gửi cho cả lớp em xem”</p></div>
+                <div class="ed-box"><h6>Ngữ cảnh</h6><p>Đã xét cả 3 lượt hội thoại gần nhất</p></div>
+              </div>
+            </figure>
           </div>
         </section>
       </div>

@@ -171,7 +171,7 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   new IntersectionObserver(([e]) => (e.isIntersecting ? startArch() : stopArch()), { threshold: 0.35 }).observe(archBox);
 }
 
-// Kết quả: khi bảng hiện ra, các số đếm từ 0 lên rồi hàng SafeViChi 2.0 sáng lên.
+// Kết quả: khi bảng hiện ra, các số đếm từ 0 lên rồi hàng SafeViChi v2 sáng lên.
 const resTable = document.querySelector('#res-main .tbl');
 const numCells = [...resTable.querySelectorAll('td')].filter((td) => /^\d+(,\d+)?%?$/.test(td.textContent.trim()))
   .map((td) => { const t = td.textContent.trim(); return { td, t, v: parseFloat(t.replace(',', '.')), dec: (t.split(',')[1] || '').replace('%', '').length, pct: t.endsWith('%') }; });
@@ -192,4 +192,27 @@ if (matchMedia('(prefers-reduced-motion: reduce)').matches) resTable.classList.a
 else new IntersectionObserver(([e]) => (e.isIntersecting ? countUp() : resetCount()), { threshold: 0.3 }).observe(resTable);
 
 // Hình minh họa hoạt hình cùng nét với trang chủ.
-drawClosing($('art-closing'));
+// Khung chat mẫu ở trang cuối: bong bóng tin nhắn ôm sát dòng chữ dài nhất (CSS không tự co khi chữ xuống dòng).
+function fitBubbles() {
+  for (const b of document.querySelectorAll('.end-demo .ed-msg')) {
+    b.style.width = '';
+    const r = document.createRange();
+    r.selectNodeContents(b);
+    const rects = [...r.getClientRects()];
+    if (!rects.length) continue;
+    const cs = getComputedStyle(b);
+    const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+    const w = Math.max(...rects.map((x) => x.right)) - Math.min(...rects.map((x) => x.left));
+    b.style.width = `${Math.ceil(w + pad + 1)}px`;
+  }
+}
+fitBubbles();
+document.fonts?.ready.then(fitBubbles);
+addEventListener('resize', fitBubbles);
+
+const endArt = $('art-closing');
+let endW = 0, endT = 0;
+new ResizeObserver(() => {
+  clearTimeout(endT);
+  endT = setTimeout(() => { if (Math.abs(endArt.clientWidth - endW) > 40 || !endW) { endW = endArt.clientWidth; drawClosing(endArt); } }, 150);
+}).observe(endArt);
