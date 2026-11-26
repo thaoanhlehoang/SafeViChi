@@ -230,7 +230,7 @@ export function setupLanding({ onStart }) {
   const draw = { a: drawRing, b: drawHands }[v];
   let raf = 0;
   const redraw = () => { if (!draw) return; cancelAnimationFrame(raf); raf = requestAnimationFrame(() => draw(svg)); };
-  redraw();
+  if (draw) draw(svg);
   window.addEventListener('resize', redraw);
 
   const track = document.getElementById('track');
@@ -263,10 +263,12 @@ export function setupLanding({ onStart }) {
   const about = document.getElementById('thong-tin');
   const scroller = home;
   const barH = () => about.querySelector('.about-bar').offsetHeight;
-  document.getElementById('open-about').addEventListener('click', (e) => {
-    e.preventDefault();
-    home.scrollTo({ top: about.offsetTop, behavior: 'smooth' });
-  });
+  for (const a of document.querySelectorAll('[data-open-about]')) {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      home.scrollTo({ top: about.offsetTop, behavior: 'smooth' });
+    });
+  }
   document.getElementById('close-about').addEventListener('click', () => home.scrollTo({ top: 0, behavior: 'smooth' }));
   for (const b of about.querySelectorAll('[data-about-start]')) b.addEventListener('click', () => go(1));
 

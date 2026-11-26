@@ -18,6 +18,10 @@ h2, h3 { line-height: 1.3; }
 
 /* ---------- Phông nền cố định ---------- */
 .ring-art { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; }
+/* Nền trời tạm khi SVG chưa kịp vẽ, để chữ ở trang đầu luôn rõ ngay khung hình đầu tiên. */
+.ring-art:empty {
+  background: radial-gradient(circle min(40vh, 35.4vw) at 50% 50%, #ffffff 0%, #e6f3fa 55%, #a9d2ea 98%, #2f5e2a 100%);
+}
 /* Trời, vòng người, lớp hạt là ảnh riêng (xem rasterizeLayers) để chuyển cảnh chạy trên GPU. */
 .art-layers { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .art-layer { position: absolute; inset: 0; width: 100vw; height: 100vh; transform-origin: 50% 50%; }
@@ -85,18 +89,38 @@ textarea:focus { outline: none; border-color: var(--green-500); box-shadow: 0 0 
 .back:hover { background: var(--green-100); color: var(--green-900); }
 
 .btn-start {
+  display: inline-flex; align-items: center; justify-content: center;
   margin-top: 1.6rem; padding: .8rem 2.2rem; border: 0; border-radius: 999px;
-  font: 600 1.05rem/1 var(--font); color: #fff; background: var(--green-700); cursor: pointer;
+  font: 600 1.05rem/1 var(--font); color: #fff; background: var(--green-700);
+  text-decoration: none; cursor: pointer;
   box-shadow: 0 6px 18px -6px rgba(29, 59, 34, .55); transition: background 150ms, transform 150ms;
 }
 .btn-start:hover { background: var(--green-900); }
 .btn-start:active { transform: translateY(1px); }
 .btn-start:disabled { opacity: .5; cursor: default; }
+
+.hero-actions {
+  display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+  gap: .75rem; margin-top: 1.6rem;
+}
+.hero-actions .btn-start { margin-top: 0; padding: .82rem 1.7rem; border: 1.5px solid transparent; }
+.btn-hero-sec {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: .82rem 1.7rem; border: 1.5px solid rgba(47, 107, 58, .38); border-radius: 999px;
+  font: 600 1.05rem/1 var(--font); color: var(--green-900);
+  background: rgba(255, 253, 247, .82); backdrop-filter: blur(4px);
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 6px 18px -8px rgba(29, 59, 34, .32);
+  transition: background-color 150ms, border-color 150ms, transform 150ms;
+}
+.btn-hero-sec:hover { background: #fff; border-color: var(--green-700); }
+.btn-hero-sec:active { transform: translateY(1px); }
 :focus-visible { outline: 3px solid #f2c94c; outline-offset: 3px; }
 
 /* Phương án B (?v=b): chữ bên trái. */
 body.v-hands .landing { place-items: center start; }
 body.v-hands .hero { margin-left: 7vw; max-width: 30rem; text-align: left; }
+body.v-hands .hero-actions { justify-content: flex-start; }
 body.v-hands .lede { margin-left: 0; }
 
 @media (prefers-reduced-motion: reduce) {
