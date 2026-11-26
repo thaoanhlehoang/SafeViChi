@@ -7,27 +7,27 @@
 \subsection{Chọn mô hình: bốn ứng viên trên tập dev}
 \label{sec:yc3-chon}
 
-Nhóm huấn luyện song song bốn ứng viên trên cùng tập dữ liệu, cùng phân hoạch phân tầng theo nhóm trùng lặp
+Nhóm huấn luyện song song bốn ứng viên với cùng dữ liệu, cùng phân hoạch phân tầng theo nhóm trùng lặp
 (\so{dev.chia.fit} mẫu \textbf{fit}, \so{dev.chia.dev} mẫu \textbf{dev}, \so{dev.chia.cal} mẫu \textbf{cal}), cùng
-seed 42 và cùng tiêu chí chọn checkpoint. Ba ứng viên sử dụng chung kiến trúc bộ mã hóa \textbf{SafeVi-DualORC-CRF}
+seed 42 và cùng tiêu chí chọn checkpoint. Ba ứng viên dùng chung kiến trúc \textbf{SafeVi-DualORC-CRF}
 (phân loại 5 nhãn kết hợp gắn thẻ BIO + CRF mức từ), chỉ khác bộ mã hóa nền: mmBERT-base (đa ngôn ngữ), BamiBERT và
-ViSoBERT (tiếng Việt). Ứng viên thứ tư (\textbf{GuardMerge}) chuyển đổi từ nền mô hình ngôn ngữ lớn hai chiều khoảng
-0,6 tỉ tham số và tinh chỉnh bằng LoRA. Toàn bộ quy trình chọn mô hình được thực hiện độc lập trên tập \textbf{dev}
+ViSoBERT (tiếng Việt). Ứng viên thứ tư (\textbf{GuardMerge}) chuyển từ nền LLM hai chiều khoảng
+0,6 tỉ tham số, tinh chỉnh bằng LoRA. Việc chọn mô hình chỉ dùng tập \textbf{dev},
 trước khi mở khóa tập kiểm thử (Hình~\ref{fig:p4-ung-vien}, Bảng~\ref{tab:p4-ung-vien}).
 
 \begin{figure}[H]
 \centering
 \input{hinh/ung_vien_dev.tex}
 \caption{Bốn ứng viên trên tập dev: Macro-F1 theo độ trễ GPU (batch~1), kèm dung lượng trọng số FP32. Ba bộ mã hóa
-SafeVi-DualORC-CRF vượt trội GuardMerge cả về chất lượng lẫn tốc độ.}
+SafeVi-DualORC-CRF hơn GuardMerge cả về chất lượng và tốc độ.}
 \label{fig:p4-ung-vien}
 \end{figure}
 
 \begin{table}[H]
 \centering
 \small
-\caption{So sánh bốn ứng viên trên tập dev (F1 trên thang 0--100; FPR và Tô oan tính theo \%). ``Tô oan'': tỉ lệ đoạn
-\nhan{AN_TOAN} bị trích xuất bằng chứng. ``Chênh vùng'': hiệu Macro-F1 giữa vùng cao nhất và thấp nhất. Độ trễ đo trên
+\caption{Bốn ứng viên trên tập dev (F1 thang 0--100; FPR và Tô oan theo \%). ``Tô oan'': tỉ lệ đoạn
+\nhan{AN_TOAN} bị trích bằng chứng. ``Chênh vùng'': hiệu Macro-F1 giữa vùng cao nhất và thấp nhất. Độ trễ đo trên
 GPU \so{v2.gpu}, batch~1.}
 \label{tab:p4-ung-vien}
 \setlength{\tabcolsep}{4pt}
@@ -52,44 +52,41 @@ Thời gian huấn luyện (phút) & \so{dev.mmbert.trainphut} & \textbf{\so{dev
 
 Kiểm định ghép cặp McNemar trên từng đoạn của tập dev cho thấy:
 \begin{itemize}
-  \item mmBERT-base vượt GuardMerge có ý nghĩa thống kê ($p = \so{dev.mc.guard}$) và nhanh hơn hơn hai lần
-        (\so{dev.mmbert.p50}~ms so với \so{dev.guard.p50}~ms). Hướng dùng nền LLM 0,6 tỉ tham số tinh chỉnh LoRA bị
+  \item mmBERT-base hơn GuardMerge có ý nghĩa thống kê ($p = \so{dev.mc.guard}$) và nhanh gấp hơn hai lần
+        (\so{dev.mmbert.p50}~ms so với \so{dev.guard.p50}~ms), nên hướng tinh chỉnh LoRA nền LLM 0,6 tỉ tham số bị
         loại.
-  \item Ba bộ mã hóa SafeVi-DualORC-CRF hòa nhau về mặt thống kê trên chỉ số tổng (mmBERT-base so với ViSoBERT:
+  \item Ba bộ mã hóa SafeVi-DualORC-CRF hòa nhau về thống kê trên chỉ số tổng (mmBERT-base so với ViSoBERT:
         $p = \so{dev.mc.visobert}$; so với BamiBERT: $p = \so{dev.mc.bamibert}$).
 \end{itemize}
 
-Khi tổng điểm hòa về mặt thống kê, nhóm lựa chọn theo các lát cắt sát nhất với mục tiêu cốt lõi của SafeViChi v2:
-\textbf{mmBERT-base} dẫn đầu trên hội thoại nhiều lượt, vượt xa hai bộ mã hóa tiếng Việt trên lát cắt tiếng lóng
-(\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT và \so{dev.bamibert.tieng} của BamiBERT), đạt độ đồng
-đều vùng miền tốt nhất (chênh lệch chỉ \so{dev.mmbert.gap}), đồng thời nền đa ngôn ngữ giúp tổng quát hóa tốt trước ký
-tự Unicode biến dạng (C2). Lợi thế nhẹ của ViSoBERT trên tổng điểm dev chủ yếu nằm ở bình luận một dòng, trùng khớp kho
-tiền huấn luyện của nó. Dù trọng số FP32 của mmBERT-base lớn hơn (\so{dev.mmbert.trongso}~MiB), sau lượng tử hóa ONNX
-INT8 mô hình chỉ còn \so{tb.int8.mib}~MiB (khoảng 15\% giới hạn 2~GB) và suy luận \so{tb.a.int8.8.p50}~ms trên CPU
-laptop; BamiBERT được lưu làm phương án dự phòng siêu nhẹ cho thiết bị cấu hình rất yếu.
+Vì tổng điểm hòa về thống kê, nhóm chọn theo các lát cắt sát mục tiêu của SafeViChi v2.
+\textbf{mmBERT-base} dẫn đầu trên hội thoại nhiều lượt, hơn hai bộ mã hóa tiếng Việt trên lát cắt tiếng lóng
+(\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT và \so{dev.bamibert.tieng} của BamiBERT), đồng
+đều vùng miền nhất (chênh \so{dev.mmbert.gap}), và nền đa ngôn ngữ giúp tổng quát hóa tốt trước ký
+tự Unicode biến dạng (C2). Lợi thế nhẹ của ViSoBERT trên tổng điểm dev chủ yếu đến từ bình luận một dòng, vốn trùng với kho
+tiền huấn luyện của nó. Trọng số FP32 của mmBERT-base lớn hơn nhưng vẫn nhỏ sau lượng tử hóa INT8
+(Mục~\ref{sec:yc3-chi-phi}); BamiBERT được giữ làm phương án dự phòng cho thiết bị rất yếu.
 
 \subsection{Đóng góp của từng mô-đun (ablation)}
 \label{sec:yc3-ablation}
 
 \paragraph{Đọc toàn bộ đoạn hội thoại.}
-Trên \so{ctx.n} đoạn nhiều dòng của tập dev, SafeViChi v2 đạt Macro-F1 \so{ctx.full} khi đọc toàn bộ hội thoại nhưng chỉ
-còn \so{ctx.last} khi chỉ đọc dòng cuối (tăng \so{ctx.gain} điểm). Kết quả này khẳng định mô hình thực sự khai thác ngữ
-cảnh liên lượt để phát hiện các tình huống bộc lộ dần về cuối đoạn. Một bộ phân loại chỉ dựa vào độ dài đoạn chỉ đạt
-Macro-F1 \so{ctx.lenonly}, chứng minh v2 không học lối tắt dựa vào số dòng dù bình luận thực tế đều dài một dòng còn hội
+Trên \so{ctx.n} đoạn nhiều dòng của tập dev, SafeViChi v2 đạt Macro-F1 \so{ctx.full} khi đọc cả hội thoại, so với
+\so{ctx.last} khi chỉ đọc dòng cuối (tăng \so{ctx.gain} điểm). Như vậy mô hình có dùng ngữ
+cảnh liên lượt để phát hiện tình huống bộc lộ dần về cuối đoạn. Bộ phân loại chỉ dựa vào độ dài đoạn chỉ đạt
+Macro-F1 \so{ctx.lenonly}, cho thấy v2 không học lối tắt theo số dòng, dù bình luận thực tế đều một dòng còn hội
 thoại tổng hợp phần lớn nhiều dòng.
 
 \paragraph{Bộ chuẩn hóa đầu vào của SafeViChi v1.}
-Khác với SafeViChi v1 phụ thuộc vào bộ chuẩn hóa 5 tầng, SafeViChi v2 học trực tiếp trên văn bản biến dạng thông qua tăng
-cường trực tuyến, phạt nhất quán, FGM và nhánh CNN đọc theo byte. Nhóm đo ảnh hưởng khi bật/tắt bộ chuẩn hóa v1 trên các
-bộ thử của tập dev (Bảng~\ref{tab:p4-chuan-hoa}) và xác nhận lại sau khi đóng băng mô hình trên toàn bộ tập kiểm thử
-(Bảng~\ref{tab:p4-chuan-hoa-test}).
+Nhóm đo ảnh hưởng của việc bật/tắt bộ chuẩn hóa 5 tầng của v1 trên tập dev (Bảng~\ref{tab:p4-chuan-hoa}) và kiểm lại
+trên tập kiểm thử sau khi đóng băng mô hình (Bảng~\ref{tab:p4-chuan-hoa-test}).
 
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3.5pt}
-\caption{Ảnh hưởng khi bật/tắt bộ chuẩn hóa v1 trên các bộ thử của tập dev (Macro-F1, thang 0--100). ``Mức tụt'':
-Macro-F1 bản biến dạng trừ bản gốc khi tắt chuẩn hóa; trong ngoặc là chênh lệch khi bật so với khi tắt.}
+\caption{Ảnh hưởng của bộ chuẩn hóa v1 trên các bộ thử của tập dev (Macro-F1, thang 0--100). ``Mức tụt'':
+Macro-F1 bản biến dạng trừ bản gốc khi tắt chuẩn hóa; trong ngoặc là chênh lệch bật so với tắt.}
 \label{tab:p4-chuan-hoa}
 \begin{tabularx}{\linewidth}{@{}Ycccccc@{}}
 \toprule
@@ -108,8 +105,8 @@ Ký tự vô hình & Không & \so{cn.blindspotzerowidth.n} & \so{cn.blindspotzer
 \begin{table}[H]
 \centering
 \small
-\caption{Kiểm chứng bật/tắt bộ chuẩn hóa v1 trên toàn bộ tập kiểm thử sau khi đóng băng mô hình và ngưỡng (thang 0--100;
-trong ngoặc là chênh lệch khi bật so với khi tắt).}
+\caption{Bật/tắt bộ chuẩn hóa v1 trên toàn bộ tập kiểm thử, sau khi đóng băng mô hình và ngưỡng (thang 0--100;
+trong ngoặc là chênh lệch bật so với tắt).}
 \label{tab:p4-chuan-hoa-test}
 \begin{tabular}{lccccc}
 \toprule
@@ -125,32 +122,26 @@ Biến dạng chưa thấy khi huấn luyện & \so{cnt.chuathay.n} & \textbf{\s
 \end{tabular}
 \end{table}
 
-Kết quả trên cả tập dev lẫn tập kiểm thử hoàn toàn nhất quán: bộ chuẩn hóa v1 chỉ hỗ trợ một số biến dạng C1 đã biết
-(trên dev \so{cn.c1indist.gain}; trên test C1 chủ yếu nhờ chèn ký tự \so{cnt.kieu.chenkytu.gain}), nhưng lại làm giảm
+Kết quả trên dev và test nhất quán: bộ chuẩn hóa v1 chỉ giúp một số biến dạng C1 đã biết
+(dev \so{cn.c1indist.gain}; test C1 chủ yếu nhờ chèn ký tự \so{cnt.kieu.chenkytu.gain}), nhưng làm giảm
 Macro-F1 trên đoạn gốc C0 (\so{cnt.C0.gain}), nhóm điểm mù C2 (\so{cnt.C2.gain}, như ký tự vô hình
 \so{cnt.kieu.zerowidth.gain}, chèn dấu cách \so{cnt.kieu.spaceinjection.gain}) và nhóm biến dạng chưa thấy
-(\so{cnt.chuathay.gain}) do đôi khi chuyển đổi sai các từ mô hình vốn đã hiểu đúng. Vì vậy, SafeViChi v2 mặc định \textbf{tắt}
-bộ chuẩn hóa v1 và suy luận trực tiếp trên văn bản gốc; năng lực chống né lọc nay nằm trực tiếp trong biểu diễn của mô
-hình thay vì bộ luật cứng.
-
-\paragraph{Bộ mã hóa nền.}
-Từ Bảng~\ref{tab:p4-ung-vien}, giữ nguyên kiến trúc SafeVi-DualORC-CRF và thay đổi bộ mã hóa nền giữ điểm tổng trong
-khoảng hòa thống kê, nhưng tạo khác biệt rõ về khả năng xử lý tiếng lóng, cân bằng vùng miền và chi phí triển khai.
+(\so{cnt.chuathay.gain}) vì đôi khi chuyển sai những từ mô hình vốn hiểu đúng. Do đó SafeViChi v2 mặc định \textbf{tắt}
+bộ chuẩn hóa v1, suy luận trực tiếp trên văn bản gốc.
 
 \paragraph{Lượng tử hóa FP32 $\to$ INT8.}
-Để tối ưu triển khai cục bộ, mô hình xuất sang ONNX được lượng tử hóa INT8 kiểu lai: bảng embedding nén INT8 đối xứng
+Để chạy cục bộ, mô hình xuất sang ONNX được lượng tử hóa INT8 kiểu lai: bảng embedding nén INT8 đối xứng
 theo hàng; các lớp attention và lớp vào MLP lượng tử hóa động cả trọng số lẫn đầu vào; lớp ra MLP chỉ lượng tử hóa trọng
-số INT8 (tránh cắt ngọn ngoại lai); đầu phân loại, đầu gắn thẻ và tầng CRF giữ nguyên FP32 để bảo toàn hiệu chuẩn xác
-suất. Nhờ đó, dung lượng tệp giảm từ \so{tb.fp32.mib}~MiB xuống \so{tb.int8.mib}~MiB (nén khoảng \so{tb.nen} lần), trong
-khi chất lượng trên toàn bộ \so{lt.ALL.n} đoạn kiểm thử gần như bảo toàn tuyệt đối (Bảng~\ref{tab:p4-luong-tu}):
-Macro-F1 chỉ chênh \so{lt.ALL.d.macro} điểm (không có ý nghĩa thống kê, McNemar $p = \so{lt.ALL.p}$), BC F1 theo ý thậm
-chí tăng nhẹ \so{lt.ALL.d.bcy} điểm, và FPR trên C0, C1 giữ nguyên hoàn toàn.
+số (tránh cắt ngọn ngoại lai); đầu phân loại, đầu gắn thẻ và tầng CRF giữ FP32 để bảo toàn hiệu chuẩn xác
+suất. Tệp giảm từ \so{tb.fp32.mib}~MiB xuống \so{tb.int8.mib}~MiB (khoảng \so{tb.nen} lần); trên toàn
+bộ \so{lt.ALL.n} đoạn kiểm thử, Macro-F1 chênh \so{lt.ALL.d.macro} điểm (không có ý nghĩa thống kê, McNemar
+$p = \so{lt.ALL.p}$) và BC F1 theo ý chênh \so{lt.ALL.d.bcy} điểm (Bảng~\ref{tab:p4-luong-tu}).
 
 \begin{table}[H]
 \centering
 \small
-\caption{Đánh đổi chất lượng khi lượng tử hóa ONNX FP32 $\to$ INT8 trên tập kiểm thử (thang 0--100; FPR tính theo \%;
-cùng tập và cùng ngưỡng đã đóng băng; trong ngoặc là INT8 trừ FP32).}
+\caption{Đánh đổi chất lượng khi lượng tử hóa ONNX FP32 $\to$ INT8 trên tập kiểm thử (thang 0--100; FPR theo \%;
+cùng tập, cùng ngưỡng đã đóng băng; trong ngoặc là INT8 trừ FP32).}
 \label{tab:p4-luong-tu}
 \begin{tabular}{lrcccccc}
 \toprule
@@ -170,12 +161,12 @@ C2 & \so{lt.C2.n} & \so{lt.C2.fp32.macro} & \so{lt.C2.int8.macro} (\so{lt.C2.d.m
 \subsection{Chi phí vận hành trên thiết bị đích}
 \label{sec:yc3-chi-phi}
 
-Bảng~\ref{tab:p4-chi-phi} đối chiếu tổng quan chi phí triển khai và vận hành giữa ba hệ thống.
+Bảng~\ref{tab:p4-chi-phi} so sánh chi phí triển khai và vận hành của ba hệ thống.
 
 \begin{table}[H]
 \centering
 \small
-\caption{Tổng hợp chi phí vận hành của ba hệ thống. ``--'': chưa đo hoặc không đo được từ phía thiết bị người dùng.}
+\caption{Chi phí vận hành của ba hệ thống. ``--'': chưa đo hoặc không đo được từ thiết bị người dùng.}
 \label{tab:p4-chi-phi}
 \begin{tabularx}{\linewidth}{lYYY}
 \toprule
@@ -193,16 +184,12 @@ Chi phí huấn luyện & (vòng loại) & Không huấn luyện & \so{dev.mmber
 \end{tabularx}
 \end{table}
 
-\begin{itemize}
-  \item \textbf{LLM qua API rẻ nhưng không phù hợp mục tiêu sản phẩm:} dù chi phí mỗi 1.000 đoạn là
-        \so{api.C0.usd1000}~USD, phương án API buộc phải gửi nội dung tin nhắn riêng tư ra máy chủ bên ngoài, có độ trễ
-        lớn (p50 \so{api.C0.p50}~s, chậm hơn trên một trăm lần so với SafeViChi v2 trên CPU) và phụ thuộc kết nối mạng.
-  \item \textbf{Chi phí xây dựng dữ liệu huấn luyện thấp:} toàn bộ quy trình gán nhãn lại, sinh hội thoại và lọc độc lập
-        chỉ tốn \so{cp.tong.usd}~USD (Mục~\ref{sec:p1-chiphi}), là chi phí một lần trong giai đoạn phát triển.
-\end{itemize}
+LLM qua API rẻ (\so{api.C0.usd1000}~USD mỗi 1.000 đoạn) nhưng không phù hợp mục tiêu sản phẩm: phải gửi tin nhắn riêng
+tư ra máy chủ bên ngoài, chậm hơn SafeViChi v2 trên CPU trên một trăm lần và phụ thuộc mạng. Chi phí tạo dữ liệu
+huấn luyện của v2 là \so{cp.tong.usd}~USD, trả một lần (Mục~\ref{sec:p1-chiphi}).
 
 \paragraph{Đo hiệu năng, năng lượng và độ nhất quán trên thiết bị đích.}
-Mô hình ONNX INT8 được đánh giá trực tiếp ở chế độ tương tác \textbf{batch~1} (xử lý từng đoạn khi người dùng nhận tin)
+Bản ONNX INT8 được đo ở chế độ tương tác \textbf{batch~1} (xử lý từng đoạn khi người dùng nhận tin)
 trên ba môi trường đích: CPU laptop (\so{tb.a.cpu}, \texttt{onnxruntime}), điện thoại Android (\so{tb.mob.may},
 \texttt{onnxruntime-android}) và trình duyệt (\so{tb.web.trinhduyet}, \so{tb.web.backend}, \texttt{onnxruntime-web}) qua
 ứng dụng web SafeViChi v2 (Bảng~\ref{tab:p4-thiet-bi}, Bảng~\ref{tab:p4-nang-luong} và Bảng~\ref{tab:p4-khop}).
@@ -231,17 +218,17 @@ ONNX INT8 (trình duyệt) & 4 & \so{tb.web.n} & \so{tb.web.p50} & \so{tb.web.p9
 \smallskip
 \parbox{\linewidth}{\footnotesize $^{\dagger}$ Đo trên \so{tb.mob.may} ở cấu hình tối ưu (Total~PSS thực chiếm
 \so{tb.mob.4.pss}~MiB).\\
-$^{*}$ Phần RAM trình duyệt tăng thêm khi suy luận so với trang trống (\so{tb.web.ram.trong}~MiB); đỉnh toàn trình duyệt
-là \so{tb.web.ram.dinh}~MiB (tạm đạt \so{tb.web.ram.nap}~MiB lúc nạp rồi giảm). Dung lượng tải lần đầu là
-\so{tb.web.taive}~MiB, sau đó lưu trong bộ nhớ đệm để chạy ngoại tuyến.}
+$^{*}$ RAM trình duyệt tăng thêm khi suy luận so với trang trống (\so{tb.web.ram.trong}~MiB); đỉnh toàn trình duyệt
+\so{tb.web.ram.dinh}~MiB (tạm lên \so{tb.web.ram.nap}~MiB lúc nạp rồi giảm). Tải lần đầu
+\so{tb.web.taive}~MiB, sau đó lưu bộ nhớ đệm để chạy ngoại tuyến.}
 \end{table}
 
 \begin{table}[H]
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3.5pt}
-\caption{Năng lượng tiêu thụ của bản ONNX INT8 đo từ cảm biến xả pin Windows khi chạy liên tục trên laptop (4 luồng).
-``Tăng thêm'': công suất đang chạy trừ công suất lúc nghỉ.}
+\caption{Năng lượng của bản ONNX INT8, đo bằng cảm biến xả pin Windows khi chạy liên tục trên laptop (4 luồng).
+``Tăng thêm'': công suất khi chạy trừ công suất nghỉ.}
 \label{tab:p4-nang-luong}
 \begin{tabularx}{\linewidth}{@{}lCCCCC@{}}
 \toprule
@@ -256,7 +243,7 @@ Trình duyệt (4 luồng) & \so{tb.web.pnghi} & \so{tb.web.ptai} & \so{tb.web.m
 \begin{table}[H]
 \centering
 \small
-\caption{Chất lượng suy luận của bản triển khai ONNX INT8 trên toàn bộ \so{tb.int8.n} đoạn kiểm thử (C0, C1 và C2; thang
+\caption{Chất lượng của bản ONNX INT8 trên toàn bộ \so{tb.int8.n} đoạn kiểm thử (C0, C1, C2; thang
 0--100).}
 \label{tab:p4-khop}
 \begin{tabularx}{\linewidth}{YCCC}
@@ -270,27 +257,25 @@ ONNX INT8 (trình duyệt, WASM 4 luồng) & \so{tb.web.macro} & \so{tb.web.bcy}
 \end{tabularx}
 \end{table}
 
-Một số kết luận chính về vận hành thực tế:
+Kết luận chính về vận hành thực tế:
 \begin{itemize}
-  \item \textbf{Hiệu năng cao và tiết kiệm tài nguyên trên CPU laptop:} so với PyTorch FP32 (8 luồng), bản ONNX INT8 rút
-        ngắn thời gian nạp mô hình hơn 13 lần (\so{tb.a.torch.8.nap}~s $\to$ \so{tb.a.int8.8.nap}~s), giảm RAM đỉnh gần
-        5 lần (\so{tb.a.torch.8.ram}~MiB $\to$ \so{tb.a.int8.8.ram}~MiB) và đạt độ trễ p50 chỉ \so{tb.a.int8.8.p50}~ms
-        (nhanh hơn cả FP32 trên GPU \so{v2.gpu} ở batch~1 và vượt xa yêu cầu phản hồi thời gian thực).
-  \item \textbf{Triển khai trực tiếp trên điện thoại Android đạt hiệu năng tương đương laptop:} trên \so{tb.mob.may} (4
-        luồng), bản ONNX INT8 đạt độ trễ p50 \so{tb.mob.4.p50}~ms, p95 \so{tb.mob.4.p95}~ms (nhanh hơn laptop CPU ở cùng
-        mức 4 luồng là \so{tb.a.int8.4.p50}~ms), nạp mô hình trong \so{tb.mob.4.nap}~s và RAM đỉnh chỉ
-        \so{tb.mob.4.ram}~MiB (Total~PSS \so{tb.mob.4.pss}~MiB, thấp hơn 31\% so với laptop), đồng thời khớp nhãn
+  \item \textbf{Nhanh và tiết kiệm tài nguyên trên CPU laptop:} so với PyTorch FP32 (8 luồng), bản ONNX INT8 nạp mô
+        hình nhanh hơn 13 lần (\so{tb.a.torch.8.nap}~s $\to$ \so{tb.a.int8.8.nap}~s), giảm RAM đỉnh gần
+        5 lần (\so{tb.a.torch.8.ram}~MiB $\to$ \so{tb.a.int8.8.ram}~MiB), p50 chỉ \so{tb.a.int8.8.p50}~ms
+        (nhanh hơn cả FP32 trên GPU \so{v2.gpu} ở batch~1, đáp ứng yêu cầu phản hồi thời gian thực).
+  \item \textbf{Chạy trực tiếp trên điện thoại Android, hiệu năng tương đương laptop:} trên \so{tb.mob.may} (4
+        luồng), bản ONNX INT8 đạt p50 \so{tb.mob.4.p50}~ms, p95 \so{tb.mob.4.p95}~ms (nhanh hơn laptop CPU cùng
+        4 luồng: \so{tb.a.int8.4.p50}~ms), nạp mô hình \so{tb.mob.4.nap}~s, RAM đỉnh chỉ
+        \so{tb.mob.4.ram}~MiB (Total~PSS \so{tb.mob.4.pss}~MiB, thấp hơn 31\% so với laptop) và khớp nhãn
         \so{tb.mob.parity.khop} với bản FP32 trên tập đối chiếu \so{tb.mob.parity.n} đoạn C0.
-  \item \textbf{Chất lượng ổn định giữa các runtime cục bộ:} trên trọn bộ \so{tb.int8.n} đoạn kiểm thử, bản ONNX INT8
-        trên CPU và trình duyệt đạt Macro-F1 và BC F1 gần như tương đương PyTorch FP32 (Bảng~\ref{tab:p4-khop}), khớp
-        nhãn lần lượt \so{tb.int8.khop} và \so{tb.web.khop.torch} (chênh lệch nhỏ phát sinh từ sai khác số học của lượng
-        tử hóa động ở các đoạn nằm sát ranh giới hai nhãn; riêng trên C0/C1 độ khớp đạt \so{tb.int8.C0.khop} và
-        \so{tb.int8.C1.khop}).
-  \item \textbf{Suy luận trực tiếp trong trình duyệt và tiêu thụ năng lượng:} bản trình duyệt chạy ngoại tuyến qua
-        WebAssembly đạt p50 \so{tb.web.p50}~ms (chậm hơn bản CPU gốc do tập lệnh vector WASM chỉ rộng 128 bit, nhưng vẫn
-        đáp ứng tốt khi xử lý tin nhắn đến theo từng lượt). Phép đo năng lượng sử dụng cảm biến pin Windows qua cửa sổ
-        chạy liên tục tối thiểu \so{tb.b.giay}~giây kèm hai cửa sổ nghỉ trước--sau, ghi nhận mức tiêu thụ tăng thêm rất
-        thấp (\so{tb.b.wh}~Wh trên CPU và \so{tb.web.wh}~Wh trên trình duyệt cho mỗi 1.000 đoạn).
+  \item \textbf{Chất lượng ổn định giữa các runtime cục bộ} (Bảng~\ref{tab:p4-khop}): nhãn lệch so với FP32 do sai
+        khác số học của lượng tử hóa động ở các đoạn sát ranh giới hai nhãn; trên C0/C1 độ khớp đạt
+        \so{tb.int8.C0.khop} và \so{tb.int8.C1.khop}.
+  \item \textbf{Suy luận trong trình duyệt và năng lượng:} bản trình duyệt chạy ngoại tuyến qua
+        WebAssembly đạt p50 \so{tb.web.p50}~ms (chậm hơn bản CPU gốc do lệnh vector WASM chỉ rộng 128 bit, nhưng vẫn
+        đủ để xử lý tin nhắn đến theo từng lượt). Năng lượng được đo bằng cảm biến pin Windows qua cửa sổ
+        chạy liên tục tối thiểu \so{tb.b.giay}~giây kèm hai cửa sổ nghỉ trước--sau; mức tiêu thụ tăng thêm
+        thấp: \so{tb.b.wh}~Wh trên CPU và \so{tb.web.wh}~Wh trên trình duyệt cho mỗi 1.000 đoạn.
 \end{itemize}
 
 \section{Hạn chế và hướng phát triển}
@@ -298,20 +283,20 @@ Một số kết luận chính về vận hành thực tế:
 
 \paragraph{Hạn chế hiện tại.}
 \begin{itemize}
-  \item \textbf{Cỡ mẫu tập kiểm thử còn khiêm tốn} (\so{te.tong} đoạn gốc do thành viên nhóm tự biên soạn), khiến các
-        lát cắt nhỏ theo phương ngữ hoặc kênh giao tiếp chịu biên độ dao động lớn hơn.
-  \item \textbf{Tỉ lệ báo nhầm trên nhóm kịch bản chưa thấy còn cao,} chủ yếu do ngưỡng phân loại hiện dùng chung cho
-        toàn bộ mô hình và thiếu các đoạn đối chứng an toàn tương ứng cho các tình huống ngoài tập huấn luyện.
-  \item \textbf{Hiệu năng giảm trên kịch bản hoàn toàn mới} (Mục~\ref{sec:yc2}) và độ trễ trên trình duyệt WebAssembly
-        còn cao hơn bản CPU gốc.
+  \item \textbf{Tập kiểm thử còn nhỏ} (\so{te.tong} đoạn gốc do thành viên nhóm tự biên soạn), nên các
+        lát cắt nhỏ theo phương ngữ hoặc kênh giao tiếp dao động lớn hơn.
+  \item \textbf{Báo nhầm và hiệu năng trên kịch bản chưa thấy:} FPR cao và Macro-F1 giảm mạnh ở nhóm này
+        (Mục~\ref{sec:p2-yc1}, \ref{sec:yc2}); ngưỡng phân loại hiện dùng chung cho mọi nhãn và được dò trên tập cal
+        mang nhãn LLM.
+  \item \textbf{Độ trễ trên trình duyệt} (WebAssembly) còn cao hơn bản CPU gốc.
 \end{itemize}
 
 \paragraph{Hướng phát triển tiếp theo.}
 \begin{itemize}
-  \item Bổ sung các kịch bản chưa thấy (vay trực tuyến, giả giao hàng, kiểm soát người yêu, chuyển nhầm tiền) cùng tin
-        nhắn thực tế đã ẩn danh và các đoạn đối chứng an toàn để nâng cao độ khái quát.
-  \item Xây dựng tập kiểm định (validation) độc lập do người gán để hiệu chỉnh ngưỡng quyết định riêng cho từng nhãn
+  \item Bổ sung kịch bản chưa thấy (vay trực tuyến, giả giao hàng, kiểm soát người yêu, chuyển nhầm tiền), tin
+        nhắn thực tế đã ẩn danh và đoạn đối chứng an toàn để tăng độ khái quát.
+  \item Xây dựng tập kiểm định (validation) độc lập do người gán để chỉnh ngưỡng riêng cho từng nhãn
         nguy hại, tối ưu đồng thời FPR và độ phủ phát hiện.
-  \item Tăng tốc suy luận trong trình duyệt bằng tăng tốc phần cứng (WebGPU) và đánh giá mở rộng trên các dòng điện thoại
+  \item Tăng tốc suy luận trong trình duyệt bằng phần cứng (WebGPU) và đánh giá thêm trên điện thoại
         tầm trung, cấu hình thấp (kết hợp phương án dự phòng BamiBERT).
 \end{itemize}

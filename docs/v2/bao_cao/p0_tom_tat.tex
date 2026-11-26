@@ -12,23 +12,23 @@ SafeViChi v2 đọc một đoạn hội thoại tiếng Việt (1--8 dòng) và 
 tin nhắn ra ngoài.
 
 \textbf{Thay đổi chính so với SafeViChi v1:}
-SafeViChi v1 chỉ phân loại nhị phân \nhan{HATE}/\nhan{CLEAN} nên chủ yếu nhận diện được nội dung xúc phạm: trên tập kiểm
-thử mới (C0), v1 gắn nhãn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM}, nhưng chỉ \so{C0.v1.dd.r} số đoạn
+SafeViChi v1 chỉ phân loại nhị phân \nhan{HATE}/\nhan{CLEAN} nên chủ yếu bắt được nội dung xúc phạm: trên tập kiểm
+thử mới (C0), v1 gắn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM} nhưng chỉ \so{C0.v1.dd.r} số đoạn
 \nhan{DE_DOA}, \so{C0.v1.qr.r} số đoạn \nhan{QUAY_ROI} và \so{C0.v1.ld.r} số đoạn \nhan{LUA_DAO}.
-SafeViChi v2 chuyển sang 5 nhãn theo tình huống, đọc cả đoạn hội thoại thay vì một câu đơn lẻ, và trích xuất bằng chứng đồng thời
-với phân loại nhãn. Dữ liệu huấn luyện kết hợp hai nguồn có lọc kiểm định: các bình luận thực tế (ViHSD, ViHOS, ViTHSD) được LLM gán nhãn lại và lọc đồng thuận với người gán gốc, cùng các hội thoại tổng hợp theo kịch bản đã qua bước gán nhãn lại độc lập (ẩn nhãn yêu cầu) để lọc nhiễu; tập kiểm thử hoàn toàn do thành viên nhóm tự biên soạn.
+SafeViChi v2 dùng 5 nhãn theo tình huống, đọc cả đoạn hội thoại thay vì một câu và trích bằng chứng cùng lúc với phân
+loại. Dữ liệu huấn luyện gồm hai nguồn đã lọc: bình luận thực tế (ViHSD, ViHOS, ViTHSD) được LLM gán lại nhãn, chỉ giữ mẫu đồng thuận với người gán gốc; và hội thoại tổng hợp theo kịch bản, được gán lại nhãn độc lập (ẩn nhãn yêu cầu) để lọc nhiễu. Tập kiểm thử do thành viên nhóm tự biên soạn toàn bộ.
 
 \textbf{Kết quả trên tập kiểm thử} (\so{te.tong} đoạn gốc C0; \so{te.C1.n} bản biến dạng bề mặt thường
-gặp C1, gồm cả kiểu đã thấy và chưa thấy; \so{te.C2.n} bản biến dạng đổi lớp ký tự Unicode ``điểm mù'' C2, hoàn toàn
-ngoài tập huấn luyện):
+gặp C1, gồm cả kiểu đã thấy và chưa thấy; \so{te.C2.n} bản biến dạng đổi lớp ký tự Unicode ``điểm mù'' C2, không có
+trong tập huấn luyện):
 
 \begin{table}[H]
 \centering
 \small
 \setlength{\tabcolsep}{4.5pt}
 \caption{Kết quả chính trên tập kiểm thử (thang 0--100, tức F1 $\times$ 100). Macro-F1: trung bình F1 trên 5 nhãn;
-Binary-F1: F1 phân biệt nguy hại/an toàn; BC F1: F1 cụm bằng chứng tính theo ý (mức cụm). SafeViChi v1 chỉ có nhãn nhị phân và
-không trích xuất bằng chứng.}
+Binary-F1: F1 phân biệt nguy hại/an toàn; BC F1: F1 bằng chứng theo ý (mức cụm). SafeViChi v1 chỉ có nhãn nhị phân,
+không trích bằng chứng.}
 \label{tab:p0-chinh}
 \begin{tabular}{l c ccc ccc}
 \toprule
@@ -44,31 +44,30 @@ C2 & \so{C2.v1.bin} & \so{C2.llm.macro} & \so{C2.llm.bin} & \so{C2.llm.bcf} & \t
 \end{table}
 
 \begin{itemize}[itemsep=0.05em,topsep=0.1em]
-  \item SafeViChi v2 đạt kết quả cao nhất trên cả ba tập và duy trì hiệu năng ổn định hơn hẳn khi tin nhắn bị biến dạng; trái lại,
-        gpt-oss-120b (API) suy giảm mạnh trên C1, C2 và giảm sâu khả năng trích xuất bằng chứng ở C2 (từ \so{C0.llm.bcf} xuống
-        \so{C2.llm.bcf}).
-  \item Dung lượng trọng số FP32 là \so{v2.trongso}~MiB (dưới ngưỡng 2~GB khi chưa lượng tử hóa), độ trễ trung vị
-        (p50, batch~1) đạt \so{v2.p50}~ms mỗi đoạn trên GPU \so{v2.gpu}. Ở bản triển khai ONNX INT8 cho thiết bị đích,
-        dung lượng giảm còn \so{tb.int8.mib}~MiB (nhỏ hơn \so{tb.nen} lần), độ trễ p50 đạt \so{tb.a.int8.8.p50}~ms trên
+  \item SafeViChi v2 cao nhất trên cả ba tập và ổn định hơn khi tin nhắn bị biến dạng; gpt-oss-120b (API) giảm mạnh
+        trên C1, C2, riêng BC F1 giảm từ \so{C0.llm.bcf} (C0) xuống \so{C2.llm.bcf} (C2).
+  \item Trọng số FP32 nặng \so{v2.trongso}~MiB (dưới ngưỡng 2~GB khi chưa lượng tử hóa), độ trễ trung vị
+        (p50, batch~1) \so{v2.p50}~ms mỗi đoạn trên GPU \so{v2.gpu}. Bản ONNX INT8 cho thiết bị đích còn
+        \so{tb.int8.mib}~MiB (nhỏ hơn \so{tb.nen} lần), p50 \so{tb.a.int8.8.p50}~ms trên
         CPU laptop (8 luồng), \so{tb.mob.4.p50}~ms trên điện thoại Android (4 luồng, RAM đỉnh \so{tb.mob.4.ram}~MiB) và
-        \so{tb.web.p50}~ms trong trình duyệt (4 luồng). Tổng chi phí gọi API LLM để xây dựng dữ liệu huấn luyện là
+        \so{tb.web.p50}~ms trong trình duyệt (4 luồng). Chi phí API LLM để xây dữ liệu huấn luyện tổng cộng
         \so{cp.tong.usd}~USD.
-  \item Hạn chế chính: tỉ lệ báo nhầm (FPR) trên các đoạn an toàn còn cao (\so{C0.v2.fpr} trên C0); hiệu năng giảm mạnh
-        trên kịch bản chưa thấy khi huấn luyện (Macro-F1 giảm từ \so{phan.C0.trongphanphoi.v2.macro} xuống
-        \so{phan.C0.chuathay.v2.macro} trên C0); và suy luận trong trình duyệt hiện chậm hơn đáng kể so với CLI.
+  \item Hạn chế chính: tỉ lệ báo nhầm (FPR) trên đoạn an toàn còn cao (\so{C0.v2.fpr} trên C0); hiệu năng giảm mạnh
+        trên kịch bản chưa thấy khi huấn luyện (Macro-F1 trên C0 giảm từ \so{phan.C0.trongphanphoi.v2.macro} xuống
+        \so{phan.C0.chuathay.v2.macro}); suy luận trong trình duyệt còn chậm hơn đáng kể so với CLI.
 \end{itemize}
 
 \begin{table}[H]
 \centering
 \small
-\caption{Tổng hợp ba yêu cầu cải tiến của ban tổ chức và nội dung thực hiện của nhóm.}
+\caption{Ba yêu cầu cải tiến của ban tổ chức và nội dung nhóm thực hiện.}
 \label{tab:p0-yeucau}
 \begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.28\linewidth}Y}
 \toprule
 \textbf{Yêu cầu của ban tổ chức} & \textbf{Nội dung thực hiện} \\
 \midrule
-1. Giảm giải thích sai và kiểm duyệt sai & Tách nhãn và bằng chứng thành hai đầu ra, hai ngưỡng và hai bộ độ đo riêng; phân tích chi tiết các trường hợp báo nhầm và bỏ sót (Mục~\ref{sec:p2-yc1}). \\
-2. Khái quát trước kiểu né lọc mới & Đánh giá riêng theo từng kiểu biến dạng, kịch bản chưa thấy và giọng vùng miền; kiểm tra chống rò rỉ dữ liệu huấn luyện--kiểm thử; phân tích các trường hợp thất bại (Mục~\ref{sec:yc2}). \\
+1. Giảm giải thích sai và kiểm duyệt sai & Tách nhãn và bằng chứng thành hai đầu ra, hai ngưỡng và hai bộ độ đo riêng; phân tích các ca báo nhầm và bỏ sót (Mục~\ref{sec:p2-yc1}). \\
+2. Khái quát trước kiểu né lọc mới & Đánh giá riêng theo kiểu biến dạng, kịch bản chưa thấy và giọng vùng miền; kiểm tra rò rỉ dữ liệu huấn luyện--kiểm thử; phân tích các ca thất bại (Mục~\ref{sec:yc2}). \\
 3. So sánh phương pháp và chi phí & So sánh SafeViChi v1, LLM qua API, 4 ứng viên mô hình nhỏ và các thử nghiệm ablation; đo dung lượng, bộ nhớ, độ trễ, năng lượng và chi phí API (Mục~\ref{sec:yc3}). \\
 \bottomrule
 \end{tabularx}
