@@ -1,0 +1,65 @@
+{
+  "clean_c0": {
+    "suite": "clean_c0",
+    "seen_in_train": true,
+    "n": 1340,
+    "perturbed_raw_f1": 0.9223816972282141,
+    "perturbed_norm_f1": 0.9181613187227718,
+    "gain_vs_raw_f1": -0.004220378505442213,
+    "perturbed_norm_binary_f1": 0.9260493004663558,
+    "fpr_an_toan": 0.1040268456375839,
+    "evidence_f1": 0.6998688061358361,
+    "evidence_f1_theo_y": 0.7099567860603905,
+    "gain_vs_raw_ev_theo_y": -0.006423525635243399
+  },
+  "accent_strip": {
+    "suite": "accent_strip",
+    "seen_in_train": true,
+    "n": 1216,
+    "perturbed_raw_f1": 0.8715879864152256,
+    "perturbed_norm_f1": 0.8687552235855366,
+    "gain_vs_raw_f1": -0.0028327628296890284,
+    "perturbed_norm_binary_f1": 0.8707991038088125,
+    "newly_missed_harm": 54
+  },
+  "c1_in_dist": {
+    "suite": "c1_in_dist",
+    "seen_in_train": true,
+    "n": 1255,
+    "perturbed_raw_f1": 0.8765823861667619,
+    "perturbed_norm_f1": 0.9009384207835607,
+    "gain_vs_raw_f1": 0.024356034616798805,
+    "perturbed_norm_binary_f1": 0.9143258426966292,
+    "newly_missed_harm": 24
+  },
+  "c1_heldout_controlled": {
+    "suite": "c1_heldout_controlled",
+    "seen_in_train": false,
+    "n": 1153,
+    "perturbed_raw_f1": 0.9123977057233775,
+    "perturbed_norm_f1": 0.917731980547779,
+    "gain_vs_raw_f1": 0.005334274824401519,
+    "perturbed_norm_binary_f1": 0.9330389992641648,
+    "newly_missed_harm": 9
+  },
+  "blindspot_homoglyph": {
+    "suite": "blindspot_homoglyph",
+    "seen_in_train": false,
+    "n": 1203,
+    "perturbed_raw_f1": 0.9000963772598911,
+    "perturbed_norm_f1": 0.8976159535909588,
+    "gain_vs_raw_f1": -0.002480423668932308,
+    "perturbed_norm_binary_f1": 0.9188426252646437,
+    "newly_missed_harm": 22
+  },
+  "blindspot_zero_width": {
+    "suite": "blindspot_zero_width",
+    "seen_in_train": false,
+    "n": 1330,
+    "perturbed_raw_f1": 0.8979251877899775,
+    "perturbed_norm_f1": 0.9019709974471738,
+    "gain_vs_raw_f1": 0.004045809657196253,
+    "perturbed_norm_binary_f1": 0.9061662198391421,
+    "newly_missed_harm": 29
+  }
+}

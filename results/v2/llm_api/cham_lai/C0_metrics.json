@@ -1,0 +1,289 @@
+{
+  "classification": {
+    "n": 334,
+    "macro_f1": 0.7723,
+    "weighted_f1": 0.7837,
+    "accuracy": 0.7964,
+    "per_class": {
+      "AN_TOAN": {
+        "precision": 0.6788,
+        "recall": 0.9688,
+        "f1": 0.7983,
+        "support": 96
+      },
+      "XUC_PHAM": {
+        "precision": 0.8167,
+        "recall": 0.9245,
+        "f1": 0.8673,
+        "support": 53
+      },
+      "QUAY_ROI": {
+        "precision": 0.8846,
+        "recall": 0.451,
+        "f1": 0.5974,
+        "support": 51
+      },
+      "DE_DOA": {
+        "precision": 0.8049,
+        "recall": 0.5323,
+        "f1": 0.6408,
+        "support": 62
+      },
+      "LUA_DAO": {
+        "precision": 0.9714,
+        "recall": 0.9444,
+        "f1": 0.9577,
+        "support": 72
+      }
+    },
+    "binary_harmful_vs_safe": {
+      "precision": 0.9848,
+      "recall": 0.8151,
+      "f1": 0.892,
+      "fpr_an_toan": 0.0312,
+      "fnr_nguy_hai": 0.1849,
+      "tp": 194,
+      "fp": 3,
+      "fn": 44,
+      "tn": 93
+    },
+    "confusion_matrix": {
+      "labels": [
+        "AN_TOAN",
+        "XUC_PHAM",
+        "QUAY_ROI",
+        "DE_DOA",
+        "LUA_DAO"
+      ],
+      "matrix": [
+        [
+          93,
+          1,
+          0,
+          2,
+          0
+        ],
+        [
+          4,
+          49,
+          0,
+          0,
+          0
+        ],
+        [
+          15,
+          5,
+          23,
+          6,
+          2
+        ],
+        [
+          21,
+          5,
+          3,
+          33,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          68
+        ]
+      ]
+    },
+    "calibration": null,
+    "bootstrap_95": {
+      "macro_f1": {
+        "low": 0.7242,
+        "high": 0.8157,
+        "halfwidth": 0.0458
+      },
+      "binary_f1": {
+        "low": 0.8591,
+        "high": 0.9204,
+        "halfwidth": 0.0306
+      }
+    }
+  },
+  "evidence": {
+    "n_harmful_evaluated": 238,
+    "n_safe_evaluated": 96,
+    "he_so_phu": 1.5,
+    "f1_theo_y": {
+      "precision": 0.6783,
+      "recall": 0.5403,
+      "f1": 0.5765
+    },
+    "f1_muc_tu": {
+      "precision": 0.6608,
+      "recall": 0.4937,
+      "f1": 0.5335
+    },
+    "safe_false_highlight_rate": 0.0312,
+    "harmful_empty_evidence_rate": 0.2185,
+    "word_length_ratio": 0.561,
+    "non_verbatim_phrase_rate": 0.0766,
+    "total_pred_phrases": 274,
+    "total_non_verbatim_phrases": 21
+  },
+  "output_reliability": {
+    "n": 334,
+    "valid_output_rate": 1.0,
+    "invalid_label_rate": 0.0,
+    "parse_error_rate": 0.0,
+    "refusal_rate": 0.0
+  },
+  "slices": {
+    "bien_dang": {
+      "C0": {
+        "n": 334,
+        "macro_f1": 0.7723,
+        "binary_f1": 0.892,
+        "fpr_an_toan": 0.0312,
+        "evidence_f1_theo_y": 0.5765,
+        "evidence_f1_muc_tu": 0.5335,
+        "safe_false_highlight_rate": 0.0312
+      }
+    },
+    "giong_vung": {
+      "bac": {
+        "n": 112,
+        "macro_f1": 0.7559,
+        "binary_f1": 0.8889,
+        "fpr_an_toan": 0.0303,
+        "evidence_f1_theo_y": 0.6152,
+        "evidence_f1_muc_tu": 0.5794,
+        "safe_false_highlight_rate": 0.0303
+      },
+      "nam": {
+        "n": 111,
+        "macro_f1": 0.8105,
+        "binary_f1": 0.9054,
+        "fpr_an_toan": 0.0323,
+        "evidence_f1_theo_y": 0.5967,
+        "evidence_f1_muc_tu": 0.5445,
+        "safe_false_highlight_rate": 0.0323
+      },
+      "trung": {
+        "n": 111,
+        "macro_f1": 0.7279,
+        "binary_f1": 0.8811,
+        "fpr_an_toan": 0.0312,
+        "evidence_f1_theo_y": 0.5174,
+        "evidence_f1_muc_tu": 0.4763,
+        "safe_false_highlight_rate": 0.0312
+      },
+      "worst_group_macro_f1": 0.7279,
+      "region_gap_max_min": 0.0826
+    },
+    "phan_test": {
+      "chua_thay": {
+        "n": 149,
+        "macro_f1": 0.5299,
+        "binary_f1": 0.8023,
+        "fpr_an_toan": 0.0652,
+        "evidence_f1_theo_y": 0.5084,
+        "evidence_f1_muc_tu": 0.4786,
+        "safe_false_highlight_rate": 0.0652
+      },
+      "trong_phan_phoi": {
+        "n": 185,
+        "macro_f1": 0.8484,
+        "binary_f1": 0.9535,
+        "fpr_an_toan": 0.0,
+        "evidence_f1_theo_y": 0.6286,
+        "evidence_f1_muc_tu": 0.5753,
+        "safe_false_highlight_rate": 0.0
+      }
+    },
+    "bien_dang_x_nhom": {
+      "C0_bac": {
+        "n": 112,
+        "macro_f1": 0.7559,
+        "binary_f1": 0.8889,
+        "fpr_an_toan": 0.0303,
+        "evidence_f1_theo_y": 0.6152,
+        "evidence_f1_muc_tu": 0.5794,
+        "safe_false_highlight_rate": 0.0303
+      },
+      "C0_trung": {
+        "n": 111,
+        "macro_f1": 0.7279,
+        "binary_f1": 0.8811,
+        "fpr_an_toan": 0.0312,
+        "evidence_f1_theo_y": 0.5174,
+        "evidence_f1_muc_tu": 0.4763,
+        "safe_false_highlight_rate": 0.0312
+      },
+      "C0_nam": {
+        "n": 111,
+        "macro_f1": 0.8105,
+        "binary_f1": 0.9054,
+        "fpr_an_toan": 0.0323,
+        "evidence_f1_theo_y": 0.5967,
+        "evidence_f1_muc_tu": 0.5445,
+        "safe_false_highlight_rate": 0.0323
+      },
+      "C0_da_thay": {
+        "n": 185,
+        "macro_f1": 0.8484,
+        "binary_f1": 0.9535,
+        "fpr_an_toan": 0.0,
+        "evidence_f1_theo_y": 0.6286,
+        "evidence_f1_muc_tu": 0.5753,
+        "safe_false_highlight_rate": 0.0
+      },
+      "C0_chua_thay": {
+        "n": 149,
+        "macro_f1": 0.5299,
+        "binary_f1": 0.8023,
+        "fpr_an_toan": 0.0652,
+        "evidence_f1_theo_y": 0.5084,
+        "evidence_f1_muc_tu": 0.4786,
+        "safe_false_highlight_rate": 0.0652
+      }
+    },
+    "so_luot": {
+      "1_luot": {
+        "n": 108,
+        "macro_f1": 0.8037,
+        "binary_f1": 0.9412,
+        "fpr_an_toan": 0.0,
+        "evidence_f1_theo_y": 0.6006,
+        "evidence_f1_muc_tu": 0.5533,
+        "safe_false_highlight_rate": 0.0
+      },
+      "nhieu_luot": {
+        "n": 226,
+        "macro_f1": 0.7462,
+        "binary_f1": 0.8696,
+        "fpr_an_toan": 0.05,
+        "evidence_f1_theo_y": 0.5661,
+        "evidence_f1_muc_tu": 0.5249,
+        "safe_false_highlight_rate": 0.05
+      }
+    },
+    "cach_gan": {
+      "llm_nguoi_duyet": {
+        "n": 9,
+        "macro_f1": 0.3846,
+        "binary_f1": 0.7143,
+        "fpr_an_toan": 0.0,
+        "evidence_f1_theo_y": 0.468,
+        "evidence_f1_muc_tu": 0.4222,
+        "safe_false_highlight_rate": 0.0
+      },
+      "nguoi": {
+        "n": 325,
+        "macro_f1": 0.7789,
+        "binary_f1": 0.8979,
+        "fpr_an_toan": 0.0312,
+        "evidence_f1_theo_y": 0.5808,
+        "evidence_f1_muc_tu": 0.5378,
+        "safe_false_highlight_rate": 0.0312
+      }
+    }
+  }
+}

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2f6b3a" />
+  <title>SafeViChi – Mỗi tin nhắn, một vòng tay bảo vệ</title>
+  <meta name="description" content="SafeViChi phát hiện tin nhắn xúc phạm, quấy rối, đe dọa, lừa đảo tiếng Việt ngay trên máy bạn." />
+</head>
+<body>
+  <!-- Phông nền cố định: tán lá, khoảng trời và vòng người (vẽ bằng SVG). -->
+  <svg id="ring" class="ring-art" aria-hidden="true" focusable="false"></svg>
+  <div id="art-layers" class="art-layers" aria-hidden="true"></div>
+
+  <!-- Hai màn xếp chồng: Trang chủ (cuộn xuống xem tổng quan) → Trò chuyện thử nghiệm -->
+  <div class="track" id="track" data-step="0">
+
+    <!-- 1. Trang chủ -->
+    <div class="panel panel-home" id="panel-home" aria-label="Trang chủ" data-pos="current">
+      <section class="landing" aria-labelledby="hero-title">
+        <div class="hero">
+          <p class="eyebrow">Phát hiện tin nhắn nguy hại tiếng Việt</p>
+          <h1 id="hero-title">SafeViChi</h1>
+          <p class="tagline">Mỗi tin nhắn, một vòng tay bảo vệ.</p>
+          <button id="start" class="btn-start" type="button">Bắt đầu</button>
+        </div>
+        <a class="scroll-down" id="open-about" href="#thong-tin">
+          <span>Tìm hiểu thêm</span>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </section>
+
+      <!-- Trang tổng quan hệ thống: nằm ngay dưới trang chủ, cuộn xuống để xem. Nội dung đang là bản mẫu. -->
+      <div class="about" id="thong-tin" aria-label="Tổng quan hệ thống">
+        <header class="about-bar">
+          <span class="about-bar-pad" aria-hidden="true"></span>
+          <nav class="about-nav" aria-label="Các phần">
+            <a href="#ab-boi-canh" data-sec="ab-boi-canh">Bối cảnh</a>
+            <a href="#ab-san-pham" data-sec="ab-san-pham">Sản phẩm</a>
+            <a href="#ab-kien-truc" data-sec="ab-kien-truc">Kiến trúc</a>
+            <a href="#ab-ket-qua" data-sec="ab-ket-qua">Kết quả</a>
+            <button class="nav-try" type="button" data-about-start>Dùng thử</button>
+          </nav>
+          <span class="about-bar-pad" aria-hidden="true"></span>
+          <span class="read-prog" id="read-prog" aria-hidden="true"></span>
+        </header>
+
+        <!-- 01 Bối cảnh -->
+        <section class="about-sec sec-photo" id="ab-boi-canh" aria-labelledby="ab-boi-canh-h">
+          <!-- Ảnh nền tạm do nhóm cung cấp; thay bằng ảnh có quyền sử dụng trước khi đưa lên mạng (public/anh/boi-canh.jpg). -->
+          <div class="photo-bg" aria-hidden="true"></div>
+          <div class="sec-inner">
+            <div class="photo-text">
+              <div class="sec-head reveal"><h3 id="ab-boi-canh-h">Bối cảnh</h3></div>
+              <div class="photo-lede">
+                <p class="reveal">Không gian số mở ra vô vàn cơ hội để thế hệ trẻ học hỏi, kết nối và khám phá thế giới. Tuy nhiên, song hành với những cơ hội ấy là các nguy cơ ngày càng tinh vi, từ bắt nạt trực tuyến, lừa đảo đến dụ dỗ và thao túng tâm lý, ẩn mình ngay trong những cuộc trò chuyện tưởng chừng vô hại.</p>
+                <p class="reveal">Trước sự phát triển nhanh chóng của công nghệ, bảo vệ thế hệ trẻ không chỉ là ngăn chặn nội dung độc hại, mà còn là chủ động nhận diện nguy cơ, cảnh báo kịp thời và giúp các em tự tin tương tác trên môi trường số.</p>
+                <p class="reveal">Một không gian mạng an toàn hơn cần được xây dựng trên nền tảng công nghệ thông minh, thấu hiểu ngữ cảnh và tôn trọng quyền riêng tư.</p>
+              </div>
+            </div>
+            <ul class="law-row">
+              <li class="reveal"><span class="law-id">Luật 24/2018/QH14 · Điều 29</span><h5>Luật An ninh mạng</h5><p>Doanh nghiệp phải ngăn chặn, gỡ bỏ nội dung gây hại cho trẻ em.</p></li>
+              <li class="reveal"><span class="law-id">QĐ 830/QĐ-TTg</span><h5>Bảo vệ trẻ em trên môi trường mạng</h5><p>Chương trình quốc gia giai đoạn 2021–2025.</p></li>
+              <li class="reveal"><span class="law-id">NĐ 147/2024/NĐ-CP</span><h5>Quản lý dịch vụ Internet</h5><p>Tài khoản trẻ dưới 16 tuổi đăng ký bằng thông tin cha mẹ.</p></li>
+              <li class="reveal"><span class="law-id">Luật 91/2025/QH15</span><h5>Bảo vệ dữ liệu cá nhân</h5><p>Có hiệu lực từ 01/01/2026.</p></li>
+            </ul>
+          </div>
+          <button class="sec-next" type="button" aria-label="Tới mục tiếp theo"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        </section>
+
+        <!-- 02 Sản phẩm -->
+        <section class="about-sec" id="ab-san-pham" aria-labelledby="ab-san-pham-h">
+          <div class="sec-inner">
+            <div class="prod-top">
+              <div>
+                <div class="sec-head reveal"><h3 id="ab-san-pham-h">SafeViChi 2.0</h3></div>
+                <p class="prod-tag reveal">Thấu hiểu ngữ cảnh, chủ động nhận diện nguy cơ.</p>
+                <p class="sec-lede reveal">SafeViChi 2.0 là mô hình AI chuyên nhận diện nội dung nguy hại trong giao tiếp tiếng Việt, hướng tới bảo vệ trẻ em và người trẻ trên môi trường số.</p>
+              </div>
+            </div>
+            <div class="prod-cols">
+              <div class="prod-col">
+                <h4 class="col-h reveal">Tính năng nổi bật</h4>
+                <ul class="feat-list">
+                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h11M4 11h16M4 16h9"/></svg></span><div><h5>Thấu hiểu ngữ cảnh hội thoại</h5><p>Phân tích tối đa 8 lượt gần nhất, phát hiện nguy cơ mà từng tin nhắn riêng lẻ có thể bỏ sót.</p></div></li>
+                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19l4-1 10-10-3-3L6 15z"/><path d="M14 7l3 3"/></svg></span><div><h5>Nhận diện có căn cứ</h5><p>Phân loại kèm trích xuất bằng chứng nguyên văn, giúp kết quả trực quan và dễ giải thích.</p></div></li>
+                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10.5 17.5h3"/></svg></span><div><h5>Xử lý trực tiếp trên thiết bị</h5><p>Toàn bộ quá trình phân tích chạy ngay trên trình duyệt, hội thoại không cần gửi đến máy chủ.</p></div></li>
+                </ul>
+              </div>
+              <div class="prod-col">
+                <h4 class="col-h reveal">Phạm vi nhận diện</h4>
+                <p class="col-sub reveal">SafeViChi 2.0 phân loại nội dung hội thoại thành 5 nhóm:</p>
+                <ul class="scope-list">
+                  <li class="reveal" style="--c: var(--at)"><b>An toàn</b><span>Nội dung giao tiếp thông thường.</span></li>
+                  <li class="reveal" style="--c: var(--xp)"><b>Xúc phạm</b><span>Lăng mạ, miệt thị, chế giễu hoặc hạ thấp người khác.</span></li>
+                  <li class="reveal" style="--c: var(--qr)"><b>Quấy rối</b><span>Dụ dỗ, làm phiền hoặc có hành vi tiếp cận không phù hợp.</span></li>
+                  <li class="reveal" style="--c: var(--dd)"><b>Đe dọa</b><span>Uy hiếp, đe dọa gây tổn hại hoặc ép buộc người khác.</span></li>
+                  <li class="reveal" style="--c: var(--ld)"><b>Lừa đảo</b><span>Gian dối nhằm chiếm đoạt tài sản hoặc thông tin cá nhân.</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <button class="sec-next" type="button" aria-label="Tới mục tiếp theo"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        </section>
+
+        <!-- 03 Kiến trúc -->
+        <section class="about-sec" id="ab-kien-truc" aria-labelledby="ab-kien-truc-h">
+          <div class="sec-inner">
+            <div class="sec-head reveal"><h3 id="ab-kien-truc-h">Kiến trúc mô hình</h3></div>
+            <p class="sec-lede arch-lede reveal">Kiến trúc học đa nhiệm kết hợp biểu diễn ngữ cảnh và đặc trưng cấp byte để đồng thời phân loại hội thoại và trích xuất bằng chứng nguy hại.</p>
+            <div class="arch reveal" id="arch" role="img" aria-label="Sơ đồ kiến trúc: đầu vào hội thoại đi qua hai nhánh mmBERT-base và Byte-level CNN, hợp nhất bằng cổng gated fusion, rồi tách thành Classification Head và BIO cộng CRF, cuối cùng ra nhãn phân loại kèm bằng chứng">
+              <svg class="arch-lines" aria-hidden="true"></svg>
+              <div class="arch-node" data-n="in" style="grid-area: in" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg></span><h5>Conversation Input</h5><p>1–8 lượt hội thoại · Tối đa 512 token</p></div>
+              <div class="arch-node arch-main" data-n="bert" style="grid-area: bert" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5l9 4.5 9-4.5"/></svg></span><h5>mmBERT-base</h5><p>Biểu diễn ngữ cảnh hội thoại</p></div>
+              <div class="arch-node arch-sub" data-n="cnn" style="grid-area: cnn" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 5.5v2M16 5.5h3M5 16h3M17.5 16v3"/></svg></span><h5>Byte-level CNN</h5><p>Biểu diễn đặc trưng cấp byte</p></div>
+              <div class="arch-fuse" data-n="fuse" style="grid-area: fuse"><span class="fuse-dot" data-n="fuse-dot">σ</span><span class="fuse-k">Gated<br>fusion</span></div>
+              <div class="arch-node" data-n="cls" style="grid-area: cls" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V14M9 20V8M14 20V11M19 20V4"/><path d="M2.5 20.5h19"/></svg></span><h5>Classification Head</h5><p>Phân loại 5 nhãn</p></div>
+              <div class="arch-node" data-n="bio" style="grid-area: bio" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h6M15 12h6M3 18h12"/><rect x="9" y="9.5" width="6" height="5" rx="1"/></svg></span><h5>BIO + CRF</h5><p>Trích xuất bằng chứng</p></div>
+              <div class="arch-node arch-out" data-n="out" style="grid-area: out" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><h5>Prediction &amp; Evidence</h5><p>Nhãn phân loại + Bằng chứng</p></div>
+            </div>
+            <div class="spec-row">
+              <div class="spec reveal">
+                <p class="spec-num">13.392</p>
+                <h5>mẫu huấn luyện</h5>
+                <ul class="kw"><li>Dữ liệu thực tái gán nhãn bằng LLM</li><li>Hội thoại tổng hợp theo kịch bản</li></ul>
+              </div>
+              <div class="spec reveal">
+                <p class="spec-num">3<small> kiểu biến dạng</small></p>
+                <h5>Chống né lọc</h5>
+                <ul class="kw"><li>Bỏ dấu</li><li>Teencode</li><li>Lỗi chính tả</li><li>Nhất quán gốc ↔ biến dạng</li></ul>
+              </div>
+              <div class="spec reveal">
+                <p class="spec-num">−74,4%<small> kích thước</small></p>
+                <div class="size-bars" role="img" aria-label="Kích thước mô hình: FP32 1.178 MiB, INT8 301 MiB">
+                  <span class="sb-k">FP32</span><span class="sb-bar"><i style="width: 100%"></i></span><span class="sb-v">1.178 MiB</span>
+                  <span class="sb-k">INT8</span><span class="sb-bar"><i class="sb-new" style="width: 25.6%"></i></span><span class="sb-v">301 MiB</span>
+                </div>
+                <ul class="kw"><li>ONNX</li><li>INT8</li><li>ONNX Runtime Web</li><li>Web Worker</li></ul>
+              </div>
+            </div>
+          </div>
+          <button class="sec-next" type="button" aria-label="Tới mục tiếp theo"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        </section>
+
+        <!-- 05 Kết quả -->
+        <section class="about-sec" id="ab-ket-qua" aria-labelledby="ab-ket-qua-h">
+          <div class="sec-inner">
+            <div class="res-head">
+              <div>
+                <div class="sec-head reveal"><h3 id="ab-ket-qua-h">Kết quả thực nghiệm</h3></div>
+                <p class="sec-lede reveal">So với SafeViChi 1.0 và LLM gpt-oss-120b qua API, trên cùng bộ test do người trong nhóm tự viết.</p>
+              </div>
+              <dl class="sets reveal">
+                <div><dt>C0</dt><dd>334 đoạn gốc</dd></div>
+                <div><dt>C1</dt><dd>668 bản biến dạng thường gặp</dd></div>
+                <div><dt>C2</dt><dd>668 bản biến dạng chưa từng thấy khi train</dd></div>
+              </dl>
+            </div>
+            <div class="res-panels reveal">
+              <div class="tbl-wrap" id="res-main">
+                <table class="tbl">
+                  <thead><tr><th>Tập</th><th class="sys">Hệ</th><th>Macro-F1</th><th>Binary-F1</th><th>Báo nhầm (FPR)</th><th>Bằng chứng F1</th></tr></thead>
+                  <tbody>
+                    <tr class="grp"><td rowspan="3">C0</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>31,2</td><td>0,0%</td><td>–</td></tr>
+                    <tr><td class="sys">gpt-oss-120b</td><td>77,2</td><td>89,2</td><td>3,1%</td><td>70,7</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>86,5</td><td>92,9</td><td>10,4%</td><td>83,0</td></tr>
+                    <tr class="grp"><td rowspan="3">C1</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>31,0</td><td>1,6%</td><td>–</td></tr>
+                    <tr><td class="sys">gpt-oss-120b</td><td>58,5</td><td>74,5</td><td>10,9%</td><td>56,1</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>78,6</td><td>90,3</td><td>10,9%</td><td>76,5</td></tr>
+                    <tr class="grp"><td rowspan="3">C2</td><td class="sys">SafeViChi 1.0</td><td>–</td><td>39,5</td><td>4,2%</td><td>–</td></tr>
+                    <tr><td class="sys">gpt-oss-120b</td><td>62,7</td><td>77,9</td><td>4,2%</td><td>32,2</td></tr>
+                    <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>77,1</td><td>90,9</td><td>10,4%</td><td>75,3</td></tr>
+                  </tbody>
+                </table>
+                <p class="note">F1 nhân 100. Binary-F1: gộp 4 nhãn nguy hại làm một. FPR: tỉ lệ câu an toàn bị báo nguy hại. SafeViChi 1.0 chỉ có nhãn nhị phân, không trả bằng chứng.</p>
+              </div>
+            </div>
+          </div>
+          <button class="sec-next" type="button" aria-label="Tới mục tiếp theo"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        </section>
+
+        <!-- Kết thúc -->
+        <section class="about-sec about-end" id="ab-ket-thuc" aria-labelledby="ab-ket-thuc-h">
+          <div class="sec-inner end-inner">
+            <svg class="art art-end reveal" id="art-closing"></svg>
+            <h3 class="reveal" id="ab-ket-thuc-h">Thử ngay với hội thoại mẫu</h3>
+            <div class="foot-actions reveal">
+              <button class="btn-start" type="button" data-about-start>Bắt đầu thử</button>
+              <a class="btn-ghost" href="https://github.com/thaoanhlehoang/SafeViChi/blob/v2-final/docs/v2/bao_cao/bao_cao_v2.pdf" target="_blank" rel="noopener">Đọc báo cáo đầy đủ</a>
+            </div>
+            <p class="end-foot">SafeViChi · AI2026</p>
+          </div>
+        </section>
+      </div>
+      <button class="to-top" id="close-about" type="button" aria-label="Lên đầu trang"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+    </div>
+
+    <!-- 2. Trò chuyện thử nghiệm -->
+    <div class="panel panel-chat" id="panel-app" aria-label="Trò chuyện" data-pos="after" inert>
+      <main class="chat-shell" id="chat-shell">
+        <!-- Cột trái: danh sách cuộc trò chuyện -->
+        <aside class="col-contacts" aria-label="Cuộc trò chuyện">
+          <header class="contacts-head">
+            <h2>Tin nhắn</h2>
+            <div class="contacts-actions">
+              <button class="text-btn new-chat-btn" id="new-chat" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Mới
+              </button>
+              <button class="text-btn" type="button" data-go="0">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Trang chủ
+              </button>
+            </div>
+          </header>
+          <label class="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+            <input id="contact-search" type="search" placeholder="Tìm cuộc trò chuyện" aria-label="Tìm cuộc trò chuyện">
+          </label>
+          <ul class="contact-list" id="contact-list"></ul>
+        </aside>
+
+        <!-- Cột giữa: khung chat -->
+        <section class="col-chat" aria-label="Khung chat">
+          <header class="chat-head">
+            <span class="avatar" id="chat-avatar"></span>
+            <div class="chat-who"><h3 id="chat-name"></h3><p id="chat-sub"></p></div>
+            <button class="ai-toggle" id="ai-toggle" type="button" aria-pressed="true" aria-controls="ai-panel">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="8" width="16" height="11" rx="3.5"/><path d="M12 8V4.5"/><circle cx="12" cy="3.6" r="1.1"/><circle cx="9" cy="13.2" r="1.3" class="eye-dot"/><circle cx="15" cy="13.2" r="1.3" class="eye-dot"/><path d="M2 12.5v3M22 12.5v3"/></svg>
+              <span>Phân tích</span>
+            </button>
+          </header>
+          <ol class="messages" id="messages" aria-live="polite"></ol>
+          <div class="safety-bar" id="safety-bar" role="status" aria-live="polite" hidden></div>
+          <div class="send-warn" id="send-warn" role="alertdialog" aria-labelledby="warn-title" aria-describedby="warn-desc" hidden>
+            <svg viewBox="0 0 24 24" class="warn-icon" aria-hidden="true"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.3" r=".6"/></svg>
+            <div class="warn-body">
+              <h4 id="warn-title"></h4>
+              <p id="warn-desc">Bạn có muốn sửa trước khi gửi không?</p>
+            </div>
+            <div class="warn-actions">
+              <button type="button" class="warn-send" id="warn-send">Vẫn gửi</button>
+              <button type="button" class="warn-edit" id="warn-edit">Chỉnh sửa</button>
+            </div>
+          </div>
+          <form class="composer" id="composer" autocomplete="off">
+            <div class="sender-switch" role="group" aria-label="Gửi với tư cách">
+              <button type="button" data-from="me" aria-pressed="true">Tôi</button>
+              <button type="button" data-from="them" aria-pressed="false">Người kia</button>
+            </div>
+            <input id="composer-input" maxlength="300" placeholder="Đang nạp mô hình ONNX…" aria-label="Nội dung tin nhắn">
+            <button class="send" id="composer-send" type="submit" aria-disabled="true">Đang tải…</button>
+          </form>
+        </section>
+
+        <!-- Cột phải: AI phân tích -->
+        <aside class="col-ai" id="ai-panel" aria-label="Phân tích AI">
+          <div class="ai-inner">
+            <header class="ai-head">
+              <div class="ai-head-text">
+                <h3>Phân tích AI realtime</h3>
+                <p class="ai-target-kicker" id="ai-kicker"></p>
+              </div>
+              <span class="ai-engine" id="ai-engine">Đang tải…</span>
+            </header>
+            <div class="ai-body">
+              <div class="ai-summary" id="ai-summary"></div>
+              <section class="ai-step ai-card">
+                <h4><span>1</span>Bằng chứng</h4>
+                <ul class="evidence" id="ai-evidence"></ul>
+              </section>
+              <section class="ai-step ai-card">
+                <h4><span>2</span>Độ tin cậy</h4>
+                <ul class="probs" id="ai-probs"></ul>
+                <div class="verdict-wrap" id="ai-verdict"></div>
+              </section>
+              <section class="ai-step ai-card">
+                <h4><span>3</span>Đoạn hội thoại gửi vào mô hình</h4>
+                <ol class="ctx-list" id="ai-context"></ol>
+              </section>
+            </div>
+          </div>
+        </aside>
+        <!-- Hộp tải mô hình: che cả màn chat cho tới khi mô hình sẵn sàng -->
+        <div class="model-loader" id="model-loader" role="dialog" aria-modal="true" aria-labelledby="loader-title" aria-describedby="loader-stage">
+          <div class="loader-card">
+            <button class="text-btn loader-back" type="button" data-go="0">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trang chủ
+            </button>
+            <h3 id="loader-title">Đang tải mô hình</h3>
+            <p class="loader-stage" id="loader-stage">Đang tìm mô hình…</p>
+            <div class="loader-bar" id="loader-bar" role="progressbar" aria-label="Tiến trình tải mô hình" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+            <div class="loader-meta"><span id="loader-pct">0%</span><span id="loader-bytes"></span></div>
+            <button class="loader-retry" id="loader-retry" type="button" hidden>Thử lại</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

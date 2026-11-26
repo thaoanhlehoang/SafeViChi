@@ -1,0 +1,105 @@
+\documentclass[11pt,a4paper]{article}
+
+% Biên dịch bằng pdfLaTeX (chạy 2 lần để có mục lục):
+%   python -m src.v2.eval.xuat_so_lieu_bao_cao
+%   cd docs/v2/bao_cao && pdflatex bao_cao_v2.tex && pdflatex bao_cao_v2.tex
+% Mọi con số lấy qua \so{khoa} từ so_lieu.tex (sinh tự động từ results/v2). Không gõ số tay.
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage[a4paper,left=25mm,right=22mm,top=22mm,bottom=22mm]{geometry}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\definecolor{navy}{HTML}{17365D}
+\definecolor{nenxanh}{HTML}{EAF2F8}
+\definecolor{nenxam}{HTML}{F3F4F6}
+\definecolor{chuxam}{HTML}{666666}
+% Màu 3 hệ trong biểu đồ (thứ tự cố định: v1, LLM API, v2)
+\definecolor{mauvmot}{HTML}{257DE0}
+\definecolor{maullm}{HTML}{F47230}
+\definecolor{mauvhai}{HTML}{00B894}
+
+\hypersetup{
+  colorlinks=true, linkcolor=navy, urlcolor=navy, citecolor=navy,
+  pdftitle={SafeViChi v2 - Báo cáo vòng chung kết},
+  pdfauthor={Nhóm SafeViChi}
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\setlist{itemsep=0.2em,topsep=0.2em}
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% ---------- Số liệu sinh tự động ----------
+\makeatletter
+\newcommand{\soset}[2]{\expandafter\def\csname so@#1\endcsname{#2}}
+\newcommand{\so}[1]{\ifcsname so@#1\endcsname\csname so@#1\endcsname\else
+  \textbf{\textcolor{red}{??}}\PackageWarning{so}{Thieu so lieu: #1}\fi}
+\makeatother
+\input{so_lieu.tex}
+
+% Tên nhãn, đường dẫn tệp
+\newcommand{\nhan}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\tep}[1]{\nolinkurl{#1}}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\-}
+% Hộp ghi nhớ ngắn
+\newcommand{\ghinho}[1]{\par\noindent\colorbox{nenxanh}{\parbox{\dimexpr\linewidth-2\fboxsep}{\small #1}}\par}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small SafeViChi v2}
+\fancyhead[R]{\small Báo cáo vòng chung kết}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{15pt}
+
+\begin{document}
+
+% ---------- Trang bìa ----------
+\begin{titlepage}
+\centering
+\vspace*{30mm}
+{\Huge\bfseries\color{navy} SafeViChi\par}
+\vspace{6mm}
+{\LARGE Phát hiện tin nhắn tiếng Việt nguy hại theo tình huống,\\ kèm bằng chứng, chạy trên thiết bị\par}
+\vspace{12mm}
+{\large Báo cáo vòng chung kết\par}
+\vspace{40mm}
+\begin{tabular}{ll}
+Phiên bản mã & nhánh \tep{v2-final} \\
+Dữ liệu train/test & commit \texttt{\so{v2.datarev}} \\
+Ngày nộp & 26/11/2026 \\
+\end{tabular}
+\vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\input{p0_tom_tat.tex}
+\input{p1_thay_doi_du_lieu.tex}
+\input{p2_mo_hinh_yc1.tex}
+\input{p3_yc2.tex}
+\input{p4_yc3_han_che.tex}
+
+\end{document}

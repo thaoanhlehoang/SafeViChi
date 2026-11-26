@@ -1,0 +1,65 @@
+# Thẻ dữ liệu SafeViChi v2 – tập train (bàn giao đợt 1, 20/11/2026)
+
+Số liệu trong thẻ này lấy từ `data/v2/train_stats.json` (sinh bằng `python -m src.v2.data.split`); nếu chạy lại,
+xem file đó thay vì số ở đây. Checksum: `data/v2/CHECKSUMS.json`.
+
+## Có gì
+
+| File | Nội dung |
+| --- | --- |
+| `data/v2/train.jsonl` | Tập train, 13.392 dòng, đã trộn thứ tự (seed 42). Chỉ có `id`, `text`, `nhan`, `bang_chung` |
+| `data/v2/so_sanh.jsonl` | Cùng các dòng, cùng thứ tự, đủ mọi trường + `meta`. Dùng để phân tích theo nhóm, ghép theo `id` |
+| `data/v2/train_stats.json` | Phân bố nhãn, nguồn, số dòng; checksum file nguồn |
+| `data/v2/test.jsonl` | Test người viết, 334 đoạn (289 đoạn đợt 1, 45 đoạn `XUC_PHAM` chửi rủa thêm 23/11), cùng 4 trường như train. Tạo lại từ `data/v2/raw/test_A.csv`…`test_D.csv` bằng `python -m src.v2.data.load_test_nguoi_viet ... --xuat-test` |
+| `data/v2/test_day_du.jsonl` | Cùng các dòng test, thêm `giong_vung` (bac/trung/nam), `phan_test` (trong_phan_phoi/chua_thay), `kich_ban`, nhãn người và nhãn LLM. Dùng để tính điểm theo vùng miền và kịch bản chưa thấy |
+| `data/v2/test_perturb_C1.jsonl` | Test biến dạng C1 bản gọn (668 dòng = 334 × 2 kiểu C1 ngẫu nhiên, seed 42), đã gắn sẵn `giong_vung`, `phan_test`, `kich_ban` |
+| `data/v2/test_perturb_C2.jsonl` | Test biến dạng C2 điểm mù bản gọn (668 dòng = 334 × 2 kiểu C2 ngẫu nhiên, seed 42), 100% kiểu né lọc chưa thấy |
+| `data/v2/test_stats.json` | Thống kê tổng hợp tập test gốc `C0`, `bien_dang_C1`, `bien_dang_C2`, và 15 lát cắt `lat_cat_C0_C1_C2` (các file lát cắt rời trong `data/v2/test_perturb/` được bỏ khỏi git; `src/v2/eval/evaluate.py` lọc trực tiếp in-memory hoặc tái tạo cục bộ bằng `src/v2/data/tach_test_bien_dang.py`) |
+| `data/v2/validation.jsonl` | **Chưa có.** Chọn từ kho test, do người gán |
+
+## Định dạng mỗi dòng
+
+`train.jsonl` chỉ có `id`, `text`, `nhan`, `bang_chung`. `so_sanh.jsonl` có đủ định dạng trong `CLAUDE.md`: thêm
+`nguon`, `nguon_id`, `cach_gan`, `the`, `so_dong`, `bien_dang` (hiện chỉ `C0`), `nhom_trung`, `split` (= `train`), cộng
+trường phụ `meta` (nguồn thật/sinh, nhãn gốc, kịch bản, kênh, giọng... dùng để phân tích theo nhóm, **không đưa vào
+mô hình**).
+
+- `text` là đoạn hội thoại 1–8 dòng ngăn bằng `\n`, mỗi dòng là toàn bộ lượt nói của một người, không ghi người nói.
+- Đầu ra mô hình cần học: `{"nhan": ..., "bang_chung": [...]}`. `bang_chung` chép nguyên văn, mỗi cụm nằm trong một
+  dòng; `AN_TOAN` luôn rỗng.
+
+## Phân bố
+
+| Nhãn | Câu thật | Đoạn LLM sinh | Tổng |
+| --- | --- | --- | --- |
+| `AN_TOAN` | 3.967 | 2.000 | 5.967 |
+| `XUC_PHAM` | 2.527 | 470 | 2.997 |
+| `LUA_DAO` | 0 | 1.751 | 1.751 |
+| `DE_DOA` | 156 | 1.361 | 1.517 |
+| `QUAY_ROI` | 62 | 1.098 | 1.160 |
+
+`AN_TOAN` gấp khoảng 5 lần `QUAY_ROI`: nên dùng trọng số theo nhãn hoặc lấy mẫu cân bằng khi train.
+
+## Nguồn và cách gán nhãn
+
+- **Câu thật** (ViHSD, ViHOS, ViTHSD, 1 dòng): DeepSeek V4.1 Flash gán lại theo `docs/v2/HUONG_DAN_GAN_NHAN.md`, chỉ
+  giữ câu mà nhãn LLM khớp với ít nhất một người gán gốc. Câu `AN_TOAN` ưu tiên ca khó (có từ tục nhưng vô hại, người
+  gán gốc bất đồng). Đối chiếu 100 câu với một mô hình thứ hai (Claude): khớp 86%
+  (`results/v2/dong_thuan_nhan/metrics.json`; **chưa có nhãn người**).
+- **Đoạn sinh** (hội thoại 1–8 dòng): DeepSeek sinh theo `docs/v2/KICH_BAN.md`, rồi được gán lại mà không biết nhãn
+  yêu cầu; chỉ giữ đoạn trùng nhãn. Đoạn `AN_TOAN` sinh là "sinh đôi" dễ nhầm của kịch bản nguy hại.
+- Kịch bản `LD7`, `LD12`, `DD6`, `QR6` để ngoài train, dùng làm phần "kịch bản chưa thấy" của test (`phan_test=chua_thay`).
+- Đã khử trùng gần đúng với kho test (`data/v2/interim/kho_test.jsonl`): không câu train nào cùng nhóm với câu kho test.
+
+## Giới hạn cần biết khi train
+
+- **Nhãn hiếm gần như toàn câu sinh.** Điểm trên câu thật của `DE_DOA`, `QUAY_ROI`, `LUA_DAO` phải đo riêng ở test.
+- **Lệch số dòng theo nhãn:** câu thật đều 1 dòng, còn đoạn sinh phần lớn nhiều dòng. Trong train, 1.591 `AN_TOAN` và
+  470 `XUC_PHAM` là nhiều dòng, nhưng phần lớn câu nhiều dòng vẫn thuộc nhãn hiếm. Kiểm tra mô hình có đoán theo số
+  dòng không (so điểm theo `so_dong` trên validation).
+- `QUAY_ROI` ít hơn mục tiêu (~1.450) vì kịch bản `QR3` (bình phẩm ngoại hình) bị bộ lọc gán thành `XUC_PHAM`;
+  hướng dẫn gán nhãn đang chưa thống nhất chỗ này.
+- Tệp `data/v2/train.jsonl` lưu bản gốc sạch (`C0`, có teencode tự nhiên trong câu thật và câu sinh). Quá trình
+  huấn luyện được phép tăng cường trực tuyến (bỏ dấu, C1 đơn nghĩa phi điểm mù), nhưng **bắt buộc giữ các kiểu
+  điểm mù C2 và tập C1 held-out ngoài train** để đo "kiểu né lọc chưa thấy" trên test (`src/v2/data/perturb.py`).
+- Chưa có validation thật: nếu cần gỡ lỗi, tạm tách một phần train theo `nhom_trung`, **không dùng để dò ngưỡng**.
