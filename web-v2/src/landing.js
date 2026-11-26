@@ -259,8 +259,89 @@ export function setupLanding({ onStart }) {
   document.getElementById('start').addEventListener('click', () => go(1));
   for (const b of document.querySelectorAll('[data-go]')) b.addEventListener('click', () => go(Number(b.dataset.go)));
 
-  // Trang chủ: khi cuộn xuống phần thông tin thì làm mờ vòng người cho dễ đọc.
+  // Trang tổng quan nằm ngay dưới trang chủ: cuộn xuống hoặc bấm mũi tên để tới.
+  const about = document.getElementById('thong-tin');
+  const scroller = home;
+  const barH = () => about.querySelector('.about-bar').offsetHeight;
+  document.getElementById('open-about').addEventListener('click', (e) => {
+    e.preventDefault();
+    home.scrollTo({ top: about.offsetTop, behavior: 'smooth' });
+  });
+  document.getElementById('close-about').addEventListener('click', () => home.scrollTo({ top: 0, behavior: 'smooth' }));
+  for (const b of about.querySelectorAll('[data-about-start]')) b.addEventListener('click', () => go(1));
+
+  // Mỗi mục là một màn hình: nút mũi tên cuối mục trượt xuống mục kế tiếp.
+  const allSecs = [...about.querySelectorAll('.about-sec')];
+  const toSec = (sec) => home.scrollTo({ top: about.offsetTop + sec.offsetTop - barH(), behavior: 'smooth' });
+  allSecs.forEach((sec, i) => sec.querySelector('.sec-next')?.addEventListener('click', () => allSecs[i + 1] && toSec(allSecs[i + 1])));
+
+  // Cuộn tới phần tổng quan thì làm mờ vòng người cho dễ đọc.
+  // Giữa trang chính và Bối cảnh vẫn "hít": cuộn xuống từ trang chính là tới thẳng Bối cảnh,
+  // cuộn lên ở đầu Bối cảnh là về trang chính. Từ Bối cảnh trở xuống thì cuộn tự do.
+  let gliding = 0;
+  const glide = (top) => { gliding = performance.now(); home.scrollTo({ top, behavior: 'smooth' }); };
+  home.addEventListener('wheel', (e) => {
+    const top = about.offsetTop, y = home.scrollTop;
+    if (performance.now() - gliding < 900) { if (y < top + 4) e.preventDefault(); return; }
+    if (e.deltaY > 0 && y < top - 4) { e.preventDefault(); glide(top); }
+    else if (e.deltaY < 0 && y > 0 && y <= top + 4) { e.preventDefault(); glide(0); }
+  }, { passive: false });
+  // Cảm ứng hoặc phím: nếu dừng lửng giữa trang chính và Bối cảnh thì trượt về phía gần hơn.
+  let settle = 0;
   home.addEventListener('scroll', () => {
-    document.body.classList.toggle('reading', home.scrollTop > window.innerHeight * 0.35);
+    clearTimeout(settle);
+    settle = setTimeout(() => {
+      const top = about.offsetTop, y = home.scrollTop;
+      if (y > 4 && y < top - 4 && performance.now() - gliding > 900) glide(y > top * 0.35 ? top : 0);
+    }, 160);
   }, { passive: true });
+
+  home.addEventListener('scroll', () => {
+    document.body.classList.toggle('reading', home.scrollTop > window.innerHeight * 0.08);
+  }, { passive: true });
+
+  // Khi cuộn: ảnh nền Bối cảnh trôi chậm hơn chữ, và vạch tiến độ đọc dài ra.
+  const aboutEl = document.getElementById('thong-tin');
+  const photo = aboutEl.querySelector('.photo-bg');
+  const photoSec = photo?.closest('.about-sec');
+  const prog = document.getElementById('read-prog');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ticking = false;
+  const onScroll = () => {
+    ticking = false;
+    const y = home.scrollTop;
+    if (photo && !still) {
+      const rel = y - (aboutEl.offsetTop + photoSec.offsetTop) + home.clientHeight * 0.1;
+      photo.style.transform = `translate3d(0, ${(rel * 0.25).toFixed(1)}px, 0) scale(${(1.02 + Math.max(0, rel) / home.clientHeight * 0.05).toFixed(4)})`;
+    }
+    const span = aboutEl.offsetHeight - home.clientHeight;
+    const p = Math.min(1, Math.max(0, (y - aboutEl.offsetTop) / span));
+    prog.style.transform = `scaleX(${p.toFixed(4)})`;
+  };
+  home.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  onScroll();
+
+  // Cuộn tới đâu hiện tới đó; khối nào ra khỏi khung nhìn (cuộn lên hay xuống) thì mờ đi lại.
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) en.target.classList.toggle('shown', en.isIntersecting);
+  }, { root: scroller, threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  scroller.querySelectorAll('.reveal').forEach((n) => io.observe(n));
+
+  // Đánh dấu phần đang xem trên thanh điều hướng.
+  const links = [...about.querySelectorAll('.about-nav a')];
+  const secs = links.map((l) => document.getElementById(l.dataset.sec));
+  const markNav = () => {
+    const y = scroller.scrollTop + scroller.clientHeight * 0.35 - about.offsetTop;
+    let cur = null;
+    for (const s of secs) if (s.offsetTop <= y) cur = s.id;
+    links.forEach((l) => l.toggleAttribute('aria-current', l.dataset.sec === cur));
+  };
+  scroller.addEventListener('scroll', markNav, { passive: true });
+  for (const l of links) {
+    l.addEventListener('click', (e) => {
+      e.preventDefault();
+      const t = document.getElementById(l.dataset.sec);
+      toSec(t);
+    });
+  }
 }
