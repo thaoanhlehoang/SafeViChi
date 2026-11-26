@@ -12,6 +12,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{enumitem}
@@ -78,9 +79,9 @@
 \begin{titlepage}
 \centering
 \vspace*{30mm}
-{\Huge\bfseries\color{navy} SafeViChi v2\par}
+{\Huge\bfseries\color{navy} SafeViChi\par}
 \vspace{6mm}
-{\Large Phát hiện tin nhắn tiếng Việt nguy hại theo tình huống,\\ kèm bằng chứng, chạy trên thiết bị\par}
+{\LARGE Phát hiện tin nhắn tiếng Việt nguy hại theo tình huống,\\ kèm bằng chứng, chạy trên thiết bị\par}
 \vspace{12mm}
 {\large Báo cáo vòng chung kết\par}
 \vspace{40mm}
@@ -90,8 +91,6 @@ Dữ liệu train/test & commit \texttt{\so{v2.datarev}} \\
 Ngày nộp & 26/11/2026 \\
 \end{tabular}
 \vfill
-{\small Mọi con số trong báo cáo được sinh tự động từ thư mục \tep{results/v2/} bằng\\
-\tep{python -m src.v2.eval.xuat_so_lieu_bao_cao}.\par}
 \end{titlepage}
 
 \tableofcontents

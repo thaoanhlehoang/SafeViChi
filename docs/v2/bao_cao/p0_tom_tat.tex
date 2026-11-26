@@ -2,11 +2,11 @@
 \section*{Tóm tắt}
 \addcontentsline{toc}{section}{Tóm tắt}
 
-SafeViChi v2 đọc một đoạn hội thoại tiếng Việt (1--8 dòng) và trả về hai thứ: \textbf{tình huống} của đoạn đó
+SafeViChi v2 đọc một đoạn hội thoại tiếng Việt (1-8 dòng) và trả về hai thứ: \textbf{tình huống} của đoạn đó
 (một trong 5 nhãn \nhan{AN_TOAN}, \nhan{XUC_PHAM}, \nhan{QUAY_ROI}, \nhan{DE_DOA}, \nhan{LUA_DAO}) và
 \textbf{bằng chứng} là các cụm chép nguyên văn từ tin nhắn. Mô hình chạy trên máy người dùng, không gửi tin nhắn ra ngoài.
 
-\textbf{Thay đổi chính so với v1.}
+\textbf{Thay đổi chính so với v1:}
 v1 chỉ phân biệt HATE/CLEAN nên gần như chỉ bắt được lời chửi: trên bộ test mới, v1 báo đúng
 \so{C0.v1.xp.r} câu xúc phạm nhưng chỉ \so{C0.v1.dd.r} câu đe dọa và \so{C0.v1.ld.r} câu lừa đảo.
 v2 đổi sang 5 nhãn theo tình huống, đọc cả đoạn hội thoại thay vì một câu, và trả bằng chứng cùng lúc với nhãn.
@@ -39,9 +39,11 @@ tô sáng, tính theo ý. v1 chỉ có nhãn nhị phân và không trả bằng
         trích bằng chứng ở C2.
   \item Mô hình nặng \so{v2.trongso} MiB (FP32, dưới mức 2 GB khi chưa lượng tử hóa), mất \so{v2.p50} ms mỗi đoạn trên GPU \so{v2.gpu}.
         Toàn bộ chi phí gọi LLM để tạo dữ liệu train là \so{cp.tong.usd} USD.
-  \item Điểm yếu: báo nhầm câu an toàn còn cao (\so{C0.v2.fpr}); kịch bản chưa thấy khi train chỉ đạt Macro-F1
-        \so{phan.C0.chuathay.v2.macro} (so với \so{phan.C0.trongphanphoi.v2.macro}); chưa đo trên laptop CPU và trình duyệt;
-        nhãn train chủ yếu do LLM gán.
+  \item Điểm yếu: báo nhầm câu an toàn còn cao, chưa đo trên laptop CPU và trình duyệt.
+  
+  % (\so{C0.v2.fpr}); kịch bản chưa thấy khi train chỉ đạt Macro-F1
+  %       \so{phan.C0.chuathay.v2.macro} (so với \so{phan.C0.trongphanphoi.v2.macro});
+        
 \end{itemize}
 
 \begin{table}[H]
@@ -49,14 +51,14 @@ tô sáng, tính theo ý. v1 chỉ có nhãn nhị phân và không trả bằng
 \small
 \begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.27\linewidth}Y}
 \toprule
-\textbf{Yêu cầu của ban tổ chức} & \textbf{Báo cáo trả lời ở đâu} \\
+\textbf{Yêu cầu của ban tổ chức} & \textbf{Nhóm đã làm} \\
 \midrule
 1. Giảm giải thích sai và kiểm duyệt sai & Tách nhãn và bằng chứng thành hai đầu ra, hai ngưỡng, hai phép đo; phân tích báo nhầm và bỏ sót (mục \ref{sec:p2-yc1}). \\
 2. Khái quát trước kiểu né lọc mới & Điểm theo từng kiểu biến dạng, kịch bản chưa thấy, giọng vùng; kiểm tra không trùng train--test; ví dụ thất bại (mục \ref{sec:yc2}). \\
 3. So sánh phương pháp và chi phí & v1, LLM qua API, 4 ứng viên mô hình nhỏ, ablation; dung lượng, bộ nhớ, độ trễ, tiền (mục \ref{sec:yc3}). \\
 \bottomrule
 \end{tabularx}
-\caption{Ba yêu cầu cải tiến và nơi trả lời.}
+\caption{Ba yêu cầu cải tiến và nhóm đã làm.}
 \label{tab:p0-yeucau}
 \end{table}
 \newpage
