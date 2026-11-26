@@ -4,28 +4,27 @@
 \label{sec:p1-v1v2}
 
 \textbf{SafeViChi v1 (vòng loại)} phân loại một câu bình luận đơn lẻ thành \nhan{HATE} hoặc \nhan{CLEAN}. Câu đi qua bộ chuẩn hóa
-5 tầng (Unicode, ký tự đồng dạng, ký tự phân cách, ký tự lặp, teencode), sau đó đưa vào ViHateT5 đã được tinh chỉnh
-(fine-tune) đối kháng. Phần giải thích dùng phương pháp occlusion: che lần lượt từng cụm hai từ rồi chạy lại mô hình;
-cụm làm điểm rủi ro giảm mạnh nhất sẽ được chọn làm bằng chứng (tô sáng). Trên tập kiểm thử của vòng loại
-(\so{v1goc.n} câu bình luận ViHSD/ViHOS), F1 lớp \nhan{HATE} của v1 đạt \so{v1goc.C0} với câu gốc không biến dạng
+5 tầng (Unicode, ký tự đồng dạng, ký tự phân cách, ký tự lặp, teencode) rồi vào ViHateT5 đã tinh chỉnh
+(fine-tune) đối kháng. Phần giải thích dùng occlusion: che lần lượt từng cụm hai từ rồi chạy lại mô hình;
+cụm làm điểm rủi ro giảm mạnh nhất được tô sáng làm bằng chứng. Trên tập kiểm thử vòng loại
+(\so{v1goc.n} câu bình luận ViHSD/ViHOS), F1 lớp \nhan{HATE} của v1 đạt \so{v1goc.C0} với câu gốc
 (C0), \so{v1goc.C1} với câu biến dạng né lọc (C1) và \so{v1goc.C2} với kiểu điểm mù (C2).
 
-\textbf{Vấn đề.} Khi chạy lại SafeViChi v1 trên tập gốc C0 của bộ kiểm thử mới (hội thoại do người viết,
+\textbf{Vấn đề.} Trên tập gốc C0 của bộ kiểm thử mới (hội thoại do người viết,
 Mục~\ref{sec:p1-test}), v1 gắn nhãn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM}, nhưng chỉ
 \so{C0.v1.dd.r} số đoạn \nhan{DE_DOA}, \so{C0.v1.qr.r} số đoạn \nhan{QUAY_ROI} và \so{C0.v1.ld.r} số đoạn
-\nhan{LUA_DAO}. Nguyên nhân nằm ở định nghĩa nhãn: \nhan{HATE} trong các bộ dữ liệu cũ chủ yếu bao phủ ngôn từ lăng mạ,
-miệt thị. Trong khi đó, tin nhắn nguy hại trong thực tế đa dạng hơn: tin lừa đảo thường có ngôn từ rất lịch sự, còn lời
-đe dọa nhiều khi không chứa từ ngữ thô tục. Vì vậy, SafeViChi v2 thực hiện ba thay đổi chính như sau:
+\nhan{LUA_DAO}. Nguyên nhân: \nhan{HATE} trong các bộ dữ liệu cũ chủ yếu bao phủ ngôn từ lăng mạ,
+miệt thị, còn tin nhắn nguy hại thực tế đa dạng hơn: tin lừa đảo thường rất lịch sự, lời
+đe dọa nhiều khi không có từ thô tục. Vì vậy, SafeViChi v2 có ba thay đổi chính:
 
 \begin{itemize}
   \item \textbf{Nhãn theo tình huống.} Dùng 5 nhãn (\nhan{AN_TOAN}, \nhan{XUC_PHAM}, \nhan{QUAY_ROI}, \nhan{DE_DOA},
-        \nhan{LUA_DAO}) thay cho phân loại nhị phân \nhan{HATE}/\nhan{CLEAN}, giúp bao phủ đầy đủ các dạng tin nhắn
-        nguy hại thường gặp ngoài ngôn từ lăng mạ và phân tách rõ tính chất, mức độ rủi ro của từng tình huống.
-  \item \textbf{Đọc cả đoạn hội thoại.} Mục đích nguy hại thường chỉ bộc lộ ở các lượt cuối, sau nhiều lượt chào hỏi
-        bình thường. Mô hình tiếp nhận tối đa 8 dòng gần nhất thay vì chỉ một câu đơn lẻ.
-  \item \textbf{Trích xuất bằng chứng đồng thời với phân loại nhãn.} Mô hình tự trả về các cụm từ làm bằng chứng trong
-        cùng một lượt suy luận, không cần chạy lặp lại nhiều lần như occlusion. Hai đầu ra có ngưỡng quyết định và bộ
-        độ đo đánh giá riêng.
+        \nhan{LUA_DAO}) thay cho \nhan{HATE}/\nhan{CLEAN}, bao phủ các dạng tin nhắn
+        nguy hại thường gặp ngoài lăng mạ và tách rõ tính chất, mức độ rủi ro của từng tình huống.
+  \item \textbf{Đọc cả đoạn hội thoại.} Mục đích nguy hại thường chỉ lộ ở các lượt cuối, sau nhiều lượt chào hỏi
+        bình thường. Mô hình nhận tối đa 8 dòng gần nhất thay vì một câu.
+  \item \textbf{Trích bằng chứng cùng lúc với phân loại.} Mô hình trả về các cụm bằng chứng trong
+        cùng một lượt suy luận, không phải chạy lặp nhiều lần như occlusion.
 \end{itemize}
 
 \begin{table}[H]
@@ -43,8 +42,8 @@ Mô hình & ViHateT5 (encoder--decoder), tinh chỉnh đối kháng FGM & SafeVi
   nhánh CNN đọc byte và hai đầu ra (phân loại 5 nhãn; gắn thẻ BIO + CRF trích xuất bằng chứng) \\
 Chống né lọc & Chuẩn hóa 5 tầng + FGM & Tăng cường dữ liệu khi huấn luyện (bỏ dấu, biến dạng bề mặt) + phạt nhất quán
   + FGM + nhánh CNN đọc theo byte \\
-Giải thích & Occlusion sau khi phân loại, chạy lặp lại mô hình nhiều lần & Gắn thẻ cụm bằng chứng ngay trong một lượt
-  suy luận; cụm luôn được trích nguyên văn từ tin nhắn \\
+Giải thích & Occlusion sau phân loại, chạy lặp mô hình nhiều lần & Gắn thẻ cụm bằng chứng trong một lượt
+  suy luận; cụm luôn trích nguyên văn từ tin nhắn \\
 Dữ liệu huấn luyện & ViHSD, ViHOS với nhãn gốc & Bình luận thực tế (ViHSD, ViHOS, ViTHSD) được LLM gán nhãn lại và lọc
   đồng thuận với người gán gốc + hội thoại tổng hợp theo kịch bản đã qua bước gán nhãn lại độc lập để lọc nhiễu
   (Mục~\ref{sec:p1-dulieu}) \\
@@ -82,7 +81,7 @@ Mỗi mẫu đầu vào (tin nhắn đơn lẻ hoặc đoạn hội thoại) đ�
 \end{tabularx}
 \end{table}
 
-\textbf{Quy tắc ưu tiên khi một đoạn chứa dấu hiệu của nhiều nhãn:} người gán nhãn xét lần lượt theo thứ tự ưu tiên
+\textbf{Quy tắc ưu tiên khi một đoạn có dấu hiệu của nhiều nhãn:} xét lần lượt
 \nhan{DE_DOA} $>$ \nhan{LUA_DAO} $>$ \nhan{QUAY_ROI} $>$ \nhan{XUC_PHAM} $>$ \nhan{AN_TOAN} và dừng ở điều kiện thỏa
 mãn đầu tiên:
 \begin{enumerate}
@@ -92,11 +91,11 @@ mãn đầu tiên:
   \item Có chửi bới, lăng mạ, miệt thị một cá nhân hoặc nhóm người không? $\to$ \nhan{XUC_PHAM}
   \item Các trường hợp còn lại $\to$ \nhan{AN_TOAN}
 \end{enumerate}
-Ví dụ: ``Chuyển 10 triệu trước 8h không tao gửi clip cho cả nhà mày'' có yếu tố yêu cầu chuyển tiền, nhưng bản chất là
-tống tiền nên thuộc \nhan{DE_DOA}, không phải \nhan{LUA_DAO}. Với đoạn hội thoại nhiều dòng, nhãn của cả đoạn là nhãn
-có mức ưu tiên cao nhất khi xét trên toàn bộ ngữ cảnh hội thoại.
+Ví dụ: ``Chuyển 10 triệu trước 8h không tao gửi clip cho cả nhà mày'' có đòi chuyển tiền nhưng bản chất là
+tống tiền, nên thuộc \nhan{DE_DOA}, không phải \nhan{LUA_DAO}. Đoạn hội thoại nhiều dòng nhận nhãn
+có mức ưu tiên cao nhất xét trên toàn bộ ngữ cảnh.
 
-\textbf{Trường hợp biên (trông giống nguy hại nhưng an toàn).} Đây là nguồn gây báo nhầm chính, nên được sinh bổ sung
+\textbf{Trường hợp biên (trông giống nguy hại nhưng an toàn).} Đây là nguồn báo nhầm chính nên được sinh bổ sung
 vào dữ liệu huấn luyện (Mục~\ref{sec:p1-sinh}):
 
 \begin{table}[H]
@@ -109,18 +108,18 @@ vào dữ liệu huấn luyện (Mục~\ref{sec:p1-sinh}):
 \textbf{Tin nhắn} & \textbf{Lý do phân loại an toàn} \\
 \midrule
 ``Vãi cả chưởng, kèo này căng đét'' & Chửi thề cảm thán, không nhắm vào cá nhân hay nhóm nào \\
-``Tao giết mày luôn á, cười đau bụng'' & Cách nói quá mang tính đùa cợt, có dấu hiệu đùa rõ ràng ngay trong câu \\
+``Tao giết mày luôn á, cười đau bụng'' & Nói quá để đùa, dấu hiệu đùa rõ ngay trong câu \\
 ``Mã OTP của bạn là 123456. Không chia sẻ mã này cho bất kỳ ai'' & Tin OTP hợp lệ: không yêu cầu cung cấp thông tin và có cảnh báo không chia sẻ mã \\
 ``Ai bảo người miền Tây lười là phân biệt vùng miền đấy'' & Trích dẫn định kiến để phản bác, không mang ý miệt thị \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{Bằng chứng} là các cụm từ trích nguyên văn từ tin nhắn nhằm giải thích lý do đoạn hội thoại bị đánh giá là nguy
-hại. Mỗi cụm nằm gọn trong một dòng, chọn cụm ngắn nhất còn đủ nghĩa và có thể trích nhiều cụm trên một hoặc nhiều dòng.
-Danh sách bằng chứng của nhãn \nhan{AN_TOAN} luôn rỗng; đoạn nguy hại cũng có thể để rỗng nếu tính chất nguy hại nằm ở
-toàn bộ ngữ cảnh (ví dụ mỉa mai). Đầu ra của mô hình có định dạng JSON gồm hai trường \texttt{nhan} và
-\texttt{bang\_chung}. Ví dụ dưới đây là một đoạn trích từ tập kiểm thử do người viết (C0, giọng \so{vd.dung.vung}, kịch
+\textbf{Bằng chứng} là các cụm trích nguyên văn từ tin nhắn, giải thích vì sao đoạn bị đánh giá nguy
+hại. Mỗi cụm nằm trong một dòng, là cụm ngắn nhất còn đủ nghĩa; có thể trích nhiều cụm trên một hoặc nhiều dòng.
+Bằng chứng của \nhan{AN_TOAN} luôn rỗng; đoạn nguy hại cũng có thể rỗng nếu tính nguy hại nằm ở
+toàn bộ ngữ cảnh (ví dụ mỉa mai). Đầu ra là JSON gồm hai trường \texttt{nhan} và
+\texttt{bang\_chung}. Dưới đây là một đoạn trong tập kiểm thử do người viết (C0, giọng \so{vd.dung.vung}, kịch
 bản \so{vd.dung.kichban}: đe dọa tìm ra ngoài đời trong game) kèm đầu ra của SafeViChi v2:
 
 \ghinho{\textbf{Đầu vào} (mỗi dòng là một lượt nói luân phiên; nhãn chuẩn: \so{vd.dung.gold}):\\[2pt]
@@ -131,9 +130,9 @@ bản \so{vd.dung.kichban}: đe dọa tìm ra ngoài đời trong game) kèm đ�
 \section{Dữ liệu}
 \label{sec:p1-dulieu}
 
-Dữ liệu của SafeViChi v2 gồm ba thành phần, được xây dựng theo hai luồng riêng biệt (Hình~\ref{fig:p1-luong}). Tập huấn luyện
-(train) kết hợp các bình luận thực tế được LLM gán nhãn lại theo 5 nhãn và các hội thoại tổng hợp do LLM sinh theo kịch
-bản. Tập kiểm thử (test) hoàn toàn do thành viên nhóm tự biên soạn, không sử dụng văn bản do LLM sinh.
+Dữ liệu SafeViChi v2 gồm ba thành phần, xây dựng theo hai luồng riêng (Hình~\ref{fig:p1-luong}). Tập huấn luyện
+(train) gồm bình luận thực tế được LLM gán lại theo 5 nhãn và hội thoại tổng hợp do LLM sinh theo kịch
+bản. Tập kiểm thử (test) do thành viên nhóm tự biên soạn, không dùng văn bản do LLM sinh.
 
 \begin{figure}[H]
 \centering
@@ -147,20 +146,19 @@ bản. Tập kiểm thử (test) hoàn toàn do thành viên nhóm tự biên so
 % Nhánh 1: bình luận thực tế
 \node[hop] (a1) {ViHSD, ViHOS, ViTHSD\\ \so{dl.goc.tong} bản ghi};
 \node[hop, right=of a1] (a2) {Gộp, khử trùng\\ \so{dl.khacnhau} câu khác nhau};
-\node[hop, right=of a2] (a3) {Tách kho dự trữ \so{dl.khotest} câu\\ (cách ly, không gửi LLM)};
-\node[hop, right=of a3] (a4) {LLM gán lại \so{dl.ganlai} câu; giữ \so{dl.that.giu} câu đồng thuận};
+\node[hop, right=of a2] (a4) {LLM gán lại \so{dl.ganlai} câu; giữ \so{dl.that.giu} câu đồng thuận};
 % Nhánh 2: sinh theo kịch bản
 \node[hop, below=of a1] (b1) {Kịch bản $\times$ kênh $\times$ giọng viết $\times$ độ lộ $\times$ kiểu lộ};
 \node[hop, right=of b1] (b2) {LLM sinh \so{dl.sinh.tong} đoạn, kèm đối chứng \nhan{AN_TOAN}};
 \node[hop, right=of b2] (b3) {LLM gán lại độc lập (ẩn nhãn yêu cầu)};
 \node[hop, right=of b3] (b4) {Giữ \so{dl.sinh.giu} đoạn trùng nhãn};
 % Gộp thành train
-\path (a4.east) -- (b4.east) coordinate[midway] (giua);
+\path (b4.east |- a4.east) -- (b4.east) coordinate[midway] (giua);
 \node[hopdich, right=5mm of giua] (tr) {Train\\ \so{tr.tong} đoạn\\ {\normalfont(cân nhãn, khử trùng)}};
-\draw[mui] (a1) -- (a2); \draw[mui] (a2) -- (a3); \draw[mui] (a3) -- (a4);
+\draw[mui] (a1) -- (a2); \draw[mui] (a2) -- (a4);
 \draw[mui] (b1) -- (b2); \draw[mui] (b2) -- (b3); \draw[mui] (b3) -- (b4);
-\draw[mui] (a4.east) -- (tr.north west);
-\draw[mui] (b4.east) -- (tr.south west);
+\draw[mui] (a4.east) -- (a4.east -| tr.west);
+\draw[mui] (b4.east) -- (b4.east -| tr.west);
 % Nhánh 3: test do người viết
 \node[hoptest, below=10mm of b1] (c1) {Thành viên nhóm tự viết, trước khi đọc câu sinh};
 \node[hoptest, right=of c1] (c2) {Test C0: \so{te.tong} đoạn, 3 giọng vùng miền};
@@ -181,68 +179,59 @@ dưới (xám): tập kiểm thử do người viết.}
 
 \begin{itemize}
   \item \textbf{Gộp nguồn.} Ba bộ dữ liệu công khai ViHSD (\so{dl.goc.vihsd}), ViHOS (\so{dl.goc.vihos}) và ViTHSD
-        (\so{dl.goc.vithsd}) có tổng cộng \so{dl.goc.tong} bản ghi. Do ViHOS và ViTHSD phần lớn tái sử dụng câu từ
+        (\so{dl.goc.vithsd}) có tổng \so{dl.goc.tong} bản ghi. Do ViHOS và ViTHSD phần lớn dùng lại câu của
         ViHSD, sau khi gộp và khử trùng theo nội dung còn \so{dl.khacnhau} câu khác nhau.
-  \item \textbf{Tách kho dự trữ cách ly trước khi gọi LLM.} Sau khử trùng gần đúng, các nhóm câu chưa từng thuộc tập
-        huấn luyện (train split) của ViHSD/ViHOS (phần ViHateT5 ở SafeViChi v1 đã học) được tách riêng thành kho dự trữ
-        cách ly (\so{dl.khotest} câu). Kho này không bao giờ được gửi cho LLM và không đưa vào tập huấn luyện nhằm tránh
-        rò rỉ (đánh giá chính thức của SafeViChi v2 sử dụng tập kiểm thử hội thoại do người viết ở Mục~\ref{sec:p1-test}).
-  \item \textbf{Chọn mẫu cần gán nhãn lại.} Từ \so{dl.khotrain} câu còn lại, chọn \so{dl.ganlai} câu gồm:
-        \so{dl.ganlai.nguyhai} câu có nhãn gốc nguy hại, \so{dl.ganlai.blacklist} câu nhãn gốc \nhan{CLEAN} nhưng chứa
-        từ trong danh sách đen (blacklist) của SafeViChi v1 (các trường hợp dễ báo nhầm), \so{dl.ganlai.tukhoa} câu khớp từ khóa
-        của 3 nhãn hiếm, và \so{dl.ganlai.ngaunhien} câu nhãn gốc \nhan{CLEAN} chọn ngẫu nhiên (seed 42).
-  \item \textbf{Gán nhãn lại bằng LLM.} Sử dụng mô hình DeepSeek V4.1 Flash (mã định danh \texttt{\so{cp.model}}) để đọc hướng dẫn gán nhãn và
-        trả về nhãn kèm cụm bằng chứng theo định dạng JSON. Chương trình tự động kiểm tra tính hợp lệ của nhãn và loại
-        bỏ các cụm bằng chứng không xuất hiện nguyên văn trong câu.
-  \item \textbf{Lọc theo đồng thuận.} Do một câu có thể xuất hiện ở 1--3 bộ dữ liệu nguồn với nhãn gốc khác nhau, chỉ
-        giữ lại những câu mà nhãn LLM (quy về nhị phân an toàn/nguy hại) khớp với ít nhất một nhóm gán nhãn gốc. Kết
-        quả giữ \so{dl.that.giu} câu và loại \so{dl.that.bo} câu. Phần lớn các mẫu bị loại gồm
+  \item \textbf{Chọn mẫu gán nhãn lại.} Chọn \so{dl.ganlai} câu gồm:
+        \so{dl.ganlai.nguyhai} câu nhãn gốc nguy hại, \so{dl.ganlai.blacklist} câu nhãn gốc \nhan{CLEAN} nhưng chứa
+        từ trong danh sách đen (blacklist) của SafeViChi v1 (dễ báo nhầm), \so{dl.ganlai.tukhoa} câu khớp từ khóa
+        của 3 nhãn hiếm và \so{dl.ganlai.ngaunhien} câu nhãn gốc \nhan{CLEAN} chọn ngẫu nhiên (seed 42).
+  \item \textbf{Gán nhãn lại bằng LLM.} DeepSeek V4.1 Flash (mã \texttt{\so{cp.model}}) đọc hướng dẫn gán nhãn và
+        trả về nhãn kèm cụm bằng chứng dạng JSON. Chương trình tự kiểm tra nhãn hợp lệ và loại
+        cụm bằng chứng không có nguyên văn trong câu.
+  \item \textbf{Lọc theo đồng thuận.} Một câu có thể nằm ở 1--3 bộ nguồn với nhãn gốc khác nhau; chỉ
+        giữ câu có nhãn LLM (quy về nhị phân an toàn/nguy hại) khớp ít nhất một nhóm gán nhãn gốc. Kết
+        quả giữ \so{dl.that.giu} câu, loại \so{dl.that.bo} câu. Phần lớn mẫu bị loại gồm
         \so{dl.that.bo.hate.antoan} câu nhãn gốc \nhan{HATE} mà LLM gán \nhan{AN_TOAN} và \so{dl.that.bo.clean.xucpham}
-        câu nhãn gốc \nhan{CLEAN} mà LLM gán \nhan{XUC_PHAM}. Do nguồn lực kiểm duyệt thủ công có hạn, nhóm quyết định
-        loại bỏ các mẫu bất đồng này thay vì giữ lại nhãn có nguy cơ sai lệch.
+        câu nhãn gốc \nhan{CLEAN} mà LLM gán \nhan{XUC_PHAM}. Do nguồn lực kiểm duyệt thủ công có hạn, nhóm
+        loại các mẫu bất đồng thay vì giữ nhãn có thể sai.
 \end{itemize}
 
 \subsection{Hội thoại tổng hợp theo kịch bản}
 \label{sec:p1-sinh}
 
-Dữ liệu bình luận thực tế hầu như thiếu vắng ba nhãn hiếm: sau khi gán nhãn lại và lọc đồng thuận, tập huấn luyện chỉ
+Bình luận thực tế hầu như thiếu ba nhãn hiếm: sau gán nhãn lại và lọc đồng thuận, tập huấn luyện chỉ
 có \so{tr.dd.that} câu \nhan{DE_DOA}, \so{tr.qr.that} câu \nhan{QUAY_ROI} và \so{tr.ld.that} câu \nhan{LUA_DAO}. Vì
-vậy, nhóm sử dụng LLM (DeepSeek V4.1 Flash) để sinh bổ sung hội thoại theo kịch bản.
+vậy, nhóm dùng LLM (DeepSeek V4.1 Flash) sinh bổ sung hội thoại theo kịch bản.
 
 \begin{itemize}
-  \item \textbf{Kịch bản.} Gồm 26 kịch bản xoay quanh bối cảnh học sinh, sinh viên: 12 kịch bản lừa đảo (nạp game giá
-        rẻ, việc làm thêm yêu cầu nộp cọc, giveaway giả...), 6 kịch bản đe dọa (hẹn đánh, đòi nợ, tống tiền bằng ảnh...),
-        6 kịch bản quấy rối (xin ảnh riêng tư, nhắn dồn dập sau khi bị từ chối...), và 2 kịch bản xúc phạm. Bốn kịch bản
-        (\so{rr.kichban}) được giữ hoàn toàn ngoài tập huấn luyện để đánh giá khả năng khái quát trên ``kịch bản chưa
-        thấy'' ở tập kiểm thử. Danh sách đầy đủ được trình bày ở Bảng~\ref{tab:p1-kichban}.
+  \item \textbf{Kịch bản.} 26 kịch bản trong bối cảnh học sinh, sinh viên: 12 lừa đảo (nạp game giá
+        rẻ, việc làm thêm đòi cọc, giveaway giả...), 6 đe dọa (hẹn đánh, đòi nợ, tống tiền bằng ảnh...),
+        6 quấy rối (xin ảnh riêng tư, nhắn dồn dập sau khi bị từ chối...) và 2 xúc phạm
+        (Bảng~\ref{tab:p1-kichban}).
   \item \textbf{Tổ hợp sinh (ô sinh).} Mỗi lượt gọi LLM ứng với một tổ hợp (kịch bản $\times$ kênh $\times$ giọng viết
-        $\times$ độ lộ $\times$ kiểu lộ) và yêu cầu sinh 5 đoạn hội thoại khác nhau. Kênh gồm Messenger/Zalo, nhóm lớp,
-        chat game (2--6 dòng) và bình luận, SMS (1 dòng). Giọng viết đa dạng theo hình thức (teencode, không dấu, viết
-        tắt) và phương ngữ (Bắc, Trung, Nam). Độ lộ gồm lộ liễu hoặc ẩn ý; kiểu lộ gồm bộc lộ ngay dòng đầu hoặc lộ dần
+        $\times$ độ lộ $\times$ kiểu lộ) và sinh 5 đoạn hội thoại khác nhau. Kênh gồm Messenger/Zalo, nhóm lớp,
+        chat game (2--6 dòng) và bình luận, SMS (1 dòng). Giọng viết đa dạng về hình thức (teencode, không dấu, viết
+        tắt) và phương ngữ (Bắc, Trung, Nam). Độ lộ: lộ liễu hoặc ẩn ý; kiểu lộ: lộ ngay dòng đầu hoặc lộ dần
         ở cuối đoạn.
   \item \textbf{Cặp đối chứng an toàn (sinh đôi an toàn).} Mỗi tổ hợp nguy hại đi kèm một tổ hợp \nhan{AN_TOAN} cùng
-        kênh và giọng viết: nội dung có bề mặt gần giống nguy hại nhưng thực chất vô hại (bạn thân đùa cợt, nhắc trả
-        tiền trà sữa lịch sự), nhằm ngăn mô hình học lối tắt (shortcut) kiểu ``cứ có từ đe dọa là nguy hại''. Nhãn
-        \nhan{XUC_PHAM} chỉ sinh ở dạng nhiều dòng vì các câu \nhan{XUC_PHAM} thực tế đều gồm một dòng, giúp mô hình
+        kênh và giọng viết, bề mặt gần giống nguy hại nhưng vô hại (bạn thân đùa cợt, nhắc trả
+        tiền trà sữa lịch sự), để mô hình không học lối tắt (shortcut) ``cứ có từ đe dọa là nguy hại''. Nhãn
+        \nhan{XUC_PHAM} chỉ sinh dạng nhiều dòng vì câu \nhan{XUC_PHAM} thực tế đều một dòng, để mô hình
         không học lối tắt ``nhiều dòng là nhãn hiếm''.
   \item \textbf{An toàn nội dung.} Không sinh nội dung tình dục tường minh; không dùng tên, số điện thoại hay tài khoản
-        có thật; các liên kết sử dụng tên miền giả dạng \tep{xxx[.]com}. Các tổ hợp bị bộ lọc an toàn của LLM từ chối
-        sẽ được bỏ qua.
-  \item \textbf{Kết quả sinh.} Sau \so{cp.sinh.goi} lượt gọi, thu được \so{dl.sinh.tong} đoạn hội thoại với độ dài trung
+        có thật; liên kết dùng tên miền giả dạng \tep{xxx[.]com}. Tổ hợp bị bộ lọc an toàn của LLM từ chối
+        thì bỏ qua.
+  \item \textbf{Kết quả sinh.} Sau \so{cp.sinh.goi} lượt gọi, thu được \so{dl.sinh.tong} đoạn, trung
         bình \so{dl.sinh.dongtb} dòng mỗi đoạn.
-  \item \textbf{Lọc lại độc lập.} LLM được gọi lại để gán nhãn từng đoạn mà không biết nhãn đã yêu cầu khi sinh; chỉ giữ
-        các đoạn trùng nhãn, đạt \so{dl.sinh.giu} đoạn (\so{dl.sinh.tilegiu}). Nhãn \nhan{QUAY_ROI} có tỉ lệ giữ thấp
-        nhất (\so{dl.sinh.qr.tilegiu}), chủ yếu do kịch bản bình phẩm ngoại hình (QR3) chỉ giữ \so{dl.sinh.qrba.tilegiu}
-        vì các đoạn này thường bị phân loại lại thành \nhan{XUC_PHAM}, cho thấy ranh giới giữa hai nhãn này trong hướng
-        dẫn gán nhãn vẫn còn vùng giao thoa.
-  \item \textbf{Khử trùng và chống rò rỉ.} Các đoạn sinh được khử trùng gần đúng nội bộ khi ghép tập huấn luyện; đồng
-        thời toàn bộ tập huấn luyện được kiểm tra chống rò rỉ với tập kiểm thử do người viết (ngưỡng tương đồng 3-gram
-        $\ge \so{rr.nguong}$), ghi nhận \so{rr.trunggan} cặp gần trùng.
+  \item \textbf{Lọc lại độc lập.} LLM gán nhãn lại từng đoạn mà không biết nhãn đã yêu cầu khi sinh; chỉ giữ
+        đoạn trùng nhãn, được \so{dl.sinh.giu} đoạn (\so{dl.sinh.tilegiu}). \nhan{QUAY_ROI} có tỉ lệ giữ thấp
+        nhất (\so{dl.sinh.qr.tilegiu}), chủ yếu do kịch bản bình phẩm ngoại hình (QR3) chỉ giữ \so{dl.sinh.qrba.tilegiu}:
+        các đoạn này hay bị gán lại thành \nhan{XUC_PHAM}, cho thấy ranh giới hai nhãn trong hướng
+        dẫn gán nhãn còn chồng lấn.
 \end{itemize}
 
-Bảng~\ref{tab:p1-kichban} liệt kê chi tiết từng kịch bản, gồm tình huống nguy hại yêu cầu LLM sinh và cặp đối chứng an
-toàn đi kèm. Bốn kịch bản đánh dấu \textbf{Ngoài train} không được sinh vào tập huấn luyện mà chỉ xuất hiện trong tập
-kiểm thử do người viết. Danh mục kịch bản được quản lý tại tệp \tep{src/v2/labeling/kich_ban.yaml}.
+Bốn kịch bản đánh dấu \textbf{Ngoài train} trong Bảng~\ref{tab:p1-kichban} (\so{rr.kichban}) không được sinh vào tập
+huấn luyện mà chỉ có trong tập kiểm thử, để đánh giá khái quát trên kịch bản chưa thấy. Danh mục kịch bản nằm ở tệp \tep{src/v2/labeling/kich_ban.yaml}.
 
 {\small
 \setlength{\LTpre}{0.5em}
@@ -324,8 +313,7 @@ XP2 & Miệt thị vùng miền, dân tộc, tôn giáo hoặc một nhóm ngư�
 \begin{figure}[H]
 \centering
 \input{hinh/train_phan_bo.tex}
-\caption{Thành phần tập huấn luyện theo nhãn. Ba nhãn hiếm (\nhan{QUAY_ROI}, \nhan{DE_DOA}, \nhan{LUA_DAO}) phần lớn
-là hội thoại tổng hợp do LLM sinh, do đó hiệu năng thực tế của chúng cần được đánh giá trên tập kiểm thử do người viết.}
+\caption{Thành phần tập huấn luyện theo nhãn và nguồn.}
 \label{fig:p1-train}
 \end{figure}
 
@@ -349,33 +337,33 @@ Tổng & \so{tr.that} & \so{tr.sinh} & \so{tr.tong} & \so{te.tong} \\
 \end{tabular}
 \end{table}
 
-\textbf{Tập huấn luyện (train)} gồm \so{tr.tong} đoạn, được ghép từ \so{dl.that.giu} bình luận thực tế sau lọc đồng
-thuận và \so{dl.sinh.giu} đoạn sinh sau lọc nhãn độc lập. Để cân bằng phân bố lớp, ba nhãn hiếm (\nhan{QUAY_ROI},
-\nhan{DE_DOA}, \nhan{LUA_DAO}) được giữ toàn bộ, trong khi hai nhãn chiếm tỉ trọng lớn (\nhan{AN_TOAN} và
-\nhan{XUC_PHAM}) được lấy mẫu hạ tỉ lệ (seed 42, ưu tiên các trường hợp khó và chia đều theo kịch bản), sau đó khử trùng
-gần đúng nội bộ và loại trùng với kho dự trữ cách ly, cho ra \so{tr.that} bình luận thực tế và \so{tr.sinh} đoạn sinh.
-Do ba nhãn hiếm phần lớn là hội thoại tổng hợp, hiệu năng thực tế của chúng chỉ phản ánh đáng tin cậy trên tập kiểm thử
-do người viết. Toàn bộ \so{tr.that} bình luận thực tế đều gồm một dòng, trong khi phần lớn đoạn sinh gồm nhiều dòng
-(tổng cộng tập huấn luyện có \so{tr.motdong} mẫu một dòng); Mục~\ref{sec:yc3-ablation} kiểm chứng rằng mô hình không dự
+\textbf{Tập huấn luyện (train)} gồm \so{tr.tong} đoạn, ghép từ \so{dl.that.giu} bình luận thực tế sau lọc đồng
+thuận và \so{dl.sinh.giu} đoạn sinh sau lọc nhãn độc lập. Để cân bằng lớp, ba nhãn hiếm (\nhan{QUAY_ROI},
+\nhan{DE_DOA}, \nhan{LUA_DAO}) được giữ toàn bộ; hai nhãn lớn (\nhan{AN_TOAN} và
+\nhan{XUC_PHAM}) được lấy mẫu hạ tỉ lệ (seed 42, ưu tiên trường hợp khó, chia đều theo kịch bản), rồi khử trùng
+gần đúng nội bộ, còn \so{tr.that} bình luận thực tế và \so{tr.sinh} đoạn sinh.
+Vì ba nhãn hiếm phần lớn là hội thoại tổng hợp, hiệu năng thực tế của chúng chỉ đo đáng tin trên tập kiểm thử
+do người viết. Cả \so{tr.that} bình luận thực tế đều một dòng, còn phần lớn đoạn sinh nhiều dòng
+(tập huấn luyện có \so{tr.motdong} mẫu một dòng); Mục~\ref{sec:yc3-ablation} kiểm chứng mô hình không dự
 đoán nhãn chỉ dựa vào số dòng.
 
-\textbf{Tập kiểm thử (test)} gồm \so{te.tong} đoạn gốc C0 do \so{te.nguoiviet} thành viên trong nhóm tự biên soạn.
+\textbf{Tập kiểm thử (test)} gồm \so{te.tong} đoạn gốc C0 do \so{te.nguoiviet} thành viên nhóm tự biên soạn.
 \begin{itemize}
-  \item \textbf{Giọng vùng miền:} Bắc \so{te.bac}, Trung \so{te.trung}, Nam \so{te.nam} đoạn, phản ánh tự nhiên cách
-        diễn đạt đặc trưng của từng vùng miền (ví dụ ``tau nỏ cần mô'', ``tui hổng cần đâu'').
-  \item \textbf{Kịch bản:} \so{te.trongpp} đoạn thuộc các kịch bản đã sinh trong tập huấn luyện; \so{te.chuathay} đoạn
-        thuộc 4 kịch bản giữ ngoài tập huấn luyện và các tình huống mới do thành viên nhóm tự xây dựng. Phần chưa thấy
+  \item \textbf{Giọng vùng miền:} Bắc \so{te.bac}, Trung \so{te.trung}, Nam \so{te.nam} đoạn, giữ cách
+        diễn đạt đặc trưng từng vùng (ví dụ ``tau nỏ cần mô'', ``tui hổng cần đâu'').
+  \item \textbf{Kịch bản:} \so{te.trongpp} đoạn thuộc kịch bản đã sinh trong tập huấn luyện; \so{te.chuathay} đoạn
+        thuộc 4 kịch bản giữ ngoài tập huấn luyện và các tình huống mới do nhóm tự xây dựng. Phần chưa thấy
         chỉ có \so{te.chuathay.xp} đoạn \nhan{XUC_PHAM}.
   \item \textbf{Quy trình chốt nhãn:} Người viết tự gán nhãn và cụm bằng chứng; sau đó một LLM gán nhãn độc lập để đối
-        chiếu chéo (quyền quyết định thuộc về người duyệt). Hai bên trùng khớp ở \so{te.chon.trung} đoạn. Với các đoạn
-        bất đồng, người duyệt giữ nguyên nhãn người viết ở \so{te.chon.nguoi} đoạn và điều chỉnh theo LLM ở
-        \so{te.chon.llm} đoạn (được đánh dấu \tep{cach_gan=llm_nguoi_duyet} trong siêu dữ liệu).
+        chiếu (người duyệt quyết định). Hai bên khớp ở \so{te.chon.trung} đoạn. Với đoạn
+        bất đồng, người duyệt giữ nhãn người viết ở \so{te.chon.nguoi} đoạn và theo LLM ở
+        \so{te.chon.llm} đoạn (đánh dấu \tep{cach_gan=llm_nguoi_duyet} trong siêu dữ liệu).
 \end{itemize}
 
-\textbf{Các bản biến dạng C1 và C2.} Mỗi đoạn gốc C0 trong tập kiểm thử được tạo 2 bản biến dạng cho mỗi nhóm bằng cách
-chọn kiểu ngẫu nhiên (seed 42), thu được \so{te.C1.n} mẫu C1 và \so{te.C2.n} mẫu C2. Phép biến dạng được áp dụng ở mức
-từ trên khoảng \so{te.C1.tiletu} số từ (cho cả C1 và C2), luôn tác động vào cụm bằng chứng, đồng thời vị trí cụm bằng
-chứng được ánh xạ đồng bộ theo các từ bị biến đổi.
+\textbf{Các bản biến dạng C1 và C2.} Mỗi đoạn gốc C0 trong tập kiểm thử có 2 bản biến dạng cho mỗi nhóm, kiểu
+chọn ngẫu nhiên (seed 42), thu được \so{te.C1.n} mẫu C1 và \so{te.C2.n} mẫu C2. Biến dạng áp dụng ở mức
+từ trên khoảng \so{te.C1.tiletu} số từ (cả C1 và C2), luôn chạm vào cụm bằng chứng; vị trí cụm bằng
+chứng được ánh xạ lại theo các từ bị biến đổi.
 
 \begin{table}[H]
 \centering
@@ -390,7 +378,7 @@ C1, đã thấy (xuất hiện tự nhiên trong tập huấn luyện C0) & bỏ
   gõ sai (\so{te.C1.gosai}), kéo dài ký tự (\so{te.C1.keodai}) \\
 C1, giữ ngoài tập huấn luyện gốc C0 & dính từ (\so{te.C1.dinhtu}), số thay chữ (\so{te.C1.sothaychu}),
   chèn ký tự (\so{te.C1.chenkytu}) \\
-C2, điểm mù (hoàn toàn ngoài quá trình huấn luyện) & chữ toàn khổ (\so{te.C2.fullwidth}), ký tự vô hình (\so{te.C2.zerowidth}),
+C2, điểm mù (ngoài quá trình huấn luyện) & chữ toàn khổ (\so{te.C2.fullwidth}), ký tự vô hình (\so{te.C2.zerowidth}),
   chèn dấu cách giữa các chữ (\so{te.C2.spaceinjection}), dấu phân cách lạ (\so{te.C2.exoticseparator}),
   chữ Cyrillic giống chữ Latin (\so{te.C2.cyrillichomoglyph}), kéo dài kép (\so{te.C2.doubleelongation}) \\
 \bottomrule
@@ -419,5 +407,4 @@ Tổng & \so{cp.tong.goi} & \so{cp.tong.usd} & \so{cp.tong.phut} \\
 \end{tabular}
 \end{table}
 
-Tổng chi phí gọi API LLM cho toàn bộ quy trình gán nhãn, sinh và lọc dữ liệu huấn luyện là \so{cp.tong.usd}~USD, với
-thời gian thực thi khoảng \so{cp.tong.phut}~phút và tổng lượng sử dụng \so{cp.tong.trieutoken}~triệu token.
+Tổng lượng sử dụng là \so{cp.tong.trieutoken}~triệu token; đây là chi phí một lần trong giai đoạn phát triển.
