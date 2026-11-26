@@ -1,21 +1,21 @@
 % Phần 1: thay đổi từ v1 sang v2, năm nhãn, dữ liệu. Số liệu lấy qua \so{...} (so_lieu.tex).
 
-\section{Những thay đổi ở phiên bản v2}
+\section{Những thay đổi ở phiên bản SafeViChi v2}
 \label{sec:p1-v1v2}
 
-\textbf{v1 (vòng loại)} phân loại một câu bình luận đơn lẻ thành \nhan{HATE} hoặc \nhan{CLEAN}. Câu đi qua bộ chuẩn hóa
+\textbf{SafeViChi v1 (vòng loại)} phân loại một câu bình luận đơn lẻ thành \nhan{HATE} hoặc \nhan{CLEAN}. Câu đi qua bộ chuẩn hóa
 5 tầng (Unicode, ký tự đồng dạng, ký tự phân cách, ký tự lặp, teencode), sau đó đưa vào ViHateT5 đã được tinh chỉnh
 (fine-tune) đối kháng. Phần giải thích dùng phương pháp occlusion: che lần lượt từng cụm hai từ rồi chạy lại mô hình;
 cụm làm điểm rủi ro giảm mạnh nhất sẽ được chọn làm bằng chứng (tô sáng). Trên tập kiểm thử của vòng loại
 (\so{v1goc.n} câu bình luận ViHSD/ViHOS), F1 lớp \nhan{HATE} của v1 đạt \so{v1goc.C0} với câu gốc không biến dạng
 (C0), \so{v1goc.C1} với câu biến dạng né lọc (C1) và \so{v1goc.C2} với kiểu điểm mù (C2).
 
-\textbf{Vấn đề.} Khi chạy lại v1 trên tập gốc C0 của bộ kiểm thử mới của v2 (hội thoại do người viết,
+\textbf{Vấn đề.} Khi chạy lại SafeViChi v1 trên tập gốc C0 của bộ kiểm thử mới (hội thoại do người viết,
 Mục~\ref{sec:p1-test}), v1 gắn nhãn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM}, nhưng chỉ
 \so{C0.v1.dd.r} số đoạn \nhan{DE_DOA}, \so{C0.v1.qr.r} số đoạn \nhan{QUAY_ROI} và \so{C0.v1.ld.r} số đoạn
 \nhan{LUA_DAO}. Nguyên nhân nằm ở định nghĩa nhãn: \nhan{HATE} trong các bộ dữ liệu cũ chủ yếu bao phủ ngôn từ lăng mạ,
 miệt thị. Trong khi đó, tin nhắn nguy hại trong thực tế đa dạng hơn: tin lừa đảo thường có ngôn từ rất lịch sự, còn lời
-đe dọa nhiều khi không chứa từ ngữ thô tục. Vì vậy, v2 thực hiện ba thay đổi chính như sau:
+đe dọa nhiều khi không chứa từ ngữ thô tục. Vì vậy, SafeViChi v2 thực hiện ba thay đổi chính như sau:
 
 \begin{itemize}
   \item \textbf{Nhãn theo tình huống.} Dùng 5 nhãn (\nhan{AN_TOAN}, \nhan{XUC_PHAM}, \nhan{QUAY_ROI}, \nhan{DE_DOA},
@@ -30,12 +30,12 @@ miệt thị. Trong khi đó, tin nhắn nguy hại trong thực tế đa dạng
 
 \begin{table}[H]
 \centering
-\caption{So sánh v1 và v2}
+\caption{So sánh SafeViChi v1 và SafeViChi v2}
 \label{tab:p1-v1v2}
 \small
 \begin{tabularx}{\linewidth}{@{}p{2.6cm}YY@{}}
 \toprule
-\textbf{Khía cạnh} & \textbf{v1 (vòng loại)} & \textbf{v2 (chung kết)} \\
+\textbf{Khía cạnh} & \textbf{SafeViChi v1 (vòng loại)} & \textbf{SafeViChi v2 (chung kết)} \\
 \midrule
 Nhãn & \nhan{HATE} / \nhan{CLEAN} & 5 nhãn theo tình huống (Mục~\ref{sec:p1-nhan}) \\
 Đầu vào & Một câu bình luận & Đoạn hội thoại hoặc tin nhắn (1--8 dòng, mỗi dòng là một lượt nói) \\
@@ -66,7 +66,7 @@ Mỗi mẫu đầu vào (tin nhắn đơn lẻ hoặc đoạn hội thoại) đ�
 
 \begin{table}[H]
 \centering
-\caption{Năm nhãn tình huống của v2}
+\caption{Năm nhãn tình huống của SafeViChi v2}
 \label{tab:p1-nhan}
 \small
 \begin{tabularx}{\linewidth}{@{}p{2.2cm}YY@{}}
@@ -121,17 +121,17 @@ hại. Mỗi cụm nằm gọn trong một dòng, chọn cụm ngắn nhất cò
 Danh sách bằng chứng của nhãn \nhan{AN_TOAN} luôn rỗng; đoạn nguy hại cũng có thể để rỗng nếu tính chất nguy hại nằm ở
 toàn bộ ngữ cảnh (ví dụ mỉa mai). Đầu ra của mô hình có định dạng JSON gồm hai trường \texttt{nhan} và
 \texttt{bang\_chung}. Ví dụ dưới đây là một đoạn trích từ tập kiểm thử do người viết (C0, giọng \so{vd.dung.vung}, kịch
-bản \so{vd.dung.kichban}: đe dọa tìm ra ngoài đời trong game) kèm đầu ra của v2:
+bản \so{vd.dung.kichban}: đe dọa tìm ra ngoài đời trong game) kèm đầu ra của SafeViChi v2:
 
 \ghinho{\textbf{Đầu vào} (mỗi dòng là một lượt nói luân phiên; nhãn chuẩn: \so{vd.dung.gold}):\\[2pt]
 \so{vd.dung.dong}\\[4pt]
-\textbf{Đầu ra của v2:}\\[2pt]
+\textbf{Đầu ra của SafeViChi v2:}\\[2pt]
 {\ttfamily \so{vd.dung.json}}}
 
 \section{Dữ liệu}
 \label{sec:p1-dulieu}
 
-Dữ liệu của v2 gồm ba thành phần, được xây dựng theo hai luồng riêng biệt (Hình~\ref{fig:p1-luong}). Tập huấn luyện
+Dữ liệu của SafeViChi v2 gồm ba thành phần, được xây dựng theo hai luồng riêng biệt (Hình~\ref{fig:p1-luong}). Tập huấn luyện
 (train) kết hợp các bình luận thực tế được LLM gán nhãn lại theo 5 nhãn và các hội thoại tổng hợp do LLM sinh theo kịch
 bản. Tập kiểm thử (test) hoàn toàn do thành viên nhóm tự biên soạn, không sử dụng văn bản do LLM sinh.
 
@@ -171,7 +171,7 @@ bản. Tập kiểm thử (test) hoàn toàn do thành viên nhóm tự biên so
 \draw[-{Stealth[length=2mm]}, thick, chuxam] (c3) -- (c4);
 \draw[dashed, chuxam] (tr.south) |- (c4.east);
 \end{tikzpicture}
-\caption{Luồng xây dựng dữ liệu v2. Hàng trên: bình luận thực tế; hàng giữa: hội thoại tổng hợp theo kịch bản; hàng
+\caption{Luồng xây dựng dữ liệu SafeViChi v2. Hàng trên: bình luận thực tế; hàng giữa: hội thoại tổng hợp theo kịch bản; hàng
 dưới (xám): tập kiểm thử do người viết.}
 \label{fig:p1-luong}
 \end{figure}
@@ -184,12 +184,12 @@ dưới (xám): tập kiểm thử do người viết.}
         (\so{dl.goc.vithsd}) có tổng cộng \so{dl.goc.tong} bản ghi. Do ViHOS và ViTHSD phần lớn tái sử dụng câu từ
         ViHSD, sau khi gộp và khử trùng theo nội dung còn \so{dl.khacnhau} câu khác nhau.
   \item \textbf{Tách kho dự trữ cách ly trước khi gọi LLM.} Sau khử trùng gần đúng, các nhóm câu chưa từng thuộc tập
-        huấn luyện (train split) của ViHSD/ViHOS (phần ViHateT5 ở v1 đã học) được tách riêng thành kho dự trữ cách ly
-        (\so{dl.khotest} câu). Kho này không bao giờ được gửi cho LLM và không đưa vào tập huấn luyện nhằm tránh rò rỉ
-        (đánh giá chính thức của v2 sử dụng tập kiểm thử hội thoại do người viết ở Mục~\ref{sec:p1-test}).
+        huấn luyện (train split) của ViHSD/ViHOS (phần ViHateT5 ở SafeViChi v1 đã học) được tách riêng thành kho dự trữ
+        cách ly (\so{dl.khotest} câu). Kho này không bao giờ được gửi cho LLM và không đưa vào tập huấn luyện nhằm tránh
+        rò rỉ (đánh giá chính thức của SafeViChi v2 sử dụng tập kiểm thử hội thoại do người viết ở Mục~\ref{sec:p1-test}).
   \item \textbf{Chọn mẫu cần gán nhãn lại.} Từ \so{dl.khotrain} câu còn lại, chọn \so{dl.ganlai} câu gồm:
         \so{dl.ganlai.nguyhai} câu có nhãn gốc nguy hại, \so{dl.ganlai.blacklist} câu nhãn gốc \nhan{CLEAN} nhưng chứa
-        từ trong danh sách đen (blacklist) của v1 (các trường hợp dễ báo nhầm), \so{dl.ganlai.tukhoa} câu khớp từ khóa
+        từ trong danh sách đen (blacklist) của SafeViChi v1 (các trường hợp dễ báo nhầm), \so{dl.ganlai.tukhoa} câu khớp từ khóa
         của 3 nhãn hiếm, và \so{dl.ganlai.ngaunhien} câu nhãn gốc \nhan{CLEAN} chọn ngẫu nhiên (seed 42).
   \item \textbf{Gán nhãn lại bằng LLM.} Sử dụng mô hình DeepSeek V4.1 Flash (mã định danh \texttt{\so{cp.model}}) để đọc hướng dẫn gán nhãn và
         trả về nhãn kèm cụm bằng chứng theo định dạng JSON. Chương trình tự động kiểm tra tính hợp lệ của nhãn và loại

@@ -1,8 +1,8 @@
 % Phần 0: tóm tắt. Mọi số lấy qua \so{...}.
 {% Giữ phần Tóm tắt gọn trong 1 trang, không ảnh hưởng các phần sau
-\setlength{\parskip}{0.35em}
-\setlength{\intextsep}{6pt plus 2pt minus 2pt}
-\renewcommand{\arraystretch}{1.08}
+\setlength{\parskip}{0.25em}
+\setlength{\intextsep}{4pt plus 1pt minus 1pt}
+\renewcommand{\arraystretch}{1.04}
 \section*{Tóm tắt}
 \addcontentsline{toc}{section}{Tóm tắt}
 
@@ -11,11 +11,11 @@ SafeViChi v2 đọc một đoạn hội thoại tiếng Việt (1--8 dòng) và 
 \textbf{bằng chứng} là các cụm từ trích nguyên văn từ tin nhắn. Mô hình chạy cục bộ trên thiết bị người dùng, không gửi
 tin nhắn ra ngoài.
 
-\textbf{Thay đổi chính so với v1:}
-v1 chỉ phân loại nhị phân \nhan{HATE}/\nhan{CLEAN} nên chủ yếu nhận diện được nội dung xúc phạm: trên tập kiểm thử mới
-(C0), v1 gắn nhãn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM}, nhưng chỉ \so{C0.v1.dd.r} số đoạn
+\textbf{Thay đổi chính so với SafeViChi v1:}
+SafeViChi v1 chỉ phân loại nhị phân \nhan{HATE}/\nhan{CLEAN} nên chủ yếu nhận diện được nội dung xúc phạm: trên tập kiểm
+thử mới (C0), v1 gắn nhãn \nhan{HATE} cho \so{C0.v1.xp.r} số đoạn \nhan{XUC_PHAM}, nhưng chỉ \so{C0.v1.dd.r} số đoạn
 \nhan{DE_DOA}, \so{C0.v1.qr.r} số đoạn \nhan{QUAY_ROI} và \so{C0.v1.ld.r} số đoạn \nhan{LUA_DAO}.
-v2 chuyển sang 5 nhãn theo tình huống, đọc cả đoạn hội thoại thay vì một câu đơn lẻ, và trích xuất bằng chứng đồng thời
+SafeViChi v2 chuyển sang 5 nhãn theo tình huống, đọc cả đoạn hội thoại thay vì một câu đơn lẻ, và trích xuất bằng chứng đồng thời
 với phân loại nhãn. Dữ liệu huấn luyện kết hợp hai nguồn có lọc kiểm định: các bình luận thực tế (ViHSD, ViHOS, ViTHSD) được LLM gán nhãn lại và lọc đồng thuận với người gán gốc, cùng các hội thoại tổng hợp theo kịch bản đã qua bước gán nhãn lại độc lập (ẩn nhãn yêu cầu) để lọc nhiễu; tập kiểm thử hoàn toàn do thành viên nhóm tự biên soạn.
 
 \textbf{Kết quả trên tập kiểm thử} (\so{te.tong} đoạn gốc C0; \so{te.C1.n} bản biến dạng bề mặt thường
@@ -27,12 +27,12 @@ ngoài tập huấn luyện):
 \small
 \setlength{\tabcolsep}{4.5pt}
 \caption{Kết quả chính trên tập kiểm thử (thang 0--100, tức F1 $\times$ 100). Macro-F1: trung bình F1 trên 5 nhãn;
-Binary-F1: F1 phân biệt nguy hại/an toàn; BC F1: F1 cụm bằng chứng tính theo ý (mức cụm). v1 chỉ có nhãn nhị phân và
+Binary-F1: F1 phân biệt nguy hại/an toàn; BC F1: F1 cụm bằng chứng tính theo ý (mức cụm). SafeViChi v1 chỉ có nhãn nhị phân và
 không trích xuất bằng chứng.}
 \label{tab:p0-chinh}
 \begin{tabular}{l c ccc ccc}
 \toprule
-& \textbf{v1} & \multicolumn{3}{c}{\textbf{gpt-oss-120b (API)}} & \multicolumn{3}{c}{\textbf{v2}} \\
+& \textbf{SafeViChi v1} & \multicolumn{3}{c}{\textbf{gpt-oss-120b (API)}} & \multicolumn{3}{c}{\textbf{SafeViChi v2}} \\
 \cmidrule(lr){2-2}\cmidrule(lr){3-5}\cmidrule(lr){6-8}
 Tập & Binary-F1 & Macro-F1 & Binary-F1 & BC F1 & Macro-F1 & Binary-F1 & BC F1 \\
 \midrule
@@ -43,9 +43,9 @@ C2 & \so{C2.v1.bin} & \so{C2.llm.macro} & \so{C2.llm.bin} & \so{C2.llm.bcf} & \t
 \end{tabular}
 \end{table}
 
-\begin{itemize}[itemsep=0.1em,topsep=0.15em]
-  \item v2 đạt kết quả cao nhất trên cả ba tập và duy trì hiệu năng ổn định hơn hẳn khi tin nhắn bị biến dạng; trái lại,
-        gpt-oss-120b suy giảm mạnh trên C1, C2 và giảm sâu khả năng trích xuất bằng chứng ở C2 (từ \so{C0.llm.bcf} xuống
+\begin{itemize}[itemsep=0.05em,topsep=0.1em]
+  \item SafeViChi v2 đạt kết quả cao nhất trên cả ba tập và duy trì hiệu năng ổn định hơn hẳn khi tin nhắn bị biến dạng; trái lại,
+        gpt-oss-120b (API) suy giảm mạnh trên C1, C2 và giảm sâu khả năng trích xuất bằng chứng ở C2 (từ \so{C0.llm.bcf} xuống
         \so{C2.llm.bcf}).
   \item Dung lượng trọng số FP32 là \so{v2.trongso}~MiB (dưới ngưỡng 2~GB khi chưa lượng tử hóa), độ trễ trung vị
         (p50, batch~1) đạt \so{v2.p50}~ms mỗi đoạn trên GPU \so{v2.gpu}. Ở bản triển khai ONNX INT8 cho thiết bị đích,
@@ -69,7 +69,7 @@ C2 & \so{C2.v1.bin} & \so{C2.llm.macro} & \so{C2.llm.bin} & \so{C2.llm.bcf} & \t
 \midrule
 1. Giảm giải thích sai và kiểm duyệt sai & Tách nhãn và bằng chứng thành hai đầu ra, hai ngưỡng và hai bộ độ đo riêng; phân tích chi tiết các trường hợp báo nhầm và bỏ sót (Mục~\ref{sec:p2-yc1}). \\
 2. Khái quát trước kiểu né lọc mới & Đánh giá riêng theo từng kiểu biến dạng, kịch bản chưa thấy và giọng vùng miền; kiểm tra chống rò rỉ dữ liệu huấn luyện--kiểm thử; phân tích các trường hợp thất bại (Mục~\ref{sec:yc2}). \\
-3. So sánh phương pháp và chi phí & So sánh v1, LLM qua API, 4 ứng viên mô hình nhỏ và các thử nghiệm ablation; đo dung lượng, bộ nhớ, độ trễ, năng lượng và chi phí API (Mục~\ref{sec:yc3}). \\
+3. So sánh phương pháp và chi phí & So sánh SafeViChi v1, LLM qua API, 4 ứng viên mô hình nhỏ và các thử nghiệm ablation; đo dung lượng, bộ nhớ, độ trễ, năng lượng và chi phí API (Mục~\ref{sec:yc3}). \\
 \bottomrule
 \end{tabularx}
 \end{table}

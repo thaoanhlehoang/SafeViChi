@@ -1,7 +1,7 @@
 % Phần 2: Mô hình v2, cách đánh giá, kết quả chung, Yêu cầu 1.
 % Mọi con số lấy qua \so{...} (so_lieu.tex, sinh tự động). Không gõ số tay.
 
-\section{Mô hình v2}
+\section{Mô hình SafeViChi v2}
 \label{sec:p2-mo-hinh}
 
 \subsection{Lựa chọn bộ mã hóa thay cho mô hình sinh}
@@ -17,11 +17,11 @@ viên sử dụng kiến trúc bộ mã hóa \textbf{SafeVi-DualORC-CRF} (mmBERT
 (\textbf{GuardMerge}) kết hợp trọng số nền mô hình ngôn ngữ lớn hai chiều 0,6 tỉ tham số và tinh chỉnh bằng LoRA. Kết
 quả trên dev cho thấy mmBERT-base vượt GuardMerge có ý nghĩa thống kê (kiểm định McNemar, $p = \so{dev.mc.guard}$) và
 suy luận nhanh hơn hơn hai lần (\so{dev.mmbert.p50}~ms so với \so{dev.guard.p50}~ms mỗi đoạn trên GPU \so{v2.gpu},
-batch~1). Do đó, v2 lựa chọn kiến trúc bộ mã hóa trên nền mmBERT-base.
+batch~1). Do đó, SafeViChi v2 lựa chọn kiến trúc bộ mã hóa trên nền mmBERT-base.
 
 \subsection{Kiến trúc mô hình}
 
-Mô hình chính thức của v2 có kiến trúc \textbf{SafeVi-DualORC-CRF}, xây dựng trên bộ mã hóa đa ngôn ngữ
+Mô hình chính thức của SafeViChi v2 có kiến trúc \textbf{SafeVi-DualORC-CRF}, xây dựng trên bộ mã hóa đa ngôn ngữ
 \textbf{mmBERT-base}. Mô hình tiếp nhận đồng thời toàn bộ đoạn hội thoại (1--8 dòng, tối đa \so{v2.maxtok} token; khi
 vượt ngưỡng sẽ phân bổ ngân sách token giữa các lượt thay vì chỉ giữ dòng cuối) và vận hành trực tiếp trên văn bản gốc,
 không bật bộ chuẩn hóa v1 (thử nghiệm bật/tắt chuẩn hóa được trình bày ở Mục~\ref{sec:yc3-ablation}).
@@ -79,7 +79,7 @@ epoch, seed 42), mỗi đoạn được tăng cường dữ liệu trực tuyế
 hoặc biến dạng bề mặt C1 đơn nghĩa phi điểm mù (teencode, bỏ dấu, kéo dài nguyên âm, cùng một số dạng chèn dấu phân
 cách và thay chữ bằng số mức cơ bản) với xác suất \so{v2.surface}. Hai đầu ra được tối ưu đồng thời bằng hàm mất mát đa
 nhiệm riêng, kết hợp cơ chế \textbf{phạt nhất quán} (consistency loss) giữa dự đoán trên bản gốc và bản biến dạng, cùng
-\textbf{huấn luyện đối kháng FGM} tương tự v1 (cộng nhiễu chuẩn hóa vào tầng embedding với $\varepsilon = \so{v2.fgm}$,
+\textbf{huấn luyện đối kháng FGM} tương tự SafeViChi v1 (cộng nhiễu chuẩn hóa vào tầng embedding với $\varepsilon = \so{v2.fgm}$,
 áp dụng từ epoch thứ 2). Toàn bộ 6 kiểu điểm mù C2, phép dính từ trong C1 và bộ biến dạng giữ ngoài (held-out) hoàn toàn
 không được sử dụng trong bước huấn luyện này.
 
@@ -115,15 +115,15 @@ thử.
 \subsection{Ba hệ thống đối chiếu}
 
 \begin{itemize}
-  \item \textbf{v1:} SafeViChi vòng loại (ViHateT5 tinh chỉnh đối kháng FGM kèm bộ chuẩn hóa 5 tầng). Hệ thống chỉ xuất
-        nhãn nhị phân \nhan{HATE}/\nhan{CLEAN} và không trích xuất cụm bằng chứng theo định dạng JSON v2, nên chỉ đánh
-        giá theo bài toán phân loại nhị phân (quy \nhan{HATE} về 4 nhãn nguy hại, \nhan{CLEAN} về \nhan{AN_TOAN}).
+  \item \textbf{SafeViChi v1:} Phiên bản vòng loại (ViHateT5 tinh chỉnh đối kháng FGM kèm bộ chuẩn hóa 5 tầng). Hệ thống
+        chỉ xuất nhãn nhị phân \nhan{HATE}/\nhan{CLEAN} và không trích xuất cụm bằng chứng theo định dạng JSON của v2, nên
+        chỉ đánh giá theo bài toán phân loại nhị phân (quy \nhan{HATE} về 4 nhãn nguy hại, \nhan{CLEAN} về \nhan{AN_TOAN}).
   \item \textbf{gpt-oss-120b (API):} Mô hình ngôn ngữ lớn (\texttt{openai/gpt-oss-120b}, độc lập với LLM tạo dữ liệu
         huấn luyện), không tinh chỉnh trọng số; sử dụng prompt gồm đầy đủ hướng dẫn gán nhãn của nhóm (định nghĩa 5 nhãn,
         quy tắc ưu tiên, ví dụ trường hợp biên và quy tắc bằng chứng), suy luận trực tiếp trên văn bản gốc ở mức suy luận
         \texttt{\so{api.reasoning}}.
-  \item \textbf{v2:} Mô hình SafeVi-DualORC-CRF trên mmBERT-base (Mục~\ref{sec:p2-mo-hinh}), bản trọng số FP32 kèm các
-        tham số hiệu chỉnh đã đóng băng, suy luận trực tiếp trên văn bản gốc (tắt bộ chuẩn hóa v1).
+  \item \textbf{SafeViChi v2:} Mô hình SafeVi-DualORC-CRF trên mmBERT-base (Mục~\ref{sec:p2-mo-hinh}), bản trọng số FP32
+        kèm các tham số hiệu chỉnh đã đóng băng, suy luận trực tiếp trên văn bản gốc (tắt bộ chuẩn hóa v1).
 \end{itemize}
 
 Cả ba hệ thống được đánh giá trên cùng tập kiểm thử do thành viên nhóm tự biên soạn (Mục~\ref{sec:p1-test},
@@ -141,7 +141,7 @@ tự Unicode ``điểm mù'' hoàn toàn ngoài quá trình huấn luyện).
   \item \textbf{FPR:} tỉ lệ đoạn \nhan{AN_TOAN} bị phân loại nhầm là nguy hại (tỉ lệ báo nhầm); càng thấp càng tốt.
   \item \textbf{BC P/R/F1 theo ý:} đánh giá chất lượng cụm bằng chứng khớp nguyên văn ở mức mệnh đề. Precision đo tỉ lệ
         từ trích xuất nằm đúng mệnh đề chứa ý chuẩn; Recall đo mức độ bao phủ các ý chuẩn (trích trúng từ $2/3$ số từ của
-        ý trở lên đạt đủ điểm). Khi đối chiếu bằng F1 mức từ chặt hơn, ưu thế của v2 vẫn giữ nguyên (C0: \so{C0.v2.bctu}
+        ý trở lên đạt đủ điểm). Khi đối chiếu bằng F1 mức từ chặt hơn, ưu thế của SafeViChi v2 vẫn giữ nguyên (C0: \so{C0.v2.bctu}
         so với \so{C0.llm.bctu}; C2: \so{C2.v2.bctu} so với \so{C2.llm.bctu}).
 \end{itemize}
 
@@ -162,17 +162,17 @@ có đầu ra tương ứng.}
 \toprule
 \textbf{Tập} & \textbf{Hệ thống} & \textbf{Macro-F1} & \textbf{KTC 95\% Macro-F1} & \textbf{Binary-F1} & \textbf{FPR} & \textbf{BC F1 theo ý} \\
 \midrule
-\multirow{3}{*}{C0} & v1 & -- & -- & \so{C0.v1.bin} & \so{C0.v1.fpr} & -- \\
+\multirow{3}{*}{C0} & SafeViChi v1 & -- & -- & \so{C0.v1.bin} & \so{C0.v1.fpr} & -- \\
  & gpt-oss-120b (API) & \so{C0.llm.macro} & \so{C0.llm.macro.lo}--\so{C0.llm.macro.hi} & \so{C0.llm.bin} & \so{C0.llm.fpr} & \so{C0.llm.bcf} \\
- & \textbf{v2} & \textbf{\so{C0.v2.macro}} & \so{C0.v2.macro.lo}--\so{C0.v2.macro.hi} & \textbf{\so{C0.v2.bin}} & \so{C0.v2.fpr} & \textbf{\so{C0.v2.bcf}} \\
+ & \textbf{SafeViChi v2} & \textbf{\so{C0.v2.macro}} & \so{C0.v2.macro.lo}--\so{C0.v2.macro.hi} & \textbf{\so{C0.v2.bin}} & \so{C0.v2.fpr} & \textbf{\so{C0.v2.bcf}} \\
 \midrule
-\multirow{3}{*}{C1} & v1 & -- & -- & \so{C1.v1.bin} & \so{C1.v1.fpr} & -- \\
+\multirow{3}{*}{C1} & SafeViChi v1 & -- & -- & \so{C1.v1.bin} & \so{C1.v1.fpr} & -- \\
  & gpt-oss-120b (API) & \so{C1.llm.macro} & \so{C1.llm.macro.lo}--\so{C1.llm.macro.hi} & \so{C1.llm.bin} & \so{C1.llm.fpr} & \so{C1.llm.bcf} \\
- & \textbf{v2} & \textbf{\so{C1.v2.macro}} & \so{C1.v2.macro.lo}--\so{C1.v2.macro.hi} & \textbf{\so{C1.v2.bin}} & \so{C1.v2.fpr} & \textbf{\so{C1.v2.bcf}} \\
+ & \textbf{SafeViChi v2} & \textbf{\so{C1.v2.macro}} & \so{C1.v2.macro.lo}--\so{C1.v2.macro.hi} & \textbf{\so{C1.v2.bin}} & \so{C1.v2.fpr} & \textbf{\so{C1.v2.bcf}} \\
 \midrule
-\multirow{3}{*}{C2} & v1 & -- & -- & \so{C2.v1.bin} & \so{C2.v1.fpr} & -- \\
+\multirow{3}{*}{C2} & SafeViChi v1 & -- & -- & \so{C2.v1.bin} & \so{C2.v1.fpr} & -- \\
  & gpt-oss-120b (API) & \so{C2.llm.macro} & \so{C2.llm.macro.lo}--\so{C2.llm.macro.hi} & \so{C2.llm.bin} & \so{C2.llm.fpr} & \so{C2.llm.bcf} \\
- & \textbf{v2} & \textbf{\so{C2.v2.macro}} & \so{C2.v2.macro.lo}--\so{C2.v2.macro.hi} & \textbf{\so{C2.v2.bin}} & \so{C2.v2.fpr} & \textbf{\so{C2.v2.bcf}} \\
+ & \textbf{SafeViChi v2} & \textbf{\so{C2.v2.macro}} & \so{C2.v2.macro.lo}--\so{C2.v2.macro.hi} & \textbf{\so{C2.v2.bin}} & \so{C2.v2.fpr} & \textbf{\so{C2.v2.bcf}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -187,25 +187,27 @@ Bảng~\ref{tab:p2-chinh}.}
 
 \textbf{Nhận xét:}
 \begin{itemize}
-  \item \textbf{v2 dẫn đầu có ý nghĩa thống kê trên cả ba tập.} Ở cả C0, C1 và C2, v2 đạt điểm cao nhất trên mọi chỉ số
-        chính (Macro-F1, Binary-F1 và BC F1 theo ý); khoảng tin cậy 95\% của Macro-F1 giữa v2 và gpt-oss-120b (API) hoàn
-        toàn không chồng lấp trên cả ba tập, khẳng định ưu thế không chỉ do biến động chọn mẫu ngẫu nhiên.
-  \item \textbf{v2 duy trì hiệu năng ổn định khi tin nhắn bị biến dạng né lọc.} Khi chuyển từ C0 sang C1 và C2,
+  \item \textbf{SafeViChi v2 dẫn đầu có ý nghĩa thống kê trên cả ba tập.} Ở cả C0, C1 và C2, mô hình đạt điểm cao nhất trên
+        mọi chỉ số chính (Macro-F1, Binary-F1 và BC F1 theo ý); khoảng tin cậy 95\% của Macro-F1 giữa SafeViChi v2 và
+        gpt-oss-120b (API) hoàn toàn không chồng lấp trên cả ba tập, khẳng định ưu thế không chỉ do biến động chọn mẫu ngẫu
+        nhiên.
+  \item \textbf{SafeViChi v2 duy trì hiệu năng ổn định khi tin nhắn bị biến dạng né lọc.} Khi chuyển từ C0 sang C1 và C2,
         Binary-F1 của v2 chỉ giảm nhẹ từ \so{C0.v2.bin} xuống \so{C1.v2.bin} và \so{C2.v2.bin}, đồng thời BC F1 theo ý
         vẫn giữ ở mức \so{C1.v2.bcf} và \so{C2.v2.bcf}. Trái lại, gpt-oss-120b (API) suy giảm sâu cả về phân loại
         (Binary-F1 từ \so{C0.llm.bin} xuống \so{C1.llm.bin} ở C1 và \so{C2.llm.bin} ở C2) lẫn trích xuất bằng chứng
         (BC F1 từ \so{C0.llm.bcf} tụt xuống \so{C2.llm.bcf} ở C2).
-  \item \textbf{Độ phủ phát hiện nguy hại vượt trội và đánh đổi FPR.} v2 duy trì tỉ lệ phát hiện (recall) tin nhắn nguy
-        hại cao trên cả ba tập (\so{C0.v2.r} ở C0, \so{C1.v2.r} ở C1 và \so{C2.v2.r} ở C2) với precision ổn định
+  \item \textbf{Độ phủ phát hiện nguy hại vượt trội và đánh đổi FPR.} SafeViChi v2 duy trì tỉ lệ phát hiện (recall) tin
+        nhắn nguy hại cao trên cả ba tập (\so{C0.v2.r} ở C0, \so{C1.v2.r} ở C1 và \so{C2.v2.r} ở C2) với precision ổn định
         (\so{C0.v2.p} ở C0), trong khi gpt-oss-120b (API) thận trọng quá mức nên bỏ sót nhiều đoạn nguy hại (recall chỉ
         đạt \so{C0.llm.r} ở C0, \so{C1.llm.r} ở C1 và \so{C2.llm.r} ở C2). Đổi lại, FPR của v2 trên C0 cao hơn
         (\so{C0.v2.fpr} so với \so{C0.llm.fpr}), nhưng trên tập biến dạng C1 hai hệ thống có cùng mức FPR
         (\so{C1.v2.fpr} so với \so{C1.llm.fpr}); nguyên nhân báo nhầm và hướng tinh chỉnh ngưỡng được phân tích chi tiết
         ở Mục~\ref{sec:p2-yc1}.
-  \item \textbf{Lý do Binary-F1 của v1 tăng nhẹ trên C2.} Trên Hình~\ref{fig:p2-binary}, Binary-F1 của v1 tăng từ
-        \so{C0.v1.bin} (C0) lên \so{C2.v1.bin} (C2) không phải do khả năng chống điểm mù tốt hơn, mà vì biến dạng làm vỡ
+  \item \textbf{Lý do Binary-F1 của SafeViChi v1 tăng nhẹ trên C2.} Trên Hình~\ref{fig:p2-binary}, Binary-F1 của v1 tăng
+        từ \so{C0.v1.bin} (C0) lên \so{C2.v1.bin} (C2) không phải do khả năng chống điểm mù tốt hơn, mà vì biến dạng làm vỡ
         từ khiến v1 gắn nhãn \nhan{HATE} nhiều hơn trên cả đoạn an toàn (FPR tăng từ \so{C0.v1.fpr} lên \so{C2.v1.fpr})
-        lẫn đoạn nguy hại (recall tăng từ \so{C0.v1.r} lên \so{C2.v1.r}), và vẫn thấp hơn v2 rất xa (\so{C2.v2.bin}).
+        lẫn đoạn nguy hại (recall tăng từ \so{C0.v1.r} lên \so{C2.v1.r}), và vẫn thấp hơn SafeViChi v2 rất xa
+        (\so{C2.v2.bin}).
 \end{itemize}
 
 % ---------------------------------------------------------------------------
@@ -214,9 +216,9 @@ Bảng~\ref{tab:p2-chinh}.}
 
 \subsection{Tách kết quả phân loại khỏi bằng chứng}
 
-Ở v1, bằng chứng được tìm bằng phương pháp occlusion \emph{sau} khi phân loại: che lần lượt từng cụm hai từ rồi suy luận
-lại nhiều lần, nên chất lượng bằng chứng phụ thuộc trực tiếp vào bộ phân loại. v2 khắc phục hạn chế này bằng cách trích
-xuất bằng chứng ngay trong một lượt suy luận duy nhất và tách bạch hai nhiệm vụ:
+Ở SafeViChi v1, bằng chứng được tìm bằng phương pháp occlusion \emph{sau} khi phân loại: che lần lượt từng cụm hai từ rồi
+suy luận lại nhiều lần, nên chất lượng bằng chứng phụ thuộc trực tiếp vào bộ phân loại. SafeViChi v2 khắc phục hạn chế
+này bằng cách trích xuất bằng chứng ngay trong một lượt suy luận duy nhất và tách bạch hai nhiệm vụ:
 
 \begin{itemize}
   \item \textbf{Hai đầu ra độc lập:} dùng chung bộ mã hóa nhưng tách thành đầu phân loại và đầu gắn thẻ mức từ, tối ưu
@@ -240,7 +242,7 @@ nhãn chuẩn tương ứng).}
 \label{tab:p2-theo-nhan}
 \begin{tabular}{lcccccccc}
 \toprule
- & & \multicolumn{4}{c}{\textbf{v2}} & \multicolumn{2}{c}{\textbf{gpt-oss-120b (API)}} \\
+ & & \multicolumn{4}{c}{\textbf{SafeViChi v2}} & \multicolumn{2}{c}{\textbf{gpt-oss-120b (API)}} \\
 \cmidrule(lr){3-6}\cmidrule(lr){7-8}
 \textbf{Nhãn} & \textbf{$n$} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{BC F1} & \textbf{F1} & \textbf{BC F1} \\
 \midrule
@@ -253,7 +255,7 @@ nhãn chuẩn tương ứng).}
 \end{tabular}
 \end{table}
 
-Trên C0 (Bảng~\ref{tab:p2-theo-nhan}), v2 vượt trội rõ rệt so với gpt-oss-120b (API) về F1 trên 4/5 nhãn (\nhan{AN_TOAN},
+Trên C0 (Bảng~\ref{tab:p2-theo-nhan}), SafeViChi v2 vượt trội rõ rệt so với gpt-oss-120b (API) về F1 trên 4/5 nhãn (\nhan{AN_TOAN},
 \nhan{XUC_PHAM}, \nhan{QUAY_ROI}, \nhan{DE_DOA}), đạt mức tương đương ở \nhan{LUA_DAO} (\so{C0.v2.ld.f} so với
 \so{C0.llm.ld.f}), đồng thời dẫn đầu về chất lượng bằng chứng (BC F1) trên cả bốn nhãn nguy hại. Trong đó,
 \nhan{LUA_DAO} (\so{C0.v2.ld.f}) và \nhan{XUC_PHAM} (\so{C0.v2.xp.f}) đạt hiệu năng cao nhất; riêng \nhan{QUAY_ROI} giữ
@@ -262,18 +264,18 @@ precision cao (\so{C0.v2.qr.p}) và vượt gpt-oss-120b (API) tới gần 19 đ
 \begin{figure}[H]
 \centering
 \input{hinh/ma_tran_nham.tex}
-\caption{Ma trận nhầm lẫn của v2 trên tập kiểm thử C0. Số trong ô là số đoạn; màu đậm theo tỉ lệ trong hàng.}
+\caption{Ma trận nhầm lẫn của SafeViChi v2 trên tập kiểm thử C0. Số trong ô là số đoạn; màu đậm theo tỉ lệ trong hàng.}
 \label{fig:p2-nham-lan}
 \end{figure}
 
-Trên Hình~\ref{fig:p2-nham-lan}, các dự đoán của v2 tập trung rõ nét dọc đường chéo chính. Nhầm lẫn giữa các nhãn nguy
+Trên Hình~\ref{fig:p2-nham-lan}, các dự đoán của SafeViChi v2 tập trung rõ nét dọc đường chéo chính. Nhầm lẫn giữa các nhãn nguy
 hại chủ yếu rơi vào hai vùng ranh giới tự nhiên: \nhan{QUAY_ROI} sang \nhan{DE_DOA} (\so{C0.v2.cm.qr.dd} đoạn, khi hành
 vi bám riết hoặc kiểm soát kèm cấu trúc cảnh cáo) và \nhan{XUC_PHAM} sang \nhan{QUAY_ROI} (\so{C0.v2.cm.xp.qr} đoạn,
 thuộc vùng giao thoa bình phẩm ngoại hình ở Mục~\ref{sec:p1-sinh}).
 
 \subsection{Báo nhầm đoạn an toàn}
 
-Trên nhóm kịch bản đã xuất hiện trong tập huấn luyện, v2 kiểm soát tỉ lệ báo nhầm ở mức rất thấp
+Trên nhóm kịch bản đã xuất hiện trong tập huấn luyện, SafeViChi v2 kiểm soát tỉ lệ báo nhầm ở mức rất thấp
 (\so{phan.C0.trongphanphoi.v2.fpr}) và không ghi nhận đoạn \nhan{AN_TOAN} nào bị báo nhầm thành \nhan{XUC_PHAM}
 (\so{C0.v2.cm.at.xp} đoạn). Xét toàn tập C0, có \so{C0.v2.fp.tong} trên \so{C0.at.n} đoạn \nhan{AN_TOAN} bị báo nhầm
 (\so{C0.v2.cm.at.dd} \nhan{DE_DOA}, \so{C0.v2.cm.at.ld} \nhan{LUA_DAO}, \so{C0.v2.cm.at.qr} \nhan{QUAY_ROI}), tập trung
@@ -284,17 +286,17 @@ Bảng~\ref{tab:p2-bao-nham} minh họa hai trường hợp tiêu biểu.
 \begin{table}[H]
 \centering
 \small
-\caption{Hai đoạn \nhan{AN_TOAN} bị v2 báo nhầm trên tập kiểm thử C0.}
+\caption{Hai đoạn \nhan{AN_TOAN} bị SafeViChi v2 báo nhầm trên tập kiểm thử C0.}
 \label{tab:p2-bao-nham}
 \begin{tabularx}{\linewidth}{>{\hsize=1.35\hsize}Y >{\hsize=0.65\hsize}Y}
 \toprule
 \textbf{Đoạn tin nhắn} & \textbf{Kết quả phân loại và bằng chứng} \\
 \midrule
 \so{vd.otp.text} &
-Nhãn chuẩn: \so{vd.otp.gold}\newline v2: \so{vd.otp.pred} (\so{vd.otp.tincay})\newline gpt-oss-120b (API): \so{vd.otp.llm}\newline Bằng chứng v2: \so{vd.otp.bc} \\
+Nhãn chuẩn: \so{vd.otp.gold}\newline SafeViChi v2: \so{vd.otp.pred} (\so{vd.otp.tincay})\newline gpt-oss-120b (API): \so{vd.otp.llm}\newline Bằng chứng v2: \so{vd.otp.bc} \\
 \midrule
 \so{vd.baoco.text} &
-Nhãn chuẩn: \so{vd.baoco.gold}\newline v2: \so{vd.baoco.pred} (\so{vd.baoco.tincay})\newline gpt-oss-120b (API): \so{vd.baoco.llm}\newline Bằng chứng v2: \so{vd.baoco.bc} \\
+Nhãn chuẩn: \so{vd.baoco.gold}\newline SafeViChi v2: \so{vd.baoco.pred} (\so{vd.baoco.tincay})\newline gpt-oss-120b (API): \so{vd.baoco.llm}\newline Bằng chứng v2: \so{vd.baoco.bc} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -304,17 +306,17 @@ trong tập huấn luyện nên mô hình bám theo từ khóa quen thuộc vớ
 \so{vd.baoco.tincay}). Do đó, hướng xử lý hiệu quả là bổ sung dữ liệu đối chứng an toàn tương ứng thay vì chỉ nâng
 ngưỡng chung.
 
-\textbf{Tiếng lóng.} Trên C0, v2 không báo nhầm trường hợp tiếng lóng vô hại nào sang \nhan{XUC_PHAM}. Đối chiếu thêm
+\textbf{Tiếng lóng.} Trên C0, SafeViChi v2 không báo nhầm trường hợp tiếng lóng vô hại nào sang \nhan{XUC_PHAM}. Đối chiếu thêm
 trên lát cắt có thẻ tiếng lóng của tập dev ($n = \so{dev.tieng.n}$), mmBERT-base đạt Macro-F1 cao nhất trong 4 ứng viên
 (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT), đồng thời duy trì FPR thấp hơn GuardMerge
 (\so{dev.mmbert.tieng.fpr} so với \so{dev.guard.tieng.fpr}).
 
 \subsection{Bỏ sót đoạn nguy hại}
 
-Nhờ duy trì độ phủ phát hiện cao trên C0 (recall \so{C0.v2.r}, vượt xa mức \so{C0.llm.r} của gpt-oss-120b (API)), v2
-giảm đáng kể tỉ lệ bỏ sót nguy hại, chỉ còn \so{C0.v2.fn.tong} đoạn bị dự đoán là \nhan{AN_TOAN} (\so{C0.v2.cm.dd.at}
-\nhan{DE_DOA}, \so{C0.v2.cm.qr.at} \nhan{QUAY_ROI}, \so{C0.v2.cm.ld.at} \nhan{LUA_DAO} và \so{C0.v2.cm.xp.at}
-\nhan{XUC_PHAM}). Phần lớn các trường hợp này mang tính ẩn ý (như lời đe dọa nói tránh ``nhớ đi đường đông người nhé'')
+Nhờ duy trì độ phủ phát hiện cao trên C0 (recall \so{C0.v2.r}, vượt xa mức \so{C0.llm.r} của gpt-oss-120b (API)),
+SafeViChi v2 giảm đáng kể tỉ lệ bỏ sót nguy hại, chỉ còn \so{C0.v2.fn.tong} đoạn bị dự đoán là \nhan{AN_TOAN}
+(\so{C0.v2.cm.dd.at} \nhan{DE_DOA}, \so{C0.v2.cm.qr.at} \nhan{QUAY_ROI}, \so{C0.v2.cm.ld.at} \nhan{LUA_DAO} và
+\so{C0.v2.cm.xp.at} \nhan{XUC_PHAM}). Phần lớn các trường hợp này mang tính ẩn ý (như lời đe dọa nói tránh ``nhớ đi đường đông người nhé'')
 hoặc thuộc kịch bản chưa xuất hiện khi huấn luyện (chi tiết ở Mục~\ref{sec:yc2}).
 
 \subsection{Hiệu chỉnh ngưỡng}
@@ -336,7 +338,7 @@ làm thay đổi FPR khoảng 3 điểm phần trăm, nên mức chênh lệch n
 \begin{figure}[H]
 \centering
 \input{hinh/bang_chung_bien_dang.tex}
-\caption{BC F1 theo ý qua các mức biến dạng C0, C1 và C2. v2 trích cụm trực tiếp theo vị trí từ trên văn bản gốc nên giữ
+\caption{BC F1 theo ý qua các mức biến dạng C0, C1 và C2. SafeViChi v2 trích cụm trực tiếp theo vị trí từ trên văn bản gốc nên giữ
 vững hiệu năng, trong khi gpt-oss-120b (API) suy giảm sâu dưới biến dạng.}
 \label{fig:p2-bc-bien-dang}
 \end{figure}
@@ -345,7 +347,7 @@ vững hiệu năng, trong khi gpt-oss-120b (API) suy giảm sâu dưới biến
 \centering
 \footnotesize
 \setlength{\tabcolsep}{4pt}
-\caption{Chất lượng trích xuất bằng chứng của v2 và gpt-oss-120b (API) trên tập kiểm thử (BC P/R/F1 theo thang 0--100;
+\caption{Chất lượng trích xuất bằng chứng của SafeViChi v2 và gpt-oss-120b (API) trên tập kiểm thử (BC P/R/F1 theo thang 0--100;
 các tỉ lệ tính theo \%). $n$ BC: số đoạn nguy hại được đánh giá bằng chứng. Tô oan: tỉ lệ đoạn \nhan{AN_TOAN} bị trích
 xuất ít nhất một cụm. Rỗng: tỉ lệ đoạn nguy hại được phân loại đúng là nguy hại nhưng không có cụm bằng chứng nào. Lệch
 nguyên văn: tỉ lệ cụm trích xuất không xuất hiện nguyên văn trong tin nhắn.}
@@ -355,32 +357,32 @@ nguyên văn: tỉ lệ cụm trích xuất không xuất hiện nguyên văn tr
 \textbf{Tập} & \textbf{Hệ thống} & \textbf{$n$ BC} & \textbf{BC P} & \textbf{BC R} & \textbf{BC F1} & \textbf{Tô oan} & \textbf{Rỗng} & \textbf{Lệch nguyên văn} \\
 \midrule
 \multirow{2}{*}{C0} & gpt-oss-120b (API) & \so{C0.llm.nbc} & \so{C0.llm.bcp} & \so{C0.llm.bcr} & \so{C0.llm.bcf} & \so{C0.llm.toan} & \so{C0.llm.rong} & \so{C0.llm.khongnguyenvan} \\
- & \textbf{v2} & \so{C0.v2.nbc} & \textbf{\so{C0.v2.bcp}} & \textbf{\so{C0.v2.bcr}} & \textbf{\so{C0.v2.bcf}} & \so{C0.v2.toan} & \textbf{\so{C0.v2.rong}} & \textbf{\so{C0.v2.khongnguyenvan}} \\
+ & \textbf{SafeViChi v2} & \so{C0.v2.nbc} & \textbf{\so{C0.v2.bcp}} & \textbf{\so{C0.v2.bcr}} & \textbf{\so{C0.v2.bcf}} & \so{C0.v2.toan} & \textbf{\so{C0.v2.rong}} & \textbf{\so{C0.v2.khongnguyenvan}} \\
 \midrule
 \multirow{2}{*}{C1} & gpt-oss-120b (API) & \so{C1.llm.nbc} & \so{C1.llm.bcp} & \so{C1.llm.bcr} & \so{C1.llm.bcf} & \so{C1.llm.toan} & \so{C1.llm.rong} & \so{C1.llm.khongnguyenvan} \\
- & \textbf{v2} & \so{C1.v2.nbc} & \textbf{\so{C1.v2.bcp}} & \textbf{\so{C1.v2.bcr}} & \textbf{\so{C1.v2.bcf}} & \textbf{\so{C1.v2.toan}} & \textbf{\so{C1.v2.rong}} & \textbf{\so{C1.v2.khongnguyenvan}} \\
+ & \textbf{SafeViChi v2} & \so{C1.v2.nbc} & \textbf{\so{C1.v2.bcp}} & \textbf{\so{C1.v2.bcr}} & \textbf{\so{C1.v2.bcf}} & \textbf{\so{C1.v2.toan}} & \textbf{\so{C1.v2.rong}} & \textbf{\so{C1.v2.khongnguyenvan}} \\
 \midrule
 \multirow{2}{*}{C2} & gpt-oss-120b (API) & \so{C2.llm.nbc} & \so{C2.llm.bcp} & \so{C2.llm.bcr} & \so{C2.llm.bcf} & \so{C2.llm.toan} & \so{C2.llm.rong} & \so{C2.llm.khongnguyenvan} \\
- & \textbf{v2} & \so{C2.v2.nbc} & \textbf{\so{C2.v2.bcp}} & \textbf{\so{C2.v2.bcr}} & \textbf{\so{C2.v2.bcf}} & \so{C2.v2.toan} & \textbf{\so{C2.v2.rong}} & \textbf{\so{C2.v2.khongnguyenvan}} \\
+ & \textbf{SafeViChi v2} & \so{C2.v2.nbc} & \textbf{\so{C2.v2.bcp}} & \textbf{\so{C2.v2.bcr}} & \textbf{\so{C2.v2.bcf}} & \so{C2.v2.toan} & \textbf{\so{C2.v2.rong}} & \textbf{\so{C2.v2.khongnguyenvan}} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{itemize}
-  \item \textbf{Vượt trội toàn diện trên C0:} v2 cao hơn gpt-oss-120b (API) ở cả precision, recall và BC F1 theo ý
+  \item \textbf{Vượt trội toàn diện trên C0:} SafeViChi v2 cao hơn gpt-oss-120b (API) ở cả precision, recall và BC F1 theo ý
         (\so{C0.v2.bcp}/\so{C0.v2.bcr}/\so{C0.v2.bcf} so với \so{C0.llm.bcp}/\so{C0.llm.bcr}/\so{C0.llm.bcf}), đồng thời
         có tỉ lệ bỏ trống bằng chứng thấp hơn (\so{C0.v2.rong} so với \so{C0.llm.rong}).
-  \item \textbf{Bền vững tuyệt đối trước biến dạng né lọc:} nhờ trích cụm trực tiếp theo vị trí từ trên văn bản gốc, v2
-        duy trì \so{C2.v2.khongnguyenvan} cụm lệch nguyên văn trên cả ba tập, giữ BC F1 ở mức \so{C1.v2.bcf} (C1) và
-        \so{C2.v2.bcf} (C2) với tỉ lệ bỏ trống thấp (\so{C2.v2.rong}). Trái lại, gpt-oss-120b (API) thường tự chuẩn hóa
+  \item \textbf{Bền vững tuyệt đối trước biến dạng né lọc:} nhờ trích cụm trực tiếp theo vị trí từ trên văn bản gốc,
+        SafeViChi v2 duy trì \so{C2.v2.khongnguyenvan} cụm lệch nguyên văn trên cả ba tập, giữ BC F1 ở mức \so{C1.v2.bcf}
+        (C1) và \so{C2.v2.bcf} (C2) với tỉ lệ bỏ trống thấp (\so{C2.v2.rong}). Trái lại, gpt-oss-120b (API) thường tự chuẩn hóa
         ký tự khi sinh JSON nên tụt sâu BC F1 xuống \so{C2.llm.bcf} trên C2, với \so{C2.llm.khongnguyenvan} cụm lệch
         nguyên văn và \so{C2.llm.rong} đoạn nguy hại bị bỏ trống (Hình~\ref{fig:p2-bc-bien-dang},
         Bảng~\ref{tab:p2-bang-chung}).
   \item \textbf{Tỉ lệ tô oan ổn định theo FPR:} do đoạn dự đoán \nhan{AN_TOAN} luôn có bằng chứng rỗng, tô oan chỉ phát
-        sinh trên các đoạn an toàn bị phân loại nhầm. v2 giữ tỉ lệ này ổn định quanh \so{C1.v2.toan}--\so{C0.v2.toan}
+        sinh trên các đoạn an toàn bị phân loại nhầm. SafeViChi v2 giữ tỉ lệ này ổn định quanh \so{C1.v2.toan}--\so{C0.v2.toan}
         trên cả ba tập và thấp hơn gpt-oss-120b (API) ở C1 (\so{C1.v2.toan} so với \so{C1.llm.toan}).
 \end{itemize}
 
 \ghinho{\textbf{Quy ước đánh giá bằng chứng.} Điểm bằng chứng chỉ tính trên các đoạn nguy hại mà hệ thống đã phân loại là
-nguy hại; các đoạn bị dự đoán nhầm \nhan{AN_TOAN} đã bị phạt ở phần phân loại. Nhờ recall vượt trội, v2 đạt điểm bằng
+nguy hại; các đoạn bị dự đoán nhầm \nhan{AN_TOAN} đã bị phạt ở phần phân loại. Nhờ recall vượt trội, SafeViChi v2 đạt điểm bằng
 chứng cao hơn dù được đánh giá trên nhiều đoạn khó hơn mà LLM bỏ sót (C0: \so{C0.v2.nbc} so với \so{C0.llm.nbc} đoạn).}
