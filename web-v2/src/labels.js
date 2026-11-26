@@ -1,10 +1,10 @@
 // Bộ nhãn v2 và hành động của ứng dụng (theo CLAUDE.md). UI đọc màu/hành động từ đây.
 export const LABELS = {
-  AN_TOAN:  { ten: 'An toàn',  mau: '#16a34a', hanh_dong: 'Hiện bình thường' },
-  XUC_PHAM: { ten: 'Xúc phạm', mau: '#d97706', hanh_dong: 'Làm mờ, bấm mới xem' },
-  QUAY_ROI: { ten: 'Quấy rối', mau: '#9333ea', hanh_dong: 'Gợi ý chặn, báo cáo' },
-  DE_DOA:   { ten: 'Đe dọa',   mau: '#dc2626', hanh_dong: 'Cảnh báo mạnh, gợi ý lưu bằng chứng' },
-  LUA_DAO:  { ten: 'Lừa đảo',  mau: '#2563eb', hanh_dong: 'Cảnh báo, vô hiệu link' },
+  AN_TOAN:  { ten: 'An toàn',  mau: '#378454', hanh_dong: 'Hiện bình thường' },
+  XUC_PHAM: { ten: 'Xúc phạm', mau: '#B76530', hanh_dong: 'Làm mờ, bấm mới xem' },
+  QUAY_ROI: { ten: 'Quấy rối', mau: '#8560A4', hanh_dong: 'Gợi ý chặn, báo cáo' },
+  DE_DOA:   { ten: 'Đe dọa',   mau: '#B54747', hanh_dong: 'Cảnh báo mạnh, gợi ý lưu bằng chứng' },
+  LUA_DAO:  { ten: 'Lừa đảo',  mau: '#A48124', hanh_dong: 'Cảnh báo, vô hiệu link' },
 };
 
 // Mô tả ngắn cho phần thông tin (theo docs/v2/HUONG_DAN_GAN_NHAN.md, rút gọn).

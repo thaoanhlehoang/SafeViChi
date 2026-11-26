@@ -67,6 +67,29 @@ const CONVERSATIONS = [
   },
 ];
 
+// Mốc thời gian để xếp danh sách chat: tin mới nhất lên đầu.
+// Hội thoại mẫu rải ở mấy ngày trước (giờ theo tin cuối); tin gửi trong buổi demo mang giờ thật.
+const SEED_DAYS_AGO = { nguoila: 1, tuan: 1, minh: 2, hoamai: 3, toan12a: 4, me: 5 };
+for (const conv of CONVERSATIONS) {
+  const d = new Date();
+  d.setDate(d.getDate() - (SEED_DAYS_AGO[conv.id] ?? 1));
+  const [hh, mm] = (conv.messages.at(-1)?.time || '00:00').split(':').map(Number);
+  conv.lastAt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm).getTime();
+}
+const byRecent = () => CONVERSATIONS.sort((a, b) => b.lastAt - a.lastAt);
+const WEEKDAY = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+// Hôm nay: giờ; trong 6 ngày gần nhất: thứ (T2…CN); cũ hơn: ngày/tháng.
+function contactTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  if (d.toDateString() === now.toDateString()) return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  if (startToday - ts < 6 * 864e5) return WEEKDAY[d.getDay()];
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
+}
+byRecent();
+
 const ORDER = ['AN_TOAN', 'XUC_PHAM', 'QUAY_ROI', 'DE_DOA', 'LUA_DAO'];
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, text) => {
@@ -190,6 +213,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
               start: localStart,
               end: localEnd,
               text: p.m.text.slice(localStart, localEnd),
+              nhan: out.nhan,
             });
           }
         }
@@ -199,6 +223,8 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
         time: t.time,
         text: t.text,
         msgIndices: t.parts.map((p) => p.i),
+        // Vị trí từng tin gốc trong lượt gộp, để cột phân tích tách mỗi tin một dòng (chỉ hiển thị).
+        partRanges: t.parts.map((p) => [p.start, p.end]),
         spans,
       };
     });
@@ -238,7 +264,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     });
 
     const bubbleSpans = new Map(ctxRes.bubbleSpans);
-    bubbleSpans.set(targetPart.i, soloSpansInMsg);
+    bubbleSpans.set(targetPart.i, soloSpansInMsg.map((sp) => ({ ...sp, nhan: soloOut.nhan })));
 
     return {
       nhan: soloOut.nhan,
@@ -335,8 +361,9 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     sendBtn.setAttribute('aria-disabled', String(disabled));
 
     if (!ready) {
-      input.placeholder = engineError ? 'Không nạp được mô hình ONNX…' : 'Đang nạp mô hình ONNX…';
-      sendBtn.textContent = engineError ? 'Chưa sẵn sàng' : 'Đang tải…';
+      // Lúc đang tải, hộp tải mô hình đã che màn chat, ô nhập để nguyên như bình thường.
+      input.placeholder = 'Nhập tin nhắn…';
+      sendBtn.replaceChildren('Gửi ', el('kbd', '', '↵'));
     } else if (busy) {
       sendBtn.textContent = 'Đang kiểm tra…';
     } else {
@@ -345,7 +372,40 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     }
   }
 
+  // Hộp tải mô hình: khóa cả màn chat (inert), chỉ còn nút về Trang chủ, cho tới khi mô hình sẵn sàng.
+  const loader = $('model-loader');
+  const lockedCols = [...shell.querySelectorAll('.col-contacts, .col-chat, .col-ai')];
+  const MB = (b) => (b / 1048576).toFixed(0);
+  function updateLoader(s) {
+    const locked = s.kind === 'loading' || s.kind === 'error';
+    lockedCols.forEach((c) => { c.inert = locked; });
+    if (!locked) {
+      loader.classList.add('done');
+      setTimeout(() => { if (loader.classList.contains('done')) loader.hidden = true; }, 350);
+      return;
+    }
+    loader.hidden = false;
+    loader.classList.remove('done');
+    const failed = s.kind === 'error';
+    loader.classList.toggle('failed', failed);
+    $('loader-title').textContent = failed ? 'Không tải được mô hình' : 'Đang tải mô hình';
+    $('loader-retry').hidden = !failed;
+    if (failed) {
+      $('loader-stage').textContent = s.message || 'Đã có lỗi khi tải mô hình.';
+      return;
+    }
+    const total = s.total > 1 ? s.total : 0;
+    const pct = total ? Math.min(100, Math.round((100 * s.loaded) / total)) : 0;
+    $('loader-stage').textContent = s.stage || 'Đang tải…';
+    $('loader-bar').style.setProperty('--p', pct / 100);
+    $('loader-bar').setAttribute('aria-valuenow', String(pct));
+    $('loader-pct').textContent = `${pct}%`;
+    $('loader-bytes').textContent = total ? `${MB(s.loaded)} / ${MB(total)} MB` : '';
+  }
+  $('loader-retry').addEventListener('click', () => { if (typeof retryLoad === 'function') retryLoad(); });
+
   onEngineStatus((s) => {
+    updateLoader(s);
     const badge = $('ai-engine');
     badge.textContent = s.text;
     badge.dataset.kind = s.kind;
@@ -362,17 +422,10 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       analyzeLatestConversations();
     } else if (s.kind === 'loading' && !ready) {
       syncComposerState();
-      renderAI(null, s.text);
     }
   });
 
   // Trả về nhãn nguy hại hiện hành dựa trên kết quả phân tích mới nhất của hội thoại (tránh kẹt chấm cũ).
-  const activeThreatLabel = (conv) => {
-    const last = conv.messages.at(-1);
-    const nhan = last?.analysis?.nhan;
-    return nhan && nhan !== 'AN_TOAN' ? nhan : null;
-  };
-
   function avatar(name) {
     let h = 0;
     for (const ch of name) h = (h * 31 + ch.codePointAt(0)) >>> 0;
@@ -402,7 +455,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
 
   function renderContacts() {
     const q = $('contact-search').value.trim().toLowerCase();
-    list.replaceChildren(...CONVERSATIONS
+    list.replaceChildren(...byRecent()
       .filter((conv) => !q || conv.name.toLowerCase().includes(q))
       .map((conv) => {
         const li = el('li');
@@ -412,7 +465,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
         const last = conv.messages.at(-1);
         const body = el('span', 'contact-body');
         const top = el('span', 'contact-top');
-        top.append(el('span', 'contact-name', conv.name), el('span', 'contact-time', last ? last.time : 'Mới'));
+        top.append(el('span', 'contact-name', conv.name), el('span', 'contact-time', !last ? 'Mới' : contactTime(conv.lastAt)));
         const prevText = last
           ? (last.from === 'me' ? 'Bạn: ' : last.author ? `${last.author}: ` : '') + last.text
           : 'Chưa có tin nhắn nào';
@@ -420,13 +473,14 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
         body.append(top, prev);
         b.append(avatar(conv.name), body);
 
-        const threat = activeThreatLabel(conv);
-        if (threat) {
-          const info = LABELS[threat];
+        // Chấm màu theo nhãn của tin cuối (xanh lá = an toàn), chỉ khi đã phân tích xong.
+        const nhan = last?.analysis?.nhan;
+        if (LABELS[nhan]) {
+          const info = LABELS[nhan];
           const dot = el('span', 'contact-flag');
           dot.style.setProperty('--c', info.mau);
           dot.setAttribute('aria-hidden', 'true');
-          b.append(dot, el('span', 'visually-hidden', `Cảnh báo: ${info.ten}`));
+          b.append(dot, el('span', 'visually-hidden', nhan === 'AN_TOAN' ? 'An toàn' : `Cảnh báo: ${info.ten}`));
         }
         b.onclick = () => openConversation(conv);
         li.append(b);
@@ -439,9 +493,9 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     const conv = {
       id: `custom-${customCount}`,
       name: customCount === 1 ? 'Hội thoại mới' : `Hội thoại mới ${customCount}`,
-      sub: 'Thử nghiệm tự do (1–8 lượt)',
       custom: true,
       messages: [],
+      lastAt: Date.now(),
     };
     CONVERSATIONS.unshift(conv);
     openConversation(conv);
@@ -454,7 +508,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     // Bấm xem tin cũ sẽ ẩn cảnh báo nháp để cột AI phản hồi ngay đúng tin vừa chọn.
     if (draft) clearDraft();
     view = { conv, msg: m };
-    document.querySelector('.ai-inner').scrollTop = 0;
+    document.querySelector('.ai-body').scrollTop = 0;
     openAI(true);
     renderSafetyBar();
     renderView();
@@ -478,7 +532,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     clearDraft();
     const lastIdx = conv.messages.length - 1;
     view = lastIdx >= 0 ? { conv, msg: conv.messages[lastIdx] } : null;
-    document.querySelector('.ai-inner').scrollTop = 0;
+    document.querySelector('.ai-body').scrollTop = 0;
     renderContacts();
     renderHeader();
     syncComposerState();
@@ -505,6 +559,13 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     $('chat-sub').textContent = current.sub;
   }
 
+  // <mark> bằng chứng, tô nền theo màu của nhãn độc hại.
+  function markEl(text, nhan) {
+    const mk = el('mark', 'evidence-mark', text);
+    if (LABELS[nhan]) mk.style.setProperty('--c', LABELS[nhan].mau);
+    return mk;
+  }
+
   // Chèn chữ thường và <mark> bằng chứng xen kẽ, theo vị trí trên câu gốc (100% text node, chống XSS).
   function highlighted(text, spans) {
     const frag = document.createDocumentFragment();
@@ -512,7 +573,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     for (const s of [...spans].sort((a, b) => a.start - b.start)) {
       if (s.start < pos) continue;
       frag.append(text.slice(pos, s.start));
-      frag.append(el('mark', 'evidence-mark', text.slice(s.start, s.end)));
+      frag.append(markEl(text.slice(s.start, s.end), s.nhan));
       pos = s.end;
     }
     frag.append(text.slice(pos));
@@ -585,7 +646,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       XUC_PHAM: 'Phát hiện nội dung có dấu hiệu xúc phạm trong hội thoại.',
       QUAY_ROI: 'Phát hiện nội dung có dấu hiệu quấy rối trong hội thoại.',
       DE_DOA: 'Phát hiện nội dung có dấu hiệu đe dọa / tống tiền trong hội thoại.',
-      LUA_DAO: 'Phát hiện nội dung có dấu hiệu lừa đảo (dụ OTP, link lạ) trong hội thoại.',
+      LUA_DAO: 'Phát hiện nội dung có dấu hiệu lừa đảo trong hội thoại.',
     };
 
     const body = el('div', 'safety-body');
@@ -605,34 +666,13 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   }
 
   function renderView() {
-    if (engineError && !ready) {
-      renderError(engineError);
-      return;
-    }
     if (draft) {
-      renderAI(draft.analysis, 'Tin chưa gửi');
+      renderAI(draft.analysis);
     } else if (view?.msg) {
-      renderAI(view.msg.analysis, `Khi ${view.msg.from === 'me' ? 'bạn gửi' : 'nhận'} tin lúc ${view.msg.time}`);
+      renderAI(view.msg.analysis);
     } else {
-      renderAI(null, ready ? 'Hội thoại trống · Nhập tin để phân tích' : 'Đang khởi động mô hình ONNX…');
+      renderAI(null);
     }
-  }
-
-  function renderError(message) {
-    $('ai-kicker').textContent = 'Không thể khởi tạo mô hình ONNX';
-    $('ai-summary').replaceChildren();
-    const errItem = el('li', 'ai-empty');
-    errItem.append(el('p', 'ai-error-msg', message));
-    if (typeof retryLoad === 'function') {
-      const btn = el('button', 'ai-retry', 'Thử tải lại');
-      btn.type = 'button';
-      btn.onclick = () => retryLoad();
-      errItem.append(btn);
-    }
-    $('ai-context').replaceChildren(errItem);
-    $('ai-verdict').replaceChildren();
-    $('ai-probs').replaceChildren();
-    $('ai-evidence').replaceChildren();
   }
 
   function renderAI(res, kicker) {
@@ -644,9 +684,9 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     if (!res) {
       $('ai-summary').replaceChildren();
       const emptyMsg = !ready
-        ? 'Đang nạp mô hình ONNX trên máy…'
+        ? ''
         : current.messages.length === 0
-          ? 'Gửi tin nhắn đầu tiên để xem kết quả phân tích ONNX realtime.'
+          ? ''
           : 'Đang phân tích…';
       ctx.replaceChildren(el('li', 'ai-empty', emptyMsg));
       verdict.replaceChildren();
@@ -659,6 +699,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     const top = LABELS[res.nhan];
     const sChip = el('span', 'label-chip', top.ten);
     sChip.style.setProperty('--c', top.mau);
+    $('ai-summary').style.setProperty('--c', top.mau);
     $('ai-summary').replaceChildren(sChip, el('span', 'summary-pct', `${(100 * res.xac_suat[res.nhan]).toFixed(1)}%`));
 
     ctx.replaceChildren(...res.rows.map((r, k) => {
@@ -667,19 +708,17 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       if (r.spans.length) li.classList.add('has-ev');
       const head = el('div', 'ctx-head');
       head.append(el('span', 'ctx-who', r.who), el('span', 'ctx-time', r.time));
-      const orig = el('p', 'ctx-text');
-      orig.append(highlighted(r.text, r.spans));
-      li.append(head, orig);
+      li.append(head);
+      // Mô hình nhận cả lượt nối bằng dấu cách (đúng quy ước dữ liệu huấn luyện v2);
+      // ở đây tách lại mỗi tin một dòng cho dễ đọc.
+      const ranges = r.partRanges?.length ? r.partRanges : [[0, r.text.length]];
+      for (const [a, b] of ranges) {
+        li.append(el('p', 'ctx-text', r.text.slice(a, b)));
+      }
       return li;
     }));
 
-    const info = LABELS[res.nhan];
-    const riskText = typeof res.rui_ro === 'number' ? `Rủi ro ${res.rui_ro.toFixed(1)}/100` : '';
-    const msText = typeof res.ms === 'number' ? `${Math.round(res.ms)} ms` : '';
-    const metaText = [riskText, msText].filter(Boolean).join(' · ');
-    const verdictNodes = [el('p', 'verdict-action', `Gợi ý xử lý: ${info.hanh_dong}`)];
-    if (metaText) verdictNodes.push(el('p', 'verdict-meta', metaText));
-    verdict.replaceChildren(...verdictNodes);
+    verdict.replaceChildren();
 
     probs.replaceChildren(...ORDER.map((k) => {
       const li = el('li');
@@ -692,11 +731,19 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       return li;
     }));
 
-    const evs = res.rows.flatMap((r, k) => r.spans.map((s) => ({ s, r, k })));
+    // Cụm bằng chứng trải qua nhiều tin trong cùng lượt gộp: tách theo từng tin, mỗi tin một dòng.
+    const evs = res.rows.flatMap((r) => r.spans.map((sp) => {
+      const ranges = r.partRanges?.length ? r.partRanges : [[0, r.text.length]];
+      const pieces = ranges
+        .map(([a, b]) => r.text.slice(Math.max(sp.start, a), Math.min(sp.end, b)).trim())
+        .filter(Boolean);
+      return pieces.length ? pieces : [sp.text];
+    }));
+    ev.style.setProperty('--c', LABELS[res.nhan].mau);
     ev.replaceChildren(...(evs.length
-      ? evs.map(({ s, r, k }) => {
+      ? evs.map((pieces) => {
         const li = el('li');
-        li.append(el('mark', 'evidence-mark', s.text), el('span', 'ev-where', `${String(k + 1).padStart(2, '0')} · ${r.who}`));
+        for (const t of pieces) li.append(el('span', 'evidence-text', t));
         return li;
       })
       : [el('li', 'ai-empty', res.nhan === 'AN_TOAN'
@@ -720,6 +767,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     const m = { from, text, time: nowTime() };
     if (from === 'them' && conv.group) m.author = 'Thành viên';
     conv.messages.push(m);
+    conv.lastAt = Date.now();
     const newIdx = conv.messages.length - 1;
 
     const rows = analysis.rows.map((r, i) => (
@@ -761,7 +809,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       desc.replaceChildren('Cụm từ bị đánh dấu: ');
       draftSpans.slice(0, 3).forEach((sp, i) => {
         if (i > 0) desc.append(', ');
-        desc.append(el('mark', 'evidence-mark', sp.text));
+        desc.append(markEl(sp.text, sp.nhan || res.nhan));
       });
       desc.append('. Bạn có muốn sửa trước khi gửi không?');
     } else {
