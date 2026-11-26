@@ -1,6 +1,6 @@
 // Hình minh họa cho trang tổng quan: cùng nét vẽ với vòng người ở trang chủ
 // (nhìn từ trên xuống, áo họa tiết tông xanh, màu bột, hạt giấy). Vẽ bằng SVG sinh từ code.
-import { SHIRTS, HAIR, SKIN } from './landing.js';
+import { SHIRTS } from './landing.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const LEAVES = ['#24552c', '#2f6b38', '#4a8233', '#5f9a3f', '#7aa955', '#3c7232', '#548f3d'];
@@ -46,84 +46,63 @@ function defsFor(svg, id, hr) {
   return defs;
 }
 
-// Bãi cỏ tròn mép gồ ghề như vết cọ, rải lá.
-function lawn(svg, id, cx, cy, r, rand, hr) {
-  el('circle', { cx, cy, r, fill: `url(#${id}-glow)`, filter: `url(#${id}-brush)` }, svg);
-  const g = el('g', {}, svg);
-  for (let i = 0; i < 70; i++) {
-    const a = rand() * Math.PI * 2;
-    const d = r * (0.92 + rand() * 0.2);
-    const len = hr * (0.18 + rand() * 0.22);
-    el('path', {
-      d: `M0,${-len} C${len * 0.6},${-len * 0.4} ${len * 0.6},${len * 0.4} 0,${len} C${-len * 0.6},${len * 0.4} ${-len * 0.6},${-len * 0.4} 0,${-len} Z`,
-      transform: `translate(${cx + Math.cos(a) * d},${cy + Math.sin(a) * d}) rotate(${rand() * 360})`,
-      fill: LEAVES[Math.floor(rand() * LEAVES.length)], opacity: 0.8,
-    }, g);
-  }
-}
-
-// Một bạn nhỏ nhìn từ trên xuống. Gốc tọa độ ở đầu, +y hướng về phía vật ở giữa.
-// reach: tay vươn tới (x, y) theo hệ tọa độ riêng; null thì tay để xuôi.
-function kid(parent, id, { x, y, deg, hr, shirt, hair, skin, style, reach }) {
-  const g = el('g', { transform: `translate(${x},${y}) rotate(${deg})`, filter: `url(#${id}-shade)` }, parent);
-  const fillShirt = `url(#${id}-s${shirt})`;
-  const [bg] = SHIRTS[shirt];
-  // Thân và chân phía sau đầu.
-  el('path', { d: `M${-hr * 0.55},${-hr * 2.9} L${-hr * 0.5},${-hr * 4.4} M${hr * 0.55},${-hr * 2.9} L${hr * 0.5},${-hr * 4.4}`, stroke: '#3d4f6b', 'stroke-width': hr * 0.62, 'stroke-linecap': 'round' }, g);
-  el('rect', { x: -hr * 1.15, y: -hr * 3.15, width: hr * 2.3, height: hr * 2.6, rx: hr * 0.75, fill: fillShirt }, g);
-  // Tay.
-  const hands = reach ? [[-hr * 0.35 + reach[0], reach[1]], [hr * 0.35 + reach[0], reach[1]]] : [[-hr * 1.55, -hr * 1.2], [hr * 1.55, -hr * 1.2]];
-  [[-1, hands[0]], [1, hands[1]]].forEach(([s, [hx, hy]]) => {
-    const sx = s * hr * 0.95, sy = -hr * 0.95;
-    const mx = (sx + hx) / 2 + s * hr * 0.55, my = (sy + hy) / 2;
-    el('path', { d: `M${sx},${sy} Q${mx},${my} ${hx},${hy}`, stroke: bg, 'stroke-width': hr * 0.5, 'stroke-linecap': 'round', fill: 'none' }, g);
-    el('path', { d: `M${sx},${sy} Q${mx},${my} ${hx},${hy}`, stroke: fillShirt, 'stroke-width': hr * 0.4, 'stroke-linecap': 'round', fill: 'none' }, g);
-    el('circle', { cx: hx, cy: hy, r: hr * 0.24, fill: skin }, g);
-  });
-  // Đầu: giống vòng người ở trang chủ.
-  if (style === 1) for (const sd of [-1, 1]) el('path', { d: `M${sd * hr * 0.6},${-hr * 0.4} Q${sd * hr * 1.35},${hr * 0.2} ${sd * hr * 1.05},${hr * 0.95} Q${sd * hr * 0.85},${hr * 0.5} ${sd * hr * 0.7},${hr * 0.1} Z`, fill: hair }, g);
-  if (style === 3) el('circle', { cx: 0, cy: -hr * 1.05, r: hr * 0.42, fill: hair }, g);
-  el('circle', { cx: 0, cy: -hr * 0.35, r: hr * 0.98, fill: hair }, g);
-  el('ellipse', { cx: 0, cy: hr * 0.18, rx: hr * 0.82, ry: hr * 0.84, fill: skin }, g);
-  el('path', { d: `M${-hr * 0.9},${-hr * 0.05} Q${-hr * 0.4},${-hr * 0.35} 0,${-hr * 0.05} Q${hr * 0.45},${-hr * 0.4} ${hr * 0.9},${-hr * 0.05} L${hr * 0.9},${-hr * 0.6} L${-hr * 0.9},${-hr * 0.6} Z`, fill: hair }, g);
-  for (const s of [-1, 1]) {
-    el('path', { d: `M${s * hr * 0.42},${hr * 0.18} q${s * hr * 0.12},${hr * 0.1} ${s * hr * 0.24},0`, stroke: '#2a211d', 'stroke-width': hr * 0.07, 'stroke-linecap': 'round', fill: 'none' }, g);
-    el('circle', { cx: s * hr * 0.48, cy: hr * 0.48, r: hr * 0.13, fill: '#f08f86', opacity: 0.45 }, g);
-  }
-  el('path', { d: `M${-hr * 0.17},${hr * 0.6} Q0,${hr * 0.75} ${hr * 0.17},${hr * 0.6}`, stroke: '#9a4a3a', 'stroke-width': hr * 0.07, 'stroke-linecap': 'round', fill: 'none' }, g);
-  return g;
-}
-
-// Điện thoại nằm giữa, màn hình có vài bong bóng tin nhắn; warn: tô một bong bóng theo màu cảnh báo.
 function setup(svg, W, H) {
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('aria-hidden', 'true');
   svg.replaceChildren();
 }
-// Hạt giấy chỉ phủ trong bãi cỏ tròn, để nền quanh hình vẫn trùng màu giấy của trang.
-function grainOver(svg, id, W, H) {
-  const clip = el('clipPath', { id: `${id}-clip` }, svg.querySelector('defs'));
-  el('circle', { cx: W / 2, cy: H / 2, r: Math.min(W, H) * 0.47 }, clip);
-  el('rect', { width: W, height: H, filter: `url(#${id}-grain)`, opacity: 0.3, 'pointer-events': 'none', 'clip-path': `url(#${id}-clip)` }, svg);
-}
-function person(i, rand) {
-  return { shirt: i % SHIRTS.length, hair: HAIR[Math.floor(rand() * HAIR.length)], skin: SKIN[Math.floor(rand() * SKIN.length)], style: i % 5 === 4 ? 0 : i % 5 };
-}
-
-// Kết thúc: vòng người nhỏ quanh khoảng trời, gợi lại trang chủ.
+// Kết thúc: bãi cỏ phủ kín như trang chủ, rải hoa trắng, vài cánh chim mờ bay qua,
+// nửa phải để khung chat mẫu, nửa trái để chữ.
 export function drawClosing(svg) {
-  const id = 'art-end', W = 460, H = 460, cx = W / 2, cy = H / 2, hr = 24;
+  const W = Math.max(320, svg.clientWidth || window.innerWidth);
+  const H = Math.max(320, svg.clientHeight || window.innerHeight);
+  const id = 'art-end', hr = Math.max(20, Math.min(44, Math.min(W, H) * 0.052));
   setup(svg, W, H);
-  defsFor(svg, id, hr);
-  const rand = rng(5);
-  lawn(svg, id, cx, cy, 205, rand, hr);
-  const kids = el('g', {}, svg);
-  const N = 8;
-  for (let i = 0; i < N; i++) {
-    const deg = (360 / N) * i;
-    const a = (deg * Math.PI) / 180, d = 118;
-    kid(kids, id, { x: cx + Math.sin(a) * d, y: cy - Math.cos(a) * d, deg, hr, ...person(i + 1, rand), reach: null });
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  const defs = defsFor(svg, id, hr);
+  const blur = el('filter', { id: `${id}-blur`, x: '-50%', y: '-50%', width: '200%', height: '200%' }, defs);
+  el('feGaussianBlur', { stdDeviation: hr * 0.16 }, blur);
+  const rand = rng(11);
+  // Tán lá phủ kín.
+  el('rect', { width: W, height: H, fill: '#2f5e2a' }, svg);
+  const leaves = el('g', {}, svg);
+  const nLeaf = Math.round((W * H) / 900);
+  for (let i = 0; i < nLeaf; i++) {
+    const x = rand() * (W + 60) - 30, y = rand() * (H + 60) - 30;
+    const len = (10 + rand() * 16) * (hr / 50) * 1.6;
+    el('path', {
+      d: `M0,${-len} C${len * 0.6},${-len * 0.4} ${len * 0.6},${len * 0.4} 0,${len} C${-len * 0.6},${len * 0.4} ${-len * 0.6},${-len * 0.4} 0,${-len} Z`,
+      transform: `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${Math.round(rand() * 360)})`,
+      fill: LEAVES[Math.floor(rand() * LEAVES.length)], opacity: (0.7 + rand() * 0.3).toFixed(2),
+    }, leaves);
   }
-  grainOver(svg, id, W, H);
+  // Hoa trắng nhỏ.
+  const flowers = el('g', { filter: `url(#${id}-shade)` }, svg);
+  for (let i = 0; i < Math.round((W * H) / 26000); i++) {
+    const x = rand() * W, y = rand() * H, r = hr * (0.14 + rand() * 0.08);
+    if (W > 900 && x < W * 0.42 && y > H * 0.3 && y < H * 0.78) continue; // chừa chỗ cho chữ
+    const g = el('g', { transform: `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${Math.round(rand() * 72)})` }, flowers);
+    for (let k = 0; k < 5; k++) {
+      const a = (k * 72 * Math.PI) / 180;
+      el('circle', { cx: Math.cos(a) * r, cy: Math.sin(a) * r, r: r * 0.75, fill: '#fbfaf2' }, g);
+    }
+    el('circle', { r: r * 0.5, fill: '#f2c94c' }, g);
+  }
+  // Chim trắng mờ bay ngang, như nhìn từ trên xuống.
+  const doves = [[0.1, 0.17, -30, 1.15], [0.88, 0.15, 205, 1], [0.48, 0.93, 150, 1.25], [0.96, 0.84, -50, 0.85]];
+  for (const [fx, fy, rot, sc] of doves) {
+    const s = hr * 3 * sc;
+    const g = el('g', { class: 'dove' }, svg);
+    const b = el('g', { transform: `translate(${(W * fx).toFixed(1)},${(H * fy).toFixed(1)}) rotate(${rot}) scale(${(s / 110).toFixed(3)})`, filter: `url(#${id}-blur)`, opacity: 0.9 }, g);
+    for (const sd of [-1, 1]) {
+      // Cánh dang rộng, mép sau xẻ lông.
+      el('path', { d: `M0,-4 C${sd * -22},-30 ${sd * -72},-40 ${sd * -112},-28 C${sd * -104},-20 ${sd * -96},-15 ${sd * -88},-11 C${sd * -96},-6 ${sd * -90},-1 ${sd * -78},1 C${sd * -82},6 ${sd * -72},10 ${sd * -60},9 C${sd * -46},13 ${sd * -20},12 ${sd * -4},10 Z`, fill: '#fbfbf6' }, b);
+    }
+    el('path', { d: 'M-11,24 L-16,50 L0,45 L16,50 L11,24 Z', fill: '#f1f1ea' }, b);
+    el('ellipse', { cx: 0, cy: 2, rx: 11, ry: 30, fill: '#ffffff' }, b);
+    el('circle', { cx: 0, cy: -27, r: 9.5, fill: '#ffffff' }, b);
+    el('path', { d: 'M-3,-36 L0,-43 L3,-36 Z', fill: '#e8c46a' }, b);
+  }
+  // Hạt giấy phủ toàn bộ.
+  el('rect', { width: W, height: H, filter: `url(#${id}-grain)`, opacity: 0.3, 'pointer-events': 'none' }, svg);
 }
-
