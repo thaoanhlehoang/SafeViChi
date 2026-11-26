@@ -37,7 +37,7 @@ SafeViChi/
 │
 ├── src/                        # Mã nguồn v2 & dùng chung (chi tiết tại src/README.md)
 │   ├── v2/                     # Pipeline vòng chung kết: data/, labeling/, train/, eval/, bench/
-│   └── shared/                 # Dùng chung v1 + v2: normalization/, variant_generator/, reporting/, utils/
+│   └── shared/                 # Dùng chung v1 + v2: variant_generator/, reporting/, utils/ (kèm normalization/ kế thừa v1)
 │
 ├── notebooks/                  # Notebook huấn luyện v2 trên Colab/Kaggle (xem notebooks/README.md)
 ├── data/                       # Dữ liệu v2 (train 13.392, test C0 334, C1/C2 668 mỗi tập) & data/raw/
@@ -55,19 +55,45 @@ SafeViChi/
 
 ## Cài đặt & Khởi động nhanh
 
-### 1. Tạo môi trường Python
+### 1. Cài đặt CLI suy luận cục bộ (`safevichi`, không cần PyTorch)
+Chỉ cài gói nhẹ (`onnxruntime`, `tokenizers`, `numpy`, `huggingface-hub`) và đăng ký sẵn lệnh `safevichi` dùng được ở mọi thư mục trên CMD / PowerShell / Terminal:
+```bash
+git clone https://github.com/thaoanhlehoang/SafeViChi.git && cd SafeViChi
+pip install -e .
+```
+**Tự động tải mô hình từ Hugging Face ([`dminhnhat06/safevichi_v2`](https://huggingface.co/dminhnhat06/safevichi_v2)):** lần chạy `safevichi` đầu tiên sẽ tự động tải gói ONNX Hybrid INT8 (`safevichi_v2_int8.onnx`, `crf_params.json`, `tokenizer/`, tổng ~334 MiB) vào `models/dualorc_mmbert_base/onnx/` và xác thực SHA-256; các lần chạy sau hoàn toàn offline. Có thể tải trước thủ công bằng:
+```bash
+python -m src.v2.download_model              # Tải trước gói ONNX INT8 (~334 MiB)
+python -m src.v2.download_model --fp32       # Tải gói ONNX FP32 (~1,18 GiB)
+python -m src.v2.download_model --all        # Tải trọn gói ONNX INT8 + FP32 + PyTorch safetensors
+```
+*(Hỗ trợ `--no-download` / `SAFEVICHI_OFFLINE=1` cho môi trường offline hoàn toàn, hoặc trỏ `--onnx-dir` / `SAFEVICHI_ONNX_DIR` tới thư mục mô hình có sẵn.)*
+
+Sau khi cài xong, mở CMD / PowerShell ở **bất kỳ đâu** và chạy trực tiếp (mô hình suy luận trực tiếp trên văn bản gốc):
+```bash
+safevichi                                              # Mở chế độ tương tác (gõ từng tin nhắn)
+safevichi --chat                                       # Chế độ hội thoại trượt 1–8 lượt
+safevichi "Tài khoản sẽ bị khóa, bấm link nhập OTP"    # Quét nhanh 1 tin nhắn
+safevichi "Lượt 1 || Lượt 2"                           # Hội thoại nhiều lượt ngăn bằng ||
+safevichi --json "Mày là đồ ngu"                       # Trả về JSON thuần
+safevichi --file messages.txt --out ket_qua.jsonl      # Quét hàng loạt
+```
+*(Ghi chú: tùy chọn `--legacy-normalize` gọi bộ chuẩn hóa v1 vẫn còn để đối chiếu nhưng đã bị đánh dấu lỗi thời và không dùng trong sản phẩm mặc định.)*
+
+### 2. Tạo môi trường đầy đủ (huấn luyện / đánh giá / kiểm thử)
 ```bash
 python -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
 pip install -r requirements-lock.txt
+pip install -e . --no-deps
 ```
 
-### 2. Chạy kiểm thử tự động
+### 3. Chạy kiểm thử tự động
 ```bash
 pytest -q                       # Chạy toàn bộ unit test (cả tests/v2 và v1/tests)
 ```
 
-### 3. Đánh giá mô hình v2 (phân loại + bằng chứng + lát cắt C0/C1/C2)
+### 4. Đánh giá mô hình v2 (phân loại + bằng chứng + lát cắt C0/C1/C2)
 ```bash
 python -m src.v2.eval.evaluate \
   --gold data/v2/test_day_du.jsonl data/v2/test_perturb_C1.jsonl data/v2/test_perturb_C2.jsonl \
@@ -80,7 +106,7 @@ Bộ đánh giá tính đồng thời:
 - **Bằng chứng:** Song song **F1 theo ý** ([DO_DO_BANG_CHUNG.md](docs/v2/DO_DO_BANG_CHUNG.md)) và **F1 mức từ**, tỉ lệ tô oan `AN_TOAN`, tỉ lệ cụm bịa không có trong câu (`non_verbatim_phrase_rate`).
 - **Khái quát hóa theo nhóm (in-memory):** `C0 / C1 / C2` (kèm độ tụt $\Delta\text{F1}$), 3 vùng miền `bac / trung / nam` (kèm Worst-group F1), kịch bản `trong_phan_phoi` vs `chua_thay`, số lượt hội thoại, thẻ ca khó.
 
-### 4. Chạy Web Demo on-device
+### 5. Chạy Web Demo on-device
 ```bash
 cd demo
 npm install && npm run dev

@@ -52,38 +52,20 @@ Mô hình sử dụng nguyên vẹn checkpoint và `calibration.json` đã đón
 
 ---
 
-## 3. Phân tích lợi ích bộ chuẩn hóa: Dòng `#6` (`#5` + Chuẩn hóa v1) vs Dòng `#5` (Thô)
+## 3. Đối chiếu ablation với bộ chuẩn hóa v1 *(Lỗi thời)*: Dòng `#6` vs Dòng `#5`
 
-### 3.1. Tổng hợp hiệu ứng chuẩn hóa v1 (`#6 − #5`)
+Để kiểm chứng xem mô hình v2 có còn cần bộ quy tắc tiền xử lý của v1 hay không, bảng dưới đối chiếu Dòng `#5` (văn bản gốc — cấu hình chính thức của sản phẩm) với Dòng `#6` (gắn thêm bộ chuẩn hóa v1):
 
-| Tập / Chỉ số | Dòng `#5` (Thô) | Dòng `#6` (+ Chuẩn hóa v1) | Lợi ích (`#6 − #5`) |
+| Tập / Chỉ số | Dòng `#5` (Chính thức — văn bản gốc) | Dòng `#6` (+ Chuẩn hóa v1, lỗi thời) | Chênh lệch (`#6 − #5`) |
 | :--- | :---: | :---: | :---: |
 | `C0` — Macro-F1 (5 lớp) | **0,8647** | 0,8524 | `-0,0123` |
-| **`C1` — Macro-F1 (5 lớp)** | 0,7859 | **0,8275** | **`+0,0416`** |
-| **`C1` — Evidence F1 theo ý** | 0,7649 | **0,8165** | **`+0,0516`** |
+| `C1` — Macro-F1 (5 lớp) | 0,7859 | **0,8275** | `+0,0416` |
+| `C1` — Evidence F1 theo ý | 0,7649 | **0,8165** | `+0,0516` |
 | `C2` — Macro-F1 (5 lớp) | **0,7708** | 0,7568 | `-0,0140` |
 | `C2` — Evidence F1 theo ý | **0,7531** | 0,7411 | `-0,0120` |
 | `strictly_unseen` (`n = 764`) | **0,7836** | 0,7726 | `-0,0110` |
 
-### 3.2. Chi tiết hiệu ứng chuẩn hóa v1 theo từng kiểu biến dạng (`by_kieu`, 13 kiểu)
-
-| Nhóm | Kiểu biến dạng | `Δ Macro-F1 (#6 − #5)` | Đánh giá |
-| :---: | :--- | :---: | :--- |
-| **C1** | `chen_ky_tu` | **`+0,1751`** | Cải thiện đột biến (`+17,51 pp`, đạt `0,9423`; Ev-Y `+16,44 pp`) — chuẩn hóa khôi phục chính xác từ bị chèn ký tự xen kẽ. |
-| **C1** | `teencode` | **`+0,0421`** | Từ điển teencode giúp chuẩn hóa cách viết tắt tự nhiên và phục hồi bằng chứng rõ rệt (`+5,11 pp` F1 theo ý). |
-| **C1** | `keo_dai` | **`+0,0382`** | Rút gọn ký tự kéo dài giúp khôi phục biên từ và bằng chứng (`+4,62 pp` F1 theo ý). |
-| **C1** | `so_thay_chu` | **`+0,0354`** | Phục hồi hiệu quả các biến thể leetspeak thay chữ bằng số (`+11,14 pp` F1 theo ý). |
-| **C1** | `dinh_tu` | **`+0,0105`** | Cải thiện nhẹ biên tách từ trên nhóm dính từ (`0,8709 → 0,8814`). |
-| **C1** | `bo_dau` | `+0,0062` | Gần trung tính (`0,8006 → 0,8068`); mô hình thô đã được tăng cường `accent_aug = 0,30` nên tự xử lý tiếng Việt không dấu ổn định. |
-| **C1** | `go_sai` | `-0,0120` | Giảm nhẹ khi luật chuẩn hóa v1 sửa nhầm từ gõ sai ngữ cảnh. |
-| **C2** | `double_elongation` | **`+0,0209`** | Hưởng lợi rõ từ bước rút gọn ký tự lặp (`0,8243 → 0,8452`). |
-| **C2** | `exotic_separator` | **`+0,0179`** | Hưởng lợi từ bước loại bỏ ký tự phân cách lạ (`0,7816 → 0,7995`). |
-| **C2** | `fullwidth` | `-0,0074` | Gần trung tính so với bản thô (`0,8288 → 0,8214`). |
-| **C2** | `cyrillic_homoglyph` | `-0,0135` | Tokenizer đa ngôn ngữ 256k + `Byte-CNN` của `mmBERT-base` tự xử lý homoglyph ổn định hơn bộ quy tắc cứng v1. |
-| **C2** | `space_injection` | `-0,0364` | Giảm do v1 không ghép khoảng trắng và từ điển v1 kích hoạt sai trên các mảnh rời (`0,6709 → 0,6345`). |
-| **C2** | `zero_width` | `-0,0431` | Mô hình thô tự xử lý tốt ký tự ẩn hơn so với pipeline chuẩn hóa toàn cục v1 (`0,7239 → 0,6808`). |
-
-**Chính sách triển khai khuyến nghị:** Giữ báo cáo song song cả Dòng `#5` (thô), Dòng `#6` (+ chuẩn hóa v1 đối chiếu) và **Bộ chuẩn hóa của SafeViChi v2 (`auto`, mặc định trên CLI `safevichi`)** tại [`src/shared/normalization/v2.py`](../../../src/shared/normalization/v2.py) — loại bỏ hoàn toàn tác hại lên `C0` (`0,00 pp` giảm) đồng thời khắc phục trọn vẹn cả `C1` lẫn 6 kiểu điểm mù `C2` và né lọc trộn đa tầng.
+**Kết luận triển khai:** Bộ chuẩn hóa v1 chỉ hỗ trợ một số biến dạng C1 cố định (`chen_ky_tu` `+0,1751`, `teencode` `+0,0421`, `keo_dai` `+0,0382`, `so_thay_chu` `+0,0354`) nhưng gây suy giảm trên câu sạch `C0` (`-1,23 pp`), `go_sai` (`-1,20 pp`) và nhóm điểm mù `C2` (`zero_width` `-4,31 pp`, `space_injection` `-3,64 pp`, `cyrillic_homoglyph` `-1,35 pp`). Do đó, **sản phẩm SafeViChi v2 không sử dụng bộ chuẩn hóa**, vận hành trực tiếp mô hình thô (`#5` / ONNX Hybrid INT8 `#7`) trên văn bản gốc; bộ chuẩn hóa v1 được đánh dấu **lỗi thời** (chỉ giữ để đối chiếu ablation và tùy chọn CLI kế thừa `--legacy-normalize`). *(Chi tiết từng kiểu lưu tại `real_test_norm_official_matrix.json`.)*
 
 ---
 
@@ -204,7 +186,7 @@ results/v2/official_eval/
 | **Hồ sơ mô hình, hiệu chuẩn & `dev`** | [`dualorc_mmbert_base/`](dualorc_mmbert_base/) | **Đã lưu (13 tệp)** | `config.json`, `environment.json`, `calibration.json`, `benchmark.json`, `history.json`, `split_ids.json`, `dev_*.json`, `dev_predictions.jsonl`, `dev_diagnostics.png` |
 | **Tệp xuất thô phiên chấm test khóa** | [`dualorc_mmbert_base/test/`](dualorc_mmbert_base/test/) | **Đã lưu (23 tệp)** | `REAL_TEST_LOCK.json`, `real_test_*official_matrix.json`, `real_test_*metrics.json`, `real_test_*predictions.jsonl`, `real_test_*errors.jsonl`, `real_test_stress_tests.json`, `real_test_diagnostics.png`, `cli_eval_report.json` |
 | **Lượng tử hóa ONNX INT8 & CPU đích** | [`dualorc_mmbert_base/test/`](dualorc_mmbert_base/test/) | **Đã lưu (3 tệp)** | `int8_comparison.json`, `bench_cpu.json`, `real_test_int8_all_predictions.jsonl` |
-| **Trọng số & gói ONNX (ngoài git)** | `models/dualorc_mmbert_base/` | **Đã lưu cục bộ** | `model_best.safetensors` (`1,15 GiB`), `last.pt` (`4,60 GiB`), `onnx/dualorc_crf_fp32.onnx` (`1,15 GiB`), `onnx/dualorc_crf_int8.onnx` (`300,69 MiB`), `onnx/crf_params.json`, `onnx/tokenizer/` |
+| **Trọng số & gói ONNX (Hugging Face + cục bộ)** | `models/dualorc_mmbert_base/` · [`dminhnhat06/safevichi_v2`](https://huggingface.co/dminhnhat06/safevichi_v2) | **Đã phát hành trên HF Hub** | `model_best.safetensors` (`1,15 GiB`), `onnx/safevichi_v2_fp32.onnx` (`1,15 GiB`), `onnx/safevichi_v2_int8.onnx` (`300,69 MiB`), `onnx/crf_params.json`, `onnx/export_manifest.json`, `onnx/tokenizer/` (tự tải khi chạy `safevichi` hoặc `python -m src.v2.download_model`) |
 
 ### Lệnh tái lập & kiểm chứng chuẩn
 

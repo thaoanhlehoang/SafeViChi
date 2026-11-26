@@ -16,6 +16,5 @@ export const LABEL_INFO = {
   LUA_DAO: 'Thông tin giả để dụ chuyển tiền, đưa mã OTP hay bấm vào link.',
 };
 
-// Ứng dụng gửi tối đa 8 dòng gần nhất, mỗi dòng là một lượt nói (xem CLAUDE.md).
+// Ứng dụng gửi tối đa 8 lượt gần nhất (mỗi lượt gộp tin liên tiếp cùng người, xem CLAUDE.md).
 export const MAX_LINES = 8;
-export const MAX_CHARS = 2000;

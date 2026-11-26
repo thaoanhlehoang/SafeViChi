@@ -95,8 +95,8 @@ results/v2/   # mỗi cấu hình một thư mục: config.yaml, metrics.json, p
 docs/v2/      # kế hoạch, hướng dẫn gán nhãn, báo cáo
 ```
 
-Tái sử dụng từ v1 (đặt tại `src/shared/` và `v1/`): `src/shared/normalization/` (chuẩn hóa), `src/shared/variant_generator/` (sinh biến dạng),
-`v1/src/dataset_builder/dedup.py` (khử trùng), `v1/src/baselines/stats.py` (kiểm định), `src/shared/reporting/` (vẽ hình), `v1/scripts/checksums.py`.
+Tái sử dụng từ v1 (đặt tại `src/shared/` và `v1/`): `src/shared/variant_generator/` (sinh biến dạng),
+`v1/src/dataset_builder/dedup.py` (khử trùng), `v1/src/baselines/stats.py` (kiểm định), `src/shared/reporting/` (vẽ hình), `v1/scripts/checksums.py`; riêng `src/shared/normalization/` là bộ chuẩn hóa v1 lỗi thời (không còn dùng trong sản phẩm v2 mặc định).
 
 ## Lệnh thường dùng
 
