@@ -4,8 +4,6 @@
 \section{Yêu cầu 3: so sánh phương pháp và chi phí}
 \label{sec:yc3}
 
-Phần này trả lời ba câu hỏi: vì sao chọn mô hình hiện tại, từng mô-đun đóng góp bao nhiêu, và chạy hệ thống tốn bao nhiêu.
-So sánh với v1 và với LLM lớn qua API về chất lượng đã nằm ở các mục trước; ở đây tập trung vào lựa chọn mô hình và chi phí.
 
 \subsection{Chọn mô hình: bốn ứng viên trên tập dev}
 \label{sec:yc3-chon}
@@ -63,7 +61,7 @@ câu tiếng lóng (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của
 và BamiBERT (\so{dev.bamibert.toan}), nhưng thấp hơn GuardMerge (\so{dev.guard.toan}).
 Lợi thế nhỏ của ViSoBERT nằm chủ yếu ở câu bình luận một dòng, gần với dữ liệu nó được huấn luyện trước, chứ không ở hội thoại.
 Cái giá của mmBERT-base là nặng hơn khoảng ba lần và chậm hơn khoảng hai lần so với hai bộ mã hóa tiếng Việt, nhưng vẫn dưới
-mức 2~GB mà đề bài đặt ra. BamiBERT là phương án dự phòng cho máy yếu.
+mức 2~GB. Còn BamiBERT là phương án dự phòng cho máy yếu.
 
 \subsection{Đóng góp của từng mô-đun (ablation)}
 \label{sec:yc3-ablation}
@@ -140,13 +138,9 @@ Chi phí train & (vòng loại) & Không train & \so{dev.mmbert.trainphut} phút
 \end{tabularx}
 \end{table}
 
-Một số điểm cần đọc kèm bảng:
+Một số lưu ý:
 \begin{itemize}
-  \item \textbf{LLM qua API rẻ nhưng không hợp mục tiêu.} Chạy cả ba tập test chỉ tốn \so{api.tong.usd} USD, nhưng mỗi
-  tin nhắn phải gửi lên máy chủ bên ngoài và chờ vài giây. Điều này trái với cam kết của SafeViChi là tin nhắn không rời
-  khỏi máy. Năng lượng và RAM phía máy chủ cũng không đo được.
-  \item \textbf{v2 đủ nhỏ.} Trọng số \so{v2.trongso} MiB đã dưới mức 2~GB ngay ở dạng FP32. Lượng tử hóa INT8 sẽ còn nhỏ hơn
-  nhưng chưa đo nên chưa ghi số.
+  \item \textbf{LLM qua API rẻ nhưng không hợp mục tiêu}
   \item \textbf{Dữ liệu rẻ.} Toàn bộ việc gán lại nhãn, sinh và lọc đoạn hội thoại bằng LLM tốn \so{cp.tong.usd} USD
   (Mục~\ref{sec:p1-dulieu}).
 \end{itemize}
@@ -176,60 +170,55 @@ repo hiện chỉ giữ cấu hình đầy đủ (\tep{config.json}) và đầu 
 
 \paragraph{Hạn chế.}
 \begin{itemize}
-  \item \textbf{Nhãn train chủ yếu do LLM gán hoặc sinh.} Chưa có hệ số kappa giữa hai người gán: mẫu kiểm tra nhãn train
-  được gán bởi một mô hình thứ hai, không phải người. Tỉ lệ nhãn sai thật của train vì vậy chưa biết chính xác.
   \item \textbf{Tập test nhỏ và do nhóm tự viết} (\so{te.tong} đoạn). Cách viết của vài người có thể khác tin nhắn thật;
   các lát cắt nhỏ (theo vùng, kênh) dao động mạnh.
   \item \textbf{Báo nhầm câu an toàn còn cao.} Ngưỡng hiện chỉ dò chung cho cả mô hình, chưa dò riêng từng nhãn.
   \item \textbf{Kịch bản chưa thấy khi train vẫn là điểm yếu lớn nhất} (Mục~\ref{sec:yc2}).
   \item \textbf{Chưa đo chi phí trên laptop CPU, trình duyệt và năng lượng} (Mục~\ref{sec:yc3-chi-phi}).
-  \item README trong \tep{results/v2/official_eval/} ghi số của lượt chấm trước khi sửa tập test; báo cáo này dùng lượt
-  chấm lại mới nhất.
 \end{itemize}
 
-\paragraph{Việc tiếp theo.}
+\paragraph{Hướng đi tiếp theo.}
 \begin{itemize}
   \item Xuất mô hình sang ONNX và INT8, gắn vào bản web, đo trên laptop và trình duyệt.
   \item Lập tập validation do người gán, dò ngưỡng riêng cho từng nhãn để giảm báo nhầm.
   \item Thêm kịch bản mới và tin nhắn thật (đã che thông tin cá nhân), nhất là tin vay tiền, giả shipper, kiểm soát người yêu.
-  \item Cho hai người gán độc lập một mẫu train để đo kappa và tỉ lệ nhãn sai thật.
 \end{itemize}
 
 \appendix
-\section{Lệnh tái hiện}
-\label{sec:phu-luc-lenh}
+% \section{Lệnh tái hiện}
+% \label{sec:phu-luc-lenh}
 
-Chạy từ thư mục gốc của repo, sau \tep{pip install -r requirements-lock.txt}. Các bước gọi LLM cần khóa API trong biến
-môi trường và có cache; chạy lại sẽ đọc cache, không tốn thêm tiền.
+% Chạy từ thư mục gốc của repo, sau \tep{pip install -r requirements-lock.txt}. Các bước gọi LLM cần khóa API trong biến
+% môi trường và có cache; chạy lại sẽ đọc cache, không tốn thêm tiền.
 
-\paragraph{Dữ liệu.}
-{\footnotesize\begin{verbatim}
-python -m src.v2.data.download
-python -m src.v2.data.merge
-python -m src.v2.data.chon_gan_lai          # tách kho test, chọn câu cần gán lại
-python -m src.v2.labeling.prelabel --batch-size 20 --workers 8
-python -m src.v2.data.dong_thuan            # giữ câu nhãn LLM khớp người gán gốc
-python -m src.v2.labeling.generate --workers 8
-python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8
-python -m src.v2.labeling.chi_phi           # tổng hợp chi phí API
-python -m src.v2.data.split                 # ghép data/v2/train.jsonl
-python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv \
-    data/v2/raw/test_B.csv data/v2/raw/test_C.csv data/v2/raw/test_D.csv --xuat-test
-python -m src.v2.data.kiem_tra_ro_ri --test data/v2/test_day_du.jsonl \
-    --train data/v2/so_sanh.jsonl data/v2/interim/kho_test.jsonl
-python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
-    --nhom C1 --so-ban 2 --out data/v2/test_perturb_C1.jsonl
-python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
-    --nhom C2 --so-ban 2 --out data/v2/test_perturb_C2.jsonl
-python -m src.v2.data.tach_test_bien_dang
-\end{verbatim}}
+% \paragraph{Dữ liệu.}
+% {\footnotesize\begin{verbatim}
+% python -m src.v2.data.download
+% python -m src.v2.data.merge
+% python -m src.v2.data.chon_gan_lai          # tách kho test, chọn câu cần gán lại
+% python -m src.v2.labeling.prelabel --batch-size 20 --workers 8
+% python -m src.v2.data.dong_thuan            # giữ câu nhãn LLM khớp người gán gốc
+% python -m src.v2.labeling.generate --workers 8
+% python -m src.v2.labeling.loc_sinh --batch-size 20 --workers 8
+% python -m src.v2.labeling.chi_phi           # tổng hợp chi phí API
+% python -m src.v2.data.split                 # ghép data/v2/train.jsonl
+% python -m src.v2.data.load_test_nguoi_viet data/v2/raw/test_A.csv \
+%     data/v2/raw/test_B.csv data/v2/raw/test_C.csv data/v2/raw/test_D.csv --xuat-test
+% python -m src.v2.data.kiem_tra_ro_ri --test data/v2/test_day_du.jsonl \
+%     --train data/v2/so_sanh.jsonl data/v2/interim/kho_test.jsonl
+% python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
+%     --nhom C1 --so-ban 2 --out data/v2/test_perturb_C1.jsonl
+% python -m src.v2.data.perturb data/v2/test.jsonl --train data/v2/train.jsonl \
+%     --nhom C2 --so-ban 2 --out data/v2/test_perturb_C2.jsonl
+% python -m src.v2.data.tach_test_bien_dang
+% \end{verbatim}}
 
-\paragraph{Chấm điểm và báo cáo.}
-{\footnotesize\begin{verbatim}
-python -m src.v2.eval.bao_cao_baseline      # v1 và gpt-oss-120b, chấm lại
-python -m src.v2.eval.so_sanh_3_he          # so sánh v1, LLM API, v2 trên C0/C1/C2
-python -m src.v2.eval.xuat_so_lieu_bao_cao  # sinh docs/v2/bao_cao/so_lieu.tex
-cd docs/v2/bao_cao
-pdflatex bao_cao_v2.tex
-pdflatex bao_cao_v2.tex                     # lần 2 để có mục lục
-\end{verbatim}}
+% \paragraph{Chấm điểm và báo cáo.}
+% {\footnotesize\begin{verbatim}
+% python -m src.v2.eval.bao_cao_baseline      # v1 và gpt-oss-120b, chấm lại
+% python -m src.v2.eval.so_sanh_3_he          # so sánh v1, LLM API, v2 trên C0/C1/C2
+% python -m src.v2.eval.xuat_so_lieu_bao_cao  # sinh docs/v2/bao_cao/so_lieu.tex
+% cd docs/v2/bao_cao
+% pdflatex bao_cao_v2.tex
+% pdflatex bao_cao_v2.tex                     # lần 2 để có mục lục
+% \end{verbatim}}

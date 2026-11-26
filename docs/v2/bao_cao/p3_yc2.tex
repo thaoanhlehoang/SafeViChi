@@ -10,15 +10,11 @@ Vì vậy chúng tôi đo khái quát theo ba hướng, đều trên bộ test d
         Trong C1 (\so{te.C1.sokieu} kiểu), một phần kiểu đã xuất hiện tự nhiên trong câu train (``đã thấy''),
         phần còn lại chưa (``chưa thấy''). Mỗi câu bị biến dạng khoảng \so{te.C1.tiletu} số từ và luôn trúng cụm bằng chứng.
   \item \textbf{Kịch bản chưa thấy.} Các kịch bản \so{rr.kichban} được giữ hẳn ngoài train, cộng thêm các tình huống
-        người viết tự nghĩ ra (\tep{kich_ban = moi}). Tổng cộng \so{te.chuathay} câu C0 thuộc phần này.
+        người viết tự nghĩ ra. Tổng cộng \so{te.chuathay} câu C0 thuộc phần này.
   \item \textbf{Giọng vùng miền.} Câu test chia đều ba giọng Bắc, Trung, Nam, viết đúng cách người mỗi miền nhắn tin.
 \end{enumerate}
 
-Để các con số trên có nghĩa, train và test không được gần trùng nhau. Script \tep{src.v2.data.kiem_tra_ro_ri}
-so từng đoạn test với toàn bộ train bằng điểm trùng 3-gram: có \so{rr.trunggan} cặp gần trùng ở ngưỡng \so{rr.nguong},
-và \so{rr.trainkichban} câu train thuộc các kịch bản giữ ngoài.
-
-\textbf{C1 và C2 khác nhau thế nào.} C1 làm hỏng chính con chữ: bỏ dấu, teencode, gõ sai, số thay chữ.
+\textbf{Sự khác nhau giữa C1 và C2:} C1 làm hỏng chính con chữ: bỏ dấu, teencode, gõ sai, số thay chữ.
 Thông tin mất thật, ví dụ ``đánh'' và ``dành'' bỏ dấu đều thành ``danh''. C2 giữ nguyên chữ, chỉ đổi lớp ký tự
 Unicode: chữ toàn khổ, ký tự vô hình, chữ Cyrillic trông giống chữ Latin, chèn dấu cách giữa các chữ.
 ``Chưa thấy'' nghĩa là nằm ngoài train, không có nghĩa là khó hơn. Vì thế v2 đạt Binary-F1 \so{C2.v2.bin} trên C2,
@@ -70,12 +66,12 @@ Kéo dài kép {\scriptsize(double elongation)} & chưa & \so{kieu.C2.doubleelon
 \end{tabularx}
 \end{table}
 
-Ba điều rút ra:
+Nhận xét và kết luận:
 \begin{itemize}
   \item \textbf{v2 không phụ thuộc vào việc đã thấy kiểu né lọc.} Trong C1, nhóm chưa thấy đạt Macro-F1
         \so{nhom.C1.chuathay.v2.macro}, còn nhóm đã thấy chỉ \so{nhom.C1.dathay.v2.macro}. Bin-F1 của v2 trên mọi kiểu
         đều cao hơn v1 và gpt-oss-120b.
-  \item \textbf{Cái giá là báo nhầm.} Ba kiểu làm v2 báo nhầm câu an toàn nhiều nhất là chèn dấu cách
+  \item \textbf{Báo nhầm nhiều hơn.} Ba kiểu làm v2 báo nhầm câu an toàn nhiều nhất là chèn dấu cách
         (FPR \so{kieu.C2.spaceinjection.v2.fpr}), gõ sai (\so{kieu.C1.gosai.v2.fpr}) và ký tự vô hình
         (\so{kieu.C2.zerowidth.v2.fpr}). Văn bản bị băm nát khiến mô hình nghiêng về nhãn nguy hại.
         Mỗi kiểu chỉ có vài chục câu an toàn (ví dụ \so{kieu.C2.spaceinjection.nat} câu với chèn dấu cách),
@@ -126,7 +122,7 @@ Tập & Phần & n & Macro-F1 & Bin-F1 & FPR & BC & Macro-F1 \\
 Mức tụt lặp lại ở C1 và C2. Binary-F1 giảm ít hơn nhiều (\so{phan.C0.trongphanphoi.v2.bin} xuống
 \so{phan.C0.chuathay.v2.bin}): phần lớn câu nguy hại vẫn bị bắt, nhưng tên tình huống hay bị gọi sai.
 
-Ba điểm giúp đọc đúng bảng này:
+Nhận xét từ bảng này:
 \begin{itemize}
   \item gpt-oss-120b cũng tụt mạnh ở phần chưa thấy (\so{phan.C0.trongphanphoi.llm.macro} $\to$
         \so{phan.C0.chuathay.llm.macro}). Vậy đây là các kịch bản khó thật, không chỉ do v2 học thuộc train.
@@ -226,6 +222,6 @@ Kịch bản \so{vd.kiemsoat.kichban} (kiểm soát người yêu). Không chử
 \end{table}
 
 \ghinho{\textbf{Tóm lại.} v2 chống né lọc tốt, kể cả với kiểu biến dạng chưa từng thấy, và đều giữa ba giọng vùng
-miền. Điểm yếu là \emph{tình huống} mới: khi ý đồ nằm ở hàm ý, hoặc khi chiêu lừa chưa có trong train, mô hình dễ đoán
-an toàn. Hướng sửa là bổ sung kịch bản (kiểm soát, dọa trả thù, vay online, chuyển nhầm tiền), thêm tin thật đã che
-thông tin, và thêm câu an toàn ``sinh đôi'' cho các tình huống khuyên báo thầy cô để giảm báo nhầm.}
+miền. Điểm yếu là tình huống mới: khi ý đồ nằm ở hàm ý, hoặc khi chiêu lừa chưa có trong train, mô hình dễ đoán
+an toàn. Hướng phát triển tiếp là bổ sung kịch bản (kiểm soát, dọa trả thù, vay online, chuyển nhầm tiền), thêm tin thật đã che
+thông tin, và thêm câu an toàn cho các tình huống khuyên báo thầy cô để giảm báo nhầm.}

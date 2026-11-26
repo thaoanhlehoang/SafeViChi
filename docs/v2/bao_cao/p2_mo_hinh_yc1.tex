@@ -14,7 +14,7 @@ gấp hơn hai lần (\so{dev.guard.p50} ms so với \so{dev.mmbert.p50} ms mỗ
 \subsection{Cấu trúc}
 
 Mô hình chốt có tên nội bộ \textbf{SafeVi-DualORC-CRF}, xây trên \textbf{mmBERT-base} (encoder đa ngôn ngữ). Nó đọc
-\emph{cả đoạn hội thoại} một lần (tối đa \so{v2.maxtok} token), không chỉ dòng cuối, và có hai đầu ra:
+cả đoạn hội thoại một lần (tối đa \so{v2.maxtok} token), không chỉ dòng cuối, và có hai đầu ra:
 
 \begin{enumerate}
   \item \textbf{Đầu phân loại:} trả xác suất cho 5 nhãn. Nhãn có xác suất cao nhất là kết quả.
@@ -22,9 +22,7 @@ Mô hình chốt có tên nội bộ \textbf{SafeVi-DualORC-CRF}, xây trên \te
         tầng CRF để các thẻ nối với nhau hợp lệ. Các đoạn B--I liền nhau là cụm bằng chứng.
 \end{enumerate}
 
-Vì cụm bằng chứng được \emph{cắt ra từ chính văn bản}, nó luôn khớp nguyên văn. Trên test C0, tỉ lệ cụm không có
-nguyên văn trong tin nhắn của v2 là \so{C0.v2.khongnguyenvan}; của gpt-oss-120b (LLM viết lại cụm bằng lời) là
-\so{C0.llm.khongnguyenvan}. Ngoài encoder, mô hình có thêm một nhánh CNN đọc từng byte của văn bản, nhằm nhận ra chữ
+Vì cụm bằng chứng được \emph{cắt ra từ chính văn bản}, nó luôn khớp nguyên văn. Ngoài encoder, mô hình có thêm một nhánh CNN đọc từng byte của văn bản, nhằm nhận ra chữ
 bị thay bằng ký tự lạ mà bộ tách từ không quen. Hai đầu ra được ghép thành JSON \texttt{\{"nhan": ..., "bang\_chung":
 [...]\}} đúng định dạng đã nêu ở phần nhãn.
 
@@ -41,13 +39,15 @@ bị thay bằng ký tự lạ mà bộ tách từ không quen. Hai đầu ra đ
   \node[hop, right=0.5cm of chuan, text width=2.7cm] (enc) {mmBERT-base\\+ CNN đọc byte};
   \node[hop, right=0.7cm of enc, yshift=0.8cm, text width=3.0cm] (pl) {Đầu phân loại\\xác suất 5 nhãn};
   \node[hop, right=0.7cm of enc, yshift=-0.8cm, text width=3.0cm] (gt) {Đầu gắn thẻ\\BIO + CRF $\to$ cụm};
-  \node[hop, below=0.9cm of enc, text width=5.6cm, xshift=1.9cm] (ra) {JSON: \texttt{nhan} + \texttt{bang\_chung}};
+  % Hộp JSON đặt hẳn dưới đầu gắn thẻ, mép phải thẳng hàng, để không chồng lên hộp phía trên
+  \node[hop, anchor=north east, text width=4.6cm] (ra) at ([yshift=-0.9cm]gt.south east)
+    {JSON: \texttt{nhan} + \texttt{bang\_chung}};
   \draw[mui] (vao) -- (chuan);
   \draw[mui] (chuan) -- (enc);
   \draw[mui] (enc.east) -- ++(0.3,0) |- (pl.west);
   \draw[mui] (enc.east) -- ++(0.3,0) |- (gt.west);
-  \draw[mui] (pl.east) -- ++(0.3,0) |- (ra.east);
-  \draw[mui] (gt.east) -- ++(0.3,0) |- (ra.east);
+  \draw[mui] (pl.east) -- ++(0.4,0) |- (ra.east);
+  \draw[mui] (gt.east) -- ++(0.4,0) |- (ra.east);
 \end{tikzpicture}
 \caption{Luồng xử lý của v2. Hai đầu ra dùng chung encoder nhưng có ngưỡng và cách chấm riêng.}
 \label{fig:p2-luong}
@@ -58,10 +58,10 @@ bị thay bằng ký tự lạ mà bộ tách từ không quen. Hai đầu ra đ
 Tệp train lưu bản gốc C0. Khi huấn luyện, mỗi câu được biến dạng ngẫu nhiên ngay lúc đọc: bỏ dấu với xác suất
 \so{v2.accent}, biến dạng bề mặt thường gặp (kiểu C1 đã thấy) với xác suất \so{v2.surface}. Mô hình còn được phạt nếu dự
 đoán trên bản gốc và bản biến dạng khác nhau, và được huấn luyện đối kháng FGM như v1 (cộng nhiễu nhỏ vào embedding,
-$\varepsilon = \so{v2.fgm}$). Các kiểu điểm mù C2 và nhóm C1 giữ ngoài train \emph{không} được dùng ở bước này.
-Huấn luyện \so{v2.epoch} epoch, seed 42.
+$\varepsilon = \so{v2.fgm}$). Các kiểu điểm mù C2 và nhóm C1 giữ ngoài train không được dùng ở bước này.
+Huấn luyện với \so{v2.epoch} epoch, seed 42.
 
-\subsection{Chia dữ liệu nội bộ và đóng băng ngưỡng}
+\subsection{Chia dữ liệu và các ngưỡng}
 
 Tập train được chia thành ba phần: \textbf{fit} (\so{dev.chia.fit} mẫu) để học, \textbf{dev} (\so{dev.chia.dev} mẫu) để
 chọn mô hình và checkpoint, \textbf{cal} (\so{dev.chia.cal} mẫu) để hiệu chỉnh. Dev và cal tách từ train nên nhãn của
@@ -73,8 +73,7 @@ chúng cũng do LLM gán; không câu test nào được dùng ở đây. Trên 
   \item ngưỡng riêng \so{v2.nguongmottu} cho cụm chỉ có một từ, cao hơn để tránh tô lẻ tẻ.
 \end{itemize}
 
-Cả ba được ghi vào \tep{calibration.json} và đóng băng \emph{trước} khi chạy test. Sau khi thấy điểm test, nhóm không
-chỉnh lại gì.
+Cả ba được ghi vào \tep{calibration.json} và đóng băng trước khi chạy test.
 
 % ---------------------------------------------------------------------------
 \section{Cách đánh giá và kết quả chung}
@@ -96,10 +95,10 @@ bỏ dấu, teencode, gõ sai) và C2 (\so{C2.v2.n} bản biến dạng ``điể
 \subsection{Độ đo}
 
 \begin{itemize}
-  \item \textbf{Macro-F1:} trung bình F1 của 5 nhãn, mỗi nhãn nặng như nhau. Đo khả năng gọi \emph{đúng tên} tình huống.
+  \item \textbf{Macro-F1:} trung bình F1 của 5 nhãn, mỗi nhãn quan trọng như nhau. Đo khả năng gán nhãn đúng tình huống
   \item \textbf{Binary-F1:} gộp 4 nhãn nguy hại thành một, đo khả năng phân biệt nguy hại với an toàn.
   \item \textbf{FPR:} tỉ lệ câu \nhan{AN_TOAN} bị báo nguy hại (báo nhầm). Càng thấp càng tốt.
-  \item \textbf{BC P/R/F1 theo ý:} chấm bằng chứng. Mỗi cụm người gán là một ``ý''; precision là phần cụm mô hình tô
+  \item \textbf{BC P/R/F1 theo ý:} chấm bằng chứng. Mỗi cụm người gán là một ý, precision là phần cụm mô hình tô
         trúng ý đúng, recall là phần ý đúng được tô ra.
 \end{itemize}
 
@@ -145,9 +144,9 @@ Tập & Hệ & Macro-F1 & KTC 95\% Macro-F1 & Binary-F1 & FPR & BC F1 theo ý \\
         cả C0, C1 và C2, nên khoảng cách không phải do may rủi của mẫu.
   \item \textbf{v2 giữ điểm khi chữ bị biến dạng.} Binary-F1 của v2 đi từ \so{C0.v2.bin} (C0) xuống \so{C2.v2.bin} (C2);
         của gpt-oss-120b từ \so{C0.llm.bin} xuống \so{C2.llm.bin}.
-  \item \textbf{v1 gần như chỉ bắt được xúc phạm.} Ở C0, v1 báo HATE cho \so{C0.v1.xp.r} câu \nhan{XUC_PHAM}, nhưng chỉ
-        \so{C0.v1.dd.r} câu \nhan{DE_DOA}, \so{C0.v1.qr.r} câu \nhan{QUAY_ROI} và \so{C0.v1.ld.r} câu \nhan{LUA_DAO}.
-        Precision \so{C0.v1.p} của v1 chỉ phản ánh việc nó hiếm khi báo. Đây là lý do phải đổi bộ nhãn.
+  % \item \textbf{v1 gần như chỉ bắt được xúc phạm.} Ở C0, v1 báo HATE cho \so{C0.v1.xp.r} câu \nhan{XUC_PHAM}, nhưng chỉ
+  %       \so{C0.v1.dd.r} câu \nhan{DE_DOA}, \so{C0.v1.qr.r} câu \nhan{QUAY_ROI} và \so{C0.v1.ld.r} câu \nhan{LUA_DAO}.
+  %       Precision \so{C0.v1.p} của v1 chỉ phản ánh việc nó hiếm khi báo. Đây là lý do phải đổi bộ nhãn.
   \item \textbf{Đổi lại, v2 báo nhầm nhiều hơn.} Ở C0, FPR của v2 là \so{C0.v2.fpr}, của gpt-oss-120b là
         \so{C0.llm.fpr}. gpt-oss-120b thận trọng hơn: precision nguy hại \so{C0.llm.p} nhưng recall chỉ \so{C0.llm.r}
         (v2: \so{C0.v2.p} và \so{C0.v2.r}).
@@ -249,7 +248,7 @@ lóng (n = \so{dev.tieng.n}), mô hình chốt có FPR \so{dev.mmbert.tieng.fpr}
 
 Ở C0, \so{C0.v2.fn.tong} câu nguy hại bị đoán \nhan{AN_TOAN}: \so{C0.v2.cm.dd.at} câu \nhan{DE_DOA}, \so{C0.v2.cm.qr.at}
 câu \nhan{QUAY_ROI}, \so{C0.v2.cm.ld.at} câu \nhan{LUA_DAO} và \so{C0.v2.cm.xp.at} câu \nhan{XUC_PHAM}. Hơn nửa là câu
-\emph{ẩn ý}: lời dọa nói tránh (``mai đi đường đông người nhé''), kiểm soát người yêu bằng giọng quan tâm. Phần lớn
+mang tính ẩn ý: lời dọa nói tránh (``mai đi đường đông người nhé''), kiểm soát người yêu bằng giọng quan tâm. Phần lớn
 thuộc kịch bản chưa có trong train; ví dụ cụ thể ở phần Yêu cầu 2.
 
 \subsection{Hiệu chỉnh ngưỡng: đã làm gì, chưa làm gì}
@@ -262,7 +261,7 @@ thuộc kịch bản chưa có trong train; ví dụ cụ thể ở phần Yêu 
         nguy cơ khớp theo lỗi của LLM.
 \end{itemize}
 
-Nói thẳng: FPR của v2 ở C0 (\so{C0.v2.fpr}) cao hơn gpt-oss-120b (\so{C0.llm.fpr}). Theo vùng, FPR cao nhất ở giọng Nam
+Kết quả thực nghiệm: FPR của v2 ở C0 (\so{C0.v2.fpr}) cao hơn gpt-oss-120b (\so{C0.llm.fpr}). Theo vùng, FPR cao nhất ở giọng Nam
 (\so{C0.nam.v2.fpr}), so với Bắc \so{C0.bac.v2.fpr} và Trung \so{C0.trung.v2.fpr}. Mỗi vùng chỉ có khoảng
 \so{C0.nam.v2.at.n}--\so{C0.bac.v2.at.n} câu an toàn, nên một câu sai làm FPR của vùng đổi vài điểm phần trăm; chênh lệch
 vùng cần đọc kèm cỡ mẫu này.
