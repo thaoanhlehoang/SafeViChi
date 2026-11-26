@@ -9,12 +9,12 @@
   legend style={at={(0.5,1.03)}, anchor=south, legend columns=2, draw=none, font=\footnotesize,
     /tikz/every even column/.append style={column sep=0.5cm}}]
 \addplot[fill=mauvhai, draw=white, area legend] coordinates {(C0,93.0) (C1,86.7) (C2,86.0)};
-\addlegendentry{v2, kịch bản đã có trong train}
+\addlegendentry{SafeViChi v2, trong phân phối}
 \addplot[fill=mauvhai!35, draw=mauvhai, area legend] coordinates {(C0,62.1) (C1,54.4) (C2,53.2)};
-\addlegendentry{v2, kịch bản chưa thấy}
+\addlegendentry{SafeViChi v2, kịch bản chưa thấy}
 \addplot[fill=maullm, draw=white, area legend] coordinates {(C0,84.8) (C1,63.3) (C2,67.6)};
-\addlegendentry{gpt-oss-120b, kịch bản đã có trong train v2}
+\addlegendentry{gpt-oss-120b (API), trong phân phối}
 \addplot[fill=maullm!35, draw=maullm, area legend] coordinates {(C0,53.0) (C1,39.0) (C2,45.5)};
-\addlegendentry{gpt-oss-120b, kịch bản chưa thấy}
+\addlegendentry{gpt-oss-120b (API), kịch bản chưa thấy}
 \end{axis}
 \end{tikzpicture}

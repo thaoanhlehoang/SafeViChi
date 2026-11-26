@@ -23,13 +23,13 @@ trục:
 \textbf{Sự khác biệt giữa C1 và C2:} C1 tác động trực tiếp vào cấu trúc chính tả và âm tiết (bỏ dấu, teencode, gõ sai,
 số thay chữ, dính từ) nên có thể làm mất thông tin ngữ nghĩa (ví dụ ``đánh'' và ``dành'' sau khi bỏ dấu đều thành
 ``danh''). Ngược lại, C2 giữ nguyên âm tiết nhưng đổi lớp ký tự Unicode (chữ toàn khổ, ký tự vô hình, chữ Cyrillic đồng
-dạng Latin, chèn dấu cách). Nhờ bộ mã hóa đa ngôn ngữ mmBERT-base kết hợp nhánh CNN đọc theo byte UTF-8, v2 đạt
+dạng Latin, chèn dấu cách). Nhờ bộ mã hóa đa ngôn ngữ mmBERT-base kết hợp nhánh CNN đọc theo byte UTF-8, SafeViChi v2 đạt
 Binary-F1 \so{C2.v2.bin} trên C2 — thậm chí nhỉnh hơn C1 (\so{C1.v2.bin}) — đồng thời giữ Macro-F1 gần tương đương giữa
 hai tập (\so{C1.v2.macro} và \so{C2.v2.macro}).
 
 \subsection{Theo từng kiểu biến dạng}
 
-Hình~\ref{fig:p3-kieu} trực quan hóa Macro-F1 của v2 và gpt-oss-120b (API) trên toàn bộ 13 kiểu biến dạng;
+Hình~\ref{fig:p3-kieu} trực quan hóa Macro-F1 của SafeViChi v2 và gpt-oss-120b (API) trên toàn bộ 13 kiểu biến dạng;
 Bảng~\ref{tab:p3-kieu} trình bày số liệu chi tiết. Cột \textbf{Train C0} cho biết kiểu biến dạng có xuất hiện tự nhiên
 trong tập huấn luyện gốc C0 hay không (toàn bộ 6 kiểu C2 và phép \emph{dính từ} hoàn toàn không xuất hiện trong quá
 trình huấn luyện).
@@ -37,8 +37,8 @@ trình huấn luyện).
 \begin{figure}[H]
 \centering
 \input{hinh/kieu_bien_dang.tex}
-\caption{Macro-F1 5 nhãn theo 13 kiểu biến dạng, sắp giảm dần theo điểm của v2. Mỗi hàng nối điểm của gpt-oss-120b (API)
-(cam) và v2 (xanh); đoạn nối càng dài, ưu thế của v2 càng lớn.}
+\caption{Macro-F1 5 nhãn theo 13 kiểu biến dạng, sắp giảm dần theo điểm của SafeViChi v2. Mỗi hàng nối điểm của
+gpt-oss-120b (API) (cam) và SafeViChi v2 (xanh); đoạn nối càng dài, ưu thế của v2 càng lớn.}
 \label{fig:p3-kieu}
 \end{figure}
 
@@ -47,11 +47,11 @@ trình huấn luyện).
 \footnotesize
 \setlength{\tabcolsep}{3pt}
 \caption{Kết quả theo từng kiểu biến dạng trên tập kiểm thử (Macro-F1, Bin-F1, BC F1 theo ý trên thang 0--100; FPR tính
-theo \%; $n$: số đoạn). Cột \textbf{Train C0} ghi nhận sự xuất hiện tự nhiên trong tập huấn luyện gốc C0.}
+theo \%; $n$: số đoạn; v1 là SafeViChi v1). Cột \textbf{Train C0} ghi nhận sự xuất hiện tự nhiên trong tập huấn luyện gốc C0.}
 \label{tab:p3-kieu}
 \begin{tabularx}{\linewidth}{@{}Y c c c c c c c c c@{}}
 \toprule
- & & & \textbf{v1} & \multicolumn{2}{c}{\textbf{gpt-oss-120b (API)}} & \multicolumn{4}{c}{\textbf{v2}} \\
+ & & & \textbf{v1} & \multicolumn{2}{c}{\textbf{gpt-oss-120b (API)}} & \multicolumn{4}{c}{\textbf{SafeViChi v2}} \\
 \cmidrule(lr){4-4}\cmidrule(lr){5-6}\cmidrule(l){7-10}
 \textbf{Kiểu biến dạng} & \textbf{Train C0} & \textbf{$n$} & \textbf{Bin-F1} & \textbf{Macro} & \textbf{Bin-F1} & \textbf{Macro} & \textbf{Bin-F1} & \textbf{FPR} & \textbf{BC} \\
 \midrule
@@ -77,17 +77,18 @@ Kéo dài kép {\scriptsize(double elongation)} & không & \so{kieu.C2.doubleelo
 
 \textbf{Nhận xét:}
 \begin{itemize}
-  \item \textbf{v2 dẫn đầu tuyệt đối trên toàn bộ 13/13 kiểu biến dạng.} v2 vượt cả v1 lẫn gpt-oss-120b (API) ở tất cả các
-        kiểu về Macro-F1, Binary-F1 và BC F1. Đáng chú ý, trên các kiểu hoàn toàn không xuất hiện khi huấn luyện như
-        \emph{dính từ} (\so{kieu.C1.dinhtu.v2.macro} so với \so{kieu.C1.dinhtu.llm.macro} của LLM), \emph{chữ toàn khổ}
-        (\so{kieu.C2.fullwidth.v2.macro}) và \emph{kéo dài kép} (\so{kieu.C2.doubleelongation.v2.macro}), v2 vẫn duy trì
-        hiệu năng rất cao; nhóm C1 giữ ngoài tập huấn luyện gốc C0 thậm chí đạt Macro-F1 cao hơn nhóm đã thấy
-        (\so{nhom.C1.chuathay.v2.macro} so với \so{nhom.C1.dathay.v2.macro}).
+  \item \textbf{SafeViChi v2 dẫn đầu tuyệt đối trên toàn bộ 13/13 kiểu biến dạng.} Mô hình vượt cả SafeViChi v1 lẫn
+        gpt-oss-120b (API) ở tất cả các kiểu về Macro-F1, Binary-F1 và BC F1. Đáng chú ý, trên các kiểu hoàn toàn không
+        xuất hiện khi huấn luyện như \emph{dính từ} (\so{kieu.C1.dinhtu.v2.macro} so với \so{kieu.C1.dinhtu.llm.macro} của
+        LLM), \emph{chữ toàn khổ} (\so{kieu.C2.fullwidth.v2.macro}) và \emph{kéo dài kép}
+        (\so{kieu.C2.doubleelongation.v2.macro}), v2 vẫn duy trì hiệu năng rất cao; nhóm C1 giữ ngoài tập huấn luyện gốc C0
+        thậm chí đạt Macro-F1 cao hơn nhóm đã thấy (\so{nhom.C1.chuathay.v2.macro} so với \so{nhom.C1.dathay.v2.macro}).
   \item \textbf{Ưu thế trích xuất bằng chứng trên biến dạng điểm mù.} Với \emph{chữ toàn khổ} và \emph{ký tự vô hình},
         gpt-oss-120b (API) suy giảm nghiêm trọng BC F1 xuống còn \so{kieu.C2.fullwidth.llm.bcf} và
         \so{kieu.C2.zerowidth.llm.bcf} do tự chuẩn hóa ký tự khi chép lại (\so{C2.llm.khongnguyenvan} cụm lệch nguyên
-        văn trên C2). Nhờ trích cụm trực tiếp theo vị trí từ trên văn bản gốc, v2 giữ nguyên \so{C2.v2.khongnguyenvan}
-        cụm lệch nguyên văn và đạt BC F1 \so{kieu.C2.fullwidth.v2.bcf} và \so{kieu.C2.zerowidth.v2.bcf}.
+        văn trên C2). Nhờ trích cụm trực tiếp theo vị trí từ trên văn bản gốc, SafeViChi v2 giữ nguyên
+        \so{C2.v2.khongnguyenvan} cụm lệch nguyên văn và đạt BC F1 \so{kieu.C2.fullwidth.v2.bcf} và
+        \so{kieu.C2.zerowidth.v2.bcf}.
   \item \textbf{Biến động FPR trên các kiểu băm vụn cấu trúc từ.} Phần lớn các kiểu biến dạng giữ FPR ở mức rất thấp
         (như \emph{bỏ dấu} \so{kieu.C1.bodau.v2.fpr}, \emph{chữ toàn khổ} \so{kieu.C2.fullwidth.v2.fpr}); FPR tăng chủ
         yếu ở ba kiểu phá vỡ mạnh ranh giới từ là \emph{chèn dấu cách} (\so{kieu.C2.spaceinjection.v2.fpr}), \emph{gõ
@@ -101,8 +102,8 @@ Kéo dài kép {\scriptsize(double elongation)} & không & \so{kieu.C2.doubleelo
 \begin{figure}[H]
 \centering
 \input{hinh/kich_ban_chua_thay.tex}
-\caption{Macro-F1 5 nhãn trên kịch bản đã có trong tập huấn luyện (màu đậm) và kịch bản chưa thấy (màu nhạt). v2 vượt
-gpt-oss-120b (API) trên cả hai nhóm ở cả C0, C1 và C2.}
+\caption{Macro-F1 5 nhãn trên kịch bản đã có trong tập huấn luyện (màu đậm) và kịch bản chưa thấy (màu nhạt). SafeViChi v2
+vượt gpt-oss-120b (API) trên cả hai nhóm ở cả C0, C1 và C2.}
 \label{fig:p3-kichban}
 \end{figure}
 
@@ -115,7 +116,7 @@ trên thang 0--100; FPR tính theo \%; $n$: số đoạn).}
 \label{tab:p3-kichban}
 \begin{tabular}{@{}l l c c c c c c@{}}
 \toprule
- & & & \multicolumn{4}{c}{\textbf{v2}} & \textbf{gpt-oss-120b (API)} \\
+ & & & \multicolumn{4}{c}{\textbf{SafeViChi v2}} & \textbf{gpt-oss-120b (API)} \\
 \cmidrule(lr){4-7}\cmidrule(l){8-8}
 \textbf{Tập} & \textbf{Phân nhóm} & \textbf{$n$} & \textbf{Macro-F1} & \textbf{Bin-F1} & \textbf{FPR} & \textbf{BC F1} & \textbf{Macro-F1} \\
 \midrule
@@ -131,13 +132,13 @@ trên thang 0--100; FPR tính theo \%; $n$: số đoạn).}
 \end{tabular}
 \end{table}
 
-Trên nhóm kịch bản đã có trong tập huấn luyện, v2 đạt hiệu năng rất cao và ổn định qua cả ba tầng biến dạng (C0:
+Trên nhóm kịch bản đã có trong tập huấn luyện, SafeViChi v2 đạt hiệu năng rất cao và ổn định qua cả ba tầng biến dạng (C0:
 Macro-F1 \so{phan.C0.trongphanphoi.v2.macro}, Binary-F1 \so{phan.C0.trongphanphoi.v2.bin}, FPR chỉ
 \so{phan.C0.trongphanphoi.v2.fpr}; C2 vẫn giữ \so{phan.C2.trongphanphoi.v2.macro} và \so{phan.C2.trongphanphoi.v2.bin}).
 Khi chuyển sang nhóm kịch bản chưa thấy (Hình~\ref{fig:p3-kichban}, Bảng~\ref{tab:p3-kichban}):
 
 \begin{itemize}
-  \item \textbf{v2 vẫn dẫn trước gpt-oss-120b (API) trên cả C0, C1 và C2} (\so{phan.C0.chuathay.v2.macro} so với
+  \item \textbf{SafeViChi v2 vẫn dẫn trước gpt-oss-120b (API) trên cả C0, C1 và C2} (\so{phan.C0.chuathay.v2.macro} so với
         \so{phan.C0.chuathay.llm.macro} ở C0; \so{phan.C1.chuathay.v2.macro} so với \so{phan.C1.chuathay.llm.macro} ở
         C1), đồng thời duy trì khả năng phát hiện nguy hại (Binary-F1 \so{phan.C0.chuathay.v2.bin} trên C0,
         \so{phan.C2.chuathay.v2.bin} trên C2) và chất lượng bằng chứng tốt (\so{phan.C0.chuathay.v2.bcf} trên C0).
@@ -154,12 +155,12 @@ Khi chuyển sang nhóm kịch bản chưa thấy (Hình~\ref{fig:p3-kichban}, B
 \centering
 \footnotesize
 \setlength{\tabcolsep}{3.5pt}
-\caption{Kết quả theo giọng vùng miền trên C0 (Macro-F1, Bin-F1 trên thang 0--100; FPR tính theo \%), kèm FPR của v2
+\caption{Kết quả theo giọng vùng miền trên C0 (Macro-F1, Bin-F1 trên thang 0--100; FPR tính theo \%), kèm FPR của SafeViChi v2
 trên C1 và C2. Chênh lệch là hiệu giữa vùng cao nhất và vùng thấp nhất.}
 \label{tab:p3-vung}
 \begin{tabular}{@{}l c c c c c c c c c@{}}
 \toprule
- & & \multicolumn{3}{c}{\textbf{v2 (C0)}} & \multicolumn{3}{c}{\textbf{gpt-oss-120b (API, C0)}} & \multicolumn{2}{c}{\textbf{FPR v2}} \\
+ & & \multicolumn{3}{c}{\textbf{SafeViChi v2 (C0)}} & \multicolumn{3}{c}{\textbf{gpt-oss-120b (API, C0)}} & \multicolumn{2}{c}{\textbf{FPR v2}} \\
 \cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(l){9-10}
 \textbf{Giọng} & \textbf{$n$} & \textbf{Macro} & \textbf{Bin-F1} & \textbf{FPR} & \textbf{Macro} & \textbf{Bin-F1} & \textbf{FPR} & \textbf{C1} & \textbf{C2} \\
 \midrule
@@ -172,7 +173,7 @@ Chênh lệch & & \textbf{\so{C0.v2.gap.macro}} & \textbf{\so{C0.v2.gap.bin}} & 
 \end{tabular}
 \end{table}
 
-Trên Bảng~\ref{tab:p3-vung}, v2 vượt gpt-oss-120b (API) trên cả ba giọng Bắc, Trung, Nam ở cả Macro-F1 lẫn Binary-F1,
+Trên Bảng~\ref{tab:p3-vung}, SafeViChi v2 vượt gpt-oss-120b (API) trên cả ba giọng Bắc, Trung, Nam ở cả Macro-F1 lẫn Binary-F1,
 đồng thời đạt độ đồng đều vùng miền tốt hơn rõ rệt: độ chênh lệch Macro-F1 giữa ba miền chỉ là \so{C0.v2.gap.macro} điểm
 (nhỏ hơn hơn hai lần so với mức \so{C0.llm.gap.macro} điểm của gpt-oss-120b (API)), còn chênh lệch Binary-F1 chỉ là
 \so{C0.v2.gap.bin} điểm. Riêng FPR của v2 cao hơn ở giọng Nam (\so{C0.nam.v2.fpr}) so với giọng Trung
@@ -189,7 +190,9 @@ rộng thêm mẫu an toàn theo vùng trước khi kết luận sâu hơn.
 \label{tab:p3-latcat}
 \begin{tabular}{@{}l c c c c@{}}
 \toprule
-\textbf{Lát cắt} & \textbf{$n$} & \textbf{v2 Macro-F1} & \textbf{v2 Bin-F1} & \textbf{gpt-oss-120b (API) Macro-F1} \\
+ & & \multicolumn{2}{c}{\textbf{SafeViChi v2}} & \textbf{gpt-oss-120b (API)} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-5}
+\textbf{Lát cắt} & \textbf{$n$} & \textbf{Macro-F1} & \textbf{Bin-F1} & \textbf{Macro-F1} \\
 \midrule
 Hội thoại 1 dòng & \so{luot.C0.1dong.n} & \textbf{\so{luot.C0.1dong.v2.macro}} & \so{luot.C0.1dong.v2.bin} & \so{luot.C0.1dong.llm.macro} \\
 Hội thoại 2--8 dòng & \so{luot.C0.nhieudong.n} & \textbf{\so{luot.C0.nhieudong.v2.macro}} & \so{luot.C0.nhieudong.v2.bin} & \so{luot.C0.nhieudong.llm.macro} \\
@@ -202,24 +205,24 @@ Kênh SMS & \so{kenh.C0.sms.n} & \so{kenh.C0.sms.v2.macro} & \so{kenh.C0.sms.v2.
 \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:p3-latcat} khẳng định hiệu quả của thiết kế đọc ngữ cảnh đa lượt trên v2: với hội thoại 2--8 dòng, v2 đạt
-Macro-F1 \so{luot.C0.nhieudong.v2.macro} và Binary-F1 \so{luot.C0.nhieudong.v2.bin}, bỏ xa gpt-oss-120b (API)
+Bảng~\ref{tab:p3-latcat} khẳng định hiệu quả của thiết kế đọc ngữ cảnh đa lượt trên SafeViChi v2: với hội thoại 2--8 dòng,
+mô hình đạt Macro-F1 \so{luot.C0.nhieudong.v2.macro} và Binary-F1 \so{luot.C0.nhieudong.v2.bin}, bỏ xa gpt-oss-120b (API)
 (\so{luot.C0.nhieudong.llm.macro}); trên các đoạn nguy hại ẩn ý, v2 tiếp tục vượt gần 20 điểm Macro-F1
 (\so{dolo.C0.any.v2.macro} so với \so{dolo.C0.any.llm.macro}, Binary-F1 \so{dolo.C0.any.v2.bin}). Xét theo kênh giao
-tiếp, v2 dẫn đầu rõ rệt trên các kênh nhắn tin chủ lực như Messenger/Zalo (\so{kenh.C0.messengerzalo.v2.macro} so với
-\so{kenh.C0.messengerzalo.llm.macro}) và nhóm lớp (\so{kenh.C0.nhomlop.v2.macro} so với \so{kenh.C0.nhomlop.llm.macro});
+tiếp, SafeViChi v2 dẫn đầu rõ rệt trên các kênh nhắn tin chủ lực như Messenger/Zalo (\so{kenh.C0.messengerzalo.v2.macro}
+so với \so{kenh.C0.messengerzalo.llm.macro}) và nhóm lớp (\so{kenh.C0.nhomlop.v2.macro} so với \so{kenh.C0.nhomlop.llm.macro});
 chỉ riêng lát cắt nhỏ kênh SMS (\so{kenh.C0.sms.n} đoạn, gồm nhiều tin ngắn một dòng thiếu ngữ cảnh như thông báo OTP và
 giao hàng hợp lệ) là nơi gpt-oss-120b (API) có lợi thế hơn (\so{kenh.C0.sms.llm.macro} so với \so{kenh.C0.sms.v2.macro}).
 
 \subsection{Phân tích một số trường hợp thất bại}
 
 Để minh họa giới hạn còn tồn tại trên các tình huống ngoài tập huấn luyện, Bảng~\ref{tab:p3-vidu} tổng hợp bốn đoạn C0
-thuộc nhóm kịch bản chưa thấy hoặc chiêu thức mới mà v2 dự đoán nhầm thành \nhan{AN_TOAN}.
+thuộc nhóm kịch bản chưa thấy hoặc chiêu thức mới mà SafeViChi v2 dự đoán nhầm thành \nhan{AN_TOAN}.
 
 \begin{table}[H]
 \centering
 \footnotesize
-\caption{Bốn đoạn nguy hại thuộc kịch bản chưa thấy bị v2 dự đoán là \nhan{AN_TOAN} trên C0 (mỗi dòng trong ô là một
+\caption{Bốn đoạn nguy hại thuộc kịch bản chưa thấy bị SafeViChi v2 dự đoán là \nhan{AN_TOAN} trên C0 (mỗi dòng trong ô là một
 lượt nói).}
 \label{tab:p3-vidu}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.41\linewidth} >{\raggedright\arraybackslash}p{0.20\linewidth} Y@{}}
@@ -245,7 +248,7 @@ Kịch bản \so{vd.kiemsoat.kichban} (kiểm soát người yêu) giữ ngoài 
 \end{tabularx}
 \end{table}
 
-\ghinho{\textbf{Tóm tắt Yêu cầu 2.} v2 khái quát hóa tốt trước các kỹ thuật né lọc mới — vượt trội trên toàn bộ 13/13
+\ghinho{\textbf{Tóm tắt Yêu cầu 2.} SafeViChi v2 khái quát hóa tốt trước các kỹ thuật né lọc mới — vượt trội trên toàn bộ 13/13
 kiểu biến dạng (kể cả 6 kiểu điểm mù C2 và phép dính từ hoàn toàn ngoài huấn luyện), giữ độ đồng đều cao giữa ba giọng
 vùng miền và phát huy rõ ưu thế ở hội thoại nhiều lượt cùng ngôn ngữ ẩn ý. Giới hạn chính nằm ở các tình huống hoàn toàn
 mới chưa xuất hiện khi huấn luyện; hướng mở rộng tự nhiên là bổ sung các kịch bản này (DD6, LD7, LD12, QR6, chiêu chuyển

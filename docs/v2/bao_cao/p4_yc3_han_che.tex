@@ -59,7 +59,7 @@ Kiểm định ghép cặp McNemar trên từng đoạn của tập dev cho th�
         $p = \so{dev.mc.visobert}$; so với BamiBERT: $p = \so{dev.mc.bamibert}$).
 \end{itemize}
 
-Khi tổng điểm hòa về mặt thống kê, nhóm lựa chọn theo các lát cắt sát nhất với mục tiêu cốt lõi của v2:
+Khi tổng điểm hòa về mặt thống kê, nhóm lựa chọn theo các lát cắt sát nhất với mục tiêu cốt lõi của SafeViChi v2:
 \textbf{mmBERT-base} dẫn đầu trên hội thoại nhiều lượt, vượt xa hai bộ mã hóa tiếng Việt trên lát cắt tiếng lóng
 (\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT và \so{dev.bamibert.tieng} của BamiBERT), đạt độ đồng
 đều vùng miền tốt nhất (chênh lệch chỉ \so{dev.mmbert.gap}), đồng thời nền đa ngôn ngữ giúp tổng quát hóa tốt trước ký
@@ -72,16 +72,16 @@ laptop; BamiBERT được lưu làm phương án dự phòng siêu nhẹ cho thi
 \label{sec:yc3-ablation}
 
 \paragraph{Đọc toàn bộ đoạn hội thoại.}
-Trên \so{ctx.n} đoạn nhiều dòng của tập dev, v2 đạt Macro-F1 \so{ctx.full} khi đọc toàn bộ hội thoại nhưng chỉ còn
-\so{ctx.last} khi chỉ đọc dòng cuối (tăng \so{ctx.gain} điểm). Kết quả này khẳng định mô hình thực sự khai thác ngữ cảnh
-liên lượt để phát hiện các tình huống bộc lộ dần về cuối đoạn. Một bộ phân loại chỉ dựa vào độ dài đoạn chỉ đạt Macro-F1
-\so{ctx.lenonly}, chứng minh v2 không học lối tắt dựa vào số dòng dù bình luận thực tế đều dài một dòng còn hội thoại
-tổng hợp phần lớn nhiều dòng.
+Trên \so{ctx.n} đoạn nhiều dòng của tập dev, SafeViChi v2 đạt Macro-F1 \so{ctx.full} khi đọc toàn bộ hội thoại nhưng chỉ
+còn \so{ctx.last} khi chỉ đọc dòng cuối (tăng \so{ctx.gain} điểm). Kết quả này khẳng định mô hình thực sự khai thác ngữ
+cảnh liên lượt để phát hiện các tình huống bộc lộ dần về cuối đoạn. Một bộ phân loại chỉ dựa vào độ dài đoạn chỉ đạt
+Macro-F1 \so{ctx.lenonly}, chứng minh v2 không học lối tắt dựa vào số dòng dù bình luận thực tế đều dài một dòng còn hội
+thoại tổng hợp phần lớn nhiều dòng.
 
-\paragraph{Bộ chuẩn hóa đầu vào v1.}
-Khác với v1 phụ thuộc vào bộ chuẩn hóa 5 tầng, v2 học trực tiếp trên văn bản biến dạng thông qua tăng cường trực tuyến,
-phạt nhất quán, FGM và nhánh CNN đọc theo byte. Nhóm đo ảnh hưởng khi bật/tắt bộ chuẩn hóa v1 trên các bộ thử của tập
-dev (Bảng~\ref{tab:p4-chuan-hoa}) và xác nhận lại sau khi đóng băng mô hình trên toàn bộ tập kiểm thử
+\paragraph{Bộ chuẩn hóa đầu vào của SafeViChi v1.}
+Khác với SafeViChi v1 phụ thuộc vào bộ chuẩn hóa 5 tầng, SafeViChi v2 học trực tiếp trên văn bản biến dạng thông qua tăng
+cường trực tuyến, phạt nhất quán, FGM và nhánh CNN đọc theo byte. Nhóm đo ảnh hưởng khi bật/tắt bộ chuẩn hóa v1 trên các
+bộ thử của tập dev (Bảng~\ref{tab:p4-chuan-hoa}) và xác nhận lại sau khi đóng băng mô hình trên toàn bộ tập kiểm thử
 (Bảng~\ref{tab:p4-chuan-hoa-test}).
 
 \begin{table}[H]
@@ -129,7 +129,7 @@ Kết quả trên cả tập dev lẫn tập kiểm thử hoàn toàn nhất qu�
 (trên dev \so{cn.c1indist.gain}; trên test C1 chủ yếu nhờ chèn ký tự \so{cnt.kieu.chenkytu.gain}), nhưng lại làm giảm
 Macro-F1 trên đoạn gốc C0 (\so{cnt.C0.gain}), nhóm điểm mù C2 (\so{cnt.C2.gain}, như ký tự vô hình
 \so{cnt.kieu.zerowidth.gain}, chèn dấu cách \so{cnt.kieu.spaceinjection.gain}) và nhóm biến dạng chưa thấy
-(\so{cnt.chuathay.gain}) do đôi khi chuyển đổi sai các từ mô hình vốn đã hiểu đúng. Vì vậy, v2 mặc định \textbf{tắt}
+(\so{cnt.chuathay.gain}) do đôi khi chuyển đổi sai các từ mô hình vốn đã hiểu đúng. Vì vậy, SafeViChi v2 mặc định \textbf{tắt}
 bộ chuẩn hóa v1 và suy luận trực tiếp trên văn bản gốc; năng lực chống né lọc nay nằm trực tiếp trong biểu diễn của mô
 hình thay vì bộ luật cứng.
 
@@ -179,7 +179,7 @@ Bảng~\ref{tab:p4-chi-phi} đối chiếu tổng quan chi phí triển khai và
 \label{tab:p4-chi-phi}
 \begin{tabularx}{\linewidth}{lYYY}
 \toprule
-\textbf{Chỉ tiêu} & \textbf{v1 (ViHateT5)} & \textbf{gpt-oss-120b (API)} & \textbf{v2 (mmBERT-base)} \\
+\textbf{Chỉ tiêu} & \textbf{SafeViChi v1 (ViHateT5)} & \textbf{gpt-oss-120b (API)} & \textbf{SafeViChi v2 (mmBERT-base)} \\
 \midrule
 Môi trường chạy & Trình duyệt (ONNX) & Máy chủ bên ngoài & CPU laptop, điện thoại Android hoặc trình duyệt \\
 Dung lượng mô hình & \so{v1.onnx}~MiB (ONNX FP32) & -- & \textbf{\so{tb.int8.mib}~MiB} (ONNX INT8; FP32 \so{v2.trongso}~MiB) \\
@@ -196,7 +196,7 @@ Chi phí huấn luyện & (vòng loại) & Không huấn luyện & \so{dev.mmber
 \begin{itemize}
   \item \textbf{LLM qua API rẻ nhưng không phù hợp mục tiêu sản phẩm:} dù chi phí mỗi 1.000 đoạn là
         \so{api.C0.usd1000}~USD, phương án API buộc phải gửi nội dung tin nhắn riêng tư ra máy chủ bên ngoài, có độ trễ
-        lớn (p50 \so{api.C0.p50}~s, chậm hơn trên một trăm lần so với v2 trên CPU) và phụ thuộc kết nối mạng.
+        lớn (p50 \so{api.C0.p50}~s, chậm hơn trên một trăm lần so với SafeViChi v2 trên CPU) và phụ thuộc kết nối mạng.
   \item \textbf{Chi phí xây dựng dữ liệu huấn luyện thấp:} toàn bộ quy trình gán nhãn lại, sinh hội thoại và lọc độc lập
         chỉ tốn \so{cp.tong.usd}~USD (Mục~\ref{sec:p1-chiphi}), là chi phí một lần trong giai đoạn phát triển.
 \end{itemize}
@@ -205,13 +205,13 @@ Chi phí huấn luyện & (vòng loại) & Không huấn luyện & \so{dev.mmber
 Mô hình ONNX INT8 được đánh giá trực tiếp ở chế độ tương tác \textbf{batch~1} (xử lý từng đoạn khi người dùng nhận tin)
 trên ba môi trường đích: CPU laptop (\so{tb.a.cpu}, \texttt{onnxruntime}), điện thoại Android (\so{tb.mob.may},
 \texttt{onnxruntime-android}) và trình duyệt (\so{tb.web.trinhduyet}, \so{tb.web.backend}, \texttt{onnxruntime-web}) qua
-ứng dụng web v2 (Bảng~\ref{tab:p4-thiet-bi}, Bảng~\ref{tab:p4-nang-luong} và Bảng~\ref{tab:p4-khop}).
+ứng dụng web SafeViChi v2 (Bảng~\ref{tab:p4-thiet-bi}, Bảng~\ref{tab:p4-nang-luong} và Bảng~\ref{tab:p4-khop}).
 
 \begin{table}[H]
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
-\caption{Độ trễ mỗi đoạn (ms, batch~1), RAM đỉnh và thời gian nạp mô hình của v2 trên thiết bị đích.}
+\caption{Độ trễ mỗi đoạn (ms, batch~1), RAM đỉnh và thời gian nạp mô hình của SafeViChi v2 trên thiết bị đích.}
 \label{tab:p4-thiet-bi}
 \begin{tabularx}{\linewidth}{@{}Ycrrrrr@{}}
 \toprule
