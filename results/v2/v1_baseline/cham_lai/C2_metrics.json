@@ -1,0 +1,149 @@
+{
+  "he_thong": "SafeViChi v1 (ViHateT5 FGM, nhị phân HATE/CLEAN)",
+  "ghi_chu": "v1 không có 5 nhãn và bằng chứng: chỉ chấm nhị phân nguy hại/an toàn.",
+  "binary_harmful_vs_safe": {
+    "n": 668,
+    "precision": 0.937,
+    "recall": 0.25,
+    "f1": 0.3947,
+    "fpr_an_toan": 0.0417,
+    "fnr_nguy_hai": 0.75,
+    "tp": 119,
+    "fp": 8,
+    "fn": 357,
+    "tn": 184
+  },
+  "recall_theo_nhan": {
+    "XUC_PHAM": {
+      "n": 106,
+      "recall": 0.6792
+    },
+    "QUAY_ROI": {
+      "n": 102,
+      "recall": 0.098
+    },
+    "DE_DOA": {
+      "n": 124,
+      "recall": 0.25
+    },
+    "LUA_DAO": {
+      "n": 144,
+      "recall": 0.0417
+    }
+  },
+  "giong_vung": {
+    "bac": {
+      "n": 224,
+      "precision": 0.9184,
+      "recall": 0.2848,
+      "f1": 0.4348,
+      "fpr_an_toan": 0.0606,
+      "fnr_nguy_hai": 0.7152,
+      "tp": 45,
+      "fp": 4,
+      "fn": 113,
+      "tn": 62
+    },
+    "trung": {
+      "n": 222,
+      "precision": 0.9667,
+      "recall": 0.1835,
+      "f1": 0.3085,
+      "fpr_an_toan": 0.0156,
+      "fnr_nguy_hai": 0.8165,
+      "tp": 29,
+      "fp": 1,
+      "fn": 129,
+      "tn": 63
+    },
+    "nam": {
+      "n": 222,
+      "precision": 0.9375,
+      "recall": 0.2812,
+      "f1": 0.4327,
+      "fpr_an_toan": 0.0484,
+      "fnr_nguy_hai": 0.7188,
+      "tp": 45,
+      "fp": 3,
+      "fn": 115,
+      "tn": 59
+    },
+    "worst_group_binary_f1": 0.3085,
+    "region_gap_binary_f1": 0.1263,
+    "khong_ro_vung": 0
+  },
+  "kieu_bien_dang": {
+    "cyrillic_homoglyph": {
+      "n": 110,
+      "precision": 0.9,
+      "recall": 0.1216,
+      "f1": 0.2143,
+      "fpr_an_toan": 0.0278,
+      "fnr_nguy_hai": 0.8784,
+      "tp": 9,
+      "fp": 1,
+      "fn": 65,
+      "tn": 35
+    },
+    "double_elongation": {
+      "n": 98,
+      "precision": 1.0,
+      "recall": 0.3433,
+      "f1": 0.5111,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.6567,
+      "tp": 23,
+      "fp": 0,
+      "fn": 44,
+      "tn": 31
+    },
+    "exotic_separator": {
+      "n": 108,
+      "precision": 1.0,
+      "recall": 0.1711,
+      "f1": 0.2921,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.8289,
+      "tp": 13,
+      "fp": 0,
+      "fn": 63,
+      "tn": 32
+    },
+    "fullwidth": {
+      "n": 122,
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.3333,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.8,
+      "tp": 18,
+      "fp": 0,
+      "fn": 72,
+      "tn": 32
+    },
+    "space_injection": {
+      "n": 114,
+      "precision": 0.8409,
+      "recall": 0.4512,
+      "f1": 0.5873,
+      "fpr_an_toan": 0.2188,
+      "fnr_nguy_hai": 0.5488,
+      "tp": 37,
+      "fp": 7,
+      "fn": 45,
+      "tn": 25
+    },
+    "zero_width": {
+      "n": 116,
+      "precision": 1.0,
+      "recall": 0.2184,
+      "f1": 0.3585,
+      "fpr_an_toan": 0.0,
+      "fnr_nguy_hai": 0.7816,
+      "tp": 19,
+      "fp": 0,
+      "fn": 68,
+      "tn": 29
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "vihsd": {
+    "repo": "uitnlp/vihsd",
+    "revision": "88e81b36ca376867640dad9df295e0f7d499ab80",
+    "files": {
+      "train.csv": {
+        "sha256": "516a4ac12bcfd64720a6de352b3c30d019377f90a5907eff80e91d0ae2526360",
+        "bytes": 1622378
+      },
+      "dev.csv": {
+        "sha256": "1d42bc7e78b796f9a61bb30490171e5d48cbdee41f97c1235754894d28402ff7",
+        "bytes": 176826
+      },
+      "test.csv": {
+        "sha256": "ba8ae9b62c40caebcbe8af9a09590296bca286e83e22dd639de31a62ed16f5a5",
+        "bytes": 442399
+      }
+    }
+  },
+  "vithsd": {
+    "repo": "sonlam1102/vithsd",
+    "revision": "b7634be9c1fecfe8cb94bd71927adf523a875ef4",
+    "files": {
+      "train.xlsx.csv": {
+        "sha256": "130b9bdef755c5c18f62058566444a85e592f403cfdf0b2353ef89dd9ea9c324",
+        "bytes": 640343
+      },
+      "dev.xlsx.csv": {
+        "sha256": "f90bdeedaa096ffd6b4a1e9acade173b14d411d58949114f9811efbe9592b242",
+        "bytes": 111019
+      },
+      "test.xlsx.csv": {
+        "sha256": "27b051dc48be91ef6f9683709e32239ea9cf60205666121530319ee71b9ecbd6",
+        "bytes": 160143
+      }
+    }
+  }
+}

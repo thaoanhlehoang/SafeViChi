@@ -1,0 +1,72 @@
+{
+  "accent_strip": {
+    "suite": "accent_strip",
+    "seen_in_train": true,
+    "n": 1216,
+    "original_f1": 0.8990496205825025,
+    "perturbed_f1": 0.8401766316170397,
+    "delta_f1": -0.05887298896546278,
+    "original_f1_4main": 0.9153314603571032,
+    "perturbed_f1_4main": 0.8667101512234272,
+    "original_binary_f1": 0.9093655589123867,
+    "perturbed_binary_f1": 0.8604118993135011,
+    "flip_rate": 0.15707236842105263,
+    "newly_missed_harm": 61
+  },
+  "c1_in_dist": {
+    "suite": "c1_in_dist",
+    "seen_in_train": true,
+    "n": 1255,
+    "original_f1": 0.8985908887437303,
+    "perturbed_f1": 0.8495613153628799,
+    "delta_f1": -0.049029573380850344,
+    "original_f1_4main": 0.9168329169794849,
+    "perturbed_f1_4main": 0.867555847355964,
+    "original_binary_f1": 0.9121574139142656,
+    "perturbed_binary_f1": 0.8867132867132868,
+    "flip_rate": 0.11235059760956176,
+    "newly_missed_harm": 37
+  },
+  "c1_heldout_controlled": {
+    "suite": "c1_heldout_controlled",
+    "seen_in_train": false,
+    "n": 1153,
+    "original_f1": 0.901612348922173,
+    "perturbed_f1": 0.8834290539293566,
+    "delta_f1": -0.018183294992816457,
+    "original_f1_4main": 0.9191046856456169,
+    "perturbed_f1_4main": 0.9033059252548329,
+    "original_binary_f1": 0.9202363367799113,
+    "perturbed_binary_f1": 0.9021339220014717,
+    "flip_rate": 0.05203816131830009,
+    "newly_missed_harm": 19
+  },
+  "blindspot_homoglyph": {
+    "suite": "blindspot_homoglyph",
+    "seen_in_train": false,
+    "n": 1203,
+    "original_f1": 0.9041197059248451,
+    "perturbed_f1": 0.8762229313056251,
+    "delta_f1": -0.02789677461922002,
+    "original_f1_4main": 0.9202048810248409,
+    "perturbed_f1_4main": 0.8961795650329323,
+    "original_binary_f1": 0.9198012775017743,
+    "perturbed_binary_f1": 0.9011461318051576,
+    "flip_rate": 0.07647547797173733,
+    "newly_missed_harm": 28
+  },
+  "blindspot_zero_width": {
+    "suite": "blindspot_zero_width",
+    "seen_in_train": false,
+    "n": 1330,
+    "original_f1": 0.9008198936475029,
+    "perturbed_f1": 0.877675711593638,
+    "delta_f1": -0.023144182053864926,
+    "original_f1_4main": 0.9175531062620363,
+    "perturbed_f1_4main": 0.9028797634589899,
+    "original_binary_f1": 0.9130141604855023,
+    "perturbed_binary_f1": 0.8869329722410291,
+    "flip_rate": 0.07142857142857142,
+    "newly_missed_harm": 34
+  }
+}

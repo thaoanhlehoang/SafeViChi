@@ -1,0 +1,72 @@
+{
+  "accent_strip": {
+    "suite": "accent_strip",
+    "seen_in_train": true,
+    "n": 1216,
+    "original_f1": 0.9204448586303876,
+    "perturbed_f1": 0.8749379873452634,
+    "delta_f1": -0.045506871285124206,
+    "original_f1_4main": 0.9376585467862177,
+    "perturbed_f1_4main": 0.9008278070437082,
+    "original_binary_f1": 0.9226100151745068,
+    "perturbed_binary_f1": 0.8790874524714829,
+    "flip_rate": 0.13157894736842105,
+    "newly_missed_harm": 50
+  },
+  "c1_in_dist": {
+    "suite": "c1_in_dist",
+    "seen_in_train": true,
+    "n": 1255,
+    "original_f1": 0.9230106288367639,
+    "perturbed_f1": 0.8876885733083885,
+    "delta_f1": -0.03532205552837542,
+    "original_f1_4main": 0.9430490003316689,
+    "perturbed_f1_4main": 0.9153148164572324,
+    "original_binary_f1": 0.9265536723163842,
+    "perturbed_binary_f1": 0.8990825688073395,
+    "flip_rate": 0.09243027888446215,
+    "newly_missed_harm": 34
+  },
+  "c1_heldout_controlled": {
+    "suite": "c1_heldout_controlled",
+    "seen_in_train": false,
+    "n": 1153,
+    "original_f1": 0.9271650436635323,
+    "perturbed_f1": 0.9256793538294643,
+    "delta_f1": -0.001485689834067938,
+    "original_f1_4main": 0.9451070174103726,
+    "perturbed_f1_4main": 0.9468830822671839,
+    "original_binary_f1": 0.9361069836552749,
+    "perturbed_binary_f1": 0.9322533136966127,
+    "flip_rate": 0.045099739809193407,
+    "newly_missed_harm": 6
+  },
+  "blindspot_homoglyph": {
+    "suite": "blindspot_homoglyph",
+    "seen_in_train": false,
+    "n": 1203,
+    "original_f1": 0.9306317264935424,
+    "perturbed_f1": 0.910366781947004,
+    "delta_f1": -0.020264944546538377,
+    "original_f1_4main": 0.9474224994453413,
+    "perturbed_f1_4main": 0.9316521711274486,
+    "original_binary_f1": 0.9365645046329294,
+    "perturbed_binary_f1": 0.9201413427561838,
+    "flip_rate": 0.06400665004156277,
+    "newly_missed_harm": 19
+  },
+  "blindspot_zero_width": {
+    "suite": "blindspot_zero_width",
+    "seen_in_train": false,
+    "n": 1330,
+    "original_f1": 0.9237523665042333,
+    "perturbed_f1": 0.9006387351250773,
+    "delta_f1": -0.023113631379156008,
+    "original_f1_4main": 0.9420658734126837,
+    "perturbed_f1_4main": 0.9273316386678455,
+    "original_binary_f1": 0.9275558564658091,
+    "perturbed_binary_f1": 0.9027397260273973,
+    "flip_rate": 0.06766917293233082,
+    "newly_missed_harm": 36
+  }
+}

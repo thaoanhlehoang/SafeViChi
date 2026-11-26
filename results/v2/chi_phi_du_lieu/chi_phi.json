@@ -1,0 +1,136 @@
+{
+  "gia": {
+    "model": "deepseek/deepseek-v4.1-flash-1017",
+    "endpoint": "wafer/us",
+    "usd_moi_token_vao": 3.6e-08,
+    "usd_moi_token_ra": 5e-07,
+    "nguon_gia": "OpenRouter endpoints API, 20/11/2026"
+  },
+  "ty_gia_vnd_usd_gia_dinh": 27000,
+  "cac_buoc": [
+    {
+      "buoc": "gan_lai_nhan",
+      "log": [
+        "1_prelabel.log"
+      ],
+      "luot_goi": 503,
+      "token_vao": 1751648,
+      "token_ra": 679159,
+      "token_suy_luan": 0,
+      "so_lan_chay": 1,
+      "usd": 0.4026,
+      "vnd": 10871,
+      "ket_thuc": "2026-11-20 00:38:50",
+      "thoi_gian_phut": 7.8,
+      "thong_ke": {
+        "theo_nhan": {
+          "AN_TOAN": 5663,
+          "XUC_PHAM": 4108,
+          "DE_DOA": 197,
+          "QUAY_ROI": 81,
+          "LUA_DAO": 13
+        },
+        "can_duyet": 5125
+      }
+    },
+    {
+      "buoc": "sinh_doan",
+      "log": [
+        "2_generate.log"
+      ],
+      "luot_goi": 2140,
+      "token_vao": 9073461,
+      "token_ra": 2040823,
+      "token_suy_luan": 0,
+      "so_lan_chay": 1,
+      "usd": 1.3471,
+      "vnd": 36371,
+      "ket_thuc": "2026-11-20 01:10:11",
+      "thoi_gian_phut": 31.3,
+      "thong_ke": {
+        "so_doan": 10557,
+        "theo_nhan": {
+          "AN_TOAN": 5295,
+          "DE_DOA": 1474,
+          "LUA_DAO": 1823,
+          "QUAY_ROI": 1487,
+          "XUC_PHAM": 478
+        },
+        "can_duyet": 61,
+        "doan_bi_bo": {
+          "giong_tro_ly": 20,
+          "sai_so_dong": 99,
+          "nhan_khong_hop_le": 20,
+          "nhan_khong_khop_kich_ban": 2
+        },
+        "o_bi_tu_choi": [],
+        "o_loi_api": []
+      }
+    },
+    {
+      "buoc": "loc_lai_doan_sinh",
+      "log": [
+        "3_loc_sinh.log"
+      ],
+      "luot_goi": 527,
+      "token_vao": 2533253,
+      "token_ra": 877854,
+      "token_suy_luan": 0,
+      "so_lan_chay": 1,
+      "usd": 0.5301,
+      "vnd": 14313,
+      "ket_thuc": "2026-11-20 01:18:16",
+      "thoi_gian_phut": 8.1,
+      "thong_ke": {
+        "tong": 10557,
+        "giu": 9625,
+        "loai": 932,
+        "ly_do_loai": {
+          "kiem_lai_ra_XUC_PHAM": 424,
+          "kiem_lai_ra_AN_TOAN": 241,
+          "kiem_lai_ra_DE_DOA": 181,
+          "kiem_lai_ra_QUAY_ROI": 71,
+          "kiem_lai_ra_LUA_DAO": 14,
+          "chua_kiem_duoc": 1
+        },
+        "theo_nhan": {
+          "AN_TOAN(sinh_doi)": {
+            "giu": 4945,
+            "loai": 350,
+            "ti_le_giu": 0.934
+          },
+          "DE_DOA": {
+            "giu": 1361,
+            "loai": 113,
+            "ti_le_giu": 0.923
+          },
+          "LUA_DAO": {
+            "giu": 1751,
+            "loai": 72,
+            "ti_le_giu": 0.961
+          },
+          "QUAY_ROI": {
+            "giu": 1098,
+            "loai": 389,
+            "ti_le_giu": 0.738
+          },
+          "XUC_PHAM": {
+            "giu": 470,
+            "loai": 8,
+            "ti_le_giu": 0.983
+          }
+        }
+      }
+    }
+  ],
+  "tong": {
+    "luot_goi": 3170,
+    "token_vao": 13358362,
+    "token_ra": 3597836,
+    "token_suy_luan": 0,
+    "usd": 2.2798,
+    "vnd": 61555
+  },
+  "ghi_chu": "Tiền tính từ số token × giá endpoint; số bị trừ thật xem trang Activity của OpenRouter.",
+  "tao_luc": "2026-11-20 01:18:34"
+}

@@ -1,0 +1,52 @@
+{
+  "tong": 13392,
+  "theo_nhan": {
+    "AN_TOAN": 5967,
+    "XUC_PHAM": 2997,
+    "LUA_DAO": 1751,
+    "DE_DOA": 1517,
+    "QUAY_ROI": 1160
+  },
+  "theo_nhan_va_loai": {
+    "AN_TOAN|sinh": 2000,
+    "AN_TOAN|that": 3967,
+    "DE_DOA|sinh": 1361,
+    "DE_DOA|that": 156,
+    "LUA_DAO|sinh": 1751,
+    "QUAY_ROI|sinh": 1098,
+    "QUAY_ROI|that": 62,
+    "XUC_PHAM|sinh": 470,
+    "XUC_PHAM|that": 2527
+  },
+  "theo_so_dong": {
+    "1": 8044,
+    "2": 2,
+    "3": 373,
+    "4": 949,
+    "5": 2619,
+    "6": 906,
+    "7": 429,
+    "8": 70
+  },
+  "nhieu_dong_theo_nhan": {
+    "AN_TOAN": 1591,
+    "XUC_PHAM": 470,
+    "QUAY_ROI": 894,
+    "DE_DOA": 1085,
+    "LUA_DAO": 1308
+  },
+  "bi_bo_khi_khu_trung": {
+    "trung_trong_train": 36
+  },
+  "seed": 42,
+  "cau_hinh": {
+    "SO_AN_TOAN_THAT": 4000,
+    "SO_AN_TOAN_SINH": 2000,
+    "SO_XUC_PHAM": 3000
+  },
+  "nguon": {
+    "that_gan_lai.jsonl": "a82d993887f52f0fb9efc59d7d8da02a3516f1f23233e692eb75681300f812f1",
+    "sinh_llm_loc.jsonl": "0e9fe1fb6ce86abf57a76fbafd95e9ee12de170a9b5250c84f14ff8aa773f85e",
+    "kho_test.jsonl": "199b77840c349b32340d5a0584bdf71176f51da27a264cc13f4f9da4cbb21ecd"
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "model": "safevichi_v2",
+  "quantization_method": "Hybrid_INT8: PerRowInt8Embedding(int8_sym_fp32_scale) + ORT_quantize_dynamic(QInt8_per_channel_W8A8, attn+mlp.Wi) + DequantizeLinear(int8_per_channel_W8A32, 22_GeGLU_mlp.Wo) + DualORC_head_FP32",
+  "seed": 42,
+  "command": "python -m src.v2.bench.benchmark_cpu",
+  "environment": {
+    "cpu_name": "AMD Ryzen AI 7 H 350 w/ Radeon 860M",
+    "physical_cores": 8,
+    "logical_cores": 16,
+    "total_ram_GiB": 31.29,
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.9",
+    "torch": "2.14.1+cpu",
+    "onnxruntime": "1.26.0"
+  },
+  "sizes_MiB": {
+    "safetensors_fp32": 1177.0,
+    "onnx_fp32": 1177.64,
+    "onnx_int8": 300.69,
+    "tokenizer_json": 32.77,
+    "compression_ratio_vs_safetensors": 3.91,
+    "compression_ratio_vs_onnx_fp32": 3.92
+  },
+  "runs": [
+    {
+      "backend": "onnx_int8",
+      "threads": 8,
+      "n_samples": 100,
+      "warmup": 10,
+      "token_len_p50_p95": [
+        47.0,
+        71.1
+      ],
+      "disk_size_MiB": 300.69,
+      "cold_load_ms": 1533.3,
+      "latency_ms": {
+        "preprocess_p50": 0.6,
+        "inference_p50": 22.83,
+        "inference_p95": 29.09,
+        "postprocess_p50": 1.13,
+        "end_to_end_mean": 24.24,
+        "end_to_end_p50": 24.68,
+        "end_to_end_p95": 31.54,
+        "end_to_end_p99": 33.63
+      },
+      "throughput_msg_per_sec": 41.26,
+      "memory_MiB": {
+        "rss_before_load": 406.0,
+        "rss_after_load": 814.7,
+        "rss_after_run": 824.7,
+        "peak_rss": 986.0
+      },
+      "energy_estimate": {
+        "method": "tdp_bound_estimate (Windows non-admin không mở bộ đếm RAPL; ước tính từ mean_end_to_end_s × cTDP 15W–28W)",
+        "per_msg_mJ_range": [
+          363.6,
+          678.6
+        ],
+        "per_1000_msg_Wh_range": [
+          0.101,
+          0.1885
+        ]
+      }
+    },
+    {
+      "backend": "onnx_int8",
+      "threads": 4,
+      "n_samples": 100,
+      "warmup": 10,
+      "token_len_p50_p95": [
+        47.0,
+        71.1
+      ],
+      "disk_size_MiB": 300.69,
+      "cold_load_ms": 1551.0,
+      "latency_ms": {
+        "preprocess_p50": 0.6,
+        "inference_p50": 26.95,
+        "inference_p95": 39.27,
+        "postprocess_p50": 1.13,
+        "end_to_end_mean": 29.32,
+        "end_to_end_p50": 28.48,
+        "end_to_end_p95": 41.29,
+        "end_to_end_p99": 44.5
+      },
+      "throughput_msg_per_sec": 34.11,
+      "memory_MiB": {
+        "rss_before_load": 405.6,
+        "rss_after_load": 806.4,
+        "rss_after_run": 815.9,
+        "peak_rss": 982.3
+      },
+      "energy_estimate": {
+        "method": "tdp_bound_estimate (Windows non-admin không mở bộ đếm RAPL; ước tính từ mean_end_to_end_s × cTDP 15W–28W)",
+        "per_msg_mJ_range": [
+          439.7,
+          820.8
+        ],
+        "per_1000_msg_Wh_range": [
+          0.1221,
+          0.228
+        ]
+      }
+    },
+    {
+      "backend": "onnx_int8",
+      "threads": 1,
+      "n_samples": 50,
+      "warmup": 5,
+      "token_len_p50_p95": [
+        50.0,
+        77.2
+      ],
+      "disk_size_MiB": 300.69,
+      "cold_load_ms": 1410.5,
+      "latency_ms": {
+        "preprocess_p50": 0.66,
+        "inference_p50": 58.5,
+        "inference_p95": 89.88,
+        "postprocess_p50": 1.1,
+        "end_to_end_mean": 64.73,
+        "end_to_end_p50": 61.46,
+        "end_to_end_p95": 92.45,
+        "end_to_end_p99": 107.85
+      },
+      "throughput_msg_per_sec": 15.45,
+      "memory_MiB": {
+        "rss_before_load": 405.6,
+        "rss_after_load": 810.6,
+        "rss_after_run": 817.9,
+        "peak_rss": 981.9
+      },
+      "energy_estimate": {
+        "method": "tdp_bound_estimate (Windows non-admin không mở bộ đếm RAPL; ước tính từ mean_end_to_end_s × cTDP 15W–28W)",
+        "per_msg_mJ_range": [
+          971.0,
+          1812.5
+        ],
+        "per_1000_msg_Wh_range": [
+          0.2697,
+          0.5035
+        ]
+      }
+    },
+    {
+      "backend": "onnx_fp32",
+      "threads": 8,
+      "n_samples": 60,
+      "warmup": 5,
+      "token_len_p50_p95": [
+        50.5,
+        77.0
+      ],
+      "disk_size_MiB": 1177.64,
+      "cold_load_ms": 1996.9,
+      "latency_ms": {
+        "preprocess_p50": 0.64,
+        "inference_p50": 41.99,
+        "inference_p95": 55.86,
+        "postprocess_p50": 1.32,
+        "end_to_end_mean": 44.77,
+        "end_to_end_p50": 43.97,
+        "end_to_end_p95": 58.47,
+        "end_to_end_p99": 77.86
+      },
+      "throughput_msg_per_sec": 22.33,
+      "memory_MiB": {
+        "rss_before_load": 405.8,
+        "rss_after_load": 1673.3,
+        "rss_after_run": 1682.3,
+        "peak_rss": 2419.4
+      },
+      "energy_estimate": {
+        "method": "tdp_bound_estimate (Windows non-admin không mở bộ đếm RAPL; ước tính từ mean_end_to_end_s × cTDP 15W–28W)",
+        "per_msg_mJ_range": [
+          671.6,
+          1253.7
+        ],
+        "per_1000_msg_Wh_range": [
+          0.1866,
+          0.3482
+        ]
+      }
+    },
+    {
+      "backend": "torch_fp32",
+      "threads": 8,
+      "n_samples": 40,
+      "warmup": 5,
+      "token_len_p50_p95": [
+        49.0,
+        74.1
+      ],
+      "disk_size_MiB": 1177.0,
+      "cold_load_ms": 20432.6,
+      "latency_ms": {
+        "preprocess_p50": 0.66,
+        "inference_p50": 58.81,
+        "inference_p95": 78.38,
+        "postprocess_p50": 1.11,
+        "end_to_end_mean": 62.12,
+        "end_to_end_p50": 60.42,
+        "end_to_end_p95": 80.38,
+        "end_to_end_p99": 82.1
+      },
+      "throughput_msg_per_sec": 16.1,
+      "memory_MiB": {
+        "rss_before_load": 405.5,
+        "rss_after_load": 1765.4,
+        "rss_after_run": 1788.5,
+        "peak_rss": 4780.9
+      },
+      "energy_estimate": {
+        "method": "tdp_bound_estimate (Windows non-admin không mở bộ đếm RAPL; ước tính từ mean_end_to_end_s × cTDP 15W–28W)",
+        "per_msg_mJ_range": [
+          931.8,
+          1739.3
+        ],
+        "per_1000_msg_Wh_range": [
+          0.2588,
+          0.4831
+        ]
+      }
+    }
+  ]
+}

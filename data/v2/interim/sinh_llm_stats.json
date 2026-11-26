@@ -1,0 +1,115 @@
+{
+  "so_doan": 10557,
+  "so_dong_trung_binh": 4.19,
+  "theo_nhan": {
+    "AN_TOAN": 5295,
+    "DE_DOA": 1474,
+    "LUA_DAO": 1823,
+    "QUAY_ROI": 1487,
+    "XUC_PHAM": 478
+  },
+  "theo_kich_ban": {
+    "DD1": 299,
+    "DD1-SD": 295,
+    "DD2": 300,
+    "DD2-SD": 294,
+    "DD3": 297,
+    "DD3-SD": 297,
+    "DD4": 292,
+    "DD4-SD": 299,
+    "DD5": 286,
+    "DD5-SD": 299,
+    "LD1": 195,
+    "LD1-SD": 198,
+    "LD10": 159,
+    "LD10-SD": 155,
+    "LD11": 186,
+    "LD11-SD": 192,
+    "LD2": 190,
+    "LD2-SD": 197,
+    "LD3": 153,
+    "LD3-SD": 154,
+    "LD4": 154,
+    "LD4-SD": 156,
+    "LD5": 197,
+    "LD5-SD": 197,
+    "LD6": 198,
+    "LD6-SD": 200,
+    "LD8": 196,
+    "LD8-SD": 199,
+    "LD9": 195,
+    "LD9-SD": 195,
+    "QR1": 299,
+    "QR1-SD": 300,
+    "QR2": 300,
+    "QR2-SD": 299,
+    "QR3": 300,
+    "QR3-SD": 295,
+    "QR4": 291,
+    "QR4-SD": 294,
+    "QR5": 297,
+    "QR5-SD": 300,
+    "XP1": 238,
+    "XP1-SD": 240,
+    "XP2": 240,
+    "XP2-SD": 240
+  },
+  "theo_kenh": {
+    "binh_luan": 1555,
+    "chat_game": 2108,
+    "messenger_zalo": 4195,
+    "nhom_lop": 2101,
+    "sms": 598
+  },
+  "theo_giong": {
+    "giong_bac": 1181,
+    "giong_nam": 1509,
+    "giong_trung": 998,
+    "khong_dau": 1725,
+    "teencode": 2064,
+    "than_mat": 1409,
+    "trang_trong_gia_danh": 509,
+    "viet_tat": 1162
+  },
+  "theo_do_lo": {
+    "an_y": 5282,
+    "lo_lieu": 5275
+  },
+  "theo_kieu_lo": {
+    "lo_dan": 4202,
+    "mot_dong": 2153,
+    "ngay_dau": 4202
+  },
+  "theo_so_dong": {
+    "1": 2153,
+    "2": 3,
+    "3": 524,
+    "4": 1718,
+    "5": 4056,
+    "6": 1460,
+    "7": 545,
+    "8": 98
+  },
+  "can_duyet": 61,
+  "dong_bi_bo_tien_to": 0,
+  "doan_bi_bo": {
+    "giong_tro_ly": 20,
+    "sai_so_dong": 99,
+    "nhan_khong_hop_le": 20,
+    "nhan_khong_khop_kich_ban": 2
+  },
+  "so_o_da_chay": 2144,
+  "o_bi_tu_choi": [],
+  "o_loi_api": [],
+  "provider": "openai",
+  "model": "deepseek/deepseek-v4.1-flash-1017",
+  "prompt_version": "26d33b104b7e",
+  "reasoning": "none",
+  "provider_order": [
+    "wafer/us"
+  ],
+  "max_price": [
+    0.04,
+    0.5
+  ]
+}

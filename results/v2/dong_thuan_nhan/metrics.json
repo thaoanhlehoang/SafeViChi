@@ -1,0 +1,54 @@
+{
+  "so_cau_ca_hai_da_gan": 200,
+  "kappa_5_nhan": null,
+  "kappa_sach_nguy_hai": null,
+  "ti_le_A_B_cung_nhan": 1.0,
+  "nhom_giu": {
+    "llm_dung_5_nhan": {
+      "dung": 86,
+      "tong": 100,
+      "ti_le": 0.86,
+      "khoang_tin_cay_95": [
+        0.779,
+        0.915
+      ]
+    },
+    "llm_dung_sach_nguy_hai": {
+      "dung": 86,
+      "tong": 100,
+      "ti_le": 0.86,
+      "khoang_tin_cay_95": [
+        0.779,
+        0.915
+      ]
+    }
+  },
+  "nhom_bo": {
+    "nguoi_dong_y_llm_sach_nguy_hai": {
+      "dung": 61,
+      "tong": 100,
+      "ti_le": 0.61,
+      "khoang_tin_cay_95": [
+        0.512,
+        0.7
+      ]
+    },
+    "nguoi_dong_y_nhan_goc_sach_nguy_hai": {
+      "dung": 39,
+      "tong": 100,
+      "ti_le": 0.39,
+      "khoang_tin_cay_95": [
+        0.3,
+        0.488
+      ]
+    }
+  },
+  "nham_lan_A_B": {},
+  "so_cau_mau": 200,
+  "A_da_gan": 200,
+  "B_da_gan": 200,
+  "loi_nhan": [],
+  "nguoi_gan_A": "claude-opus-5-5 (mô hình, KHÔNG phải người)",
+  "nguoi_gan_B": "claude-opus-5-5 (mô hình, KHÔNG phải người)",
+  "canh_bao": "A và B cùng do 'claude-opus-5-5 (mô hình, KHÔNG phải người)' gán: không tính kappa. Các tỉ lệ nhóm giữ/bỏ là mức khớp giữa người gán này và LLM gán sơ bộ, chỉ được báo cáo đúng với nguồn nhãn đó."
+}

@@ -1,0 +1,398 @@
+{
+  "data_rev": "371a0f1caf3f7b62f62b87dbf557c66eda9c544a",
+  "evidence_metric": "f1_theo_y_clause_he_so_phu_1.5",
+  "train_aug_config": {
+    "accent_aug": 0.3,
+    "surface_aug": 0.2
+  },
+  "tiers": {
+    "C0": {
+      "n": 334,
+      "macro_f1": 0.8647,
+      "macro_f1_4main": 0.8456,
+      "binary_f1": 0.9287,
+      "fpr_an_toan": 0.1042,
+      "accuracy": 0.8653,
+      "macro_f1_bootstrap_95": [
+        0.8255,
+        0.899
+      ],
+      "evidence_f1": 0.7931,
+      "evidence_f1_theo_y": 0.8303,
+      "safe_mark_rate": 0.0938,
+      "word_length_ratio": 0.9758,
+      "harm_empty_evidence_rate": 0.0326,
+      "non_verbatim_phrase_rate": 0.0,
+      "worst_group_region_macro_f1": 0.8448,
+      "region_gap_max_min": 0.0347,
+      "n_harmful_evaluated": 215,
+      "n_harmful_skipped_pred_safe": 23
+    },
+    "C1": {
+      "n": 668,
+      "macro_f1": 0.7859,
+      "macro_f1_4main": 0.7609,
+      "binary_f1": 0.9029,
+      "fpr_an_toan": 0.1094,
+      "accuracy": 0.7979,
+      "macro_f1_bootstrap_95": [
+        0.7532,
+        0.8176
+      ],
+      "evidence_f1": 0.722,
+      "evidence_f1_theo_y": 0.7649,
+      "safe_mark_rate": 0.0885,
+      "word_length_ratio": 0.8735,
+      "harm_empty_evidence_rate": 0.0636,
+      "non_verbatim_phrase_rate": 0.0,
+      "worst_group_region_macro_f1": 0.7301,
+      "region_gap_max_min": 0.0857,
+      "n_harmful_evaluated": 409,
+      "n_harmful_skipped_pred_safe": 67
+    },
+    "C2": {
+      "n": 668,
+      "macro_f1": 0.7708,
+      "macro_f1_4main": 0.7534,
+      "binary_f1": 0.9087,
+      "fpr_an_toan": 0.1042,
+      "accuracy": 0.7829,
+      "macro_f1_bootstrap_95": [
+        0.7399,
+        0.8018
+      ],
+      "evidence_f1": 0.7017,
+      "evidence_f1_theo_y": 0.7531,
+      "safe_mark_rate": 0.0885,
+      "word_length_ratio": 0.8546,
+      "harm_empty_evidence_rate": 0.0484,
+      "non_verbatim_phrase_rate": 0.0,
+      "worst_group_region_macro_f1": 0.7355,
+      "region_gap_max_min": 0.0559,
+      "n_harmful_evaluated": 413,
+      "n_harmful_skipped_pred_safe": 63
+    }
+  },
+  "deltas_vs_C0": {
+    "C1_minus_C0": -0.0788,
+    "C2_minus_C0": -0.0939,
+    "C1_minus_C0_binary": -0.0258,
+    "C2_minus_C0_binary": -0.02,
+    "C1_minus_C0_ev_theo_y": -0.0654,
+    "C2_minus_C0_ev_theo_y": -0.0772
+  },
+  "strictly_unseen_perturb": {
+    "n": 764,
+    "macro_f1": 0.7836,
+    "macro_f1_4main": 0.7657,
+    "binary_f1": 0.9114,
+    "fpr_an_toan": 0.0995,
+    "accuracy": 0.7932,
+    "macro_f1_bootstrap_95": [
+      0.7546,
+      0.8124
+    ],
+    "evidence_f1": 0.7172,
+    "evidence_f1_theo_y": 0.766,
+    "safe_mark_rate": 0.086,
+    "word_length_ratio": 0.8657,
+    "harm_empty_evidence_rate": 0.0423,
+    "non_verbatim_phrase_rate": 0.0,
+    "worst_group_region_macro_f1": 0.7444,
+    "region_gap_max_min": 0.0561,
+    "n_harmful_evaluated": 473,
+    "n_harmful_skipped_pred_safe": 70
+  },
+  "slices_15": {
+    "C0_bac": {
+      "n": 112,
+      "macro_f1": 0.8642,
+      "binary_f1": 0.929,
+      "fpr_an_toan": 0.1212,
+      "evidence_f1": 0.7998,
+      "evidence_f1_theo_y": 0.8389
+    },
+    "C0_trung": {
+      "n": 111,
+      "macro_f1": 0.8448,
+      "binary_f1": 0.9404,
+      "fpr_an_toan": 0.0312,
+      "evidence_f1": 0.8168,
+      "evidence_f1_theo_y": 0.8559
+    },
+    "C0_nam": {
+      "n": 111,
+      "macro_f1": 0.8795,
+      "binary_f1": 0.9172,
+      "fpr_an_toan": 0.1613,
+      "evidence_f1": 0.7631,
+      "evidence_f1_theo_y": 0.7965
+    },
+    "C0_da_thay": {
+      "n": 185,
+      "macro_f1": 0.93,
+      "binary_f1": 0.9736,
+      "fpr_an_toan": 0.02,
+      "evidence_f1": 0.8372,
+      "evidence_f1_theo_y": 0.8679
+    },
+    "C0_chua_thay": {
+      "n": 149,
+      "macro_f1": 0.6209,
+      "binary_f1": 0.8687,
+      "fpr_an_toan": 0.1957,
+      "evidence_f1": 0.727,
+      "evidence_f1_theo_y": 0.7739
+    },
+    "C1_bac": {
+      "n": 224,
+      "macro_f1": 0.8158,
+      "binary_f1": 0.9246,
+      "fpr_an_toan": 0.0909,
+      "evidence_f1": 0.7216,
+      "evidence_f1_theo_y": 0.7686
+    },
+    "C1_trung": {
+      "n": 222,
+      "macro_f1": 0.7301,
+      "binary_f1": 0.8973,
+      "fpr_an_toan": 0.0469,
+      "evidence_f1": 0.7373,
+      "evidence_f1_theo_y": 0.7809
+    },
+    "C1_nam": {
+      "n": 222,
+      "macro_f1": 0.8024,
+      "binary_f1": 0.8867,
+      "fpr_an_toan": 0.1935,
+      "evidence_f1": 0.7079,
+      "evidence_f1_theo_y": 0.7457
+    },
+    "C1_da_thay": {
+      "n": 370,
+      "macro_f1": 0.8668,
+      "binary_f1": 0.9585,
+      "fpr_an_toan": 0.06,
+      "evidence_f1": 0.7569,
+      "evidence_f1_theo_y": 0.7933
+    },
+    "C1_chua_thay": {
+      "n": 298,
+      "macro_f1": 0.5444,
+      "binary_f1": 0.8245,
+      "fpr_an_toan": 0.163,
+      "evidence_f1": 0.6648,
+      "evidence_f1_theo_y": 0.7182
+    },
+    "C2_bac": {
+      "n": 224,
+      "macro_f1": 0.7914,
+      "binary_f1": 0.9085,
+      "fpr_an_toan": 0.1364,
+      "evidence_f1": 0.746,
+      "evidence_f1_theo_y": 0.8009
+    },
+    "C2_trung": {
+      "n": 222,
+      "macro_f1": 0.7355,
+      "binary_f1": 0.922,
+      "fpr_an_toan": 0.0156,
+      "evidence_f1": 0.6676,
+      "evidence_f1_theo_y": 0.7217
+    },
+    "C2_nam": {
+      "n": 222,
+      "macro_f1": 0.7839,
+      "binary_f1": 0.8961,
+      "fpr_an_toan": 0.1613,
+      "evidence_f1": 0.6905,
+      "evidence_f1_theo_y": 0.7358
+    },
+    "C2_da_thay": {
+      "n": 370,
+      "macro_f1": 0.8596,
+      "binary_f1": 0.9644,
+      "fpr_an_toan": 0.06,
+      "evidence_f1": 0.7125,
+      "evidence_f1_theo_y": 0.7632
+    },
+    "C2_chua_thay": {
+      "n": 298,
+      "macro_f1": 0.5321,
+      "binary_f1": 0.8298,
+      "fpr_an_toan": 0.1522,
+      "evidence_f1": 0.6838,
+      "evidence_f1_theo_y": 0.7363
+    }
+  },
+  "delta_slices_vs_C0": {
+    "C1_bac_minus_C0": -0.0484,
+    "C2_bac_minus_C0": -0.0728,
+    "C1_trung_minus_C0": -0.1147,
+    "C2_trung_minus_C0": -0.1093,
+    "C1_nam_minus_C0": -0.0771,
+    "C2_nam_minus_C0": -0.0956,
+    "C1_da_thay_minus_C0": -0.0632,
+    "C2_da_thay_minus_C0": -0.0704,
+    "C1_chua_thay_minus_C0": -0.0765,
+    "C2_chua_thay_minus_C0": -0.0888
+  },
+  "by_kieu_bien_dang": {
+    "bo_dau": {
+      "tier": "C1",
+      "n": 102,
+      "nhom_vs_train_c0": "da_thay",
+      "seen_in_train_aug": true,
+      "strictly_unseen": false,
+      "macro_f1": 0.8006,
+      "binary_f1": 0.9143,
+      "fpr_an_toan": 0.0,
+      "evidence_f1": 0.6808,
+      "evidence_f1_theo_y": 0.7179
+    },
+    "chen_ky_tu": {
+      "tier": "C1",
+      "n": 81,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": true,
+      "strictly_unseen": false,
+      "macro_f1": 0.7672,
+      "binary_f1": 0.9153,
+      "fpr_an_toan": 0.15,
+      "evidence_f1": 0.6197,
+      "evidence_f1_theo_y": 0.6761
+    },
+    "dinh_tu": {
+      "tier": "C1",
+      "n": 96,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.8709,
+      "binary_f1": 0.9302,
+      "fpr_an_toan": 0.069,
+      "evidence_f1": 0.8242,
+      "evidence_f1_theo_y": 0.8554
+    },
+    "go_sai": {
+      "tier": "C1",
+      "n": 104,
+      "nhom_vs_train_c0": "da_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": false,
+      "macro_f1": 0.7275,
+      "binary_f1": 0.8857,
+      "fpr_an_toan": 0.2121,
+      "evidence_f1": 0.7332,
+      "evidence_f1_theo_y": 0.755
+    },
+    "keo_dai": {
+      "tier": "C1",
+      "n": 89,
+      "nhom_vs_train_c0": "da_thay",
+      "seen_in_train_aug": true,
+      "strictly_unseen": false,
+      "macro_f1": 0.8099,
+      "binary_f1": 0.9043,
+      "fpr_an_toan": 0.037,
+      "evidence_f1": 0.7061,
+      "evidence_f1_theo_y": 0.7693
+    },
+    "so_thay_chu": {
+      "tier": "C1",
+      "n": 93,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": true,
+      "strictly_unseen": false,
+      "macro_f1": 0.7953,
+      "binary_f1": 0.9291,
+      "fpr_an_toan": 0.0741,
+      "evidence_f1": 0.7212,
+      "evidence_f1_theo_y": 0.7598
+    },
+    "teencode": {
+      "tier": "C1",
+      "n": 103,
+      "nhom_vs_train_c0": "da_thay",
+      "seen_in_train_aug": true,
+      "strictly_unseen": false,
+      "macro_f1": 0.7092,
+      "binary_f1": 0.8467,
+      "fpr_an_toan": 0.2,
+      "evidence_f1": 0.7603,
+      "evidence_f1_theo_y": 0.8174
+    },
+    "cyrillic_homoglyph": {
+      "tier": "C2",
+      "n": 110,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.7809,
+      "binary_f1": 0.8936,
+      "fpr_an_toan": 0.1111,
+      "evidence_f1": 0.7526,
+      "evidence_f1_theo_y": 0.8077
+    },
+    "double_elongation": {
+      "tier": "C2",
+      "n": 98,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.8243,
+      "binary_f1": 0.9291,
+      "fpr_an_toan": 0.0323,
+      "evidence_f1": 0.7108,
+      "evidence_f1_theo_y": 0.7483
+    },
+    "exotic_separator": {
+      "tier": "C2",
+      "n": 108,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.7816,
+      "binary_f1": 0.9379,
+      "fpr_an_toan": 0.0312,
+      "evidence_f1": 0.6947,
+      "evidence_f1_theo_y": 0.751
+    },
+    "fullwidth": {
+      "tier": "C2",
+      "n": 122,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.8288,
+      "binary_f1": 0.948,
+      "fpr_an_toan": 0.0312,
+      "evidence_f1": 0.6872,
+      "evidence_f1_theo_y": 0.7401
+    },
+    "space_injection": {
+      "tier": "C2",
+      "n": 114,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.6709,
+      "binary_f1": 0.859,
+      "fpr_an_toan": 0.2188,
+      "evidence_f1": 0.6337,
+      "evidence_f1_theo_y": 0.7046
+    },
+    "zero_width": {
+      "tier": "C2",
+      "n": 116,
+      "nhom_vs_train_c0": "chua_thay",
+      "seen_in_train_aug": false,
+      "strictly_unseen": true,
+      "macro_f1": 0.7239,
+      "binary_f1": 0.8862,
+      "fpr_an_toan": 0.2069,
+      "evidence_f1": 0.735,
+      "evidence_f1_theo_y": 0.7704
+    }
+  }
+}

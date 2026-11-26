@@ -20,8 +20,15 @@ dist/
 # ==== Dữ liệu ====
 # (đã bỏ ignore toàn bộ thư mục data/ — mọi file trong đó đều được track)
 *.csv
+# Câu test do người trong nhóm tự viết (v2): cần track
+!data/v2/raw/*.csv
 *.tsv
 *.parquet
+# Cache thô của LLM (v2): giữ trên máy để chạy tiếp khi bị ngắt, không commit
+data/v2/interim/sinh_llm_cache/
+data/v2/interim/prelabel/cache_*.jsonl
+# ViTHSD là bộ gated trên Hugging Face: không phân phối lại qua repo
+data/raw/vithsd/
 
 # ==== Model checkpoints (quá nặng cho git, dùng Git LFS hoặc lưu ngoài nếu cần) ====
 models/*
@@ -41,7 +48,8 @@ demo/dist/
 
 # ==== Biến môi trường & secrets ====
 .env
-.env.local
+.env.*
+!.env.example
 *.key
 
 # ==== IDE / OS ====
@@ -57,7 +65,13 @@ Thumbs.db
 *.toc
 *.fls
 *.fdb_latexmk
-# ...nhưng GIỮ log bằng chứng của Bước 3
-!results/step3/logs/*.log
+# ...nhưng GIỮ log bằng chứng của Bước 3 (v1)
+!v1/results/step3/logs/*.log
 wandb/
 runs/
+
+# Log chạy pipeline dữ liệu v2 (không commit)
+logs_v2/
+
+# Các file cắt lát test C0/C1/C2 theo nhóm (tái tạo nhanh bằng src.v2.data.tach_test_bien_dang; eval lọc in-memory)
+data/v2/test_perturb/

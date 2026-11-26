@@ -1,108 +1,144 @@
 # SafeViChi
 
-[Dùng thử bản demo](https://safevichi.pages.dev/)
+[![Demo](https://img.shields.io/badge/Live%20Demo-safevichi.pages.dev-2563eb)](https://safevichi.pages.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Hệ thống phát hiện nội dung độc hại tiếng Việt chống các kỹ thuật né bộ lọc, xử lý hoàn toàn cục bộ trên thiết bị (on-device).
+Hệ thống phát hiện tin nhắn tiếng Việt nguy hại **chạy hoàn toàn cục bộ trên thiết bị (on-device, `< 2 GB`)**, chống các kỹ thuật né bộ lọc (teencode, bỏ dấu, chèn ký tự, homoglyph, kéo dài ký tự) và không gửi nội dung tin nhắn ra ngoài.
 
 ---
 
-## Luận điểm cốt lõi
+## Tổng quan v2 (Vòng chung kết) vs v1 (Vòng loại)
 
-Các mô hình phát hiện nội dung độc hại tiếng Việt bị sụt giảm nghiêm trọng hiệu năng khi người dùng cố tình biến dạng chữ viết để lách luật (teencode, bỏ dấu, chèn ký tự phân cách, homoglyph, lỗi gõ). SafeViChi kết hợp lớp chuẩn hóa 5 tầng (rule-based normalizer) cùng cơ chế huấn luyện đối kháng (adversarial training) giúp phục hồi hầu hết hiệu năng bị mất mà vẫn đảm bảo tính riêng tư tuyệt đối cho người dùng.
+| Phiên bản | Vị trí / Tag | Bài toán | Đầu ra |
+| --- | --- | --- | --- |
+| **SafeViChi v2** *(hiện tại)* | Thư mục gốc (`v2-final`) | Hội thoại 2 người (1–8 lượt), **5 nhãn theo tình huống** | JSON `{"nhan": "...", "bang_chung": [...]}` (tách ngưỡng phân loại & tô sáng) |
+| **SafeViChi v1** *(baseline đóng băng)* | [v1/](v1/README.md) · tag `v1-vongloai` | Câu đơn, 2 nhãn `HATE` / `CLEAN` | ViHateT5 fine-tune đối kháng (FGM) + occlusion highlight |
 
-```
-Văn bản đầu vào
-    → [1] Lớp chuẩn hóa (rule-based normalizer)       src/normalization/
-    → [2] Bộ phân loại (ViHateT5 fine-tune đối kháng) src/classifier/
-    → [3] Module giải thích (occlusion-based)         src/explainer/
-    → Đầu ra: Nhãn rủi ro (hate/clean) + Cụm từ cảnh báo
-```
+### Bộ 5 nhãn tình huống (v2)
+
+| Nhãn | Ý nghĩa | Hành động trong ứng dụng |
+| --- | --- | --- |
+| `AN_TOAN` | Không thuộc 4 nhóm nguy hại | Hiển thị bình thường |
+| `XUC_PHAM` | Lăng mạ, miệt thị cá nhân hoặc nhóm (kể cả vùng miền) | Làm mờ, bấm mới xem |
+| `QUAY_ROI` | Gạ gẫm không mong muốn, bám riết, bêu riếu | Gợi ý chặn, báo cáo |
+| `DE_DOA` | Đe dọa gây hại thân thể, tài sản, danh dự; tống tiền | Cảnh báo mạnh, gợi ý lưu bằng chứng |
+| `LUA_DAO` | Dụ chuyển tiền, lấy OTP, bấm đường link giả mạo | Cảnh báo, vô hiệu hóa liên kết |
+
+Thứ tự ưu tiên khi nhiều nhãn cùng đúng: `DE_DOA` > `LUA_DAO` > `QUAY_ROI` > `XUC_PHAM`. Định nghĩa chi tiết và ca ranh giới xem tại [docs/v2/HUONG_DAN_GAN_NHAN.md](docs/v2/HUONG_DAN_GAN_NHAN.md).
 
 ---
 
 ## Cấu trúc thư mục
 
-```
+```text
 SafeViChi/
-├── data/                       # Dữ liệu huấn luyện, kiểm thử và ma trận benchmark
-│   ├── processed/              # Tập biến thể 75K và tập dữ liệu đã chuẩn hóa
-│   ├── data_final/             # Bộ train trộn 60/30/10, validation_mixed và test
-│   ├── eval_baseline/          # Ma trận đánh giá 3 điều kiện (C0, C1, C2)
-│   ├── data_explain/           # Tập dữ liệu ViHOS phục vụ module giải thích
-│   └── CHECKSUMS.json          # Bảng mã băm SHA-256 đối chiếu toàn vẹn dữ liệu
+├── README.md, AGENTS.md, CLAUDE.md, pyproject.toml, LICENSE
+├── requirements.txt, requirements-lock.txt, .env.example
 │
-├── src/                        # Mã nguồn triển khai
-│   ├── normalization/          # Bộ chuẩn hóa 5 tầng và từ điển teencode
-│   ├── variant_generator/      # Trình sinh biến thể 12 hiện tượng phi chuẩn
-│   ├── dataset_builder/        # Pipeline tiền xử lý, ghép nhãn, khử trùng lặp
-│   ├── classifier/             # Huấn luyện mô hình ViHateT5 và đối kháng FGM
-│   ├── baselines/              # Blacklist và ma trận benchmark đánh giá
-│   ├── explainer/              # Thuật toán occlusion khoanh vùng vi phạm
-│   ├── reporting/              # Script kết xuất biểu đồ và số liệu
-│   └── pipeline.py             # Lớp đóng gói toàn bộ quy trình đầu-cuối
+├── src/                        # Mã nguồn v2 & dùng chung (chi tiết tại src/README.md)
+│   ├── v2/                     # Pipeline vòng chung kết: data/, labeling/, train/, eval/, bench/
+│   └── shared/                 # Dùng chung v1 + v2: variant_generator/, reporting/, utils/ (kèm normalization/ kế thừa v1)
 │
-├── demo/                       # Ứng dụng web chạy trực tiếp trong trình duyệt
-│   ├── index.html              # Giao diện kiểm tra tin nhắn
-│   ├── js/                     # Logic chuẩn hóa và suy luận ONNX Web
-│   └── onnx_model/             # Checkpoint ViHateT5 đã export ONNX
+├── notebooks/                  # Notebook huấn luyện v2 trên Colab/Kaggle (xem notebooks/README.md)
+├── data/                       # Dữ liệu v2 (train 13.392, test C0 334, C1/C2 668 mỗi tập) & data/raw/
+├── results/                    # Kết quả thực nghiệm & thống kê dữ liệu v2 (results/v2/)
+├── docs/                       # Tài liệu kỹ thuật v2 (docs/v2/)
+├── tests/                      # Bộ kiểm thử tự động v2 (tests/v2/)
+├── demo/                       # Ứng dụng web chạy on-device qua ONNX Runtime Web
+├── models/                     # Checkpoint cục bộ (không commit lên git)
 │
-├── models/                     # Checkpoint mô hình PyTorch (vihatet5-v2-best)
-├── results/                    # Báo cáo số liệu thực nghiệm và biểu đồ PDF
-├── scripts/                    # Script điều phối dựng dữ liệu, eval và checksums
-├── tests/                      # Bộ kiểm thử tự động (unit tests)
-└── docs/                       # Tài liệu kỹ thuật chi tiết
-    ├── README.md               # Cẩm nang tổng quan kiến trúc và hệ thống
-    ├── pipeline.md             # Hướng dẫn từng bước tái lập pipeline từ A-Z
-    └── experiments.md          # Báo cáo số liệu thực nghiệm và kiểm định thống kê
+└── v1/                         # Toàn bộ lưu trữ vòng loại (baseline đóng băng, xem v1/README.md)
+    ├── src/, data/, results/, scripts/, docs/, tests/
 ```
 
 ---
 
 ## Cài đặt & Khởi động nhanh
 
-1. **Khởi tạo môi trường:**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate    # Trên Windows: .venv\Scripts\activate
-   pip install -r requirements-lock.txt
-   ```
+### 1. Cài đặt CLI suy luận cục bộ (`safevichi`, không cần PyTorch)
+Chỉ cài gói nhẹ (`onnxruntime`, `tokenizers`, `numpy`, `huggingface-hub`) và đăng ký sẵn lệnh `safevichi` dùng được ở mọi thư mục trên CMD / PowerShell / Terminal:
+```bash
+git clone https://github.com/thaoanhlehoang/SafeViChi.git && cd SafeViChi
+pip install -e .
+```
+**Tự động tải mô hình từ Hugging Face ([`dminhnhat06/safevichi_v2`](https://huggingface.co/dminhnhat06/safevichi_v2)):** lần chạy `safevichi` đầu tiên sẽ tự động tải gói ONNX Hybrid INT8 (`safevichi_v2_int8.onnx`, `crf_params.json`, `tokenizer/`, tổng ~334 MiB) vào `models/dualorc_mmbert_base/onnx/` và xác thực SHA-256; các lần chạy sau hoàn toàn offline. Có thể tải trước thủ công bằng:
+```bash
+python -m src.v2.download_model              # Tải trước gói ONNX INT8 (~334 MiB)
+python -m src.v2.download_model --fp32       # Tải gói ONNX FP32 (~1,18 GiB)
+python -m src.v2.download_model --all        # Tải trọn gói ONNX INT8 + FP32 + PyTorch safetensors
+```
+*(Hỗ trợ `--no-download` / `SAFEVICHI_OFFLINE=1` cho môi trường offline hoàn toàn, hoặc trỏ `--onnx-dir` / `SAFEVICHI_ONNX_DIR` tới thư mục mô hình có sẵn.)*
 
-2. **Chạy kiểm thử:**
-   ```bash
-   pytest -q                    # Toàn bộ hơn 100 test case
-   python -m scripts.checksums  # Kiểm tra tính toàn vẹn của dữ liệu và model
-   ```
+Sau khi cài xong, mở CMD / PowerShell ở **bất kỳ đâu** và chạy trực tiếp (mô hình suy luận trực tiếp trên văn bản gốc):
+```bash
+safevichi                                              # Mở chế độ tương tác (gõ từng tin nhắn)
+safevichi --chat                                       # Chế độ hội thoại trượt 1–8 lượt
+safevichi "Tài khoản sẽ bị khóa, bấm link nhập OTP"    # Quét nhanh 1 tin nhắn
+safevichi "Lượt 1 || Lượt 2"                           # Hội thoại nhiều lượt ngăn bằng ||
+safevichi --json "Mày là đồ ngu"                       # Trả về JSON thuần
+safevichi --file messages.txt --out ket_qua.jsonl      # Quét hàng loạt
+```
+*(Ghi chú: tùy chọn `--legacy-normalize` gọi bộ chuẩn hóa v1 vẫn còn để đối chiếu nhưng đã bị đánh dấu lỗi thời và không dùng trong sản phẩm mặc định.)*
 
-3. **Chạy thử Web Demo on-device:**
-   ```bash
-   cd demo
-   python -m http.server 8000
-   # Mở trình duyệt tại http://localhost:8000
-   ```
-   Toàn bộ quá trình chuẩn hóa, tokenization và suy luận mô hình diễn ra 100% bằng WebAssembly/ONNX Runtime Web trong trình duyệt của bạn.
+### 2. Tạo môi trường đầy đủ (huấn luyện / đánh giá / kiểm thử)
+```bash
+python -m venv .venv
+source .venv/bin/activate       # Windows: .venv\Scripts\activate
+pip install -r requirements-lock.txt
+pip install -e . --no-deps
+```
+
+### 3. Chạy kiểm thử tự động
+```bash
+pytest -q                       # Chạy toàn bộ unit test (cả tests/v2 và v1/tests)
+```
+
+### 4. Đánh giá mô hình v2 (phân loại + bằng chứng + lát cắt C0/C1/C2)
+```bash
+python -m src.v2.eval.evaluate \
+  --gold data/v2/test_day_du.jsonl data/v2/test_perturb_C1.jsonl data/v2/test_perturb_C2.jsonl \
+  --pred results/v2/<ten_cau_hinh>/predictions.jsonl \
+  --meta data/v2/test_day_du.jsonl \
+  --out results/v2/<ten_cau_hinh>/metrics.json
+```
+Bộ đánh giá tính đồng thời:
+- **Phân loại:** Macro-F1 (5 nhãn), P/R/F1 từng nhãn, Binary F1 (nguy hại vs `AN_TOAN` để đối chiếu v1), `FPR` trên `AN_TOAN`, Bootstrap 95% CI, ECE/PR-AUC (khi có xác suất), và kiểm định McNemar ghép cặp (`--reference-pred`).
+- **Bằng chứng:** Song song **F1 theo ý** ([DO_DO_BANG_CHUNG.md](docs/v2/DO_DO_BANG_CHUNG.md)) và **F1 mức từ**, tỉ lệ tô oan `AN_TOAN`, tỉ lệ cụm bịa không có trong câu (`non_verbatim_phrase_rate`).
+- **Khái quát hóa theo nhóm (in-memory):** `C0 / C1 / C2` (kèm độ tụt $\Delta\text{F1}$), 3 vùng miền `bac / trung / nam` (kèm Worst-group F1), kịch bản `trong_phan_phoi` vs `chua_thay`, số lượt hội thoại, thẻ ca khó.
+
+### 5. Chạy Web Demo on-device
+```bash
+cd demo
+npm install && npm run dev
+```
 
 ---
 
-## Kết quả chính
+## Mốc đối chiếu SafeViChi v1 (Đóng băng)
 
-F1 của lớp HATE trên tập test qua 3 điều kiện (C0: sạch, C1: né lọc, C2: điểm mù):
+Kết quả lớp `HATE` trên tập test v1 (`v1/results/step3/`, `v1/results/step4/`) dùng làm một dòng baseline cho v2:
 
-| Hệ thống | C0 (câu sạch) | C1 (né lọc) | C2 (điểm mù) |
-|---|:---:|:---:|:---:|
+| Hệ thống | C0 (sạch) | C1 (né lọc) | C2 (điểm mù) |
+| --- | :---: | :---: | :---: |
 | Blacklist từ khóa | 0.6551 | 0.5982 | 0.4564 |
 | ViHateT5 gốc | 0.7683 | 0.6046 | 0.4627 |
 | ViHateT5 gốc + Chuẩn hóa | 0.7497 | 0.7218 | 0.4720 |
-| **SafeViChi đầy đủ (Chuẩn hóa + Đối kháng)** | **0.8552** | **0.8266** | **0.6657** |
-
-Khả năng khoanh vùng giải thích trên tập ViHOS test: **Micro F1 đạt 0.5455**, tỷ lệ trượt hoàn toàn chỉ **1.9%**.
+| **SafeViChi v1 (Chuẩn hóa + FGM)** | **0.8552** | **0.8266** | **0.6657** |
 
 ---
 
-## Tài liệu chi tiết
+## Tài liệu tham khảo
 
-- [Tổng quan kiến trúc & Cấu trúc dự án](docs/README.md)
-- [Cẩm nang tái lập Pipeline từ đầu đến cuối](docs/pipeline.md)
-- [Báo cáo thực nghiệm & Phân tích chi tiết](docs/experiments.md)
+- **Vòng chung kết (v2):**
+  - [Kế hoạch triển khai & ma trận thực nghiệm](docs/v2/KE_HOACH.md)
+  - [Thẻ dữ liệu v2](data/v2/DATASET_CARD.md)
+  - [Hướng dẫn gán nhãn 5 lớp](docs/v2/HUONG_DAN_GAN_NHAN.md)
+  - [Độ đo bằng chứng — F1 theo ý](docs/v2/DO_DO_BANG_CHUNG.md)
+  - [Hướng dẫn viết tập test](docs/v2/HUONG_DAN_VIET_TEST.md)
+  - [Notebooks huấn luyện v2](notebooks/README.md)
+- **Vòng loại (v1 — lưu trữ đối chiếu):**
+  - [Tổng quan thư mục v1/](v1/README.md) · [Kiến trúc v1](v1/docs/README.md)
+  - [Pipeline v1](v1/docs/pipeline.md) · [Thực nghiệm v1](v1/docs/experiments.md)
 
 ---
 

@@ -1,0 +1,43 @@
+{
+  "tong_cau": 30580,
+  "so_nhom_trung": 30045,
+  "so_nhom_nhieu_cau": 234,
+  "so_cau_da_gui_llm_truoc_do": 25,
+  "kho_test": {
+    "so_cau": 6724,
+    "nhan_goc": {
+      "CLEAN": 6413,
+      "HATE": 302,
+      "OFFENSIVE": 9
+    },
+    "ung_vien_tu_khoa": 35
+  },
+  "kho_train": {
+    "so_cau": 23856,
+    "nhan_goc": {
+      "CLEAN": 18165,
+      "HATE": 5302,
+      "OFFENSIVE": 389
+    }
+  },
+  "can_gan_lai": {
+    "so_cau": 10062,
+    "theo_ly_do": {
+      "nhan_goc_nguy_hai": {
+        "HATE": 5302,
+        "OFFENSIVE": 389
+      },
+      "clean_co_tu_blacklist": {
+        "CLEAN": 1276
+      },
+      "ung_vien_tu_khoa": {
+        "CLEAN": 95
+      },
+      "clean_ngau_nhien": {
+        "CLEAN": 3000
+      }
+    }
+  },
+  "so_clean_ngau_nhien": 3000,
+  "seed": 42
+}

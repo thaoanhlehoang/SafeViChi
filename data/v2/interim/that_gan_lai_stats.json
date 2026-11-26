@@ -1,0 +1,38 @@
+{
+  "dau_vao": "prelabel_openai_deepseek-deepseek-v4.1-flash-1017_9a12e211bedb.jsonl",
+  "tong": 10062,
+  "giu": 8649,
+  "theo_ly_do": {
+    "khop_nhan_goc": 7674,
+    "lech_moi_nguoi_gan": 1413,
+    "khop_it_nhat_mot_nguoi_gan": 975
+  },
+  "theo_nhan_llm": {
+    "AN_TOAN": {
+      "giu": 4798,
+      "bo": 865
+    },
+    "DE_DOA": {
+      "giu": 156,
+      "bo": 41
+    },
+    "LUA_DAO": {
+      "bo": 13
+    },
+    "QUAY_ROI": {
+      "giu": 62,
+      "bo": 19
+    },
+    "XUC_PHAM": {
+      "giu": 3633,
+      "bo": 475
+    }
+  },
+  "chuyen_nhan_bi_bo": {
+    "HATE->AN_TOAN": 865,
+    "CLEAN->XUC_PHAM": 475,
+    "CLEAN->DE_DOA": 41,
+    "CLEAN->QUAY_ROI": 19,
+    "CLEAN->LUA_DAO": 13
+  }
+}
