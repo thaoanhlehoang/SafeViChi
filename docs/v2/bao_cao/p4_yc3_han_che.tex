@@ -27,10 +27,10 @@ SafeVi-DualORC-CRF hơn GuardMerge cả về chất lượng và tốc độ.}
 \centering
 \small
 \caption{Bốn ứng viên trên tập dev (F1 thang 0--100; FPR và Tô oan theo \%). ``Tô oan'': tỉ lệ đoạn
-\nhan{AN_TOAN} bị trích bằng chứng. ``Chênh vùng'': hiệu Macro-F1 giữa vùng cao nhất và thấp nhất. Độ trễ đo trên
-GPU \so{v2.gpu}, batch~1.}
+\nhan{AN_TOAN} bị trích bằng chứng. ``Chênh vùng'': hiệu Macro-F1 cao nhất trừ thấp nhất. ``Mức tụt homoglyph'': chênh
+Macro-F1 bản chữ đồng dạng so với gốc. Độ trễ đo trên GPU \so{v2.gpu}, batch~1.}
 \label{tab:p4-ung-vien}
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Chỉ số} & \textbf{mmBERT-base} & \textbf{BamiBERT} & \textbf{ViSoBERT} & \textbf{GuardMerge} \\
@@ -40,8 +40,13 @@ Binary-F1 (nguy hại/an toàn) & \so{dev.mmbert.bin} & \so{dev.bamibert.bin} & 
 FPR đoạn \nhan{AN_TOAN} & \so{dev.mmbert.fpr} & \so{dev.bamibert.fpr} & \textbf{\so{dev.visobert.fpr}} & \so{dev.guard.fpr} \\
 Bằng chứng: BC F1 theo ý & \so{dev.mmbert.bcf} & \textbf{\so{dev.bamibert.bcf}} & \so{dev.visobert.bcf} & \so{dev.guard.bcf} \\
 Tô oan đoạn \nhan{AN_TOAN} & \so{dev.mmbert.toan} & \so{dev.bamibert.toan} & \textbf{\so{dev.visobert.toan}} & \so{dev.guard.toan} \\
-Chênh vùng (Macro-F1) & \textbf{\so{dev.mmbert.gap}} & \so{dev.bamibert.gap} & \so{dev.visobert.gap} & \so{dev.guard.gap} \\
+\midrule
+Macro-F1 nhiều lượt ($n = \so{dev.nhieuluot.n}$) & \textbf{\so{dev.mmbert.nhieuluot}} & \so{dev.bamibert.nhieuluot} & \so{dev.visobert.nhieuluot} & \so{dev.guard.nhieuluot} \\
+Macro-F1 hội thoại ẩn ý ($n = \so{dev.any.n}$) & \textbf{\so{dev.mmbert.any}} & \so{dev.bamibert.any} & \so{dev.visobert.any} & \so{dev.guard.any} \\
+Macro-F1 bình luận 1 lượt ($n = \so{dev.motluot.n}$) & \so{dev.mmbert.motluot} & \so{dev.bamibert.motluot} & \textbf{\so{dev.visobert.motluot}} & \so{dev.guard.motluot} \\
 Macro-F1 tiếng lóng ($n = \so{dev.tieng.n}$) & \textbf{\so{dev.mmbert.tieng}} & \so{dev.bamibert.tieng} & \so{dev.visobert.tieng} & \so{dev.guard.tieng} \\
+Chênh vùng (Macro-F1) & \textbf{\so{dev.mmbert.gap}} & \so{dev.bamibert.gap} & \so{dev.visobert.gap} & \so{dev.guard.gap} \\
+Mức tụt homoglyph ($n = \so{dev.homoglyph.n}$) & \textbf{\so{dev.mmbert.homoglyph.tut}} & \so{dev.bamibert.homoglyph.tut} & \so{dev.visobert.homoglyph.tut} & \so{dev.guard.homoglyph.tut} \\
 \midrule
 Trọng số FP32 (MiB) & \so{dev.mmbert.trongso} & \so{dev.bamibert.trongso} & \textbf{\so{dev.visobert.trongso}} & \so{dev.guard.trongso} \\
 Độ trễ p50 (ms) & \so{dev.mmbert.p50} & \textbf{\so{dev.bamibert.p50}} & \so{dev.visobert.p50} & \so{dev.guard.p50} \\
@@ -50,22 +55,27 @@ Thời gian huấn luyện (phút) & \so{dev.mmbert.trainphut} & \textbf{\so{dev
 \end{tabular}
 \end{table}
 
-Kiểm định ghép cặp McNemar trên từng đoạn của tập dev cho thấy:
+Kiểm định ghép cặp McNemar trên tập dev cho thấy:
 \begin{itemize}
-  \item mmBERT-base hơn GuardMerge có ý nghĩa thống kê ($p = \so{dev.mc.guard}$) và nhanh gấp hơn hai lần
-        (\so{dev.mmbert.p50}~ms so với \so{dev.guard.p50}~ms), nên hướng tinh chỉnh LoRA nền LLM 0,6 tỉ tham số bị
-        loại.
-  \item Ba bộ mã hóa SafeVi-DualORC-CRF hòa nhau về thống kê trên chỉ số tổng (mmBERT-base so với ViSoBERT:
-        $p = \so{dev.mc.visobert}$; so với BamiBERT: $p = \so{dev.mc.bamibert}$).
+  \item Cả ba bộ mã hóa đều hơn GuardMerge có ý nghĩa thống kê (mmBERT-base: $p = \so{dev.mc.guard}$; BamiBERT:
+        $p = \so{dev.mc.bamibert.guard}$; ViSoBERT: $p = \so{dev.mc.visobert.guard}$), nhanh hơn 2--4 lần
+        (\so{dev.bamibert.p50}--\so{dev.mmbert.p50}~ms so với \so{dev.guard.p50}~ms) và ít chênh vùng hơn
+        (\so{dev.mmbert.gap}--\so{dev.bamibert.gap} so với \so{dev.guard.gap}), nên hướng LoRA nền LLM 0,6B bị loại.
+  \item Ba bộ mã hóa hòa nhau về thống kê trên chỉ số tổng (mmBERT-base so với ViSoBERT: $p = \so{dev.mc.visobert}$; so
+        với BamiBERT: $p = \so{dev.mc.bamibert}$).
 \end{itemize}
 
-Vì tổng điểm hòa về thống kê, nhóm chọn theo các lát cắt sát mục tiêu của SafeViChi v2.
-\textbf{mmBERT-base} dẫn đầu trên hội thoại nhiều lượt, hơn hai bộ mã hóa tiếng Việt trên lát cắt tiếng lóng
-(\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} của ViSoBERT và \so{dev.bamibert.tieng} của BamiBERT), đồng
-đều vùng miền nhất (chênh \so{dev.mmbert.gap}), và nền đa ngôn ngữ giúp tổng quát hóa tốt trước ký
-tự Unicode biến dạng (C2). Lợi thế nhẹ của ViSoBERT trên tổng điểm dev chủ yếu đến từ bình luận một dòng, vốn trùng với kho
-tiền huấn luyện của nó. Trọng số FP32 của mmBERT-base lớn hơn nhưng vẫn nhỏ sau lượng tử hóa INT8
-(Mục~\ref{sec:yc3-chi-phi}); BamiBERT được giữ làm phương án dự phòng cho thiết bị rất yếu.
+Do đó, nhóm chọn theo các lát cắt sát mục tiêu của SafeViChi v2 (Bảng~\ref{tab:p4-ung-vien}). \textbf{mmBERT-base} dẫn
+đầu trên hội thoại nhiều lượt (Macro-F1 \so{dev.mmbert.nhieuluot}, BC F1 \so{dev.mmbert.nhieuluot.bcf} so với
+\so{dev.bamibert.nhieuluot.bcf} và \so{dev.visobert.nhieuluot.bcf}; đọc cả đoạn tăng \so{dev.mmbert.ctxgain} so với dòng
+cuối), hội thoại ẩn ý (\so{dev.mmbert.any}, FPR \so{dev.mmbert.any.fpr} so với \so{dev.visobert.any.fpr}), tiếng lóng
+(\so{dev.mmbert.tieng} so với \so{dev.visobert.tieng} và \so{dev.bamibert.tieng}), đồng đều vùng nhất (chênh
+\so{dev.mmbert.gap}) và tụt ít nhất ở homoglyph (\so{dev.mmbert.homoglyph.tut} nhờ bộ từ vựng đa ngôn ngữ). Lợi thế nhẹ
+của ViSoBERT trên tổng dev đến từ bình luận 1 lượt (\so{dev.visobert.motluot} so với \so{dev.mmbert.motluot}) và bỏ dấu
+(\so{dev.visobert.bodau} so với \so{dev.mmbert.bodau}), vốn trùng kho tiền huấn luyện của nó. Trọng số FP32 của
+mmBERT-base lớn hơn nhưng nén còn \so{tb.int8.mib}~MiB ở ONNX INT8 (Mục~\ref{sec:yc3-chi-phi}); BamiBERT
+(\so{dev.bamibert.p50}~ms, 1.024 token, BC F1 tổng cao nhất \so{dev.bamibert.bcf}) được giữ làm dự phòng cho thiết bị rất
+yếu.
 
 \subsection{Đóng góp của từng mô-đun (ablation)}
 \label{sec:yc3-ablation}

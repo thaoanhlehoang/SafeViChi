@@ -7,7 +7,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T5]{fontenc}
 \usepackage[vietnamese]{babel}
-\usepackage[a4paper,left=25mm,right=22mm,top=22mm,bottom=22mm]{geometry}
+\usepackage[a4paper,left=25mm,right=22mm,top=22mm,bottom=22mm,headheight=16pt]{geometry}
 \usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -40,8 +40,8 @@
 
 \hypersetup{
   colorlinks=true, linkcolor=navy, urlcolor=navy, citecolor=navy,
-  pdftitle={SafeViChi v2 - Báo cáo vòng chung kết},
-  pdfauthor={Nhóm SafeViChi}
+  pdftitle={SafeViChi v2 - Báo cáo sản phẩm - Vòng Chung kết - Chặng 1 (AI26C0007 - OneUET)},
+  pdfauthor={Đội thi OneUET (AI26C0007)}
 }
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}
@@ -68,30 +68,42 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small SafeViChi v2}
-\fancyhead[R]{\small Báo cáo vòng chung kết}
-\fancyfoot[C]{\thepage}
-\setlength{\headheight}{15pt}
+\fancyhead[L]{\small\textcolor{chuxam}{SafeViChi v2}}
+\fancyhead[R]{\small\textcolor{chuxam}{Đội OneUET $\cdot$ Mã AI26C0007}}
+\fancyfoot[L]{\footnotesize\textcolor{chuxam}{Cuộc thi Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo năm 2026 $\cdot$ Vòng Chung kết -- Chặng 1}}
+\fancyfoot[R]{\small\textcolor{navy}{\textbf{\thepage}}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{{\color{navy!35}\hrule height \headrulewidth width \headwidth \vskip-\headrulewidth}}
+\renewcommand{\footrule}{\vskip-\footruleskip\vskip-\footrulewidth{\color{navy!25}\hrule height \footrulewidth width \headwidth}\vskip\footruleskip}
 
 \begin{document}
 
 % ---------- Trang bìa ----------
+\hypersetup{pageanchor=false}
 \begin{titlepage}
 \centering
-\vspace*{30mm}
-{\Huge\bfseries\color{navy} SafeViChi\par}
+\vspace*{18mm}
+{\large\bfseries\color{navy} CUỘC THI SÁNG TẠO TRẺ QUỐC GIA\\[2pt] TRONG LĨNH VỰC TRÍ TUỆ NHÂN TẠO NĂM 2026\par}
+\vspace{4mm}
+{\normalsize\bfseries\color{chuxam} VÒNG CHUNG KẾT -- CHẶNG 1\par}
+
+\vspace{34mm}
+{\Large Báo cáo sản phẩm\par}
 \vspace{6mm}
-{\LARGE Phát hiện tin nhắn tiếng Việt nguy hại theo tình huống,\\ kèm bằng chứng, chạy trên thiết bị\par}
-\vspace{12mm}
-{\large Báo cáo vòng chung kết\par}
-\vspace{40mm}
-\begin{tabular}{ll}
-Phiên bản mã & nhánh \tep{v2-final} \\
-Dữ liệu train/test & commit \texttt{\so{v2.datarev}} \\
-Ngày nộp & 26/11/2026 \\
-\end{tabular}
+{\fontsize{34}{40}\selectfont\bfseries\color{navy} SafeViChi v2\par}
+\vspace{6mm}
+{\Large Phát hiện tin nhắn tiếng Việt nguy hại theo tình huống,\\[2pt] kèm bằng chứng, chạy trên thiết bị\par}
+
+\vspace{26mm}
+{\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l@{\hspace{14mm}}l@{}}
+\textbf{\color{chuxam}Đội thi} & \textbf{OneUET} \\
+\textbf{\color{chuxam}Mã đội thi} & \textbf{\texttt{AI26C0007}} \\
+\end{tabular}}
 \vfill
 \end{titlepage}
+\hypersetup{pageanchor=true}
 
 \tableofcontents
 \newpage

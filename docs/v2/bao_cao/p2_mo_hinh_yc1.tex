@@ -6,10 +6,62 @@
 
 \subsection{Lựa chọn bộ mã hóa thay cho mô hình sinh}
 
-Mô hình sinh tự hồi quy sinh JSON tốn chi phí suy luận khi chạy cục bộ và không bảo đảm cụm bằng chứng khớp nguyên văn
-100\% trên văn bản biến dạng né lọc (xem đối chiếu với gpt-oss-120b ở Mục~\ref{sec:p2-yc1}). Vì vậy, SafeViChi v2 dùng
-kiến trúc trích xuất hai đầu ra trực tiếp trên văn bản gốc. Bộ mã hóa nền mmBERT-base được chọn từ 4 ứng viên so sánh
-trên tập dev (Mục~\ref{sec:yc3-chon}).
+SafeViChi v2 cần phân loại 5 tình huống theo ngữ cảnh hội thoại, trích bằng chứng nguyên văn, chống biến dạng né lọc và
+chạy cục bộ thời gian thực. Nhóm chọn \textbf{bộ mã hóa hai chiều kèm hai đầu trích xuất} thay cho \textbf{mô hình sinh
+tự hồi quy} vì ba lý do:
+
+\begin{itemize}
+  \item \textbf{Khớp nguyên văn và tách ngưỡng:} Mô hình sinh phải tái sinh chuỗi JSON theo phân phối ngôn ngữ nên hay
+        tự chuẩn hóa hoặc viết lệch khi gặp biến dạng né lọc (trên C2, gpt-oss-120b có \so{C2.llm.khongnguyenvan} cụm
+        lệch nguyên văn và \so{C2.llm.rong} đoạn bỏ trống bằng chứng, Bảng~\ref{tab:p2-bang-chung}); nhãn và bằng chứng
+        cũng gộp chung trong một chuỗi sinh nên khó chỉnh ngưỡng riêng. Bộ mã hóa đánh dấu trực tiếp vị trí từ trên văn
+        bản gốc nên luôn khớp nguyên văn 100\% (\so{C2.v2.khongnguyenvan} lệch) và tách riêng ngưỡng phân loại với
+        ngưỡng bằng chứng (Mục~\ref{sec:p2-nguong}).
+  \item \textbf{Ngữ cảnh hai chiều và nhánh đọc byte:} Bộ mã hóa hai chiều kết nối đồng thời mọi lượt thoại trong một
+        lượt lan truyền xuôi và cho phép ghép nhánh CNN đọc byte UTF-8 để xử lý vỡ từ ở biến dạng điểm mù C2.
+  \item \textbf{Chi phí cục bộ và suy luận một lượt:} Mô hình sinh phải đọc prompt dài rồi giải mã tuần tự từng token ở
+        batch~1 (API đạt p50 \so{api.C0.p50}~s và buộc gửi tin nhắn ra ngoài; chạy LLM cục bộ lại nặng RAM). Bộ mã hóa
+        hoàn tất cả hai đầu ra trong một lượt xuôi duy nhất, nén còn \so{tb.int8.mib}~MiB (ONNX INT8), đạt p50
+        \so{tb.a.int8.8.p50}~ms trên CPU và \so{tb.mob.4.p50}~ms trên Android (Mục~\ref{sec:yc3-chi-phi}).
+\end{itemize}
+
+Để kiểm chứng trực tiếp trên cùng dữ liệu huấn luyện và tập dev ($n = \so{dev.chia.dev}$), nhóm đối chiếu ba bộ mã hóa
+\textbf{SafeVi-DualORC-CRF} với ứng viên chuyển nền LLM 0,6 tỉ tham số sang hai chiều kèm tinh chỉnh LoRA
+(\textbf{GuardMerge}, Bảng~\ref{tab:p2-chon-dev}).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Đối chiếu ba bộ mã hóa trích xuất với ứng viên nền LLM 0,6 tỉ tham số trên tập dev ($n = \so{dev.chia.dev}$;
+F1 thang 0--100, FPR theo \%). Các cột lát cắt là Macro-F1 trên hội thoại nhiều lượt ($n = \so{dev.nhieuluot.n}$),
+hội thoại ẩn ý ($n = \so{dev.any.n}$) và tiếng lóng ($n = \so{dev.tieng.n}$). Độ trễ đo trên GPU \so{v2.gpu}, batch~1.}
+\label{tab:p2-chon-dev}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\textbf{Ứng viên} & \textbf{Macro-F1} & \textbf{BC F1} & \textbf{FPR} & \textbf{Nhiều lượt} & \textbf{Ẩn ý} & \textbf{Tiếng lóng} & \textbf{p50 (ms)} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Bộ mã hóa trích xuất hai đầu ra (SafeVi-DualORC-CRF)}} \\
+\textbf{mmBERT-base (chọn)} & \so{dev.mmbert.macro} & \so{dev.mmbert.bcf} & \so{dev.mmbert.fpr} & \textbf{\so{dev.mmbert.nhieuluot}} & \textbf{\so{dev.mmbert.any}} & \textbf{\so{dev.mmbert.tieng}} & \so{dev.mmbert.p50} \\
+BamiBERT & \so{dev.bamibert.macro} & \textbf{\so{dev.bamibert.bcf}} & \so{dev.bamibert.fpr} & \so{dev.bamibert.nhieuluot} & \so{dev.bamibert.any} & \so{dev.bamibert.tieng} & \textbf{\so{dev.bamibert.p50}} \\
+ViSoBERT & \textbf{\so{dev.visobert.macro}} & \so{dev.visobert.bcf} & \textbf{\so{dev.visobert.fpr}} & \so{dev.visobert.nhieuluot} & \so{dev.visobert.any} & \so{dev.visobert.tieng} & \so{dev.visobert.p50} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Nền LLM hai chiều 0,6 tỉ tham số tinh chỉnh LoRA}} \\
+GuardMerge & \so{dev.guard.macro} & \so{dev.guard.bcf} & \so{dev.guard.fpr} & \so{dev.guard.nhieuluot} & \so{dev.guard.any} & \so{dev.guard.tieng} & \so{dev.guard.p50} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Kết quả Bảng~\ref{tab:p2-chon-dev} cho thấy cả ba bộ mã hóa đều vượt GuardMerge có ý nghĩa thống kê (McNemar
+$p \le \so{dev.mc.guard}$), thấp hơn về FPR, cao hơn về BC F1 và nhanh hơn 2--4 lần. Trong ba bộ mã hóa (hòa thống kê
+trên chỉ số tổng: mmBERT-base so với ViSoBERT có $p = \so{dev.mc.visobert}$, với BamiBERT có
+$p = \so{dev.mc.bamibert}$), \textbf{mmBERT-base} được chọn vì dẫn đầu đồng loạt trên các lát cắt trọng tâm của v2
+(nhiều lượt, ẩn ý, tiếng lóng), đồng đều vùng miền nhất (chênh \so{dev.mmbert.gap}) và ít tụt nhất trước chữ đồng dạng
+homoglyph (\so{dev.mmbert.homoglyph.tut}, chi tiết ở Mục~\ref{sec:yc3-chon}). Vì mô hình sinh vẫn mạnh về tri thức nền
+trên kịch bản mới hoặc tin ngắn thiếu ngữ cảnh (Mục~\ref{sec:yc2}), SafeViChi v2 phân vai rõ hai giai đoạn:
+\textbf{dùng LLM ngoại tuyến} để gán nhãn lại, sinh hội thoại và lọc nhiễu với chi phí một lần \so{cp.tong.usd}~USD
+(Mục~\ref{sec:p1-dulieu}), còn \textbf{bộ mã hóa trích xuất nền mmBERT-base} đảm nhiệm suy luận trực tuyến trên thiết
+bị.
 
 \subsection{Kiến trúc mô hình}
 
