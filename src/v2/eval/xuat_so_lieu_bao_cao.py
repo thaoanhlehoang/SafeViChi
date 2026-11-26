@@ -87,6 +87,121 @@ def bundle(records, preds) -> dict[str, Any]:
     return evaluate_bundle(records, preds, n_bootstrap=0, seed=42, include_slices=False)
 
 
+def so_chuan_hoa_test(put, base: str) -> None:
+    """Mục 8.2: bật/tắt bộ chuẩn hóa v1 trên tập test khóa (dòng #5 thô và dòng #6 có chuẩn hóa)."""
+    tho = load(f"{base}/test/real_test_official_matrix.json")
+    chn = load(f"{base}/test/real_test_norm_official_matrix.json")
+    cap = [(t, tho["tiers"][t], chn["tiers"][t]) for t in ("C0", "C1", "C2")]
+    cap.append(("chuathay", tho["strictly_unseen_perturb"], chn["strictly_unseen_perturb"]))
+    for k, a, b in cap:
+        put(f"cnt.{k}.n", nn(a["n"]))
+        put(f"cnt.{k}.raw", sc(a["macro_f1"]))
+        put(f"cnt.{k}.norm", sc(b["macro_f1"]))
+        put(f"cnt.{k}.gain", dl(b["macro_f1"] - a["macro_f1"]))
+        put(f"cnt.{k}.bc.raw", sc(a["evidence_f1_theo_y"]))
+        put(f"cnt.{k}.bc.norm", sc(b["evidence_f1_theo_y"]))
+        put(f"cnt.{k}.bc.gain", dl(b["evidence_f1_theo_y"] - a["evidence_f1_theo_y"]))
+    for kieu, a in tho["by_kieu_bien_dang"].items():
+        b = chn["by_kieu_bien_dang"][kieu]
+        put(f"cnt.kieu.{kieu.replace('_', '')}.gain", dl(b["macro_f1"] - a["macro_f1"]))
+
+
+def so_thiet_bi(put, base: str) -> None:
+    """Số liệu Mục 8.3: ONNX INT8 trên laptop CPU (2 máy) và trong trình duyệt, kèm năng lượng đo từ pin."""
+    # Máy A: lượt đo của nhóm bằng `python -m src.v2.bench.benchmark_cpu` (FP32/INT8/PyTorch, 100 đoạn C0)
+    bc = load(f"{base}/test/bench_cpu.json")
+    put("tb.a.cpu", tex_escape(bc["environment"]["cpu_name"]))
+    put("tb.a.ort", bc["environment"]["onnxruntime"])
+    ma = {"onnx_int8": "int8", "onnx_fp32": "fp32", "torch_fp32": "torch"}
+    for r in bc["runs"]:
+        k = f"tb.a.{ma[r['backend']]}.{r['threads']}"
+        put(f"{k}.n", nn(r["n_samples"]))
+        put(f"{k}.p50", dec(r["latency_ms"]["end_to_end_p50"], 1))
+        put(f"{k}.p95", dec(r["latency_ms"]["end_to_end_p95"], 1))
+        put(f"{k}.ram", nn(r["memory_MiB"]["peak_rss"]))
+        put(f"{k}.nap", dec(r["cold_load_ms"] / 1000.0, 1))
+    sz = bc["sizes_MiB"]
+    put("tb.int8.mib", nn(sz["onnx_int8"]))
+    put("tb.fp32.mib", nn(sz["onnx_fp32"]))
+    put("tb.tok.mib", nn(sz["tokenizer_json"]))
+    put("tb.nen", dec(sz["compression_ratio_vs_onnx_fp32"], 1))
+
+    # INT8 so với FP32 trên toàn bộ 1.670 đoạn test (batch 8, bản khóa)
+    ict = load(f"{base}/test/int8_comparison.json")["tiers"]
+    for t in ("C0", "C1", "C2"):
+        put(f"tb.int8.{t}.khop", pc(ict[t]["agreement"]["label_exact_rate"]))
+    # Ablation lượng tử hóa FP32 -> INT8 theo từng tầng (Mục 8.2)
+    for t in ("C0", "C1", "C2", "ALL"):
+        x = ict[t]
+        for he in ("fp32", "int8"):
+            put(f"lt.{t}.{he}.macro", sc(x[he]["macro_f1"]))
+            put(f"lt.{t}.{he}.bcy", sc(x[he]["evidence_f1_theo_y"]))
+            put(f"lt.{t}.{he}.fpr", pc(x[he]["fpr_an_toan"]))
+        put(f"lt.{t}.d.macro", dl(x["delta_int8_minus_fp32"]["macro_f1"]))
+        put(f"lt.{t}.d.bcy", dl(x["delta_int8_minus_fp32"]["evidence_f1_theo_y"]))
+        put(f"lt.{t}.p", dec(x["mcnemar_5class_int8_vs_fp32"]["p_value"], 2))
+        put(f"lt.{t}.n", nn(x["n"]))
+    ic = ict["ALL"]
+    put("tb.int8.n", nn(ic["n"]))
+    put("tb.int8.macro", sc(ic["int8"]["macro_f1"]))
+    put("tb.fp32.macro", sc(ic["fp32"]["macro_f1"]))
+    put("tb.int8.bcy", sc(ic["int8"]["evidence_f1_theo_y"]))
+    put("tb.fp32.bcy", sc(ic["fp32"]["evidence_f1_theo_y"]))
+    put("tb.int8.khop", pc(ic["agreement"]["label_exact_rate"]))
+    put("tb.int8.mcnemar", dec(ic["mcnemar_5class_int8_vs_fp32"]["p_value"], 2))
+
+    # Máy B: `python -m src.v2.bench.do_thiet_bi cpu` (CLI safevichi, batch 1, chạy pin, năng lượng đo từ pin)
+    cb = load("results/v2/do_thiet_bi/cpu_laptop.json")
+    put("tb.b.cpu", tex_escape(cb["moi_truong"]["cpu"]))
+    put("tb.b.ort", cb["moi_truong"]["onnxruntime"])
+    put("tb.b.n", nn(cb["cau_hinh"][0]["n"]))
+    for r in cb["cau_hinh"]:
+        k = f"tb.b.{r['luong']}"
+        put(f"{k}.p50", dec(r["do_tre_ms"]["p50"], 1))
+        put(f"{k}.p95", dec(r["do_tre_ms"]["p95"], 1))
+        put(f"{k}.ram", nn(r["ram_MiB"]["dinh"]))
+        put(f"{k}.nap", dec(r["nap_mo_hinh_ms"] / 1000.0, 1))
+        put(f"{k}.tl", dec(r["thong_luong_doan_moi_giay"], 1))
+    nl = cb["nang_luong_4_luong"]
+    put("tb.b.pnghi", dec(nl["cong_suat_nghi_W"], 1))
+    put("tb.b.ptai", dec(nl["cong_suat_tai_W"], 1))
+    put("tb.b.mj", nn(nl["mJ_moi_doan_tang_them"]))
+    put("tb.b.mjtong", nn(nl["mJ_moi_doan_toan_may"]))
+    put("tb.b.wh", dec(nl["Wh_moi_1000_doan_tang_them"], 2))
+    put("tb.b.giay", nn(nl["dang_tai"]["giay"]))
+    put("tb.b.khop.torch", pc(cb["so_khop_pytorch_fp32"]["ti_le_nhan_trung"]))
+    put("tb.b.khop.int8", pc(cb["so_khop_onnx_int8_python"]["ti_le_nhan_trung"]))
+    put("tb.b.macro", sc(cb["diem"]["ALL"]["macro_f1"]))
+    put("tb.b.bcy", sc(cb["diem"]["ALL"]["evidence_f1_theo_y"]))
+
+    # Trình duyệt: `python -m src.v2.bench.do_thiet_bi trinh_duyet` (onnxruntime-web WASM, cùng máy B)
+    wb = load("results/v2/do_thiet_bi/trinh_duyet.json")
+    put("tb.web.trinhduyet", "Edge " + tex_escape(wb["moi_truong"]["trinh_duyet"].split("/")[-1]))
+    put("tb.web.ortweb", wb["moi_truong"]["onnxruntime_web"])
+    put("tb.web.backend", tex_escape(wb["nap"]["backend"]))
+    put("tb.web.n", nn(wb["n"]))
+    put("tb.web.p50", nn(wb["do_tre_khu_hoi_ms"]["p50"]))
+    put("tb.web.p95", nn(wb["do_tre_khu_hoi_ms"]["p95"]))
+    put("tb.web.tl", dec(wb["thong_luong_doan_moi_giay"], 1))
+    put("tb.web.nap", dec(wb["nap"]["wall_load_ms"] / 1000.0, 1))
+    put("tb.web.taive", nn(wb["dung_luong_tai_ve_MiB"]))
+    put("tb.web.ram.trong", nn(wb["ram_MiB"]["trinh_duyet_trang_trong"]))
+    put("tb.web.ram.dinh", nn(wb["ram_MiB"]["dinh_khi_chay"]))
+    put("tb.web.ram.nap", nn(wb["ram_MiB"]["sau_khi_nap_mo_hinh"]))
+    put("tb.web.ram.tang", nn(wb["ram_MiB"]["tang_them_so_voi_trang_trong"]))
+    nw = wb["nang_luong"]
+    put("tb.web.pnghi", dec(nw["cong_suat_nghi_W"], 1))
+    put("tb.web.ptai", dec(nw["cong_suat_tai_W"], 1))
+    put("tb.web.mj", nn(nw["mJ_moi_doan_tang_them"]))
+    put("tb.web.mjtong", nn(nw["mJ_moi_doan_toan_may"]))
+    put("tb.web.wh", dec(nw["Wh_moi_1000_doan_tang_them"], 2))
+    put("tb.web.khop.torch", pc(wb["so_khop_pytorch_fp32"]["ti_le_nhan_trung"]))
+    put("tb.web.khop.cli", pc(wb["so_khop_cli_cpu_batch1"]["ti_le_nhan_trung"]))
+    put("tb.web.khop.cli.bc", pc(wb["so_khop_cli_cpu_batch1"]["ti_le_bang_chung_trung"]))
+    put("tb.web.macro", sc(wb["diem"]["ALL"]["macro_f1"]))
+    put("tb.web.bcy", sc(wb["diem"]["ALL"]["evidence_f1_theo_y"]))
+
+
 def main() -> None:
     S = Store()
     put = S.put
@@ -333,6 +448,10 @@ def main() -> None:
     put("v2.accent", pc(cfg["accent_aug"]))
     put("v2.surface", pc(cfg["surface_aug"]))
     put("v2.fgm", dec(cfg["fgm_eps"], 1))
+
+    # ---------- v2 trên thiết bị đích (ONNX INT8): laptop CPU, trình duyệt, năng lượng ----------
+    so_thiet_bi(put, base)
+    so_chuan_hoa_test(put, base)
     env = load(f"{base}/environment.json")
     put("v2.gpu", tex_escape(env["device"]))
     put("v2.torch", tex_escape(env["torch"]))

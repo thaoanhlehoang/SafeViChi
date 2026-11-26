@@ -109,11 +109,62 @@ Vì vậy bản v2 mặc định \textbf{tắt} chuẩn hóa; có thể bật ch
 \paragraph{Bộ mã hóa nền.} Chính là Bảng~\ref{tab:p4-ung-vien}: cùng kiến trúc, đổi bộ mã hóa chỉ làm điểm tổng đổi trong
 khoảng hòa thống kê, nhưng làm thay đổi rõ ở câu tiếng lóng và ở chi phí.
 
-\paragraph{Chưa làm kịp.} Ba ablation trong kế hoạch chưa có kết quả:
-(1) mô hình sinh nhỏ (Qwen3-1.7B) chạy zero-shot, chưa tinh chỉnh;
-(2) lượng tử hóa 4-bit so với 16-bit;
-(3) tắt tăng cường dữ liệu trực tuyến khi train.
-Phép bật/tắt chuẩn hóa trên tập test cũng đã chạy nhưng tệp kết quả chưa được lưu vào repo, nên báo cáo không dùng số đó.
+\paragraph{Lượng tử hóa FP32 $\to$ INT8.} Mô hình xuất sang ONNX được lượng tử hóa INT8 kiểu lai: embedding INT8 theo
+hàng; attention và lớp vào của MLP lượng tử hóa động cả trọng số lẫn đầu vào; lớp ra của MLP chỉ lưu trọng số INT8;
+đầu phân loại, đầu gắn thẻ và CRF giữ FP32. Dung lượng giảm từ \so{tb.fp32.mib} MiB xuống
+\so{tb.int8.mib} MiB (khoảng \so{tb.nen} lần). RAM đỉnh giảm từ \so{tb.a.fp32.8.ram} MiB xuống
+\so{tb.a.int8.8.ram} MiB, độ trễ p50 giảm từ \so{tb.a.fp32.8.p50} ms xuống \so{tb.a.int8.8.p50} ms (PyTorch FP32:
+\so{tb.a.torch.8.p50} ms, \so{tb.a.torch.8.ram} MiB). Chất lượng trên toàn bộ tập test gần như giữ nguyên
+(Bảng~\ref{tab:p4-luong-tu}): Macro-F1 chênh \so{lt.ALL.d.macro} điểm, không có ý nghĩa thống kê (McNemar
+$p = \so{lt.ALL.p}$), còn F1 bằng chứng tăng nhẹ (\so{lt.ALL.d.bcy} điểm). Mức giảm lớn nhất nằm ở C2
+(\so{lt.C2.d.macro} điểm), và đây cũng là tập duy nhất mà tỉ lệ báo nhầm câu an toàn tăng
+(\so{lt.C2.fp32.fpr} $\to$ \so{lt.C2.int8.fpr}); ở C0 và C1 tỉ lệ này không đổi.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Lượng tử hóa FP32 $\to$ INT8 trên tập test (nhân 100; cùng tập, cùng ngưỡng đã đóng băng). Trong ngoặc: INT8
+trừ FP32.}
+\label{tab:p4-luong-tu}
+\begin{tabular}{lrcccccc}
+\toprule
+ & & \multicolumn{2}{c}{Macro-F1} & \multicolumn{2}{c}{BC F1 theo ý} & \multicolumn{2}{c}{FPR an toàn} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Tập & n & FP32 & INT8 & FP32 & INT8 & FP32 & INT8 \\
+\midrule
+C0 & \so{lt.C0.n} & \so{lt.C0.fp32.macro} & \so{lt.C0.int8.macro} (\so{lt.C0.d.macro}) & \so{lt.C0.fp32.bcy} & \so{lt.C0.int8.bcy} (\so{lt.C0.d.bcy}) & \so{lt.C0.fp32.fpr} & \so{lt.C0.int8.fpr} \\
+C1 & \so{lt.C1.n} & \so{lt.C1.fp32.macro} & \so{lt.C1.int8.macro} (\so{lt.C1.d.macro}) & \so{lt.C1.fp32.bcy} & \so{lt.C1.int8.bcy} (\so{lt.C1.d.bcy}) & \so{lt.C1.fp32.fpr} & \so{lt.C1.int8.fpr} \\
+C2 & \so{lt.C2.n} & \so{lt.C2.fp32.macro} & \so{lt.C2.int8.macro} (\so{lt.C2.d.macro}) & \so{lt.C2.fp32.bcy} & \so{lt.C2.int8.bcy} (\so{lt.C2.d.bcy}) & \so{lt.C2.fp32.fpr} & \so{lt.C2.int8.fpr} \\
+Tất cả & \so{lt.ALL.n} & \so{lt.ALL.fp32.macro} & \so{lt.ALL.int8.macro} (\so{lt.ALL.d.macro}) & \so{lt.ALL.fp32.bcy} & \so{lt.ALL.int8.bcy} (\so{lt.ALL.d.bcy}) & \so{lt.ALL.fp32.fpr} & \so{lt.ALL.int8.fpr} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\paragraph{Kiểm lại bộ chuẩn hóa trên tập test.} Sau khi đã đóng băng mô hình và ngưỡng, nhóm chạy lại phép bật/tắt chuẩn
+hóa trên toàn bộ tập test (Bảng~\ref{tab:p4-chuan-hoa-test}). Kết quả khớp với dev: Macro-F1 chỉ tăng ở C1
+(chủ yếu nhờ kiểu chèn ký tự, \so{cnt.kieu.chenkytu.gain} điểm), còn ở câu sạch, ở C2 và ở nhóm biến dạng chưa thấy khi
+train thì giảm (ký tự vô hình \so{cnt.kieu.zerowidth.gain}, chèn dấu cách \so{cnt.kieu.spaceinjection.gain}). F1 bằng chứng
+tăng ở C0 và C1 nhưng giảm ở C2. Vì phân loại sai nặng hơn tô sáng lệch, quyết định tắt chuẩn hóa được giữ nguyên.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bật và tắt bộ chuẩn hóa v1 trên tập test (nhân 100). Trong ngoặc: chênh lệch khi bật so với khi tắt.}
+\label{tab:p4-chuan-hoa-test}
+\begin{tabular}{lccccc}
+\toprule
+ & & \multicolumn{2}{c}{Macro-F1} & \multicolumn{2}{c}{BC F1 theo ý} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Tập & n & Tắt & Bật & Tắt & Bật \\
+\midrule
+C0 & \so{cnt.C0.n} & \so{cnt.C0.raw} & \so{cnt.C0.norm} (\so{cnt.C0.gain}) & \so{cnt.C0.bc.raw} & \so{cnt.C0.bc.norm} (\so{cnt.C0.bc.gain}) \\
+C1 & \so{cnt.C1.n} & \so{cnt.C1.raw} & \so{cnt.C1.norm} (\so{cnt.C1.gain}) & \so{cnt.C1.bc.raw} & \so{cnt.C1.bc.norm} (\so{cnt.C1.bc.gain}) \\
+C2 & \so{cnt.C2.n} & \so{cnt.C2.raw} & \so{cnt.C2.norm} (\so{cnt.C2.gain}) & \so{cnt.C2.bc.raw} & \so{cnt.C2.bc.norm} (\so{cnt.C2.bc.gain}) \\
+Biến dạng chưa thấy khi train & \so{cnt.chuathay.n} & \so{cnt.chuathay.raw} & \so{cnt.chuathay.norm} (\so{cnt.chuathay.gain}) & \so{cnt.chuathay.bc.raw} & \so{cnt.chuathay.bc.norm} (\so{cnt.chuathay.bc.gain}) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Chi phí vận hành}
 \label{sec:yc3-chi-phi}
@@ -127,10 +178,11 @@ Phép bật/tắt chuẩn hóa trên tập test cũng đã chạy nhưng tệp k
 \toprule
  & v1 (ViHateT5) & gpt-oss-120b qua API & v2 (mmBERT-base) \\
 \midrule
-Chạy ở đâu & Trình duyệt (ONNX) & Máy chủ bên ngoài & Thiết bị người dùng (mục tiêu) \\
-Dung lượng mô hình & \so{v1.onnx} MiB (ONNX FP32) & -- & \so{v2.trongso} MiB (FP32, chưa lượng tử hóa) \\
-Bộ nhớ khi chạy & -- & Không đo được từ phía client & Đỉnh \so{v2.dinh} MiB VRAM \\
-Độ trễ mỗi câu & -- & p50 \so{api.C0.p50} s, p95 \so{api.C0.p95} s (\so{api.songsong} yêu cầu song song) & p50 \so{v2.p50} ms, p95 \so{v2.p95} ms (GPU \so{v2.gpu}) \\
+Chạy ở đâu & Trình duyệt (ONNX) & Máy chủ bên ngoài & Laptop CPU hoặc trình duyệt của người dùng \\
+Dung lượng mô hình & \so{v1.onnx} MiB (ONNX FP32) & -- & \so{tb.int8.mib} MiB (ONNX INT8; bản FP32 \so{v2.trongso} MiB) \\
+Bộ nhớ khi chạy & -- & Không đo được từ phía client & RAM đỉnh \so{tb.b.4.ram} MiB (CPU); trình duyệt tăng \so{tb.web.ram.tang} MiB \\
+Độ trễ mỗi câu & -- & p50 \so{api.C0.p50} s, p95 \so{api.C0.p95} s (\so{api.songsong} yêu cầu song song) & CPU: p50 \so{tb.b.4.p50} ms, p95 \so{tb.b.4.p95} ms; trình duyệt: p50 \so{tb.web.p50} ms, p95 \so{tb.web.p95} ms \\
+Năng lượng mỗi câu & -- & Không đo được (máy chủ) & \so{tb.b.mj} mJ (CPU), \so{tb.web.mj} mJ (trình duyệt) \\
 Tiền & 0 & \so{api.C0.usd1000} USD / 1.000 câu & 0 \\
 Gửi tin nhắn ra ngoài & Không & \textbf{Có} & Không \\
 Chi phí train & (vòng loại) & Không train & \so{dev.mmbert.trainphut} phút, đỉnh \so{dev.mmbert.trainvram} MiB VRAM \\
@@ -145,11 +197,96 @@ Một số lưu ý:
   (Mục~\ref{sec:p1-dulieu}).
 \end{itemize}
 
-\ghinho{\textbf{Phần còn thiếu của yêu cầu 3.} Nhóm \textbf{chưa đo v2 trên laptop CPU, trong trình duyệt và chưa đo
-năng lượng}. Bản web v2 hiện vẫn dùng mô hình giả để làm giao diện; mô hình thật chưa được xuất sang ONNX. Số độ trễ ở trên
-đo trên GPU nên chưa đại diện cho máy người dùng. Kế hoạch đo: xuất ONNX và bản INT8, chạy bằng onnxruntime-web trong
-trình duyệt và onnxruntime trên laptop CPU, ghi độ trễ p50/p95 mỗi câu, RAM đỉnh, dung lượng tải về và so khớp nhãn với
-bản PyTorch trên toàn bộ tập test.}
+\paragraph{Chạy trên thiết bị đích.} Mô hình được xuất sang ONNX và lượng tử hóa INT8 (\so{tb.fp32.mib} MiB
+$\to$ \so{tb.int8.mib} MiB, nhỏ hơn khoảng \so{tb.nen} lần), rồi chạy bằng onnxruntime trên laptop CPU
+và bằng onnxruntime-web trong trình duyệt (bản web v2). Mỗi đoạn được xử lý riêng (batch 1), đúng như khi người dùng
+nhận tin. Nhóm đo trên hai máy:
+\begin{itemize}
+  \item \textbf{Máy A} (\so{tb.a.cpu}): so sánh PyTorch FP32, ONNX FP32 và ONNX INT8 trên một mẫu đoạn C0.
+  \item \textbf{Máy B} (\so{tb.b.cpu}, chạy bằng pin): chạy toàn bộ \so{tb.b.n} đoạn test bằng CLI và trong trình duyệt
+  \so{tb.web.trinhduyet} (\so{tb.web.backend}), kèm đo năng lượng.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Độ trễ mỗi đoạn (ms, batch 1), RAM đỉnh và thời gian nạp mô hình trên thiết bị đích.}
+\label{tab:p4-thiet-bi}
+\begin{tabular}{llcrrrrr}
+\toprule
+Máy & Cấu hình & Luồng & n & p50 & p95 & RAM đỉnh (MiB) & Nạp (s) \\
+\midrule
+A & PyTorch FP32 & 8 & \so{tb.a.torch.8.n} & \so{tb.a.torch.8.p50} & \so{tb.a.torch.8.p95} & \so{tb.a.torch.8.ram} & \so{tb.a.torch.8.nap} \\
+A & ONNX FP32 & 8 & \so{tb.a.fp32.8.n} & \so{tb.a.fp32.8.p50} & \so{tb.a.fp32.8.p95} & \so{tb.a.fp32.8.ram} & \so{tb.a.fp32.8.nap} \\
+A & ONNX INT8 & 8 & \so{tb.a.int8.8.n} & \so{tb.a.int8.8.p50} & \so{tb.a.int8.8.p95} & \so{tb.a.int8.8.ram} & \so{tb.a.int8.8.nap} \\
+A & ONNX INT8 & 4 & \so{tb.a.int8.4.n} & \so{tb.a.int8.4.p50} & \so{tb.a.int8.4.p95} & \so{tb.a.int8.4.ram} & \so{tb.a.int8.4.nap} \\
+A & ONNX INT8 & 1 & \so{tb.a.int8.1.n} & \so{tb.a.int8.1.p50} & \so{tb.a.int8.1.p95} & \so{tb.a.int8.1.ram} & \so{tb.a.int8.1.nap} \\
+\midrule
+B & ONNX INT8, CLI & 8 & \so{tb.b.n} & \so{tb.b.8.p50} & \so{tb.b.8.p95} & \so{tb.b.8.ram} & \so{tb.b.8.nap} \\
+B & ONNX INT8, CLI & 4 & \so{tb.b.n} & \so{tb.b.4.p50} & \so{tb.b.4.p95} & \so{tb.b.4.ram} & \so{tb.b.4.nap} \\
+B & ONNX INT8, CLI & 1 & \so{tb.b.n} & \so{tb.b.1.p50} & \so{tb.b.1.p95} & \so{tb.b.1.ram} & \so{tb.b.1.nap} \\
+B & ONNX INT8, trình duyệt & 4 & \so{tb.web.n} & \so{tb.web.p50} & \so{tb.web.p95} & +\so{tb.web.ram.tang}$^{*}$ & \so{tb.web.nap} \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+{\footnotesize $^{*}$ Phần RAM trình duyệt tăng thêm khi đang suy luận, so với khi mở trang trống (\so{tb.web.ram.trong} MiB);
+đỉnh của cả trình duyệt khi suy luận là \so{tb.web.ram.dinh} MiB. Ngay sau khi nạp mô hình, RAM lên tạm tới
+\so{tb.web.ram.nap} MiB rồi giảm. Dung lượng phải tải về lần đầu: \so{tb.web.taive} MiB, sau đó lưu trong bộ nhớ đệm
+để chạy ngoại tuyến.}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Năng lượng trên máy B, đo từ tốc độ xả pin của cả máy. ``Tăng thêm'': công suất khi chạy trừ công suất lúc nghỉ.}
+\label{tab:p4-nang-luong}
+\begin{tabularx}{\linewidth}{lCCCCC}
+\toprule
+ & Nghỉ (W) & Đang chạy (W) & mJ/đoạn (tăng thêm) & mJ/đoạn (cả máy) & Wh/1.000 đoạn (tăng thêm) \\
+\midrule
+CLI, 4 luồng & \so{tb.b.pnghi} & \so{tb.b.ptai} & \so{tb.b.mj} & \so{tb.b.mjtong} & \so{tb.b.wh} \\
+Trình duyệt, 4 luồng & \so{tb.web.pnghi} & \so{tb.web.ptai} & \so{tb.web.mj} & \so{tb.web.mjtong} & \so{tb.web.wh} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Chất lượng khi chạy trên thiết bị, trên toàn bộ \so{tb.int8.n} đoạn test (C0, C1, C2; nhân 100).}
+\label{tab:p4-khop}
+\begin{tabularx}{\linewidth}{YCCC}
+\toprule
+Cách chạy & Macro-F1 & BC F1 theo ý & Nhãn trùng với PyTorch FP32 \\
+\midrule
+PyTorch FP32 (bản chấm chính thức) & \so{tb.fp32.macro} & \so{tb.fp32.bcy} & -- \\
+ONNX INT8, Python, batch 8 & \so{tb.int8.macro} & \so{tb.int8.bcy} & \so{tb.int8.khop} \\
+ONNX INT8, CLI trên máy B, batch 1 & \so{tb.b.macro} & \so{tb.b.bcy} & \so{tb.b.khop.torch} \\
+ONNX INT8, trình duyệt trên máy B, batch 1 & \so{tb.web.macro} & \so{tb.web.bcy} & \so{tb.web.khop.torch} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Một số kết luận từ các bảng trên:
+\begin{itemize}
+  \item \textbf{Lượng tử hóa INT8 giữ gần nguyên chất lượng.} So với FP32, Macro-F1 của bản INT8 chênh không có ý nghĩa
+  thống kê (McNemar $p = \so{tb.int8.mcnemar}$), trong khi mô hình nhỏ đi khoảng \so{tb.nen} lần và RAM đỉnh giảm mạnh.
+  Nhãn trùng với FP32 ở \so{tb.int8.C0.khop} số đoạn C0, \so{tb.int8.C1.khop} ở C1 và \so{tb.int8.C2.khop} ở C2:
+  INT8 lệch nhiều hơn một chút ở các biến dạng điểm mù.
+  \item \textbf{Các bản INT8 không trùng nhau tuyệt đối, nhưng chất lượng như nhau.} Nhãn trong trình duyệt trùng với CLI
+  ở \so{tb.web.khop.cli} số đoạn (bằng chứng trùng hoàn toàn ở \so{tb.web.khop.cli.bc}); CLI trùng với bản INT8 chạy batch 8
+  ở \so{tb.b.khop.int8}. Bản INT8 lượng tử hóa động cả đầu vào mỗi lớp, nên khác biệt số học nhỏ giữa các runtime hoặc
+  giữa batch 1 và batch 8 đủ làm đổi nhãn ở các đoạn nằm sát ranh giới hai nhãn. Macro-F1 và F1 bằng chứng của mọi bản
+  vẫn gần như bằng nhau (Bảng~\ref{tab:p4-khop}).
+  \item \textbf{Trình duyệt chậm hơn CLI} vì onnxruntime-web chạy WebAssembly, chỉ có lệnh vector 128 bit, trong khi
+  onnxruntime bản gốc dùng được các lệnh vector rộng hơn của CPU. Với tin nhắn đến từng tin một, độ trễ này vẫn dùng được,
+  nhưng là chỗ cần cải thiện.
+  \item \textbf{Năng lượng} lấy từ cảm biến pin của Windows (cập nhật khoảng 8--9 giây một lần), không phải bộ đếm điện
+  năng của riêng CPU, vì Windows không mở bộ đếm này khi không có quyền quản trị. Mỗi phép đo gồm hai cửa sổ nghỉ (trước,
+  sau) và một cửa sổ chạy mô hình liên tục \so{tb.b.giay} giây trở lên; ``tăng thêm'' là phần do mô hình gây ra. Đây là
+  ước lượng cho cả máy, có nhiễu từ các tiến trình nền.
+\end{itemize}
 
 \subsection{Tái hiện kết quả}
 \label{sec:yc3-tai-hien}
@@ -160,6 +297,10 @@ bản PyTorch trên toàn bộ tập test.}
   \item Môi trường train: GPU \so{v2.gpu}, PyTorch \texttt{\so{v2.torch}}, Transformers \texttt{\so{v2.transformers}}.
   \item Mỗi cấu hình có một thư mục trong \tep{results/v2/} gồm cấu hình, môi trường, ngưỡng đã đóng băng, dự đoán và chỉ số.
   \item Chấm lại cả ba hệ trên C0/C1/C2 bằng một lệnh: \tep{python -m src.v2.eval.so_sanh_3_he}.
+  \item Đo trên thiết bị đích: \tep{python -m src.v2.bench.benchmark_cpu} (máy A), \tep{python -m src.v2.bench.do_thiet_bi cpu}
+  và \tep{python -m src.v2.bench.do_thiet_bi trinh_duyet} (máy B, chạy bằng pin). Kết quả máy B nằm trong
+  \tep{results/v2/do_thiet_bi/}; kết quả máy A và phép so INT8 với FP32 nằm trong thư mục
+  \tep{results/v2/official_eval/dualorc_mmbert_base/test/}.
   \item Mọi số trong báo cáo sinh lại bằng: \tep{python -m src.v2.eval.xuat_so_lieu_bao_cao}.
 \end{itemize}
 Hạn chế về tái hiện: mã huấn luyện DualORC-CRF chạy trên môi trường GPU riêng và chưa được đưa vào \tep{src/v2/train/};
@@ -174,12 +315,11 @@ repo hiện chỉ giữ cấu hình đầy đủ (\tep{config.json}) và đầu 
   các lát cắt nhỏ (theo vùng, kênh) dao động mạnh.
   \item \textbf{Báo nhầm câu an toàn còn cao.} Ngưỡng hiện chỉ dò chung cho cả mô hình, chưa dò riêng từng nhãn.
   \item \textbf{Kịch bản chưa thấy khi train vẫn là điểm yếu lớn nhất} (Mục~\ref{sec:yc2}).
-  \item \textbf{Chưa đo chi phí trên laptop CPU, trình duyệt và năng lượng} (Mục~\ref{sec:yc3-chi-phi}).
 \end{itemize}
 
 \paragraph{Hướng đi tiếp theo.}
 \begin{itemize}
-  \item Xuất mô hình sang ONNX và INT8, gắn vào bản web, đo trên laptop và trình duyệt.
+  \item Giảm độ trễ trong trình duyệt (thử WebGPU), đo thêm trên máy yếu.
   \item Lập tập validation do người gán, dò ngưỡng riêng cho từng nhãn để giảm báo nhầm.
   \item Thêm kịch bản mới và tin nhắn thật (đã che thông tin cá nhân), nhất là tin vay tiền, giả shipper, kiểm soát người yêu.
 \end{itemize}

@@ -10,6 +10,8 @@
 %   demo/model-manifest.json  bb7db6c14f3f
 %   results/v2/chi_phi_du_lieu/chi_phi.json  444438f46f07
 %   results/v2/dev_selection/dev_summary.json  eba74eff750a
+%   results/v2/do_thiet_bi/cpu_laptop.json  1b5ef4ab5fa8
+%   results/v2/do_thiet_bi/trinh_duyet.json  71cd51a66c5c
 %   results/v2/dong_thuan_nhan/metrics.json  c5192197b320
 %   results/v2/kiem_tra_ro_ri/bao_cao.json  bb7cb1685f9b
 %   results/v2/llm_api/test_metrics.json  1cbf24b234aa
@@ -22,7 +24,11 @@
 %   results/v2/official_eval/dualorc_mmbert_base/dev_norm_stress_tests.json  bc069a3ad5e7
 %   results/v2/official_eval/dualorc_mmbert_base/dev_stress_tests.json  0c118a4879fa
 %   results/v2/official_eval/dualorc_mmbert_base/environment.json  6e296cee27b3
+%   results/v2/official_eval/dualorc_mmbert_base/test/bench_cpu.json  7f705f3e9640
+%   results/v2/official_eval/dualorc_mmbert_base/test/int8_comparison.json  1c3c2eac2e9b
 %   results/v2/official_eval/dualorc_mmbert_base/test/real_test_all_predictions.jsonl  dfe1d08a9b8a
+%   results/v2/official_eval/dualorc_mmbert_base/test/real_test_norm_official_matrix.json  83269fd6528e
+%   results/v2/official_eval/dualorc_mmbert_base/test/real_test_official_matrix.json  1a7f54368af1
 %   results/v2/so_sanh_3_he/metrics.json  4437476f71f5
 %   v1/results/step3/test/matrix.json  deb27cc2872a
 \soset{C0.v1.n}{334}
@@ -2071,6 +2077,179 @@
 \soset{v2.accent}{30,0\%}
 \soset{v2.surface}{20,0\%}
 \soset{v2.fgm}{0,5}
+\soset{tb.a.cpu}{AMD Ryzen AI 7 H 350 w/ Radeon 860M}
+\soset{tb.a.ort}{1.26.0}
+\soset{tb.a.int8.8.n}{100}
+\soset{tb.a.int8.8.p50}{24,7}
+\soset{tb.a.int8.8.p95}{31,5}
+\soset{tb.a.int8.8.ram}{986}
+\soset{tb.a.int8.8.nap}{1,5}
+\soset{tb.a.int8.4.n}{100}
+\soset{tb.a.int8.4.p50}{28,5}
+\soset{tb.a.int8.4.p95}{41,3}
+\soset{tb.a.int8.4.ram}{982}
+\soset{tb.a.int8.4.nap}{1,6}
+\soset{tb.a.int8.1.n}{50}
+\soset{tb.a.int8.1.p50}{61,5}
+\soset{tb.a.int8.1.p95}{92,5}
+\soset{tb.a.int8.1.ram}{982}
+\soset{tb.a.int8.1.nap}{1,4}
+\soset{tb.a.fp32.8.n}{60}
+\soset{tb.a.fp32.8.p50}{44,0}
+\soset{tb.a.fp32.8.p95}{58,5}
+\soset{tb.a.fp32.8.ram}{2.419}
+\soset{tb.a.fp32.8.nap}{2,0}
+\soset{tb.a.torch.8.n}{40}
+\soset{tb.a.torch.8.p50}{60,4}
+\soset{tb.a.torch.8.p95}{80,4}
+\soset{tb.a.torch.8.ram}{4.781}
+\soset{tb.a.torch.8.nap}{20,4}
+\soset{tb.int8.mib}{301}
+\soset{tb.fp32.mib}{1.178}
+\soset{tb.tok.mib}{33}
+\soset{tb.nen}{3,9}
+\soset{tb.int8.C0.khop}{97,9\%}
+\soset{tb.int8.C1.khop}{97,8\%}
+\soset{tb.int8.C2.khop}{95,8\%}
+\soset{lt.C0.fp32.macro}{86,5}
+\soset{lt.C0.fp32.bcy}{83,0}
+\soset{lt.C0.fp32.fpr}{10,4\%}
+\soset{lt.C0.int8.macro}{86,0}
+\soset{lt.C0.int8.bcy}{84,0}
+\soset{lt.C0.int8.fpr}{10,4\%}
+\soset{lt.C0.d.macro}{$-$0,5}
+\soset{lt.C0.d.bcy}{+1,0}
+\soset{lt.C0.p}{1,00}
+\soset{lt.C0.n}{334}
+\soset{lt.C1.fp32.macro}{78,6}
+\soset{lt.C1.fp32.bcy}{76,5}
+\soset{lt.C1.fp32.fpr}{10,9\%}
+\soset{lt.C1.int8.macro}{77,7}
+\soset{lt.C1.int8.bcy}{76,7}
+\soset{lt.C1.int8.fpr}{10,9\%}
+\soset{lt.C1.d.macro}{$-$0,9}
+\soset{lt.C1.d.bcy}{+0,2}
+\soset{lt.C1.p}{0,58}
+\soset{lt.C1.n}{668}
+\soset{lt.C2.fp32.macro}{77,1}
+\soset{lt.C2.fp32.bcy}{75,3}
+\soset{lt.C2.fp32.fpr}{10,4\%}
+\soset{lt.C2.int8.macro}{75,7}
+\soset{lt.C2.int8.bcy}{76,3}
+\soset{lt.C2.int8.fpr}{13,0\%}
+\soset{lt.C2.d.macro}{$-$1,4}
+\soset{lt.C2.d.bcy}{+1,0}
+\soset{lt.C2.p}{0,12}
+\soset{lt.C2.n}{668}
+\soset{lt.ALL.fp32.macro}{79,6}
+\soset{lt.ALL.fp32.bcy}{77,4}
+\soset{lt.ALL.fp32.fpr}{10,6\%}
+\soset{lt.ALL.int8.macro}{78,6}
+\soset{lt.ALL.int8.bcy}{78,1}
+\soset{lt.ALL.int8.fpr}{11,7\%}
+\soset{lt.ALL.d.macro}{$-$1,0}
+\soset{lt.ALL.d.bcy}{+0,7}
+\soset{lt.ALL.p}{0,07}
+\soset{lt.ALL.n}{1.670}
+\soset{tb.int8.n}{1.670}
+\soset{tb.int8.macro}{78,6}
+\soset{tb.fp32.macro}{79,6}
+\soset{tb.int8.bcy}{78,1}
+\soset{tb.fp32.bcy}{77,4}
+\soset{tb.int8.khop}{97,0\%}
+\soset{tb.int8.mcnemar}{0,07}
+\soset{tb.b.cpu}{Intel(R) Core(TM) Ultra 7 155H}
+\soset{tb.b.ort}{1.32.0}
+\soset{tb.b.n}{1.670}
+\soset{tb.b.4.p50}{81,6}
+\soset{tb.b.4.p95}{150,6}
+\soset{tb.b.4.ram}{903}
+\soset{tb.b.4.nap}{5,2}
+\soset{tb.b.4.tl}{11,3}
+\soset{tb.b.8.p50}{69,1}
+\soset{tb.b.8.p95}{120,8}
+\soset{tb.b.8.ram}{904}
+\soset{tb.b.8.nap}{4,5}
+\soset{tb.b.8.tl}{13,5}
+\soset{tb.b.1.p50}{197,2}
+\soset{tb.b.1.p95}{450,2}
+\soset{tb.b.1.ram}{902}
+\soset{tb.b.1.nap}{5,2}
+\soset{tb.b.1.tl}{4,4}
+\soset{tb.b.pnghi}{8,6}
+\soset{tb.b.ptai}{14,3}
+\soset{tb.b.mj}{510}
+\soset{tb.b.mjtong}{1.285}
+\soset{tb.b.wh}{0,14}
+\soset{tb.b.giay}{300}
+\soset{tb.b.khop.torch}{97,0\%}
+\soset{tb.b.khop.int8}{97,0\%}
+\soset{tb.b.macro}{78,3}
+\soset{tb.b.bcy}{77,7}
+\soset{tb.web.trinhduyet}{Edge 158.0.4370.33}
+\soset{tb.web.ortweb}{1.31.1}
+\soset{tb.web.backend}{WASM · 4 luồng}
+\soset{tb.web.n}{1.670}
+\soset{tb.web.p50}{337}
+\soset{tb.web.p95}{605}
+\soset{tb.web.tl}{2,8}
+\soset{tb.web.nap}{7,2}
+\soset{tb.web.taive}{348}
+\soset{tb.web.ram.trong}{434}
+\soset{tb.web.ram.dinh}{1.383}
+\soset{tb.web.ram.nap}{1.823}
+\soset{tb.web.ram.tang}{949}
+\soset{tb.web.pnghi}{7,7}
+\soset{tb.web.ptai}{10,3}
+\soset{tb.web.mj}{966}
+\soset{tb.web.mjtong}{3.744}
+\soset{tb.web.wh}{0,27}
+\soset{tb.web.khop.torch}{96,8\%}
+\soset{tb.web.khop.cli}{97,2\%}
+\soset{tb.web.khop.cli.bc}{72,1\%}
+\soset{tb.web.macro}{78,4}
+\soset{tb.web.bcy}{77,8}
+\soset{cnt.C0.n}{334}
+\soset{cnt.C0.raw}{86,5}
+\soset{cnt.C0.norm}{85,2}
+\soset{cnt.C0.gain}{$-$1,2}
+\soset{cnt.C0.bc.raw}{83,0}
+\soset{cnt.C0.bc.norm}{84,5}
+\soset{cnt.C0.bc.gain}{+1,5}
+\soset{cnt.C1.n}{668}
+\soset{cnt.C1.raw}{78,6}
+\soset{cnt.C1.norm}{82,8}
+\soset{cnt.C1.gain}{+4,2}
+\soset{cnt.C1.bc.raw}{76,5}
+\soset{cnt.C1.bc.norm}{81,7}
+\soset{cnt.C1.bc.gain}{+5,2}
+\soset{cnt.C2.n}{668}
+\soset{cnt.C2.raw}{77,1}
+\soset{cnt.C2.norm}{75,7}
+\soset{cnt.C2.gain}{$-$1,4}
+\soset{cnt.C2.bc.raw}{75,3}
+\soset{cnt.C2.bc.norm}{74,1}
+\soset{cnt.C2.bc.gain}{$-$1,2}
+\soset{cnt.chuathay.n}{764}
+\soset{cnt.chuathay.raw}{78,4}
+\soset{cnt.chuathay.norm}{77,3}
+\soset{cnt.chuathay.gain}{$-$1,1}
+\soset{cnt.chuathay.bc.raw}{76,6}
+\soset{cnt.chuathay.bc.norm}{75,6}
+\soset{cnt.chuathay.bc.gain}{$-$1,0}
+\soset{cnt.kieu.bodau.gain}{+0,6}
+\soset{cnt.kieu.chenkytu.gain}{+17,5}
+\soset{cnt.kieu.dinhtu.gain}{+1,0}
+\soset{cnt.kieu.gosai.gain}{$-$1,2}
+\soset{cnt.kieu.keodai.gain}{+3,8}
+\soset{cnt.kieu.sothaychu.gain}{+3,5}
+\soset{cnt.kieu.teencode.gain}{+4,2}
+\soset{cnt.kieu.cyrillichomoglyph.gain}{$-$1,4}
+\soset{cnt.kieu.doubleelongation.gain}{+2,1}
+\soset{cnt.kieu.exoticseparator.gain}{+1,8}
+\soset{cnt.kieu.fullwidth.gain}{$-$0,7}
+\soset{cnt.kieu.spaceinjection.gain}{$-$3,6}
+\soset{cnt.kieu.zerowidth.gain}{$-$4,3}
 \soset{v2.gpu}{NVIDIA L4}
 \soset{v2.torch}{2.14.1+cu130}
 \soset{v2.transformers}{4.57.6}
