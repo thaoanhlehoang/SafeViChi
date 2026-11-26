@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#2f6b3a" />
   <title>SafeViChi – Mỗi tin nhắn, một vòng tay bảo vệ</title>
   <meta name="description" content="SafeViChi phát hiện tin nhắn xúc phạm, quấy rối, đe dọa, lừa đảo tiếng Việt ngay trên máy bạn." />
+  <link rel="stylesheet" href="/src/fonts.css" />
+  <link rel="stylesheet" href="/src/style.css" />
+  <link rel="stylesheet" href="/src/chat.css" />
 </head>
 <body>
   <!-- Phông nền cố định: tán lá, khoảng trời và vòng người (vẽ bằng SVG). -->
@@ -22,11 +25,13 @@
           <p class="eyebrow">Phát hiện tin nhắn nguy hại tiếng Việt</p>
           <h1 id="hero-title">SafeViChi</h1>
           <p class="tagline">Mỗi tin nhắn, một vòng tay bảo vệ.</p>
-          <button id="start" class="btn-start" type="button">Bắt đầu</button>
+          <div class="hero-actions">
+            <a class="btn-start" href="#thong-tin" data-open-about>Tìm hiểu thêm</a>
+            <button id="start" class="btn-hero-sec" type="button">Dùng thử</button>
+          </div>
         </div>
-        <a class="scroll-down" id="open-about" href="#thong-tin">
-          <span>Tìm hiểu thêm</span>
-          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a class="scroll-down" id="open-about" href="#thong-tin" data-open-about aria-label="Cuộn xuống xem tổng quan">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </section>
 
@@ -82,8 +87,8 @@
               <div class="prod-col">
                 <h4 class="col-h reveal">Tính năng nổi bật</h4>
                 <ul class="feat-list">
-                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h11M4 11h16M4 16h9"/></svg></span><div><h5>Thấu hiểu ngữ cảnh hội thoại</h5><p>Phân tích tối đa 8 lượt gần nhất, phát hiện nguy cơ mà từng tin nhắn riêng lẻ có thể bỏ sót.</p></div></li>
-                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19l4-1 10-10-3-3L6 15z"/><path d="M14 7l3 3"/></svg></span><div><h5>Nhận diện có căn cứ</h5><p>Phân loại kèm trích xuất bằng chứng nguyên văn, giúp kết quả trực quan và dễ giải thích.</p></div></li>
+                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h11M4 11h16M4 16h9"/></svg></span><div><h5>Thấu hiểu ngữ cảnh hội thoại</h5><p>Phân tích tối đa 8 lượt gần nhất, nhận diện cả những nguy cơ ẩn ý mà từng tin nhắn riêng lẻ dễ bỏ sót.</p></div></li>
+                  <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19l4-1 10-10-3-3L6 15z"/><path d="M14 7l3 3"/></svg></span><div><h5>Nhận diện có căn cứ</h5><p>Phân loại kèm trích xuất nguyên văn cụm từ bằng chứng, trực quan và dễ kiểm chứng.</p></div></li>
                   <li class="reveal"><span class="feat-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.5"/><path d="M10.5 17.5h3"/></svg></span><div><h5>Xử lý trực tiếp trên thiết bị</h5><p>Toàn bộ quá trình phân tích chạy ngay trên trình duyệt, hội thoại không cần gửi đến máy chủ.</p></div></li>
                 </ul>
               </div>
@@ -91,11 +96,11 @@
                 <h4 class="col-h reveal">Phạm vi nhận diện</h4>
                 <p class="col-sub reveal">SafeViChi 2.0 phân loại nội dung hội thoại thành 5 nhóm:</p>
                 <ul class="scope-list">
-                  <li class="reveal" style="--c: var(--at)"><b>An toàn</b><span>Nội dung giao tiếp thông thường.</span></li>
-                  <li class="reveal" style="--c: var(--xp)"><b>Xúc phạm</b><span>Lăng mạ, miệt thị, chế giễu hoặc hạ thấp người khác.</span></li>
-                  <li class="reveal" style="--c: var(--qr)"><b>Quấy rối</b><span>Dụ dỗ, làm phiền hoặc có hành vi tiếp cận không phù hợp.</span></li>
-                  <li class="reveal" style="--c: var(--dd)"><b>Đe dọa</b><span>Uy hiếp, đe dọa gây tổn hại hoặc ép buộc người khác.</span></li>
-                  <li class="reveal" style="--c: var(--ld)"><b>Lừa đảo</b><span>Gian dối nhằm chiếm đoạt tài sản hoặc thông tin cá nhân.</span></li>
+                  <li class="reveal" style="--c: var(--at)"><b>An toàn</b><span>Nội dung giao tiếp bình thường, không mang dấu hiệu nguy hại.</span></li>
+                  <li class="reveal" style="--c: var(--xp)"><b>Xúc phạm</b><span>Chửi bới, lăng mạ, miệt thị cá nhân hoặc nhóm người (kể cả vùng miền).</span></li>
+                  <li class="reveal" style="--c: var(--qr)"><b>Quấy rối</b><span>Gạ gẫm không mong muốn, bám riết, kiểm soát hoặc bêu riếu đời tư.</span></li>
+                  <li class="reveal" style="--c: var(--dd)"><b>Đe dọa</b><span>Uy hiếp gây tổn hại thân thể, tài sản, danh dự hoặc cưỡng ép, tống tiền.</span></li>
+                  <li class="reveal" style="--c: var(--ld)"><b>Lừa đảo</b><span>Dùng thông tin giả để dụ chuyển tiền, lộ OTP/mật khẩu hoặc bấm liên kết lạ.</span></li>
                 </ul>
               </div>
             </div>
@@ -107,27 +112,27 @@
         <section class="about-sec" id="ab-kien-truc" aria-labelledby="ab-kien-truc-h">
           <div class="sec-inner">
             <div class="sec-head reveal"><h3 id="ab-kien-truc-h">Kiến trúc mô hình</h3></div>
-            <p class="sec-lede arch-lede reveal">Kiến trúc học đa nhiệm kết hợp biểu diễn ngữ cảnh và đặc trưng cấp byte để đồng thời phân loại hội thoại và trích xuất bằng chứng nguy hại.</p>
+            <p class="sec-lede arch-lede reveal">Kiến trúc đa nhiệm kết hợp ngữ cảnh hội thoại đa lượt và đặc trưng cấp byte, đồng thời phân loại và trích xuất bằng chứng trực tiếp trên văn bản gốc.</p>
             <div class="arch reveal" id="arch" role="img" aria-label="Sơ đồ kiến trúc: đầu vào hội thoại đi qua hai nhánh mmBERT-base và Byte-level CNN, hợp nhất bằng cổng gated fusion, rồi tách thành Classification Head và BIO cộng CRF, cuối cùng ra nhãn phân loại kèm bằng chứng">
               <svg class="arch-lines" aria-hidden="true"></svg>
               <div class="arch-node" data-n="in" style="grid-area: in" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-4-3h-3"/></svg></span><h5>Conversation Input</h5><p>1–8 lượt hội thoại · Tối đa 512 token</p></div>
-              <div class="arch-node arch-main" data-n="bert" style="grid-area: bert" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5l9 4.5 9-4.5"/></svg></span><h5>mmBERT-base</h5><p>Biểu diễn ngữ cảnh hội thoại</p></div>
-              <div class="arch-node arch-sub" data-n="cnn" style="grid-area: cnn" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 5.5v2M16 5.5h3M5 16h3M17.5 16v3"/></svg></span><h5>Byte-level CNN</h5><p>Biểu diễn đặc trưng cấp byte</p></div>
+              <div class="arch-node arch-main" data-n="bert" style="grid-area: bert" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l9 4.5-9 4.5-9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/><path d="M3 16.5l9 4.5 9-4.5"/></svg></span><h5>mmBERT-base</h5><p>Ngữ cảnh đa ngôn ngữ &amp; chú ý lượt–từ</p></div>
+              <div class="arch-node arch-sub" data-n="cnn" style="grid-area: cnn" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M6.5 5.5v2M16 5.5h3M5 16h3M17.5 16v3"/></svg></span><h5>Byte-level CNN</h5><p>Đặc trưng hình thái theo byte UTF-8</p></div>
               <div class="arch-fuse" data-n="fuse" style="grid-area: fuse"><span class="fuse-dot" data-n="fuse-dot">σ</span><span class="fuse-k">Gated<br>fusion</span></div>
               <div class="arch-node" data-n="cls" style="grid-area: cls" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V14M9 20V8M14 20V11M19 20V4"/><path d="M2.5 20.5h19"/></svg></span><h5>Classification Head</h5><p>Phân loại 5 nhãn</p></div>
-              <div class="arch-node" data-n="bio" style="grid-area: bio" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h6M15 12h6M3 18h12"/><rect x="9" y="9.5" width="6" height="5" rx="1"/></svg></span><h5>BIO + CRF</h5><p>Trích xuất bằng chứng</p></div>
+              <div class="arch-node" data-n="bio" style="grid-area: bio" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h6M15 12h6M3 18h12"/><rect x="9" y="9.5" width="6" height="5" rx="1"/></svg></span><h5>BIO + CRF</h5><p>Trích xuất bằng chứng nguyên văn</p></div>
               <div class="arch-node arch-out" data-n="out" style="grid-area: out" tabindex="0"><span class="arch-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><h5>Prediction &amp; Evidence</h5><p>Nhãn phân loại + Bằng chứng</p></div>
             </div>
             <div class="spec-row">
               <div class="spec reveal">
                 <p class="spec-num">13.392</p>
                 <h5>mẫu huấn luyện</h5>
-                <ul class="kw"><li>Dữ liệu thực tái gán nhãn bằng LLM</li><li>Hội thoại tổng hợp theo kịch bản</li></ul>
+                <ul class="kw"><li>6.712 bình luận thực tái gán nhãn</li><li>6.680 hội thoại tổng hợp theo kịch bản</li></ul>
               </div>
               <div class="spec reveal">
-                <p class="spec-num">3<small> kiểu biến dạng</small></p>
+                <p class="spec-num">4<small> cơ chế</small></p>
                 <h5>Chống né lọc</h5>
-                <ul class="kw"><li>Bỏ dấu</li><li>Teencode</li><li>Lỗi chính tả</li><li>Nhất quán gốc ↔ biến dạng</li></ul>
+                <ul class="kw"><li>Tăng cường bỏ dấu &amp; C1</li><li>Phạt nhất quán gốc ↔ biến dạng</li><li>Đối kháng FGM</li><li>CNN đọc byte</li></ul>
               </div>
               <div class="spec reveal">
                 <p class="spec-num">−74,4%<small> kích thước</small></p>
@@ -135,7 +140,7 @@
                   <span class="sb-k">FP32</span><span class="sb-bar"><i style="width: 100%"></i></span><span class="sb-v">1.178 MiB</span>
                   <span class="sb-k">INT8</span><span class="sb-bar"><i class="sb-new" style="width: 25.6%"></i></span><span class="sb-v">301 MiB</span>
                 </div>
-                <ul class="kw"><li>ONNX</li><li>INT8</li><li>ONNX Runtime Web</li><li>Web Worker</li></ul>
+                <ul class="kw"><li>ONNX INT8</li><li>Laptop 24,7 ms</li><li>Android 25,0 ms</li><li>Trình duyệt · Web Worker</li></ul>
               </div>
             </div>
           </div>
@@ -148,12 +153,12 @@
             <div class="res-head">
               <div>
                 <div class="sec-head reveal"><h3 id="ab-ket-qua-h">Kết quả thực nghiệm</h3></div>
-                <p class="sec-lede reveal">So với SafeViChi 1.0 và LLM gpt-oss-120b qua API, trên cùng bộ test do người trong nhóm tự viết.</p>
+                <p class="sec-lede reveal">Đánh giá SafeViChi 2.0 cùng SafeViChi 1.0 và gpt-oss-120b (API) trên tập kiểm thử hội thoại biên soạn độc lập.</p>
               </div>
               <dl class="sets reveal">
                 <div><dt>C0</dt><dd>334 đoạn gốc</dd></div>
-                <div><dt>C1</dt><dd>668 bản biến dạng thường gặp</dd></div>
-                <div><dt>C2</dt><dd>668 bản biến dạng chưa từng thấy khi train</dd></div>
+                <div><dt>C1</dt><dd>668 bản biến dạng bề mặt (7 kiểu)</dd></div>
+                <div><dt>C2</dt><dd>668 bản biến dạng điểm mù (6 kiểu, ngoài train)</dd></div>
               </dl>
             </div>
             <div class="res-panels reveal">
@@ -172,7 +177,7 @@
                     <tr class="ours"><td class="sys">SafeViChi 2.0</td><td>77,1</td><td>90,9</td><td>10,4%</td><td>75,3</td></tr>
                   </tbody>
                 </table>
-                <p class="note">F1 nhân 100. Binary-F1: gộp 4 nhãn nguy hại làm một. FPR: tỉ lệ câu an toàn bị báo nguy hại. SafeViChi 1.0 chỉ có nhãn nhị phân, không trả bằng chứng.</p>
+                <p class="note">F1 × 100. Binary-F1: gộp 4 nhãn nguy hại; FPR: tỉ lệ đoạn an toàn bị báo nhầm; Bằng chứng F1 tính theo cụm. Số SafeViChi 2.0 đo trên bản FP32 (bản INT8 trên web tương đương); SafeViChi 1.0 chỉ có nhãn nhị phân, không xuất cụm bằng chứng.</p>
               </div>
             </div>
           </div>

@@ -1,14 +1,3 @@
-import '@fontsource-variable/plus-jakarta-sans';
-import '@fontsource/be-vietnam-pro/300.css';
-import '@fontsource/be-vietnam-pro/400.css';
-import '@fontsource/be-vietnam-pro/500.css';
-import '@fontsource/be-vietnam-pro/600.css';
-import '@fontsource/be-vietnam-pro/700.css';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
-import '@fontsource/ibm-plex-mono/600.css';
-import './style.css';
-import './chat.css';
 import { LABELS } from './labels.js';
 import { setupLanding } from './landing.js';
 import { setupChat } from './chat.js';
@@ -110,6 +99,9 @@ const VAR = { AN_TOAN: '--at', XUC_PHAM: '--xp', QUAY_ROI: '--qr', DE_DOA: '--dd
 const about = $('thong-tin');
 for (const [k, v] of Object.entries(VAR)) about.style.setProperty(v, LABELS[k].mau);
 
+// Vẽ nền trang đầu trước khi dựng các minh họa phía dưới để khung hình đầu hiện ngay.
+setupLanding({ onStart: startApp });
+
 // Sơ đồ kiến trúc: đường cong nối các khối, tính theo vị trí thật trong khung sơ đồ.
 // Hiệu ứng: một luồng sáng chạy từ đầu vào tới đầu ra, khối nào được luồng chạm tới thì sáng lên, rồi lặp lại.
 const EDGES = [['in', 'bert', 0], ['in', 'cnn', 0], ['bert', 'fuse-dot', 1], ['cnn', 'fuse-dot', 1], ['fuse-dot', 'cls', 2], ['fuse-dot', 'bio', 2], ['cls', 'out', 3], ['bio', 'out', 3]];
@@ -201,6 +193,3 @@ else new IntersectionObserver(([e]) => (e.isIntersecting ? countUp() : resetCoun
 
 // Hình minh họa hoạt hình cùng nét với trang chủ.
 drawClosing($('art-closing'));
-
-// Gọi sau khi đã dựng thẻ nhãn để hiệu ứng hiện dần bắt được cả các thẻ này.
-setupLanding({ onStart: startApp });
