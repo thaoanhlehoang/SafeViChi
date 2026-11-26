@@ -17,35 +17,90 @@ let worker = null;
 let nextId = 0;
 const pending = new Map();
 const statusListeners = [];
-const setStatus = (s) => statusListeners.forEach((f) => f(s));
+let lastStatus = null;
 
-// Gọi mô hình trong worker, trả về Promise kết quả.
-function classify(lines) {
+function setStatus(s) {
+  lastStatus = s;
+  statusListeners.forEach((f) => f(s));
+}
+
+function rejectAllPending(reason) {
+  for (const [, p] of pending) p.reject(new Error(reason));
+  pending.clear();
+}
+
+// Gọi mô hình ONNX trong worker, trả về Promise kết quả.
+function classify(lines, { priority = false } = {}) {
   return new Promise((resolve, reject) => {
+    if (!worker) {
+      reject(new Error('Worker mô hình chưa khởi chạy.'));
+      return;
+    }
     const id = ++nextId;
     pending.set(id, { resolve, reject });
-    worker.postMessage({ type: 'classify', id, lines });
+    worker.postMessage({ type: 'classify', id, lines, priority });
   });
 }
 
-function onWorkerMessage({ data }) {
-  if (data.type === 'progress') setStatus({ kind: 'loading', text: `Đang tải ${Math.round((100 * data.loaded) / data.total)}%` });
-  else if (data.type === 'ready') setStatus(data.backend === 'mock' ? { kind: 'mock', text: 'Mô hình giả' } : { kind: 'real', text: `Trên máy · ${data.backend}` });
-  else if (data.type === 'result') { pending.get(data.id)?.resolve(data); pending.delete(data.id); }
-  else if (data.type === 'error') {
-    if (data.id && pending.has(data.id)) { pending.get(data.id).reject(new Error(data.message)); pending.delete(data.id); }
-    else setStatus({ kind: 'error', text: 'Lỗi mô hình' });
+function formatProgress(data) {
+  const stage = data.stage || 'Đang tải mô hình';
+  if (data.total > 1 && data.loaded < data.total) {
+    const pct = Math.min(99, Math.max(0, Math.round((100 * data.loaded) / data.total)));
+    return `${stage} · ${pct}%`;
   }
+  return stage;
+}
+
+function onWorkerMessage({ data }) {
+  if (data.type === 'progress') {
+    setStatus({ kind: 'loading', text: formatProgress(data) });
+  } else if (data.type === 'ready') {
+    setStatus({ kind: 'real', text: 'SafeViChi v2' });
+  } else if (data.type === 'result') {
+    pending.get(data.id)?.resolve(data);
+    pending.delete(data.id);
+  } else if (data.type === 'error') {
+    if (data.id && pending.has(data.id)) {
+      pending.get(data.id).reject(new Error(data.message));
+      pending.delete(data.id);
+    } else {
+      setStatus({ kind: 'error', text: 'Lỗi nạp mô hình', message: data.message || 'Không tải được mô hình ONNX.' });
+    }
+  }
+}
+
+function ensureWorker() {
+  if (worker) return worker;
+  worker = new Worker(new URL('./model.worker.js', import.meta.url), { type: 'module' });
+  worker.onmessage = onWorkerMessage;
+  worker.onerror = (ev) => {
+    const msg = ev?.message || 'Worker ONNX gặp sự cố không mong muốn.';
+    rejectAllPending(msg);
+    setStatus({ kind: 'error', text: 'Lỗi worker', message: msg });
+  };
+  return worker;
+}
+
+function loadModel() {
+  setStatus({ kind: 'loading', text: 'Đang khởi động ONNX…' });
+  ensureWorker().postMessage({ type: 'load' });
 }
 
 // Chỉ tải mô hình khi người dùng vào màn chat, để trang đầu mở thật nhanh.
 let chatReady = false;
 function startApp() {
-  if (!chatReady) { chatReady = true; setupChat({ classify, onEngineStatus: (f) => statusListeners.push(f) }); }
-  if (worker) return;
-  worker = new Worker(new URL('./model.worker.js', import.meta.url), { type: 'module' });
-  worker.onmessage = onWorkerMessage;
-  worker.postMessage({ type: 'load' });
+  if (!chatReady) {
+    chatReady = true;
+    setupChat({
+      classify,
+      retryLoad: loadModel,
+      onEngineStatus: (f) => {
+        statusListeners.push(f);
+        if (lastStatus) f(lastStatus);
+      },
+    });
+  }
+  if (!worker) loadModel();
 }
 setupLanding({ onStart: startApp });
 

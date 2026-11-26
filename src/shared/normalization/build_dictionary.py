@@ -14,7 +14,7 @@ Cách hoạt động:
   9. Xuất ra teencode_dict.json
 
 Chạy:
-    python src/normalization/build_dictionary.py
+    python -m src.shared.normalization.build_dictionary
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ from __future__ import annotations
 import json
 import re
 import string
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -31,10 +32,12 @@ import pandas as pd
 # ============================================================
 # Cấu hình
 # ============================================================
-RAW_DATA_DIR = Path("data/raw/vilexnorm")
-OUTPUT_PATH = Path("src/normalization/teencode_dict.json")
+_NORM_DIR = Path(__file__).resolve().parent
+REPO_ROOT = _NORM_DIR.parents[2]
+RAW_DATA_DIR = REPO_ROOT / "data" / "raw" / "vilexnorm"
+OUTPUT_PATH = _NORM_DIR / "teencode_dict.json"
 MIN_FREQ = 2        # chỉ giữ cặp xuất hiện >= 2 lần
-DOMINANCE = 0.70     # nếu ứng viên top-1 chiếm < 70% tổng → loại (quá mơ hồ)
+DOMINANCE = 0.70     # nếu ứng viên top-1 chiếm < 70% tổng (gồm cả cặp giữ nguyên) → loại (quá mơ hồ)
 
 # Dấu câu + emoticon fragments cần strip khỏi đầu/cuối từ
 PUNCT_CHARS = set(string.punctuation + "…""''）（）【】")
@@ -136,12 +139,22 @@ def is_only_diacritic_diff(orig: str, norm: str) -> bool:
     return strip_diacritics(orig) == strip_diacritics(norm) and orig != norm
 
 
+def _ensure_utf8_stdout() -> None:
+    enc = (getattr(sys.stdout, "encoding", "") or "").lower().replace("_", "-")
+    if enc not in {"utf-8", "utf8"} and hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
+
 # ============================================================
 # Core logic
 # ============================================================
 
 def load_data(data_dir: Path) -> pd.DataFrame:
     """Đọc train.csv."""
+    _ensure_utf8_stdout()
     train_path = data_dir / "train.csv"
     if not train_path.exists():
         raise FileNotFoundError(f"Không tìm thấy {train_path}")
@@ -155,6 +168,7 @@ def extract_word_pairs(df: pd.DataFrame) -> Counter:
     So sánh từng cặp từ giữa original và normalized (alignment 1:1).
     Strip dấu câu, bỏ emoticon, bỏ elongation.
     """
+    _ensure_utf8_stdout()
     pair_counter = Counter()
     same_length = 0
     diff_length = 0
@@ -184,23 +198,27 @@ def extract_word_pairs(df: pd.DataFrame) -> Counter:
             o_clean = strip_punct(o_word).lower()
             n_clean = strip_punct(n_word).lower()
 
-            if not o_clean or not n_clean or o_clean == n_clean:
+            if not o_clean or not n_clean:
                 continue
 
             # Bỏ elongation (xử lý bằng regex rule riêng)
-            if is_elongated_pair(o_clean, n_clean):
+            if o_clean != n_clean and is_elongated_pair(o_clean, n_clean):
                 elongated_skipped += 1
                 continue
 
+            # Đếm CẢ cặp giữ nguyên (o_clean == n_clean) để tính đúng mẫu số dominance
             pair_counter[(o_clean, n_clean)] += 1
 
     total = same_length + diff_length
-    print(f"\n--- Thống kê alignment ---")
-    print(f"Cùng số từ (dùng được):  {same_length}/{total} ({same_length/total*100:.1f}%)")
-    print(f"Khác số từ (bỏ qua):    {diff_length}/{total} ({diff_length/total*100:.1f}%)")
+    changed_pairs = sum(1 for (o, n) in pair_counter if o != n)
+    same_pct = (same_length / total * 100) if total else 0.0
+    diff_pct = (diff_length / total * 100) if total else 0.0
+    print("\n--- Thống kê alignment ---")
+    print(f"Cùng số từ (dùng được):  {same_length}/{total} ({same_pct:.1f}%)")
+    print(f"Khác số từ (bỏ qua):    {diff_length}/{total} ({diff_pct:.1f}%)")
     print(f"Elongation (bỏ):         {elongated_skipped}")
     print(f"Emoticon (bỏ):            {emoticon_skipped}")
-    print(f"Tổng cặp từ khác nhau:  {len(pair_counter)}")
+    print(f"Tổng cặp từ biến đổi:    {changed_pairs} (tổng khóa kể cả giữ nguyên: {len(pair_counter)})")
 
     return pair_counter
 
@@ -208,17 +226,21 @@ def extract_word_pairs(df: pd.DataFrame) -> Counter:
 def build_dictionary(pair_counter: Counter, min_freq: int, dominance: float) -> dict[str, str]:
     """
     Xây từ điển 1-1 từ Counter.
-    Lọc: freq < min_freq, ambiguous blocklist, dominance < threshold.
+    Lọc: freq < min_freq, ambiguous blocklist, dominance < threshold (tính trên tổng số lần
+    xuất hiện của `orig` bao gồm cả các lần giữ nguyên `orig == norm`).
     """
-    # Nhóm: orig → [(norm, freq), ...]
+    _ensure_utf8_stdout()
+    # Tổng số lần xuất hiện của mỗi `orig` (bao gồm cả cặp giữ nguyên và cặp hiếm)
+    orig_total_freq: Counter[str] = Counter()
+    # Nhóm ứng viên biến đổi: orig → [(norm, freq), ...]
     orig_to_norms: defaultdict[str, list[tuple[str, int]]] = defaultdict(list)
 
     for (orig, norm), freq in pair_counter.items():
-        if freq < min_freq:
+        if freq <= 0 or orig in AMBIGUOUS_BLOCKLIST:
             continue
-        if orig in AMBIGUOUS_BLOCKLIST:
-            continue
-        orig_to_norms[orig].append((norm, freq))
+        orig_total_freq[orig] += freq
+        if orig != norm and freq >= min_freq:
+            orig_to_norms[orig].append((norm, freq))
 
     dictionary = {}
     conflicts = 0
@@ -227,38 +249,40 @@ def build_dictionary(pair_counter: Counter, min_freq: int, dominance: float) -> 
 
     for orig, candidates in orig_to_norms.items():
         candidates.sort(key=lambda x: x[1], reverse=True)
-        total_freq = sum(f for _, f in candidates)
+        total_freq = orig_total_freq[orig]
         best_norm, best_freq = candidates[0]
+        kept_freq = pair_counter.get((orig, orig), 0)
 
-        if len(candidates) > 1:
+        if len(candidates) > 1 or kept_freq > 0:
             conflicts += 1
-            conflict_details.append((orig, candidates))
+            conflict_details.append((orig, candidates, total_freq, kept_freq))
 
-            # Nếu ứng viên top-1 không chiếm đa số → quá mơ hồ, bỏ
-            if best_freq / total_freq < dominance:
-                dropped_ambiguous += 1
-                continue
+        # Kiểm tra tỷ lệ áp đảo trên TOÀN BỘ lần xuất hiện của `orig` (kể cả khi giữ nguyên)
+        if total_freq <= 0 or (best_freq / total_freq) < dominance:
+            dropped_ambiguous += 1
+            continue
 
         dictionary[orig] = best_norm
 
-    print(f"\n--- Kết quả xây từ điển ---")
+    print("\n--- Kết quả xây từ điển ---")
     print(f"Tổng entry sau lọc (freq >= {min_freq}): {len(dictionary)}")
     print(f"Từ trong blocklist bị loại:              {len(AMBIGUOUS_BLOCKLIST)}")
     print(f"Từ có nhiều ứng viên:                    {conflicts}")
     print(f"  → Loại vì quá mơ hồ (top1 < {dominance:.0%}):  {dropped_ambiguous}")
 
     if conflict_details[:15]:
-        print(f"\n--- Mẫu từ có nhiều ứng viên ---")
-        for orig, candidates in conflict_details[:15]:
-            total = sum(f for _, f in candidates)
-            cands = ", ".join(f'"{n}" ({f}/{total})' for n, f in candidates)
-            print(f'  "{orig}" → {cands}')
+        print("\n--- Mẫu từ có nhiều ứng viên ---")
+        for orig, candidates, total_all, kept_freq in conflict_details[:15]:
+            cands = ", ".join(f'"{n}" ({f}/{total_all})' for n, f in candidates)
+            kept_note = f', giữ nguyên ({kept_freq}/{total_all})' if kept_freq > 0 else ""
+            print(f'  "{orig}" → {cands}{kept_note}')
 
     return dictionary
 
 
 def show_sample(dictionary: dict[str, str], n: int = 40):
     """In mẫu."""
+    _ensure_utf8_stdout()
     print(f"\n--- Mẫu {n} entry ---")
     for i, (k, v) in enumerate(sorted(dictionary.items())):
         if i >= n:
@@ -268,15 +292,17 @@ def show_sample(dictionary: dict[str, str], n: int = 40):
 
 def show_stats(dictionary: dict[str, str]):
     """Thống kê."""
+    _ensure_utf8_stdout()
     lens = [len(k) for k in dictionary]
-    print(f"\n--- Phân bố độ dài từ gốc ---")
+    print("\n--- Phân bố độ dài từ gốc ---")
     for bucket in [1, 2, 3, 4]:
         label = f"{bucket} ký tự" if bucket < 4 else "4+ ký tự"
-        count = sum(1 for l in lens if (l == bucket if bucket < 4 else l >= bucket))
+        count = sum(1 for word_len in lens if (word_len == bucket if bucket < 4 else word_len >= bucket))
         print(f"  {label}: {count}")
 
 
 def main():
+    _ensure_utf8_stdout()
     df = load_data(RAW_DATA_DIR)
     pair_counter = extract_word_pairs(df)
     dictionary = build_dictionary(pair_counter, min_freq=MIN_FREQ, dominance=DOMINANCE)

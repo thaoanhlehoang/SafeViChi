@@ -1,5 +1,5 @@
 {
-  "model": "dualorc_mmbert_base",
+  "model": "safevichi_v2",
   "quantization_method": "Hybrid_INT8: PerRowInt8Embedding(int8_sym_fp32_scale) + ORT_quantize_dynamic(QInt8_per_channel_W8A8, attn+mlp.Wi) + DequantizeLinear(int8_per_channel_W8A32, 22_GeGLU_mlp.Wo) + DualORC_head_FP32",
   "sizes_MiB": {
     "safetensors_fp32": 1177.0,
