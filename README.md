@@ -26,6 +26,7 @@ $ safevichi --json "Tài khoản của quý khách sẽ bị khóa || Vui lòng 
 ## Mục lục
 
 - [Bài toán & bộ nhãn](#bài-toán--bộ-nhãn)
+- [v3: Phản hồi, kháng nghị, sửa nhãn](#v3-phản-hồi-kháng-nghị-sửa-nhãn)
 - [Kiến trúc mô hình](#kiến-trúc-mô-hình)
 - [Kết quả chính](#kết-quả-chính)
 - [Cài đặt & sử dụng](#cài-đặt--sử-dụng)
@@ -38,7 +39,8 @@ $ safevichi --json "Tài khoản của quý khách sẽ bị khóa || Vui lòng 
 
 | Phiên bản | Vị trí | Bài toán | Đầu ra |
 | --- | --- | --- | --- |
-| **v2** *(hiện tại, vòng chung kết)* | thư mục gốc | Hội thoại 2 người, 1–8 lượt, **5 nhãn theo tình huống** | Nhãn + cụm bằng chứng, phân loại và tô sáng có ngưỡng riêng |
+| **v3** *(hiện tại, chung kết chặng 2)* | [web-v2/](web-v2/) | Giữ nguyên mô hình v2, thêm **phản hồi, kháng nghị, sửa nhãn** do con người quyết định | Gói phản hồi tối thiểu, hàng đợi kiểm duyệt, đề xuất ngưỡng có phê duyệt và nhật ký |
+| **v2** *(chung kết chặng 1)* | thư mục gốc | Hội thoại 2 người, 1–8 lượt, **5 nhãn theo tình huống** | Nhãn + cụm bằng chứng, phân loại và tô sáng có ngưỡng riêng |
 | **v1** *(baseline đóng băng)* | [v1/](v1/) · tag `v1-vongloai` | Câu đơn, `HATE` / `CLEAN` | ViHateT5 fine-tune đối kháng (FGM) + occlusion |
 
 | Nhãn | Ý nghĩa | Ứng dụng xử lý |
@@ -58,6 +60,52 @@ Khi nhiều nhãn cùng đúng: `DE_DOA` > `LUA_DAO` > `QUAY_ROI` > `XUC_PHAM`. 
 ```
 
 `bang_chung` luôn là cụm chép nguyên văn từ tin nhắn (tỉ lệ cụm bịa `0%` trên bộ test) và được phép rỗng.
+
+---
+
+## v3: Phản hồi, kháng nghị, sửa nhãn
+
+Gán nhãn độc hại tự động có thể sai, ảnh hưởng tới tự do ngôn luận và gây khiếu nại. v3 không đổi mô hình v2 mà thêm một vòng phản hồi trong đó **AI chỉ gợi ý, con người quyết định**, và dữ liệu rời máy được giữ ở mức tối thiểu. Báo cáo đầy đủ: [docs/v3/bao_cao/bao_cao_v3.pdf](docs/v3/bao_cao/bao_cao_v3.pdf).
+
+### Nguyên tắc
+
+1. **AI chỉ cảnh báo, không chặn, không xóa.** Nút **Vẫn gửi** / **Vẫn xem** luôn có.
+2. **Phân quyền rõ ràng.** Người dùng quyết định với tin của mình, người duyệt (`nguoi_duyet`) quyết định nhãn đúng, quản trị viên (`quan_tri`) phê duyệt thay đổi ngưỡng.
+3. **Mọi thay đổi ngưỡng phải được phê duyệt và ghi nhật ký.** Ngưỡng mới chỉ có hiệu lực sau khi quản trị viên duyệt; đề xuất ngưỡng kèm số đo trên validation, không dùng test.
+4. **Tối thiểu hóa dữ liệu.** Phân tích tin nhắn không phát sinh request nào. Chỉ khi người dùng bấm gửi phản hồi mới có request.
+5. **Không có vòng lặp tự học.** Phản hồi không đi thẳng vào huấn luyện.
+
+### Hai mức phản hồi
+
+| | Mức 1 (mặc định) | Mức 2 (tùy chọn) |
+| --- | --- | --- |
+| Gửi gì | Chỉ mã lựa chọn: loại báo cáo, nhãn AI, nhãn đề xuất, lý do, khoảng điểm (0–9), có tô sáng hay không, phiên bản mô hình/ngưỡng, ngày | Thêm đoạn hội thoại **đã che thông tin cá nhân** |
+| Nội dung tin nhắn | **Không gửi một chữ nào** | Chỉ bản đã che, người dùng đã xem trước |
+| Điều kiện | Bấm gửi | Tự tích ô đồng ý (không tích sẵn); đổi bản xem trước thì ô đồng ý tự bỏ chọn |
+| Dùng để | Thống kê báo sai theo nhãn, lý do, khoảng điểm | Người duyệt gán lại nhãn và bằng chứng |
+
+Năm loại báo cáo: *Tin nhắn này an toàn*, *AI chọn sai loại*, *AI bỏ sót*, *Tô sáng có vấn đề*, *Khác / chưa chắc*. Câu chữ đầy đủ của biểu mẫu: [docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md](docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md).
+
+**Che thông tin trên thiết bị** ([che_thong_tin.js](web-v2/src/phan_hoi/che_thong_tin.js)) chạy trong trình duyệt trước khi dữ liệu rời máy: số điện thoại, số tài khoản, email, mã OTP, số giấy tờ, địa chỉ, tên người được thay bằng nhãn như `[SĐT]`, `[TÊN_1]`; liên kết thành `[LINK]`; số tiền được giữ để người duyệt hiểu ngữ cảnh. Không lưu bảng ánh xạ tên thật ↔ nhãn. Ở bước xem trước, người dùng được che thêm nhưng không được bỏ che. Trên 30 ca kiểm thử do nhóm tự viết (dữ liệu giả lập), bộ che đúng `30/30`, sót `0`, che nhầm `0` ([results/v3/che_thong_tin/metrics.json](results/v3/che_thong_tin/metrics.json), sinh bằng `npm run do:che`).
+
+**Không gửi, không lưu** mã tài khoản đăng nhập, số điện thoại, IP hay tên liên hệ cùng phản hồi. `ma_thiet_bi` là UUID ngẫu nhiên trong `localStorage`; giới hạn tần suất (20 lượt mức 1, 5 lượt mức 2 mỗi ngày) dùng HMAC của ngày + `ma_thiet_bi`, không dùng IP.
+
+**Làm dịu cảnh báo:** sau 3 lần người dùng báo *Tin nhắn này an toàn* cho cùng một nhãn trong 7 ngày, ứng dụng có thể thôi làm mờ hoặc thôi gợi ý chặn với nhãn đó. Việc này chỉ đổi cách hiển thị trên máy, không đổi mô hình. `DE_DOA` và `LUA_DAO` có mức sàn: vẫn hiện cảnh báo, vẫn vô hiệu liên kết.
+
+### Kiểm duyệt và hiệu chỉnh ngưỡng
+
+Khu vực nội bộ ([quan-tri.html](web-v2/quan-tri.html)) gồm:
+
+- **Hàng đợi kiểm duyệt:** người duyệt mở **từng mẫu** mức 2 (không có endpoint xuất hàng loạt), chọn nhãn, chọn cụm bằng chứng nguyên văn trong một lượt, có thể che thêm. `DE_DOA` và `XUC_PHAM` nhắm nhóm/vùng miền cần **hai người duyệt cùng nhãn**; nếu bất đồng, quản trị viên chốt bằng cách chọn một trong các lượt duyệt đã có, kèm lý do.
+- **Báo cáo mức 1:** thống kê theo nhãn, lý do, khoảng điểm, phiên bản.
+- **Đề xuất ngưỡng:** người duyệt hoặc quản trị viên tạo đề xuất kèm số đo validation trước/sau; chỉ quản trị viên phê duyệt. Phê duyệt bị từ chối (`409`) nếu cấu hình hiệu lực đã đổi kể từ lúc tạo đề xuất. Worker trên thiết bị đọc ngưỡng đã duyệt khi khởi động, nếu không có thì dùng `baseline`.
+- **Nhật ký:** mọi lần mở mẫu, lưu lượt duyệt, chốt bất đồng, tạo và phê duyệt đề xuất đều được ghi vào `nhat_ky` (bằng trigger trong cơ sở dữ liệu).
+
+Mẫu mức 2 đã duyệt xong có thể xuất ra để huấn luyện lại bằng `node web-v2/scripts/xuat_mau_da_duyet.mjs --out <tệp.jsonl>`. Mọi mẫu xuất ra có `nguon="phan_hoi"`, `cach_gan="nguoi"`, `split="train"`, **không bao giờ vào test**, và phải khử trùng gần đúng trước khi gộp vào train.
+
+### Kiến trúc máy chủ phản hồi
+
+API chạy cùng origin bằng Cloudflare Pages Functions ([functions/api/[[path]].js](web-v2/functions/api/[[path]].js)) với cơ sở dữ liệu D1 (SQLite). Lược đồ nằm trong [cloudflare/migrations/](web-v2/cloudflare/migrations/). Bản demo dùng D1 riêng chỉ chứa dữ liệu giả lập, cho phép chọn vai trò ngay trên màn hình; môi trường dữ liệu thật xác thực bằng mã truy cập theo vai trò. Danh sách endpoint, biến môi trường và các bước triển khai: [web-v2/cloudflare/FEEDBACK_RUNBOOK.md](web-v2/cloudflare/FEEDBACK_RUNBOOK.md).
 
 ---
 
@@ -159,12 +207,26 @@ Các script gọi LLM (sinh dữ liệu, gán nhãn sơ bộ) đọc cấu hình
 
 ### 3. Ứng dụng web on-device
 
-[web-v2/](web-v2/) chạy mô hình INT8 trong Web Worker qua ONNX Runtime Web (WASM), không có backend. Bản triển khai: [safevichi.pages.dev](https://safevichi.pages.dev/).
+[web-v2/](web-v2/) chạy mô hình INT8 trong Web Worker qua ONNX Runtime Web (WASM). Việc phân tích tin nhắn không cần backend; máy chủ chỉ nhận phản hồi khi người dùng bấm gửi (v3). Bản triển khai: [safevichi.pages.dev](https://safevichi.pages.dev/).
 
 ```bash
 cd web-v2 && npm install
 npm run dev                # http://127.0.0.1:5173
 npm run verify:parity      # Đối chiếu kết quả JS với bộ test v2
+npm test                   # Kiểm thử che thông tin và hợp đồng phản hồi (v3)
+npm run do:che             # Đo bộ che trên 30 ca, ghi results/v3/che_thong_tin/metrics.json
+```
+
+Chạy thử đầy đủ luồng phản hồi và kiểm duyệt với D1 cục bộ (dữ liệu giả lập):
+
+```bash
+cd web-v2
+npm run build
+node scripts/smoke-test-feedback.mjs --init-demo
+npx --yes wrangler@4.169.0 d1 migrations apply DEMO_FEEDBACK_DB --local
+npx --yes wrangler@4.169.0 pages dev dist --ip 127.0.0.1 --port 8788
+# Trang chat: http://127.0.0.1:8788/  ·  Kiểm duyệt, quản trị: http://127.0.0.1:8788/quan-tri.html
+node scripts/smoke-test-feedback.mjs http://127.0.0.1:8788   # (cửa sổ khác) thử toàn bộ luồng HTTP
 ```
 
 ---
@@ -207,7 +269,10 @@ Nguyên tắc tái lập: seed cố định `42`; bộ test khóa bằng SHA-256
 | [docs/CAU_TRUC_THU_MUC.md](docs/CAU_TRUC_THU_MUC.md) | Vai trò từng thư mục và mô-đun, định dạng dữ liệu, nơi lưu kết quả |
 | [docs/KET_QUA.md](docs/KET_QUA.md) | Toàn bộ bảng số: dữ liệu, chọn mô hình trên dev, kết quả theo nhãn và lát cắt, ablation, INT8, đo thiết bị |
 | [docs/DANH_GIA.md](docs/DANH_GIA.md) | Nhận xét theo 3 yêu cầu cải tiến, phân tích báo nhầm/bỏ sót, ví dụ thất bại, hạn chế, hướng phát triển |
-| [docs/v2/bao_cao/bao_cao_v2.pdf](docs/v2/bao_cao/bao_cao_v2.pdf) | Báo cáo vòng chung kết (mã LaTeX cùng thư mục) |
+| [docs/v2/bao_cao/bao_cao_v2.pdf](docs/v2/bao_cao/bao_cao_v2.pdf) | Báo cáo chung kết chặng 1 (mã LaTeX cùng thư mục) |
+| [docs/v3/bao_cao/bao_cao_v3.pdf](docs/v3/bao_cao/bao_cao_v3.pdf) | Báo cáo chung kết chặng 2: phản hồi, kiểm duyệt, phân quyền, tối thiểu hóa dữ liệu (mã LaTeX cùng thư mục) |
+| [docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md](docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md) | Phạm vi chặng 2 và nội dung chính thức của biểu mẫu phản hồi |
+| [web-v2/cloudflare/FEEDBACK_RUNBOOK.md](web-v2/cloudflare/FEEDBACK_RUNBOOK.md) | Chạy, tích hợp và triển khai API phản hồi; danh sách endpoint |
 
 `KET_QUA.md` và `DANH_GIA.md` sinh tự động từ `results/v2/`, không sửa tay. SafeViChi v1 (vòng loại) được giữ nguyên trong [v1/](v1/) và tag `v1-vongloai` làm baseline.
 
