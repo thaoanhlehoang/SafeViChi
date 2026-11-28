@@ -2,6 +2,7 @@ import { LABELS } from './labels.js';
 import { setupLanding } from './landing.js';
 import { setupChat } from './chat.js';
 import { drawClosing } from './about-art.js';
+import { datPhienBan } from './phan_hoi/api.js';
 
 const $ = (id) => document.getElementById(id);
 let worker = null;
@@ -46,6 +47,7 @@ function onWorkerMessage({ data }) {
   if (data.type === 'progress') {
     setStatus({ kind: 'loading', text: formatProgress(data), stage: data.stage, loaded: data.loaded, total: data.total });
   } else if (data.type === 'ready') {
+    datPhienBan({ mo_hinh: data.phien_ban_mo_hinh, nguong: data.phien_ban_nguong });
     setStatus({ kind: 'real', text: 'SafeViChi v2' });
   } else if (data.type === 'result') {
     pending.get(data.id)?.resolve(data);
@@ -74,7 +76,7 @@ function ensureWorker() {
 
 function loadModel() {
   setStatus({ kind: 'loading', text: 'Đang khởi động ONNX…', stage: 'Đang khởi động…', loaded: 0, total: 0 });
-  ensureWorker().postMessage({ type: 'load' });
+  ensureWorker().postMessage({ type: 'load', dungNguongDaDuyet: true });
 }
 
 // Chỉ tải mô hình khi người dùng vào màn chat, để trang đầu mở thật nhanh.

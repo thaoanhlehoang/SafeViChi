@@ -45,6 +45,7 @@
 
 .ph-foot { padding: .8rem 1.25rem 1rem; border-top: 1px solid var(--rule, #dcd6c6); background: var(--paper, #f4f1e8); border-radius: 0 0 12px 12px; }
 .ph-note { margin: 0 0 .5rem; font-size: .8rem; line-height: 1.45; color: var(--ink-2, #4b5a4d); }
+.ph-demo-note { color: var(--green, #24552c); font-weight: 600; }
 .ph-status { margin: 0; font-size: .82rem; }
 .ph-status:empty { display: none; }
 .ph-status.loi { margin-bottom: .5rem; color: var(--red, #b42318); }
@@ -66,3 +67,22 @@
 .safety-ok { flex: none; display: inline-grid; place-items: center; min-block-size: 28px; min-inline-size: 28px; padding: 0; border: 0; border-radius: 6px; background: none; color: var(--c, var(--green)) !important; cursor: pointer; }
 .safety-ok:hover { background: rgba(24, 38, 27, .08); }
 .safety-ok svg { width: 1.05rem; height: 1.05rem; }
+
+.ph-check { display: flex; align-items: flex-start; gap: .55rem; color: var(--ink); font-size: .87rem; line-height: 1.45; cursor: pointer; }
+.ph-check input { flex: none; margin: .18rem 0 0; accent-color: var(--green, #24552c); }
+.ph-share { margin-top: .9rem; padding: .75rem .85rem; border: 1px solid var(--rule, #dcd6c6); border-radius: 8px; background: var(--paper, #f4f1e8); }
+.ph-preview { display: grid; gap: .65rem; }
+.ph-preview h4, .ph-preview p { margin: 0; }
+.ph-preview-help { color: var(--ink-2, #4b5a4d); font-size: .8rem; line-height: 1.5; }
+.ph-preview-help:empty { display: none; }
+.ph-preview-turns { display: grid; gap: .5rem; }
+.ph-preview-turn { min-width: 0; padding: .55rem .75rem; border: 1px solid var(--rule, #dcd6c6); border-radius: 8px; background: #fff; }
+.ph-preview-turn-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; color: var(--ink-2); font-size: .8rem; }
+.ph-preview-turn textarea { display: block; width: 100%; resize: vertical; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .88rem; }
+.ph-preview-mask { padding: .3rem .45rem; border: 0; border-radius: 4px; background: #eef4ec; color: var(--green, #24552c); font: inherit; cursor: pointer; }
+.ph-settings .ph-preview-help { margin: .4rem 0 1rem; }
+.ph-settings-link { color: var(--green, #24552c); font-size: .87rem; }
+.chat-settings svg { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.chat-settings svg circle { fill: var(--sheet, #fbfaf5); }
+.warn-actions { flex-wrap: wrap; justify-content: flex-end; }
+.warn-report { border: 1px solid var(--rule, #dcd6c6); background: var(--sheet, #fbfaf5); color: var(--ink-2); }

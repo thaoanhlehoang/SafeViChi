@@ -14,6 +14,7 @@ import ortWasmModuleUrl from 'onnxruntime-web/ort-wasm-simd-threaded.mjs?url';
 import ortWasmUrl from 'onnxruntime-web/ort-wasm-simd-threaded.wasm?url';
 import { MMBertTokenizer } from './tokenizer.js';
 import { prepareDualORCInput, decodeDualORCOutput } from './dualorc.js';
+import { BASELINE_THRESHOLD_VERSION, fetchActiveThresholds } from '../feedback/thresholds.js';
 
 const LOCAL_MODEL_BASE = '/model';
 const DEFAULT_REMOTE_BASE = 'https://huggingface.co/dminhnhat06/safevichi_v2/resolve/main/onnx';
@@ -47,7 +48,8 @@ function joinUrl(base, rel) {
 
 async function tryFetchJson(url) {
   try {
-    const res = await fetch(url, { cache: 'no-cache' });
+    const isLocal = url.startsWith('/');
+    const res = await fetch(url, { cache: isLocal ? 'no-cache' : 'default' });
     if (!res.ok) return null;
     const text = await res.text();
     if (!text.trim().startsWith('{')) return null;
@@ -61,9 +63,18 @@ async function resolveModelSource() {
   const configured = normalizeBaseUrl(import.meta.env.VITE_MODEL_BASE_URL || '');
   if (configured) {
     const crf = await tryFetchJson(joinUrl(configured, CRF_FILE));
-    if (!crf) throw new Error(`Không tải được ${CRF_FILE} từ ${configured}.`);
-    const manifest = await tryFetchJson(joinUrl(configured, MANIFEST_FILE));
-    return { baseUrl: configured, isLocal: configured.startsWith('/'), crf, manifest };
+    if (crf && crf.arch === 'SafeVi-DualORC-CRF') {
+      const manifest = await tryFetchJson(joinUrl(configured, MANIFEST_FILE));
+      return { baseUrl: configured, isLocal: configured.startsWith('/'), crf, manifest };
+    }
+    // Dự phòng sang Hugging Face nếu nguồn tùy chỉnh (ví dụ R2) tạm thời không truy cập được
+    console.warn(`[SafeViChi] Không tải được ${CRF_FILE} từ ${configured}, chuyển sang dự phòng Hugging Face.`);
+    const fallbackCrf = await tryFetchJson(joinUrl(DEFAULT_REMOTE_BASE, CRF_FILE));
+    if (fallbackCrf && fallbackCrf.arch === 'SafeVi-DualORC-CRF') {
+      const manifest = await tryFetchJson(joinUrl(DEFAULT_REMOTE_BASE, MANIFEST_FILE));
+      return { baseUrl: DEFAULT_REMOTE_BASE, isLocal: false, crf: fallbackCrf, manifest };
+    }
+    throw new Error(`Không tải được ${CRF_FILE} từ ${configured}.`);
   }
 
   // Ưu tiên tệp cục bộ tại /model (không phải tải 334 MiB khi chạy trên máy đã có models/)
@@ -111,7 +122,7 @@ async function fetchBinaryWithProgress(url, { useCache, cacheKey, expectedBytes,
     }
   }
 
-  const res = await fetch(url, { cache: useCache ? 'no-cache' : 'no-store' });
+  const res = await fetch(url, { cache: useCache ? 'default' : 'no-store' });
   if (!res.ok) {
     throw new Error(`Tải thất bại (${res.status}) tại ${url}`);
   }
@@ -187,13 +198,14 @@ let session = null;
 let tokenizer = null;
 let crfMeta = null;
 let runtimeInfo = null;
+let classificationThresholds = null;
 
 export const onnxEngine = {
   get backend() {
     return runtimeInfo?.backend || 'wasm';
   },
 
-  async load(onProgress) {
+  async load(onProgress, { useApprovedThresholds = false } = {}) {
     if (session && tokenizer && crfMeta) return runtimeInfo;
 
     let lastEmitAt = 0;
@@ -214,6 +226,9 @@ export const onnxEngine = {
 
     const useCache = !isLocal;
     const shaVersion = manifest?.sha256?.onnx_int8?.slice(0, 12) || 'v2';
+    const modelVersion = 'dualorc-mmbert-int8@' + shaVersion;
+    const thresholdRequest = useApprovedThresholds && shaVersion !== 'v2'
+      ? fetchActiveThresholds(modelVersion) : null;
 
     const tokEst = FALLBACK_SIZES[TOKENIZER_FILE];
     const onnxEst = FALLBACK_SIZES[MODEL_FILE];
@@ -277,11 +292,15 @@ export const onnxEngine = {
     // Giải phóng tham chiếu bộ đệm 301 MiB để GC thu hồi sau khi ORT đã nạp vào heap WASM
     modelBytes = null;
 
+    const active = await thresholdRequest;
+    classificationThresholds = active?.nguong ?? null;
     runtimeInfo = {
       backend: `WASM · ${threads} luồng`,
       threads,
       source: isLocal ? 'local' : (fromCache ? 'cache' : 'remote'),
       loadMs: performance.now() - t0,
+      phien_ban_mo_hinh: modelVersion,
+      phien_ban_nguong: active?.phien_ban ?? BASELINE_THRESHOLD_VERSION,
     };
     return runtimeInfo;
   },
@@ -324,7 +343,7 @@ export const onnxEngine = {
       const logits = Float32Array.from(outputs.logits.data);
       const emissions = Float32Array.from(outputs.emissions.data);
       const severity = Number(outputs.severity.data[0]);
-      decoded = decodeDualORCOutput({ prep, logits, emissions, severity, meta: crfMeta });
+      decoded = decodeDualORCOutput({ prep, logits, emissions, severity, meta: crfMeta, thresholds: classificationThresholds });
     } finally {
       for (const tensor of Object.values(outputs)) tensor.dispose?.();
     }

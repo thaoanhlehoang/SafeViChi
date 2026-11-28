@@ -1,4 +1,4 @@
-// Biểu mẫu phản hồi mức 1 (Phản hồi kết quả AI). Chỉ giao diện: gói gửi đi qua api.js.
+// Biểu mẫu phản hồi dùng chung. Mức 2 chỉ gửi sau bước xem trước và xác nhận.
 // Quy tắc theo docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md, Mục 1:
 // - mỗi câu chọn một đáp án; câu phụ được bỏ qua, trừ "Vấn đề nằm ở đâu?";
 // - đổi nhánh, nhãn hoặc lý do thì xóa các đáp án phụ đã mất điều kiện hiển thị;
@@ -12,7 +12,10 @@ import {
   LY_DO_AN_TOAN, LY_DO_SAI_LOAI, LY_DO_BO_SOT, LY_DO_TO_SANG, LY_DO_KHAC,
   CHU, MO_TA_TOI_DA,
 } from './ma.js';
-import { guiPhanHoiMuc1, cheThongTin, layPhienBan } from './api.js';
+import { guiPhanHoi, laBanDemo, layPhienBan } from './api.js';
+import { createPreview, getScoreBucket, isLevel2Enabled } from '../feedback/client.js';
+import { redactPersonalInfo } from '../feedback/redaction.js';
+import { oDanhDau, taoManXemTruoc } from './muc2.js';
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
@@ -22,12 +25,6 @@ const el = (tag, cls, text) => {
 };
 
 const nhanOpt = (ma) => ({ ma, ten: TEN_NHAN[ma] });
-
-function maNgauNhien() {
-  if (crypto.randomUUID) return crypto.randomUUID();
-  const b = crypto.getRandomValues(new Uint8Array(16));
-  return [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
-}
 
 const tim = (options, ma) => options.find((o) => o.ma === ma);
 
@@ -41,7 +38,7 @@ function cauHoi(st, ctx) {
   const addPhu = (key, phu) => phu && add(key, phu.hoi, !!phu.batBuoc, phu.options);
 
   switch (st.bao_cao) {
-    case 'tin_an_toan': {
+    case 'tin_nhan_an_toan': {
       const ld = add('ly_do', 'Vì sao bạn cho rằng tin nhắn này an toàn?', true, LY_DO_AN_TOAN);
       addPhu('chi_tiet', ld?.phu);
       break;
@@ -62,7 +59,7 @@ function cauHoi(st, ctx) {
       }
       break;
     }
-    case 'to_sang': {
+    case 'loi_to_sang': {
       const opts = LY_DO_TO_SANG.filter((o) => o.canToSang === undefined || o.canToSang === ctx.coToSang);
       const ld = add('ly_do', 'Phần tô sáng có vấn đề gì?', true, opts);
       addPhu('chi_tiet', ld?.phu);
@@ -108,35 +105,38 @@ function hopLe(st, ctx) {
   const { qs, coMoTa } = cauHoi(st, ctx);
   if (qs.some((q) => q.batBuoc && !st[q.key])) return false;
   if (coMoTa) {
-    const len = (st.mo_ta || '').trim().length;
+    const len = Array.from((st.mo_ta ?? '').trim()).length;
     if (len === 0 || len > MO_TA_TOI_DA) return false;
   }
   return true;
 }
 
+function moTaToGui(st) {
+  return (st.mo_ta ?? '').trim().replace(/[\t\r\n]+/g, ' ');
+}
+
 function taoGoi(st, ctx, maLanGui) {
   const { coMoTa } = cauHoi(st, ctx);
   let nhanDeXuat = null;
-  if (st.bao_cao === 'tin_an_toan') nhanDeXuat = 'AN_TOAN';
+  if (st.bao_cao === 'tin_nhan_an_toan') nhanDeXuat = 'AN_TOAN';
   else if (st.bao_cao === 'sai_loai' || st.bao_cao === 'bo_sot') nhanDeXuat = st.nhan ?? null;
-  else if (st.bao_cao === 'to_sang') nhanDeXuat = ctx.nhanMoHinh;
+  else if (st.bao_cao === 'loi_to_sang') nhanDeXuat = ctx.nhanMoHinh;
   else if (st.bao_cao === 'khac_chua_chac') {
     nhanDeXuat = st.nhan_tuy_chon && st.nhan_tuy_chon !== 'CHUA_CHAC' ? st.nhan_tuy_chon : null;
   }
-  const pb = layPhienBan();
+  const pb = ctx.phienBan ?? layPhienBan();
   return {
-    loai: 'muc_1',
     ma_lan_gui: maLanGui,
     ma_bao_cao: st.bao_cao,
     nhan_mo_hinh: ctx.nhanMoHinh,
     nhan_de_xuat: nhanDeXuat,
     ma_ly_do: st.ly_do ?? null,
     ma_chi_tiet: st.chi_tiet ?? null,
-    ly_do_khac: coMoTa ? cheThongTin((st.mo_ta || '').trim()).slice(0, MO_TA_TOI_DA) : null,
-    co_to_sang: !!ctx.coToSang,
-    khoang_diem: Math.round((Number(ctx.xacSuat) || 0) * 10) / 10,
-    phien_ban_mo_hinh: pb.mo_hinh ?? null,
-    phien_ban_nguong: pb.nguong ?? null,
+    ly_do_khac: coMoTa ? moTaToGui(st) : null,
+    co_to_sang: ctx.nhanMoHinh !== 'AN_TOAN' && !!ctx.coToSang,
+    khoang_diem: getScoreBucket(ctx.xacSuat),
+    phien_ban_mo_hinh: pb.mo_hinh,
+    phien_ban_nguong: pb.nguong,
   };
 }
 
@@ -165,19 +165,27 @@ function nhomLuaChon(key, hoi, batBuoc, options, chon, onChon, { lon = false } =
 }
 
 /**
- * Mở biểu mẫu mức 1.
+ * Mở biểu mẫu phản hồi từ một kết quả phân tích.
  * @param {object} p
  * @param {string} p.nhanMoHinh   nhãn AI đã gán (AN_TOAN | XUC_PHAM | QUAY_ROI | DE_DOA | LUA_DAO)
  * @param {number} p.xacSuat      xác suất của nhãn đó (0..1)
  * @param {boolean} p.coToSang    AI có tô đoạn nào không
+ * @param {string[]} [p.luot]    các lượt thuộc kết quả đang được báo cáo
+ * @param {string[]} [p.tenLienHe]  tên chỉ dùng trên thiết bị để che thêm
  * @param {HTMLElement} [p.host]  nơi gắn hộp thoại (để dùng chung biến màu của khung chat)
- * @param {(goi:object)=>void} [p.onDaGui]
+ * @param {(ketQua:object)=>void} [p.onDaGui]
  */
-export function moBieuMauMuc1({ nhanMoHinh, xacSuat, coToSang, host = document.body, onDaGui } = {}) {
-  const ctx = { nhanMoHinh, xacSuat, coToSang };
+export function moBieuMauMuc1({
+  nhanMoHinh, xacSuat, coToSang, luot = [], tenLienHe = [], host = document.body, onDaGui,
+} = {}) {
+  const ctx = { nhanMoHinh, xacSuat, coToSang, phienBan: layPhienBan() };
   const st = { mo_ta: '' };
-  const maLanGui = maNgauNhien();
+  let maLanGui = null;
   let dangGui = false;
+  let xemTruoc = false;
+  let banXemTruoc = null;
+  let dongY = false;
+  const coTheGuiKem = luot.length > 0 && isLevel2Enabled();
 
   const dlg = el('dialog', 'ph-dialog');
   dlg.setAttribute('aria-labelledby', 'ph-title');
@@ -201,6 +209,8 @@ export function moBieuMauMuc1({ nhanMoHinh, xacSuat, coToSang, host = document.b
 
   const body = el('div', 'ph-body');
   const foot = el('footer', 'ph-foot');
+  const demoNote = el('p', 'ph-note ph-demo-note', 'Bản trình diễn. Chỉ gửi dữ liệu giả lập vì người xem demo có thể chọn vai trò kiểm duyệt.');
+  demoNote.hidden = true;
   const note = el('p', 'ph-note', CHU.thongBaoGui);
   const status = el('p', 'ph-status');
   status.setAttribute('role', 'status');
@@ -208,22 +218,39 @@ export function moBieuMauMuc1({ nhanMoHinh, xacSuat, coToSang, host = document.b
   const actions = el('div', 'ph-actions');
   const huy = el('button', 'ph-huy', CHU.huy);
   huy.type = 'button';
-  huy.onclick = () => dlg.close();
+  huy.onclick = () => {
+    if (!xemTruoc) {
+      dlg.close();
+      return;
+    }
+    xemTruoc = false;
+    dongY = false;
+    status.textContent = '';
+    ve();
+    body.querySelector('.ph-share input')?.focus();
+  };
   const gui = el('button', 'ph-gui', CHU.gui);
   gui.type = 'submit';
   actions.append(huy, gui);
-  foot.append(note, status, actions);
+  foot.append(demoNote, note, status, actions);
 
   form.append(head, intro, body, foot);
   dlg.append(form);
 
   function capNhatNut() {
-    const ok = hopLe(st, ctx) && !dangGui;
+    const ok = hopLe(st, ctx) && !dangGui && (!xemTruoc || dongY);
     gui.disabled = !ok;
     gui.setAttribute('aria-disabled', String(!ok));
+    gui.textContent = dangGui ? CHU.dangGui : xemTruoc ? 'Gửi bản đã che' : st.guiKem ? 'Xem trước' : CHU.gui;
+    huy.textContent = xemTruoc ? 'Quay lại' : CHU.huy;
+    huy.disabled = x.disabled = dangGui;
+    note.textContent = xemTruoc
+      ? 'Mức 2 gửi đoạn đã che và thông tin biểu mẫu cho người kiểm duyệt.'
+      : st.guiKem ? 'Bạn sẽ xem trước đoạn đã che trước khi quyết định gửi.' : CHU.thongBaoGui;
   }
 
   function onChon(key, ma, focusId) {
+    maLanGui = null;
     st[key] = ma;
     for (const k of PHU_THUOC[key] || []) {
       if (k === 'mo_ta') st.mo_ta = '';
@@ -253,17 +280,17 @@ export function moBieuMauMuc1({ nhanMoHinh, xacSuat, coToSang, host = document.b
         const ta = el('textarea');
         ta.id = 'ph-mo-ta';
         ta.rows = 3;
-        ta.maxLength = MO_TA_TOI_DA + 40; // cho phép khoảng trắng đầu/cuối, kiểm tra sau khi trim
+        ta.maxLength = 2 * MO_TA_TOI_DA + 40; // chừa chỗ cho ký tự hai đơn vị UTF-16 và khoảng trắng
         ta.value = st.mo_ta;
         const meta = el('div', 'ph-mota-meta');
         const nhac = el('span', 'ph-nhac', CHU.nhacMoTa);
         const dem = el('span', 'ph-dem');
         const capNhatDem = () => {
-          const n = st.mo_ta.trim().length;
+          const n = Array.from(st.mo_ta.trim()).length;
           dem.textContent = `${n}/${MO_TA_TOI_DA}`;
           dem.classList.toggle('qua', n > MO_TA_TOI_DA);
         };
-        ta.oninput = () => { st.mo_ta = ta.value; capNhatDem(); capNhatNut(); };
+        ta.oninput = () => { maLanGui = null; st.mo_ta = ta.value; capNhatDem(); capNhatNut(); };
         capNhatDem();
         meta.append(nhac, dem);
         wrap.append(lab, ta, meta);
@@ -271,44 +298,91 @@ export function moBieuMauMuc1({ nhanMoHinh, xacSuat, coToSang, host = document.b
       }
       parts.push(nhanh);
     }
+    if (coTheGuiKem) {
+      const { label, box } = oDanhDau('Gửi kèm đoạn hội thoại đã che (mức 2)', !!st.guiKem);
+      label.classList.add('ph-share');
+      box.onchange = () => {
+        st.guiKem = box.checked;
+        maLanGui = null;
+        status.textContent = '';
+        capNhatNut();
+      };
+      parts.push(label);
+    }
+    title.textContent = CHU.tieuDe;
+    intro.hidden = false;
     body.replaceChildren(...parts);
+    capNhatNut();
+  }
+
+  function moXemTruoc() {
+    banXemTruoc ??= createPreview(luot, { contactNames: tenLienHe });
+    xemTruoc = true;
+    dongY = false;
+    const moTa = cauHoi(st, ctx).coMoTa ? redactPersonalInfo(moTaToGui(st)) : null;
+    const { panel, title: tieuDePreview } = taoManXemTruoc(banXemTruoc, moTa, {
+      onCheThem: (ban) => { banXemTruoc = ban; maLanGui = null; },
+      onDongY: (checked) => { dongY = checked; capNhatNut(); },
+    });
+    title.textContent = 'Xem trước phản hồi mức 2';
+    intro.hidden = true;
+    body.replaceChildren(panel);
+    body.scrollTop = 0;
+    tieuDePreview.focus();
     capNhatNut();
   }
 
   form.onsubmit = async (e) => {
     e.preventDefault();
-    if (!hopLe(st, ctx) || dangGui) return;
-    const goi = taoGoi(st, ctx, maLanGui);
-    dangGui = true;
-    gui.textContent = CHU.dangGui;
+    if (gui.disabled) return;
     status.textContent = '';
+    if (st.guiKem && !xemTruoc) {
+      try {
+        if (!isLevel2Enabled()) throw new Error();
+        moXemTruoc();
+      } catch {
+        status.className = 'ph-status loi';
+        status.textContent = 'Không thể tạo bản xem trước. Bạn có thể bỏ chọn gửi kèm và gửi phản hồi mức 1.';
+      }
+      return;
+    }
+    dangGui = true;
+    body.inert = true;
     status.className = 'ph-status';
     capNhatNut();
     try {
-      await guiPhanHoiMuc1(goi);
+      maLanGui ??= crypto.randomUUID();
+      const ketQua = await guiPhanHoi(taoGoi(st, ctx, maLanGui), {
+        banXemTruoc: xemTruoc ? banXemTruoc : null,
+        dongY,
+      });
       const done = el('div', 'ph-done');
-      done.append(el('p', 'ph-done-text', CHU.daGui));
+      done.append(el('p', 'ph-done-text', xemTruoc
+        ? 'Đã gửi bản đã che để người kiểm duyệt xem xét.' : CHU.daGui));
       const dong = el('button', 'ph-gui', 'Đóng');
       dong.type = 'button';
       dong.onclick = () => dlg.close();
       done.append(dong);
+      x.disabled = false;
+      dangGui = false;
       form.replaceChildren(head, done);
       dong.focus();
-      onDaGui?.(goi);
+      onDaGui?.(ketQua);
     } catch (err) {
-      console.warn('[phan_hoi] gửi mức 1 lỗi:', err);
-      status.textContent = CHU.loiGui;
+      status.textContent = err?.status === 429 ? 'Bạn đã đạt giới hạn gửi hôm nay.' : CHU.loiGui;
       status.className = 'ph-status loi';
       dangGui = false;
-      gui.textContent = CHU.gui;
+      body.inert = false;
       capNhatNut();
     }
   };
 
+  dlg.addEventListener('cancel', (event) => { if (dangGui) event.preventDefault(); });
   dlg.addEventListener('close', () => dlg.remove());
   host.append(dlg);
   ve();
   dlg.showModal();
+  laBanDemo().then((demo) => { demoNote.hidden = !demo; }).catch(() => {});
   return dlg;
 }
 

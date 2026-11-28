@@ -2,6 +2,8 @@
 // Khớp trực tiếp với `src/v2/predict.py` và `src/v2/bench/dualorc_model.py`:
 // suy luận thẳng trên văn bản gốc (KHÔNG dùng bộ chuẩn hóa v1).
 
+import { applyThreshold } from '../feedback/thresholds.js';
+
 const UTF8 = new TextEncoder();
 const INVISIBLE_RE = /[\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff\u00ad]/g;
 const COMBINING_MARK_RE = /^\p{Mn}$/u;
@@ -432,7 +434,7 @@ function marksToRuns(words, marks, text) {
 }
 
 /** Giải mã kết quả từ 3 tensor đầu ra (logits, emissions, severity) theo crf_params.json. */
-export function decodeDualORCOutput({ prep, logits, emissions, severity, meta }) {
+export function decodeDualORCOutput({ prep, logits, emissions, severity, meta, thresholds }) {
   const labels = meta.labels || ['AN_TOAN', 'XUC_PHAM', 'QUAY_ROI', 'DE_DOA', 'LUA_DAO'];
   const temp = Number(meta.temperature || 1.0);
 
@@ -463,7 +465,7 @@ export function decodeDualORCOutput({ prep, logits, emissions, severity, meta })
     }
   }
 
-  const nhan = labels[predIdx];
+  const label = applyThreshold(labels[predIdx], bestP, thresholds);
   const rui_ro = Math.max(0, Math.min(100, Math.round(Number(severity) * 10000) / 100));
 
   const { text, lines, lineStarts, wordsMeta } = prep;
@@ -480,7 +482,7 @@ export function decodeDualORCOutput({ prep, logits, emissions, severity, meta })
   }));
 
   let runs = [];
-  if (predIdx !== 0 && wLen > 0) {
+  if (label !== 'AN_TOAN' && wLen > 0) {
     const mode = String(meta.chosen_decoder || 'marginal');
     const fb = meta.fallback_min_prob;
     if (mode === 'crf') {
@@ -534,5 +536,5 @@ export function decodeDualORCOutput({ prep, logits, emissions, severity, meta })
     };
   });
 
-  return { nhan, xac_suat, rui_ro, bang_chung };
+  return { nhan: label, xac_suat, rui_ro, bang_chung };
 }

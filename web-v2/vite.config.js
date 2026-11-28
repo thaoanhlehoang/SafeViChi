@@ -7,6 +7,7 @@ import { defineConfig, loadEnv } from 'vite';
 const CONFIG_DIR = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ONNX_DIR = resolve(CONFIG_DIR, '..', 'models', 'dualorc_mmbert_base', 'onnx');
 const DEFAULT_HF_CONNECT = ['https://huggingface.co', 'https://*.hf.co'];
+const LOCAL_API_ORIGIN = 'http://127.0.0.1:8788';
 
 const MODEL_MIME = {
   '.onnx': 'application/octet-stream',
@@ -105,6 +106,15 @@ function buildHeadersPlugin(customOrigin) {
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/
+  Cache-Control: no-cache, must-revalidate
+
+/*.html
+  Cache-Control: no-cache, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 `;
 
   return {
@@ -125,11 +135,33 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       exclude: ['onnxruntime-web'],
     },
-    server: { headers: BASE_SECURITY_HEADERS },
+    server: {
+      headers: BASE_SECURITY_HEADERS,
+      proxy: {
+        '/api/': {
+          target: LOCAL_API_ORIGIN,
+          changeOrigin: true,
+          configure(proxy) {
+            proxy.on('proxyReq', (outgoing, request) => {
+              // Vite và Wrangler dùng hai cổng. Giữ nguyên các Origin ngoại lai để API vẫn từ chối.
+              if (request.headers.origin === 'http://' + request.headers.host) {
+                outgoing.setHeader('Origin', LOCAL_API_ORIGIN);
+              }
+            });
+          },
+        },
+      },
+    },
     preview: { headers: BASE_SECURITY_HEADERS },
     worker: { format: 'es' },
     build: {
       assetsInlineLimit: 0,
+      rollupOptions: {
+        input: {
+          main: resolve(CONFIG_DIR, 'index.html'),
+          internal: resolve(CONFIG_DIR, 'quan-tri.html'),
+        },
+      },
     },
   };
 });

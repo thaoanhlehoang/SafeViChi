@@ -1,0 +1,14 @@
+{
+  "name": "safevichi-local",
+  // Không đặt pages_build_output_dir để Pages dùng thiết lập triển khai trên dashboard.
+  "compatibility_date": "2025-10-01",
+  "vars": { "FEEDBACK_DEMO": "1" },
+  "d1_databases": [
+    {
+      "binding": "DEMO_FEEDBACK_DB",
+      "database_name": "safevichi-demo-local",
+      "database_id": "00000000-0000-4000-8000-000000000002",
+      "migrations_dir": "cloudflare/migrations"
+    }
+  ]
+}

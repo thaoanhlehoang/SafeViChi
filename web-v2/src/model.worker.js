@@ -2,7 +2,7 @@
 // Mọi suy luận diễn ra hoàn toàn trên máy người dùng: worker không gửi tin nhắn đi đâu.
 //
 // Hợp đồng tin nhắn (UI <-> worker):
-//   UI -> { type: 'load' }
+//   UI -> { type: 'load', dungNguongDaDuyet?: boolean }
 //   worker -> { type: 'progress', loaded, total, stage } ... rồi { type: 'ready', backend, source, loadMs }
 //   UI -> { type: 'classify', id, lines: string[], priority?: boolean }
 //   worker -> { type: 'result', id, nhan, xac_suat: { NHAN: p }, rui_ro: number,
@@ -12,6 +12,7 @@
 import { onnxEngine } from './engine/onnx.js';
 
 let loaded = false;
+let runtimeInfo = null;
 let loadingPromise = null;
 const queue = [];
 let busy = false;
@@ -36,17 +37,18 @@ async function drainQueue() {
   }
 }
 
-async function handleLoad() {
+async function handleLoad(useApprovedThresholds) {
   if (loaded) {
-    self.postMessage({ type: 'ready', backend: onnxEngine.backend });
+    self.postMessage({ type: 'ready', ...runtimeInfo });
     return;
   }
   if (!loadingPromise) {
     loadingPromise = onnxEngine
       .load((loadedBytes, totalBytes, stage) => {
         self.postMessage({ type: 'progress', loaded: loadedBytes, total: totalBytes, stage });
-      })
+      }, { useApprovedThresholds })
       .then((info) => {
+        runtimeInfo = info;
         loaded = true;
         return info;
       })
@@ -61,6 +63,8 @@ async function handleLoad() {
       backend: info?.backend || onnxEngine.backend,
       source: info?.source,
       loadMs: info?.loadMs,
+      phien_ban_mo_hinh: info?.phien_ban_mo_hinh,
+      phien_ban_nguong: info?.phien_ban_nguong,
     });
   } catch (err) {
     self.postMessage({ type: 'error', message: String(err?.message || err) });
@@ -70,7 +74,7 @@ async function handleLoad() {
 self.onmessage = ({ data }) => {
   if (!data || typeof data !== 'object') return;
   if (data.type === 'load') {
-    handleLoad();
+    handleLoad(data.dungNguongDaDuyet === true);
   } else if (data.type === 'classify') {
     // Ưu tiên yêu cầu tương tác (gửi tin, bấm vào tin) lên trước tác vụ quét nền danh sách hội thoại
     if (data.priority) {

@@ -9,6 +9,7 @@ import { SHIRTS, HAIR, SKIN } from './landing.js';
 import { stripInvisibles } from './engine/dualorc.js';
 import { buildTurnWindow, analyzeWindow } from './engine/flow.js';
 import { moBieuMauMuc1 } from './phan_hoi/bieu_mau_muc1.js';
+import { moCaiDatPhanHoi } from './phan_hoi/muc2.js';
 
 // Hội thoại mẫu để thử nghiệm trực tiếp với mô hình thật (không lấy từ tập dữ liệu).
 const CONVERSATIONS = [
@@ -144,6 +145,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   const composer = $('composer');
   const warn = $('send-warn');
   const safetyBar = $('safety-bar');
+  $('feedback-settings').onclick = () => moCaiDatPhanHoi(shell);
   const aiOpen = () => !shell.classList.contains('ai-closed');
 
   const who = (conv, m) => (m.from === 'me' ? 'Bạn' : m.author || conv.name);
@@ -575,6 +577,18 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   const iconInfo = () => icon([['circle', { cx: 12, cy: 12, r: 9.5 }], ['path', { d: 'M12 11v5.5' }], ['path', { d: 'M12 7.6v.01', 'stroke-width': '2.6' }]]);
   const iconTick = () => icon([['path', { d: 'M5 12.5l4.5 4.5L19 7.5', 'stroke-width': '2.4' }]]);
 
+  function moPhanHoi(analysis, conv) {
+    const luot = analysis.rows.map((row) => row.text.replace(/[\r\n\u2028\u2029]+/gu, ' ').trim());
+    moBieuMauMuc1({
+      nhanMoHinh: analysis.nhan,
+      xacSuat: analysis.xac_suat?.[analysis.nhan],
+      coToSang: analysis.rows.some((row) => row.spans?.length),
+      luot: luot.filter(Boolean),
+      tenLienHe: [conv.name, ...analysis.rows.map((row) => row.who).filter((name) => name !== 'Bạn')],
+      host: shell,
+    });
+  }
+
   function renderSafetyBar() {
     const last = current.messages.at(-1);
     const analysis = last?.analysis;
@@ -609,12 +623,8 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     reportBtn.type = 'button';
     reportBtn.setAttribute('aria-haspopup', 'dialog');
     reportBtn.append(el('span', null, 'Báo cáo/kháng cáo mô hình'), iconInfo());
-    reportBtn.onclick = () => moBieuMauMuc1({
-      nhanMoHinh: nhan,
-      xacSuat: analysis.xac_suat?.[nhan],
-      coToSang: (analysis.rows || []).some((r) => r.spans?.length),
-      host: shell,
-    });
+    const conv = current;
+    reportBtn.onclick = () => moPhanHoi(analysis, conv);
 
     const hide = () => {
       current.dismissedSafetyAt = current.messages.length;
@@ -733,6 +743,8 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     draft = null;
     warn.hidden = true;
     $('warn-send').hidden = false;
+    $('warn-report').hidden = false;
+    $('warn-report').onclick = () => moPhanHoi(res, draft.conv);
     $('warn-edit').textContent = 'Chỉnh sửa';
   }
 
@@ -800,6 +812,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     $('warn-title').textContent = 'Không thể phân tích tin nhắn';
     $('warn-desc').textContent = errMsg;
     $('warn-send').hidden = true;
+    $('warn-report').hidden = true;
     $('warn-edit').textContent = 'Đóng';
     warn.hidden = false;
     renderSafetyBar();

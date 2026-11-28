@@ -1,9 +1,8 @@
 // Câu chữ và mã cho biểu mẫu phản hồi mức 1.
 // Nguồn câu chữ: docs/v3/DE_XUAT_TRIEN_KHAI_CHANG_2.md, Mục 1.
-// MÃ TẠM: phần mã (chuỗi snake_case) do giao diện đặt trước để làm song song. Khi bảng mã chính thức
-// (Mục 2, ưu tiên 1) chốt xong, chỉ cần sửa các chuỗi `ma` trong file này, không phải sửa giao diện.
+// Mã đáp án khớp hợp đồng API trong src/feedback/contract.js.
 
-export const NHAN_NGUY_HAI = ['XUC_PHAM', 'QUAY_ROI', 'DE_DOA', 'LUA_DAO'];
+export { HARMFUL_LABEL_CODES as NHAN_NGUY_HAI } from '../feedback/contract.js';
 
 export const TEN_NHAN = {
   AN_TOAN: 'An toàn',
@@ -27,15 +26,15 @@ export const DAU_HIEU = {
     { ma: 'beu_rieu', ten: 'Bêu riếu' },
   ],
   DE_DOA: [
-    { ma: 'doa_than_the_tai_san', ten: 'Dọa gây hại thân thể hoặc tài sản' },
-    { ma: 'doa_danh_du', ten: 'Dọa làm hại danh dự' },
+    { ma: 'than_the_tai_san', ten: 'Dọa gây hại thân thể hoặc tài sản' },
+    { ma: 'danh_du', ten: 'Dọa làm hại danh dự' },
     { ma: 'cuong_ep_tong_tien', ten: 'Cưỡng ép hoặc tống tiền' },
   ],
   LUA_DAO: [
     { ma: 'mao_danh', ten: 'Mạo danh' },
-    { ma: 'du_chuyen_tien', ten: 'Dụ chuyển tiền' },
-    { ma: 'du_otp_mat_khau', ten: 'Dụ cung cấp OTP hoặc mật khẩu' },
-    { ma: 'du_bam_link_cai_app', ten: 'Dụ bấm liên kết hoặc cài ứng dụng' },
+    { ma: 'chuyen_tien', ten: 'Dụ chuyển tiền' },
+    { ma: 'otp_mat_khau', ten: 'Dụ cung cấp OTP hoặc mật khẩu' },
+    { ma: 'lien_ket_ung_dung', ten: 'Dụ bấm liên kết hoặc cài ứng dụng' },
   ],
 };
 
@@ -43,10 +42,10 @@ const KHAC = { ma: 'khac', ten: 'Khác', khac: true };
 
 // Loại báo cáo. `hien(nhanMoHinh)` là điều kiện hiển thị theo bảng ở Mục 1.
 export const LOAI_BAO_CAO = [
-  { ma: 'tin_an_toan', ten: 'Tin nhắn này an toàn', hien: (n) => n !== 'AN_TOAN' },
+  { ma: 'tin_nhan_an_toan', ten: 'Tin nhắn này an toàn', hien: (n) => n !== 'AN_TOAN' },
   { ma: 'sai_loai', ten: 'Có vấn đề, nhưng AI chọn sai loại', hien: (n) => n !== 'AN_TOAN' },
   { ma: 'bo_sot', ten: 'AI bỏ sót nội dung nguy hại', hien: (n) => n === 'AN_TOAN' },
-  { ma: 'to_sang', ten: 'Nhãn đúng, phần tô sáng có vấn đề', hien: (n) => n !== 'AN_TOAN' },
+  { ma: 'loi_to_sang', ten: 'Nhãn đúng, phần tô sáng có vấn đề', hien: (n) => n !== 'AN_TOAN' },
   { ma: 'khac_chua_chac', ten: 'Vấn đề khác hoặc tôi chưa chắc', hien: () => true },
 ];
 
@@ -57,9 +56,9 @@ export const LY_DO_AN_TOAN = [
     phu: {
       hoi: 'Điều gì giúp bạn nhận ra đây là lời đùa hoặc cách nói thân mật?',
       options: [
-        { ma: 'cach_hai_ben_noi_chuyen', ten: 'Cách hai bên nói chuyện với nhau' },
-        { ma: 'cau_tra_loi_nguoi_nhan', ten: 'Câu trả lời của người nhận' },
-        { ma: 'cac_luot_truoc', ten: 'Các lượt trước' },
+        { ma: 'cach_noi_chuyen', ten: 'Cách hai bên nói chuyện với nhau' },
+        { ma: 'tra_loi_nguoi_nhan', ten: 'Câu trả lời của người nhận' },
+        { ma: 'luot_truoc', ten: 'Các lượt trước' },
       ],
     },
   },
@@ -69,8 +68,8 @@ export const LY_DO_AN_TOAN = [
       hoi: 'Điều gì giúp bạn hiểu đúng cách nói này?',
       options: [
         { ma: 'nghia_quen_thuoc', ten: 'Nghĩa quen thuộc của từ' },
-        { ma: 'cach_dung_tu_trong_cau', ten: 'Cách dùng từ trong câu' },
-        { ma: 'cac_luot_truoc', ten: 'Các lượt trước' },
+        { ma: 'cach_dung', ten: 'Cách dùng từ trong câu' },
+        { ma: 'luot_truoc', ten: 'Các lượt trước' },
       ],
     },
   },
@@ -80,8 +79,8 @@ export const LY_DO_AN_TOAN = [
       hoi: 'Bạn nhận ra đây là lời trích dẫn hoặc lời kể bằng cách nào?',
       options: [
         { ma: 'dau_hieu_trich_dan', ten: 'Có dấu hiệu trích dẫn' },
-        { ma: 'nguoi_gui_noi_ro_ke_lai', ten: 'Người gửi nói rõ họ đang kể lại' },
-        { ma: 'luot_truoc_loi_nguoi_khac', ten: 'Các lượt trước cho biết đó là lời người khác' },
+        { ma: 'noi_ro_dang_ke', ten: 'Người gửi nói rõ họ đang kể lại' },
+        { ma: 'luot_truoc', ten: 'Các lượt trước cho biết đó là lời người khác' },
       ],
     },
   },
@@ -91,7 +90,7 @@ export const LY_DO_AN_TOAN = [
       hoi: 'Tin nhắn thuộc tình huống nào?',
       options: [
         { ma: 'cong_viec_hoc_tap', ten: 'Công việc hoặc học tập' },
-        { ma: 'giao_dich_xac_minh_hop_le', ten: 'Giao dịch hoặc xác minh hợp lệ' },
+        { ma: 'giao_dich_hop_le', ten: 'Giao dịch hoặc xác minh hợp lệ' },
         { ma: 'tro_chuyen_hang_ngay', ten: 'Trò chuyện hằng ngày' },
       ],
     },
@@ -101,22 +100,22 @@ export const LY_DO_AN_TOAN = [
 
 // Nhánh "Có vấn đề, nhưng AI chọn sai loại"
 export const LY_DO_SAI_LOAI = [
-  { ma: 'hieu_sai_ngu_canh', ten: 'AI hiểu sai ý hoặc ngữ cảnh' },
+  { ma: 'sai_y_ngu_canh', ten: 'AI hiểu sai ý hoặc ngữ cảnh' },
   { ma: 'uu_tien_dau_hieu_khac', ten: 'Có nhiều dấu hiệu và tôi ưu tiên dấu hiệu khác' },
   KHAC,
 ];
 
-// Nhánh "AI bỏ sót nội dung nguy hại". Phần phụ của `truc_tiep` lấy từ DAU_HIEU theo nhãn đã chọn.
+// Nhánh "AI bỏ sót nội dung nguy hại". Dấu hiệu trực tiếp lấy từ DAU_HIEU theo nhãn đã chọn.
 export const LY_DO_BO_SOT = [
   { ma: 'dau_hieu_truc_tiep', ten: 'Dấu hiệu thể hiện trực tiếp', phuTheoNhan: true },
   {
-    ma: 'phai_doc_luot_truoc', ten: 'Phải đọc các lượt trước mới thấy',
+    ma: 'can_luot_truoc', ten: 'Phải đọc các lượt trước mới thấy',
     phu: {
       hoi: 'Các lượt trước cho thấy điều gì?',
       options: [
         { ma: 'ham_y_nguy_hai', ten: 'Câu này mang hàm ý nguy hại' },
         { ma: 'hanh_vi_lap_lai', ten: 'Hành vi đã lặp lại' },
-        { ma: 'nguoi_nhan_da_tu_choi', ten: 'Người nhận đã từ chối' },
+        { ma: 'nguoi_nhan_tu_choi', ten: 'Người nhận đã từ chối' },
       ],
     },
   },
@@ -127,9 +126,9 @@ export const LY_DO_BO_SOT = [
       options: [
         { ma: 'bo_dau', ten: 'Bỏ dấu' },
         { ma: 'viet_tat_teencode', ten: 'Viết tắt hoặc teencode' },
-        { ma: 'chen_cach_ky_tu', ten: 'Chèn dấu cách hoặc ký tự' },
-        { ma: 'viet_dinh_tu', ten: 'Viết dính từ' },
-        { ma: 'ky_tu_giong_chu', ten: 'Dùng ký tự trông giống chữ' },
+        { ma: 'chen_ky_tu', ten: 'Chèn dấu cách hoặc ký tự' },
+        { ma: 'viet_dinh', ten: 'Viết dính từ' },
+        { ma: 'ky_tu_dong_dang', ten: 'Dùng ký tự trông giống chữ' },
       ],
     },
   },
@@ -140,38 +139,38 @@ export const LY_DO_BO_SOT = [
 const VI_TRI_THIEU = {
   hoi: 'Dấu hiệu còn thiếu nằm ở đâu?',
   options: [
-    { ma: 'cung_luot_tin', ten: 'Cùng lượt tin' },
-    { ma: 'o_luot_truoc', ten: 'Ở lượt trước' },
-    { ma: 'rai_nhieu_luot', ten: 'Nằm rải qua nhiều lượt' },
+    { ma: 'cung_luot', ten: 'Cùng lượt tin' },
+    { ma: 'luot_truoc', ten: 'Ở lượt trước' },
+    { ma: 'nhieu_luot', ten: 'Nằm rải qua nhiều lượt' },
   ],
 };
 export const LY_DO_TO_SANG = [
   {
-    ma: 'to_nham_doan', ten: 'Tô nhầm đoạn', canToSang: true,
+    ma: 'to_nham', ten: 'Tô nhầm đoạn', canToSang: true,
     phu: {
       hoi: 'Đoạn được tô có vấn đề gì?',
       options: [
         { ma: 'doan_vo_hai', ten: 'Đoạn đó vô hại' },
-        { ma: 'chi_mot_phan_lien_quan', ten: 'Chỉ một phần đoạn được tô có liên quan' },
-        { ma: 'doan_lien_quan_o_cho_khac', ten: 'Đoạn liên quan nằm ở chỗ khác' },
+        { ma: 'lien_quan_mot_phan', ten: 'Chỉ một phần đoạn được tô có liên quan' },
+        { ma: 'lien_quan_cho_khac', ten: 'Đoạn liên quan nằm ở chỗ khác' },
       ],
     },
   },
-  { ma: 'to_thieu_doan', ten: 'Tô thiếu đoạn', canToSang: true, phu: VI_TRI_THIEU },
-  { ma: 'thieu_doan_can_to', ten: 'Thiếu đoạn cần tô sáng', canToSang: false, phu: VI_TRI_THIEU },
+  { ma: 'to_thieu', ten: 'Tô thiếu đoạn', canToSang: true, phu: VI_TRI_THIEU },
+  { ma: 'chua_to', ten: 'Thiếu đoạn cần tô sáng', canToSang: false, phu: VI_TRI_THIEU },
   KHAC,
 ];
 
 // Nhánh "Vấn đề khác hoặc tôi chưa chắc"
 export const LY_DO_KHAC = [
   {
-    ma: 'chua_chac_nhan', ten: 'Chưa chắc về nhãn',
+    ma: 'chua_chac', ten: 'Chưa chắc về nhãn',
     phu: {
       hoi: 'Bạn đang phân vân điều gì?',
       options: [
         { ma: 'chua_chac_nguy_hai', ten: 'Chưa chắc tin có nguy hại' },
         { ma: 'phan_van_giua_nhan', ten: 'Phân vân giữa các nhãn nguy hại' },
-        { ma: 'can_them_ngu_canh', ten: 'Cần thêm ngữ cảnh' },
+        { ma: 'can_ngu_canh', ten: 'Cần thêm ngữ cảnh' },
       ],
     },
   },
@@ -181,9 +180,9 @@ export const LY_DO_KHAC = [
       hoi: 'Vấn đề nằm ở đâu?',
       batBuoc: true,
       options: [
-        { ma: 'thong_bao_kho_hieu', ten: 'Thông báo cảnh báo khó hiểu' },
+        { ma: 'canh_bao_kho_hieu', ten: 'Thông báo cảnh báo khó hiểu' },
         { ma: 'canh_bao_qua_thuong_xuyen', ten: 'Cảnh báo xuất hiện quá thường xuyên' },
-        { ma: 'muc_canh_bao_chua_phu_hop', ten: 'Mức cảnh báo chưa phù hợp' },
+        { ma: 'muc_canh_bao', ten: 'Mức cảnh báo chưa phù hợp' },
         KHAC,
       ],
     },
@@ -203,3 +202,14 @@ export const CHU = {
 };
 
 export const MO_TA_TOI_DA = 200;
+
+const TEN_LUA_CHON = new Map();
+for (const item of [...LOAI_BAO_CAO, ...LY_DO_AN_TOAN, ...LY_DO_SAI_LOAI, ...LY_DO_BO_SOT,
+  ...LY_DO_TO_SANG, ...LY_DO_KHAC, ...Object.values(DAU_HIEU).flat()]) {
+  TEN_LUA_CHON.set(item.ma, item.ten);
+  for (const opt of item.phu?.options ?? []) if (!TEN_LUA_CHON.has(opt.ma)) TEN_LUA_CHON.set(opt.ma, opt.ten);
+}
+
+export function tenLuaChon(ma) {
+  return TEN_LUA_CHON.get(ma) ?? ma;
+}

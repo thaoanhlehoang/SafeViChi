@@ -2,16 +2,16 @@
 //
 // Chạy hoàn toàn trong trình duyệt (hoặc Node), thuần JS: không đụng DOM, không gọi mạng, không ghi
 // localStorage. Mục đích: trước khi người dùng gửi phản hồi mức 2 (kèm đoạn tin), thay các thông tin cá nhân
-// bằng nhãn giữ chỗ để không byte nào chứa PII rời máy. Đây là CHE / ẨN DANH HÓA một chiều, KHÔNG phải mã hóa:
+// bằng nhãn giữ chỗ để giảm lộ thông tin cá nhân. Đây là CHE / ẨN DANH HÓA một chiều, KHÔNG phải mã hóa:
 // không có khóa, không có bảng ánh xạ, không khôi phục được bản gốc.
 //
-// Nhãn giữ chỗ theo mục 3.3 của docs/v3/KE_HOACH_CHANG_2.md:
+// Nhãn giữ chỗ cho từng loại thông tin:
 //   số điện thoại → [SĐT]      email → [EMAIL]          số tài khoản / thẻ → [STK]
 //   OTP / mã xác minh → [MÃ]   CCCD / CMND → [GIẤY_TỜ]  địa chỉ → [ĐỊA_CHỈ]
 //   tên người → [TÊN_1], [TÊN_2]… (cùng tên → cùng số, chỉ trong một lần gọi)
-//   đường link → [LINK:ten-mien] : giữ tên miền (cần để nhận ra LUA_DAO), bỏ đường dẫn và tham số, ví dụ
+//   đường link → [LINK:ten-mien] nếu giữ tên miền, bỏ đường dẫn và tham số, ví dụ
 //     "https://vietcombank-xacminh.com/login?id=123" → "[LINK:vietcombank-xacminh.com]".
-//     Link chỉ có tên miền (không đường dẫn, không tham số) được giữ nguyên vì không có gì để che.
+//     Khi tắt giữ tên miền, mọi liên kết nhận diện được trở thành [LINK].
 //   đoạn người dùng tự che thêm ở bước xem trước → [ĐÃ_CHE]
 //
 // Giữ nguyên số tiền ("500k", "2 triệu", "1.500.000đ", "3tr", "15000000 vnd"): cần để nhận ra lừa đảo.
@@ -120,7 +120,9 @@ const KHONG_PHAI_TEN = new Set([
 // Link.
 
 const RE_LINK = /(?:https?:\/\/[^\s]+|www\.[^\s]+|(?<![\w@.\-])(?:[a-z0-9\-]+\.)+[a-z]{2,}\/[^\s]*)/gi;
-const RE_EMAIL = /(?<![\w.+\-])[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}/g;
+const RE_CHE_CA_TEN_MIEN = /\[LINK:[^\]\r\n]+\]|(?:https?:\/\/|www\.)[^\s<>"]+|(?<![\p{L}\p{N}@.\-])(?:[\p{L}\d-]+\.)+[\p{L}]{2,}(?![\p{L}\d@-]|\.[\p{L}\d-])(?:[/?#][^\s<>"]*)?/giu;
+const RE_EMAIL = /(?<![\p{L}\p{N}.+\-])[\p{L}\d._%+\-]+@[\p{L}\d\-]+(?:\.[\p{L}\d\-]+)*\.[\p{L}]{2,}/gu;
+const RE_NHAN_GIU_CHO = /\[(?:SĐT|EMAIL|STK|MÃ|GIẤY_TỜ|ĐỊA_CHỈ|ĐÃ_CHE|ẨN|TÊN(?:_[1-9]\d*)?|LINK(?::[^\]\r\n]+)?)\]/gu;
 
 // ---------------------------------------------------------------------------
 
@@ -132,13 +134,13 @@ function chongLan(spans, s, e) {
  * Che / ẩn danh hóa thông tin cá nhân trong một đoạn tin.
  *
  * @param {string} text Văn bản gốc (có thể nhiều dòng, ngăn bằng "\n"; "\n" luôn được giữ nguyên).
- * @param {{cheThem?: Array<{start:number,end:number}>}} [opts]
+ * @param {{cheThem?: Array<{start:number,end:number}>, tenLienHe?: string[], giuTenMien?: boolean}} [opts]
  *   cheThem: các đoạn (vị trí theo văn bản gốc) người dùng tự bôi đen để che thêm ở bước xem trước.
  *   Chỉ được che thêm: không có cách nào bỏ che một đoạn tự động đã che.
  * @returns {{text: string, cac_doan: Array<{loai: string, start: number, end: number}>}}
  *   text: bản đã che; cac_doan: vị trí các đoạn đã che trên văn bản gốc (không chứa nội dung gốc).
  */
-export function cheThongTin(text, { cheThem = [] } = {}) {
+export function cheThongTin(text, { cheThem = [], tenLienHe = [], giuTenMien = true } = {}) {
   if (typeof text !== 'string' || text.length === 0) return { text: text ?? '', cac_doan: [] };
 
   const fold = boDauGiuDoDai(text); // bỏ dấu, giữ hoa/thường
@@ -150,18 +152,30 @@ export function cheThongTin(text, { cheThem = [] } = {}) {
     return true;
   };
 
+  // Che trọn URL trước email để URL có thông tin đăng nhập vẫn được che toàn bộ.
+  if (!giuTenMien) {
+    for (const m of text.matchAll(RE_CHE_CA_TEN_MIEN)) {
+      const url = m[0][0] === '[' ? m[0] : m[0].replace(/[.,;:!?)\]}"'»”]+$/, '');
+      them('LINK', m.index, m.index + url.length, { nhan: '[LINK]' });
+    }
+  }
+  // Cho phép che thêm trên bản đã che mà vẫn giữ nguyên các nhãn bên ngoài vùng chọn.
+  for (const m of text.matchAll(RE_NHAN_GIU_CHO)) {
+    them(null, m.index, m.index + m[0].length, { nhan: m[0] });
+  }
+
   // 1. Email (trước link để "@ten-mien" không bị coi là link).
   for (const m of fold.matchAll(RE_EMAIL)) them('EMAIL', m.index, m.index + m[0].length);
 
-  // 2. Link: giữ tên miền, che đường dẫn và tham số.
-  for (const m of text.matchAll(RE_LINK)) {
-    let url = m[0].replace(/[.,;:!?)\]}"'»”]+$/, '');
-    const start = m.index;
-    const end = start + url.length;
-    const host = url.replace(/^https?:\/\//i, '').split(/[/?#]/)[0];
-    const conLai = url.slice(url.indexOf(host) + host.length);
-    if (!host || conLai.replace(/^\/$/, '') === '') continue; // chỉ có tên miền: không có gì để che
-    them('LINK', start, end, { nhan: `[LINK:${host.toLowerCase()}]` });
+  // 2. Link: hành vi gốc khi người gọi muốn giữ tên miền.
+  if (giuTenMien) {
+    for (const m of text.matchAll(RE_LINK)) {
+      const url = m[0].replace(/[.,;:!?)\]}"'»”]+$/, '');
+      const host = url.replace(/^https?:\/\//i, '').split(/[/?#]/)[0];
+      const conLai = url.slice(url.indexOf(host) + host.length);
+      if (!host || conLai.replace(/^\/$/, '') === '') continue;
+      them('LINK', m.index, m.index + url.length, { nhan: `[LINK:${host.toLowerCase()}]` });
+    }
   }
 
   // 3. Số tiền: đánh dấu vùng bảo vệ, không che.
@@ -214,6 +228,15 @@ export function cheThongTin(text, { cheThem = [] } = {}) {
     if (chongLan(spans, start, end) || chongLan(ten, start, end)) return;
     ten.push({ start, end, khoa: low.slice(start, end) });
   };
+  // Danh bạ chỉ dùng để nhận diện tên ngay trên thiết bị.
+  const tenDaBiet = [...new Set(tenLienHe.filter((name) => typeof name === 'string' && name.trim() &&
+    !/[\[\]\r\n]/u.test(name)).map((name) => boDauGiuDoDai(name.trim()).toLowerCase()))]
+    .sort((a, b) => b.length - a.length);
+  for (const name of tenDaBiet) {
+    const re = new RegExp('(?<![\\p{L}\\p{N}])' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+      '(?![\\p{L}\\p{N}])', 'gu');
+    for (const m of low.matchAll(re)) themTen(m.index, m.index + m[0].length);
+  }
   // 6a. @nhắc tên
   for (const m of fold.matchAll(/(?<![A-Za-z0-9.])@([A-Za-z][A-Za-z0-9_]*)/g)) {
     if (!KHONG_PHAI_TEN.has(m[1].toLowerCase())) themTen(m.index + 1, m.index + m[0].length);
@@ -282,7 +305,8 @@ export function cheThongTin(text, { cheThem = [] } = {}) {
     i = sp.end;
   }
   out += text.slice(i);
-  return { text: out, cac_doan: ketQua.map(({ loai, start, end }) => ({ loai, start, end })) };
+  return { text: out, cac_doan: ketQua.filter(({ loai }) => loai !== null)
+    .map(({ loai, start, end }) => ({ loai, start, end })) };
 }
 
 function gopThuCong(spans, s, e) {
