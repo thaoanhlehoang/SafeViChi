@@ -140,6 +140,9 @@ await call('duyet', { role: 'quan_tri', status: 403 });
 const queue = await call('duyet?sau_ngay=1900-01-01&sau_id=00000000-0000-4000-8000-000000000001', { role: 'duyet_a' });
 assert.ok(queue.hang_doi.length > 0 && queue.hang_doi.length <= 25);
 assert.ok(queue.hang_doi.every((row) => !Object.hasOwn(row, 'doan_da_che') && !Object.hasOwn(row, 'ly_do_khac')));
+assert.deepEqual(Object.keys(queue.dem).sort(), ['cho_duyet', 'da_duyet']);
+assert.ok(queue.hang_doi.every((row, i, rows) => i === 0 || rows[i - 1].ngay <= row.ngay));
+await call('duyet?trang_thai=sai', { role: 'duyet_a', status: 400 });
 await call('duyet?sau_id=sai', { role: 'duyet_a', status: 400 });
 await call('nhat-ky', { role: 'duyet_a', status: 403 });
 await call('duyet/' + id, { status: 401 });
@@ -148,31 +151,43 @@ const { mau: sample } = await call('duyet/' + id, { role: 'duyet_a' });
 assert.equal(sample.doan_da_che, finalPreview.text);
 assert.ok(Object.hasOwn(await call('duyet/tiep-theo', { role: 'duyet_a' }), 'mau'));
 const review = { nhan: 'DE_DOA', bang_chung: [{ dong: 1, start: 3, end: 18 }] };
-const first = await call('duyet/' + id, { body: review, role: 'duyet_a', status: 201 });
-assert.equal(first.trang_thai, 'cho_nguoi_thu_hai');
+await call('duyet/' + id, { body: { ...review, ghi_chu: 'x'.repeat(201) }, role: 'duyet_a', status: 400 });
+const first = await call('duyet/' + id, { body: { ...review, ghi_chu: 'Lời dọa rõ ràng.' }, role: 'duyet_a', status: 201 });
+// Một người duyệt: một lượt duyệt là chốt (quyết định 28/11/2026).
+assert.equal(first.trang_thai, 'da_duyet');
 await call('duyet/' + id, { body: review, role: 'duyet_a', status: 409 });
-const second = await call('duyet/' + id, { body: review, role: 'duyet_b', status: 201 });
-assert.equal(second.trang_thai, 'da_duyet');
+await call('duyet/' + id, { body: review, role: 'duyet_b', status: 409 });
 const final = (await call('duyet/' + id, { role: 'duyet_b' })).mau.quyet_dinh;
 assert.equal(final.bang_chung[0].text, finalPreview.text.split('\n')[1].slice(3, 18));
 assert.equal(final.nguon, 'phan_hoi');
 const auditLog = (await call('nhat-ky/' + id, { role: 'quan_tri' })).nhat_ky;
-assert.equal(auditLog.filter((row) => row.hanh_dong === 'luu_luot_duyet').length, 2);
+assert.equal(auditLog.filter((row) => row.hanh_dong === 'luu_luot_duyet').length, 1);
 assert.ok(auditLog.some((row) => row.hanh_dong === 'mo_mau'));
 assert.ok((await call('nhat-ky', { role: 'quan_tri' })).nhat_ky.length > 0);
 const submitNewLevel2 = () => call(rest, { body: { ...level2, ma_lan_gui: randomUUID() }, status: 201 });
 const groupTargeted = await submitNewLevel2();
 assert.equal((await call('duyet/' + groupTargeted.id, {
   body: { nhan: 'XUC_PHAM', nham_nhom: true }, role: 'duyet_a', status: 201,
-})).trang_thai, 'cho_nguoi_thu_hai');
-assert.equal((await call('duyet/' + groupTargeted.id, {
-  body: { nhan: 'AN_TOAN' }, role: 'duyet_b', status: 201,
-})).trang_thai, 'bat_dong');
-assert.equal((await call('duyet/' + groupTargeted.id, { role: 'duyet_b' })).mau.quyet_dinh, null);
-for (let i = 0; i < 3; i++) await submitNewLevel2();
+})).trang_thai, 'da_duyet');
+assert.equal((await call('duyet/' + groupTargeted.id, { role: 'duyet_b' })).mau.quyet_dinh.nhan, 'XUC_PHAM');
+// Tài khoản kiểm duyệt duy nhất của bản demo làm được cả việc của người duyệt lẫn quản trị.
+if (demo) {
+  assert.deepEqual((await call('noi-bo/che-do')).vai_tro.map(({ id: actor }) => actor), ['kiem_duyet']);
+  assert.ok(Object.hasOwn(await call('duyet', { role: 'kiem_duyet' }), 'hang_doi'));
+  assert.ok((await call('nhat-ky', { role: 'kiem_duyet' })).nhat_ky.length > 0);
+}
+// Che thêm chỉ làm được khi mẫu chưa có lượt duyệt.
+const extra = await submitNewLevel2();
+const masked = await call('duyet/' + extra.id + '/che-them', { body: { dong: 1, start: 0, end: 2 }, role: 'duyet_a' });
+assert.ok(masked.doan_da_che.split(String.fromCharCode(10))[1].startsWith('[ĐÃ_CHE]'));
+await call('duyet/' + extra.id + '/che-them', { body: { dong: 1, start: 0, end: 2 }, role: 'quan_tri', status: 403 });
+await call('duyet/' + extra.id, { body: { nhan: 'AN_TOAN' }, role: 'duyet_a', status: 201 });
+await call('duyet/' + extra.id + '/che-them', { body: { dong: 0, start: 0, end: 2 }, role: 'duyet_b', status: 409 });
+for (let i = 0; i < 2; i++) await submitNewLevel2();
 await call(rest, { body: { ...level2, ma_lan_gui: randomUUID() }, status: 429 });
 assert.equal((await call(rest, { body: level2 })).gui_lai, true);
-console.log('Mức 2 đạt: đồng ý, bản xem trước, giới hạn, phân quyền, hai người duyệt, bất đồng và nhật ký.');
+console.log('Mức 2 đạt: đồng ý, bản xem trước, giới hạn, phân quyền và nhật ký.');
+console.log('Kiểm duyệt đạt: một lượt là chốt, tab hàng đợi theo ngày, ghi chú, tài khoản kiểm duyệt duy nhất, che thêm khi chưa duyệt.');
 
 const model = formData.phien_ban_mo_hinh;
 const thresholds = { XUC_PHAM: 0.8, QUAY_ROI: 0.2, DE_DOA: 0.2, LUA_DAO: 0.2 };

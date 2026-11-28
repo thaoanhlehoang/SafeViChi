@@ -3,7 +3,8 @@ import { redactPersonalInfo } from './redaction.js';
 
 export const LABEL_CODES = Object.keys(LABELS);
 export const HARMFUL_LABEL_CODES = LABEL_CODES.filter((label) => label !== 'AN_TOAN');
-export const CONSENT_VERSION = 'muc-2-v1';
+// Đổi khi câu chữ thông báo đồng ý đổi (v2: bước cuối đề xuất gửi kèm đoạn hội thoại, cam kết quyền riêng tư).
+export const CONSENT_VERSION = 'muc-2-v2';
 export const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 export const LABEL_INDICATORS = {
   XUC_PHAM: ['lang_ma_ca_nhan', 'miet_thi_nhom'],

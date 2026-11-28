@@ -80,9 +80,19 @@
 .ph-preview-turn-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; color: var(--ink-2); font-size: .8rem; }
 .ph-preview-turn textarea { display: block; width: 100%; resize: vertical; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: .88rem; }
 .ph-preview-mask { padding: .3rem .45rem; border: 0; border-radius: 4px; background: #eef4ec; color: var(--green, #24552c); font: inherit; cursor: pointer; }
-.ph-settings .ph-preview-help { margin: .4rem 0 1rem; }
-.ph-settings-link { color: var(--green, #24552c); font-size: .87rem; }
-.chat-settings svg { fill: none; stroke: currentColor; stroke-width: 1.6; }
-.chat-settings svg circle { fill: var(--sheet, #fbfaf5); }
 .warn-actions { flex-wrap: wrap; justify-content: flex-end; }
 .warn-report { border: 1px solid var(--rule, #dcd6c6); background: var(--sheet, #fbfaf5); color: var(--ink-2); }
+
+/* Bước cuối: đề xuất chia sẻ đoạn hội thoại, một thẻ giấy gồm lời giải thích và cam kết quyền riêng tư */
+.ph-cam-ket { display: grid; gap: .6rem; padding: 1rem 1.1rem 1.05rem; border: 1px solid var(--rule, #dcd6c6); border-radius: 10px; background: var(--paper, #f4f1e8); }
+.ph-cam-ket h4 { margin: 0 0 .1rem; font-size: 1rem; font-weight: 700; color: var(--ink); }
+.ph-cam-ket h4:focus { outline: none; }
+.ph-cam-ket-doan { margin: 0; font-size: .88rem; line-height: 1.6; color: var(--ink-2, #4b5a4d); }
+.ph-cam-ket hr { width: 100%; margin: .35rem 0; border: 0; border-top: 1px solid var(--rule, #dcd6c6); }
+.ph-rieng-tu { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .9rem; font-weight: 700; color: var(--ink); }
+.ph-rieng-tu svg { flex: none; width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ph-cam-ket ul { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; font-size: .82rem; line-height: 1.55; color: var(--ink-2, #4b5a4d); }
+.ph-cam-ket li::before { content: '•'; margin-right: .4rem; color: var(--ink-2, #4b5a4d); }
+.ph-actions { flex-wrap: wrap; }
+.ph-actions .ph-huy:first-child:not(:only-child) { margin-right: auto; }
+.ph-tu-choi[hidden] { display: none; }

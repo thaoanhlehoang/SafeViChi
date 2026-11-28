@@ -179,7 +179,7 @@ export function hienNguong(root, api, role) {
     if (proposal.nguoi_phe_duyet) {
       detail.append(el('p', 'muted', 'Đã phê duyệt bởi ' + proposal.nguoi_phe_duyet + '.'),
         el('p', null, proposal.ly_do_phe_duyet));
-    } else if (role === 'quan_tri') {
+    } else if (role === 'quan_tri' || role === 'kiem_duyet') {
       const form = el('form', 'stack');
       const reason = reasonInput();
       const approve = nut('Phê duyệt và áp dụng', 'primary');

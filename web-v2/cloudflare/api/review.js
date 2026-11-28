@@ -1,21 +1,46 @@
 import { assertValid, assertAllowedFields, LABEL_CODES, UUID_PATTERN } from '../../src/feedback/contract.js';
 import { ApiError } from './http.js';
 
+// Quyết định 28/11/2026: một người duyệt, một lượt duyệt là chốt. Mẫu cũ còn ở cho_nguoi_thu_hai / bat_dong
+// được gộp vào tab chờ duyệt và chốt ở lượt duyệt kế tiếp.
+export const QUEUE_TABS = ['cho_duyet', 'da_duyet'];
+
+// Mẫu thuộc một tab với người đang xem: tab đang xử lý chỉ gồm mẫu họ chưa duyệt; tab đã duyệt gồm mọi mẫu.
+const IN_TAB = `p.loai = 'muc_2' AND (p.trang_thai = 'da_duyet') = (?1 = 'da_duyet')
+  AND (?1 = 'da_duyet' OR NOT EXISTS (SELECT 1 FROM luot_duyet WHERE mau_id = p.id AND nguoi = ?2))`;
+
 export async function listReviewQueue(db, actor, params) {
+  const tab = params.get('trang_thai') ?? 'cho_duyet';
+  assertValid(QUEUE_TABS.includes(tab), 'trang_thai');
   const date = params.get('sau_ngay') ?? '';
   const id = params.get('sau_id') ?? '';
   assertValid((date === '' && id === '') || (/^\d{4}-\d{2}-\d{2}$/.test(date) && UUID_PATTERN.test(id)), 'trang');
-  // Chỉ trả thông tin danh sách. Nội dung mẫu đi qua endpoint mở mẫu có nhật ký.
-  const { results } = await db.prepare(`
-    SELECT p.id, p.ngay, p.trang_thai,
-      json_extract(p.du_lieu, '$.nhan_mo_hinh') AS nhan_mo_hinh,
-      json_extract(p.du_lieu, '$.nhan_de_xuat') AS nhan_de_xuat
-    FROM phan_hoi p
-    WHERE p.loai = 'muc_2' AND p.trang_thai <> 'da_duyet' AND (p.ngay, p.id) > (?, ?)
-      AND NOT EXISTS (SELECT 1 FROM luot_duyet WHERE mau_id = p.id AND nguoi = ?)
-    ORDER BY p.ngay, p.id LIMIT 26
-  `).bind(date, id, actor).all();
-  return { hang_doi: results.slice(0, 25), con_mau: results.length > 25 };
+  // Chỉ trả thông tin danh sách (mã lựa chọn, không có đoạn hội thoại hay mô tả tự do).
+  // Nội dung mẫu đi qua endpoint mở mẫu có nhật ký.
+  const [list, counts] = await db.batch([
+    db.prepare(`
+      SELECT * FROM (
+        SELECT p.id, p.ngay, p.trang_thai,
+          json_extract(p.du_lieu, '$.nhan_mo_hinh') AS nhan_mo_hinh,
+          json_extract(p.du_lieu, '$.nhan_de_xuat') AS nhan_de_xuat,
+          json_extract(p.du_lieu, '$.ma_bao_cao') AS ma_bao_cao,
+          json_extract(p.du_lieu, '$.ma_ly_do') AS ma_ly_do,
+          json_extract(p.du_lieu, '$.ma_chi_tiet') AS ma_chi_tiet
+        FROM phan_hoi p WHERE ${IN_TAB}
+      ) WHERE (ngay, id) > (?3, ?4)
+      ORDER BY ngay, id LIMIT 26
+    `).bind(tab, actor, date, id),
+    db.prepare(`
+      SELECT CASE p.trang_thai WHEN 'da_duyet' THEN 'da_duyet' ELSE 'cho_duyet' END AS trang_thai, count(*) AS n
+      FROM phan_hoi p
+      WHERE p.loai = 'muc_2' AND (p.trang_thai = 'da_duyet'
+        OR NOT EXISTS (SELECT 1 FROM luot_duyet WHERE mau_id = p.id AND nguoi = ?))
+      GROUP BY 1
+    `).bind(actor),
+  ]);
+  const dem = Object.fromEntries(QUEUE_TABS.map((key) => [key, 0]));
+  for (const row of counts.results) dem[row.trang_thai] = row.n;
+  return { trang_thai: tab, dem, hang_doi: list.results.slice(0, 25), con_mau: list.results.length > 25 };
 }
 
 export async function openReviewSample(db, actor, id) {
@@ -67,8 +92,10 @@ function extractEvidence(redactedConversation, spans) {
 }
 
 export async function saveReview(db, actor, id, data) {
-  assertAllowedFields(data, ['nhan', 'bang_chung', 'nham_nhom']);
-  const { nhan: label, bang_chung: evidenceSpans = [], nham_nhom: targetsGroup = false } = data;
+  assertAllowedFields(data, ['nhan', 'bang_chung', 'nham_nhom', 'ghi_chu']);
+  const { nhan: label, bang_chung: evidenceSpans = [], nham_nhom: targetsGroup = false, ghi_chu: rawNote = null } = data;
+  assertValid(rawNote === null || (typeof rawNote === 'string' && Array.from(rawNote.trim()).length <= 200), 'ghi_chu');
+  const note = rawNote?.trim() || null;
   assertValid(LABEL_CODES.includes(label), 'nhan');
   assertValid(typeof targetsGroup === 'boolean' && (!targetsGroup || label === 'XUC_PHAM'), 'nham_nhom');
   assertValid(Array.isArray(evidenceSpans) && evidenceSpans.length <= 16 &&
@@ -78,17 +105,13 @@ export async function saveReview(db, actor, id, data) {
   const feedback = JSON.parse(sample.du_lieu);
   const evidence = extractEvidence(feedback.doan_da_che, evidenceSpans);
 
-  const requiresSecondReviewer = targetsGroup || [label, feedback.nhan_mo_hinh, feedback.nhan_de_xuat].includes('DE_DOA') ||
-    feedback.ma_chi_tiet === 'miet_thi_nhom';
   const [saved, current] = await db.batch([
     db.prepare(`
-      INSERT INTO luot_duyet (id, mau_id, nguoi, nhan, nham_nhom, can_duyet_hai, bang_chung)
-      SELECT ?, id, ?, ?, ?, CASE WHEN ? OR EXISTS (
-        SELECT 1 FROM luot_duyet WHERE mau_id = phan_hoi.id AND can_duyet_hai = 1
-      ) THEN 1 ELSE 0 END, ?
+      INSERT INTO luot_duyet (id, mau_id, nguoi, nhan, nham_nhom, can_duyet_hai, bang_chung, luc, ghi_chu)
+      SELECT ?, id, ?, ?, ?, 0, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), ?
       FROM phan_hoi WHERE id = ? AND loai = 'muc_2' AND trang_thai <> 'da_duyet'
       ON CONFLICT (mau_id, nguoi) DO NOTHING RETURNING id
-    `).bind(crypto.randomUUID(), actor, label, Number(targetsGroup), Number(requiresSecondReviewer), JSON.stringify(evidence), id),
+    `).bind(crypto.randomUUID(), actor, label, Number(targetsGroup), JSON.stringify(evidence), note, id),
     db.prepare('SELECT trang_thai FROM phan_hoi WHERE id = ?').bind(id),
   ]);
   if (!saved.results.length) throw new ApiError(409, 'khong_the_duyet_lai');
@@ -102,4 +125,31 @@ export async function getAuditLog(db, subjectId) {
   `);
   const { results } = await (subjectId ? query.bind(subjectId) : query).all();
   return { nhat_ky: results };
+}
+
+// Người duyệt che thêm thông tin cá nhân còn sót trong bản đã che. Chỉ làm được khi mẫu chưa có lượt duyệt nào,
+// để vị trí bằng chứng của các lượt duyệt không bị lệch. Ghi nhật ký "che_them".
+export async function maskMore(db, actor, id, data) {
+  assertAllowedFields(data, ['dong', 'start', 'end']);
+  const sample = await db.prepare("SELECT du_lieu FROM phan_hoi WHERE id = ? AND loai = 'muc_2'").bind(id).first();
+  if (!sample) throw new ApiError(404, 'khong_tim_thay_mau');
+  const feedback = JSON.parse(sample.du_lieu);
+  const [span] = extractEvidence(feedback.doan_da_che, [data]);
+  const lines = feedback.doan_da_che.split('\n');
+  const line = lines[span.dong];
+  lines[span.dong] = line.slice(0, span.start) + '[ĐÃ_CHE]' + line.slice(span.end);
+  const updated = JSON.stringify({ ...feedback, doan_da_che: lines.join('\n') });
+  const [changed] = await db.batch([
+    db.prepare(`
+      UPDATE phan_hoi SET du_lieu = ? WHERE id = ? AND du_lieu = ? AND trang_thai = 'cho_duyet'
+        AND NOT EXISTS (SELECT 1 FROM luot_duyet WHERE mau_id = phan_hoi.id)
+      RETURNING id
+    `).bind(updated, id, sample.du_lieu),
+    db.prepare(`
+      INSERT INTO nhat_ky (nguoi, hanh_dong, doi_tuong, chi_tiet)
+      SELECT ?, 'che_them', ?, ? WHERE changes() = 1
+    `).bind(actor, id, 'lượt ' + (span.dong + 1)),
+  ]);
+  if (!changed.results.length) throw new ApiError(409, 'khong_the_che_them');
+  return { id, doan_da_che: lines.join('\n') };
 }

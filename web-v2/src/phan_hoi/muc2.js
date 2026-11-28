@@ -1,4 +1,4 @@
-import { isLevel2Enabled, redactPreviewSelection, setLevel2Enabled } from '../feedback/client.js';
+import { redactPreviewSelection } from '../feedback/client.js';
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
@@ -16,7 +16,8 @@ export function oDanhDau(text, checked = false) {
   return { label, box };
 }
 
-export function taoManXemTruoc(ban, moTa, { onCheThem, onDongY }) {
+// `oDongY: false` khi việc đồng ý là hai nút riêng ở chân hộp thoại thay cho ô đánh dấu.
+export function taoManXemTruoc(ban, moTa, { onCheThem, onDongY = () => {}, oDongY = true }) {
   const panel = el('section', 'ph-preview');
   const title = el('h4', null, 'Đoạn hội thoại sẽ gửi');
   title.tabIndex = -1;
@@ -80,31 +81,6 @@ export function taoManXemTruoc(ban, moTa, { onCheThem, onDongY }) {
     moTaBox.append(el('strong', null, 'Mô tả kèm theo'), el('p', 'ph-preview-help', moTa));
     panel.append(moTaBox);
   }
-  panel.append(label);
+  if (oDongY) panel.append(label);
   return { panel, title };
-}
-
-export function moCaiDatPhanHoi(host) {
-  const dialog = el('dialog', 'ph-dialog');
-  dialog.setAttribute('aria-labelledby', 'ph-cai-dat-title');
-  const head = el('header', 'ph-head');
-  const title = el('h3', null, 'Cài đặt phản hồi');
-  title.id = 'ph-cai-dat-title';
-  head.append(title);
-  const body = el('div', 'ph-body ph-settings');
-  const { label, box } = oDanhDau('Cho phép tùy chọn phản hồi mức 2', isLevel2Enabled());
-  box.onchange = () => setLevel2Enabled(box.checked);
-  const link = el('a', 'ph-settings-link', 'Kiểm duyệt và quản trị');
-  link.href = '/quan-tri.html';
-  body.append(label, el('p', 'ph-preview-help',
-    'Mỗi lần gửi kèm đoạn hội thoại, bạn vẫn cần xem trước và đồng ý.'), link);
-  const foot = el('footer', 'ph-foot ph-actions');
-  const close = el('button', 'ph-gui', 'Đóng');
-  close.type = 'button';
-  close.onclick = () => dialog.close();
-  foot.append(close);
-  dialog.append(head, body, foot);
-  dialog.addEventListener('close', () => dialog.remove());
-  host.append(dialog);
-  dialog.showModal();
 }

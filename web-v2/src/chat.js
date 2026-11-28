@@ -9,7 +9,6 @@ import { SHIRTS, HAIR, SKIN } from './landing.js';
 import { stripInvisibles } from './engine/dualorc.js';
 import { buildTurnWindow, analyzeWindow } from './engine/flow.js';
 import { moBieuMauMuc1 } from './phan_hoi/bieu_mau_muc1.js';
-import { moCaiDatPhanHoi } from './phan_hoi/muc2.js';
 
 // Hội thoại mẫu để thử nghiệm trực tiếp với mô hình thật (không lấy từ tập dữ liệu).
 const CONVERSATIONS = [
@@ -145,7 +144,6 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
   const composer = $('composer');
   const warn = $('send-warn');
   const safetyBar = $('safety-bar');
-  $('feedback-settings').onclick = () => moCaiDatPhanHoi(shell);
   const aiOpen = () => !shell.classList.contains('ai-closed');
 
   const who = (conv, m) => (m.from === 'me' ? 'Bạn' : m.author || conv.name);
@@ -610,7 +608,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       AN_TOAN: 'Chưa phát hiện dấu hiệu nguy hại trong hội thoại.',
       XUC_PHAM: 'Phát hiện nội dung có dấu hiệu xúc phạm trong hội thoại.',
       QUAY_ROI: 'Phát hiện nội dung có dấu hiệu quấy rối trong hội thoại.',
-      DE_DOA: 'Phát hiện nội dung có dấu hiệu đe dọa / tống tiền trong hội thoại.',
+      DE_DOA: 'Phát hiện nội dung có dấu hiệu đe dọa trong hội thoại.',
       LUA_DAO: 'Phát hiện nội dung có dấu hiệu lừa đảo trong hội thoại.',
     };
 
@@ -622,7 +620,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     const reportBtn = el('button', 'safety-report');
     reportBtn.type = 'button';
     reportBtn.setAttribute('aria-haspopup', 'dialog');
-    reportBtn.append(el('span', null, 'Báo cáo/kháng cáo mô hình'), iconInfo());
+    reportBtn.append(el('span', null, 'Phản hồi kết quả'), iconInfo());
     const conv = current;
     reportBtn.onclick = () => moPhanHoi(analysis, conv);
 

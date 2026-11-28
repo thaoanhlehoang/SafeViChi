@@ -31,6 +31,8 @@ export function trangThai(value) {
 export function nhan(value) {
   const badge = el('span', 'badge tag', LABELS[value]?.ten ?? 'Chưa có đề xuất');
   badge.dataset.label = LABELS[value] ? value : '';
+  // Màu nhãn lấy từ labels.js như màn chat; đặt bằng CSSOM nên vẫn hợp CSP style-src 'self'.
+  if (LABELS[value]) badge.style.setProperty('--c', LABELS[value].mau);
   return badge;
 }
 

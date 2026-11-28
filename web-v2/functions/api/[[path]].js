@@ -1,6 +1,6 @@
 import { UUID_PATTERN } from '../../src/feedback/contract.js';
-import { listReviewQueue, saveReview, openReviewSample, getAuditLog } from '../../cloudflare/api/review.js';
-import { DEMO_ACTORS, getInternalActor, isDemoMode, requireRole, readJson, json, ApiError, handleApiError } from '../../cloudflare/api/http.js';
+import { listReviewQueue, saveReview, openReviewSample, getAuditLog, maskMore } from '../../cloudflare/api/review.js';
+import { DEMO_REVIEWER, getInternalActor, isDemoMode, requireRole, readJson, json, ApiError, handleApiError } from '../../cloudflare/api/http.js';
 import { getProposal, listPendingProposals, getActiveThreshold, approveProposal, createProposal } from '../../cloudflare/api/thresholds.js';
 import { saveFeedback, getFeedbackStats } from '../../cloudflare/api/feedback.js';
 
@@ -33,9 +33,14 @@ export async function onRequest({ request, env, params }) {
       case 'noi-bo':
         if (!['che-do', 'phien'].includes(id) || action) break;
         if (method !== 'GET') return methodNotAllowed('GET');
-        if (id === 'che-do') return json({ demo, vai_tro: demo ? Object.values(DEMO_ACTORS) : [] });
+        if (id === 'che-do') return json({ demo, vai_tro: demo ? [DEMO_REVIEWER] : [] });
         return json(await getInternalActor(request, env));
       case 'duyet': {
+        if (action === 'che-them') {
+          if (method !== 'POST') return methodNotAllowed('POST');
+          const actor = await requireRole(request, env, 'nguoi_duyet');
+          return json(await maskMore(db, actor, requireId(id), await readJson(request)));
+        }
         if (action) break;
         const actor = await requireRole(request, env, 'nguoi_duyet');
         if (!id) {

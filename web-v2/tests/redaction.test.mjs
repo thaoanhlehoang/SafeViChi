@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { redactPersonalInfo } from '../src/feedback/redaction.js';
-import { redactPreviewSelection, setLevel2Enabled, createPreview, createLevel1Payload, createLevel2Payload } from '../src/feedback/client.js';
+import { redactPreviewSelection, createPreview, createLevel1Payload, createLevel2Payload } from '../src/feedback/client.js';
 import { recordFalsePositive, getWarningPreference, resetWarnings } from '../src/feedback/warning-preferences.js';
 
 const cases = [
@@ -47,7 +47,7 @@ for (const [i, [text, expected]] of cases.entries()) {
   });
 }
 
-test('Mức 2 gửi đúng bản xem trước và tôn trọng tùy chọn tắt', async () => {
+test('Mức 2 chỉ gửi khi đồng ý và gửi đúng bản đã che', async () => {
   const map = new Map();
   const storage = { getItem: (key) => map.get(key), setItem: (key, value) => map.set(key, value) };
   const data = {
@@ -69,8 +69,6 @@ test('Mức 2 gửi đúng bản xem trước và tôn trọng tùy chọn tắt
   const level2 = await createLevel2Payload(data, manuallyRedacted, { storage, consent: true });
   assert.equal(level2.doan_da_che, manuallyRedacted.text);
   assert.equal(level2.dong_y.ban_xem_truoc_sha256.length, 64);
-  setLevel2Enabled(false, storage);
-  await assert.rejects(createLevel2Payload(data, manuallyRedacted, { storage, consent: true }), /dong_y/);
 });
 
 test('Bản xem trước tự che theo ngữ cảnh qua nhiều lượt và giữ số tiền', () => {

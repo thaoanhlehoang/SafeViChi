@@ -43,9 +43,9 @@ const KHAC = { ma: 'khac', ten: 'Khác', khac: true };
 // Loại báo cáo. `hien(nhanMoHinh)` là điều kiện hiển thị theo bảng ở Mục 1.
 export const LOAI_BAO_CAO = [
   { ma: 'tin_nhan_an_toan', ten: 'Tin nhắn này an toàn', hien: (n) => n !== 'AN_TOAN' },
-  { ma: 'sai_loai', ten: 'Có vấn đề, nhưng AI chọn sai loại', hien: (n) => n !== 'AN_TOAN' },
+  { ma: 'sai_loai', ten: 'Có nguy hại, nhưng AI chọn sai loại', hien: (n) => n !== 'AN_TOAN' },
   { ma: 'bo_sot', ten: 'AI bỏ sót nội dung nguy hại', hien: (n) => n === 'AN_TOAN' },
-  { ma: 'loi_to_sang', ten: 'Nhãn đúng, phần tô sáng có vấn đề', hien: (n) => n !== 'AN_TOAN' },
+  { ma: 'loi_to_sang', ten: 'Nhãn đúng, bằng chứng có vấn đề', hien: (n) => n !== 'AN_TOAN' },
   { ma: 'khac_chua_chac', ten: 'Vấn đề khác hoặc tôi chưa chắc', hien: () => true },
 ];
 
@@ -193,9 +193,25 @@ export const CHU = {
   tieuDe: 'Phản hồi kết quả AI',
   moDau: (tenNhan) => ['AI gợi ý nhãn ', tenNhan, '. Bạn thấy kết quả này có vấn đề gì?'],
   nhacMoTa: 'Đừng chép lại tin nhắn hoặc nhập thông tin cá nhân.',
-  thongBaoGui: 'Phản hồi mức 1 không đính kèm tin nhắn, đoạn được tô sáng hoặc mã tài khoản.',
   huy: 'Hủy',
   gui: 'Gửi phản hồi',
+  tiep: 'Tiếp tục',
+  tieuDeBuocCuoi: 'Chia sẻ đoạn hội thoại?',
+  camKetTieuDe: 'Góp phần cải thiện độ chính xác của hệ thống',
+  camKetMoDau: [
+    'Việc gửi kèm đoạn hội thoại giúp đội ngũ SafeViChi có thêm ngữ cảnh để đánh giá kết quả nhận diện và cải thiện chất lượng mô hình.',
+    'Việc chia sẻ hoàn toàn tự nguyện. Bạn vẫn có thể gửi phản hồi mà không cần cung cấp nội dung hội thoại.',
+  ],
+  camKetRiengTu: 'Cam kết bảo vệ quyền riêng tư',
+  camKet: [
+    'Các thông tin nhận dạng cá nhân như họ tên, số điện thoại, email, số tài khoản, thông tin giấy tờ, địa chỉ và đường dẫn được tự động che trên thiết bị của bạn trước khi gửi.',
+    'Không đính kèm mã tài khoản, số điện thoại hay địa chỉ IP của bạn.',
+    'Quyền truy cập nội dung được giới hạn cho đội ngũ kiểm duyệt của SafeViChi, phục vụ việc đánh giá và cải thiện hệ thống.',
+    'Dữ liệu không được mua bán, chia sẻ với bên thứ ba hoặc sử dụng cho mục đích thương mại, quảng cáo.',
+  ],
+  dongYKem: 'Đồng ý gửi kèm đoạn hội thoại',
+  tuChoiKem: 'Không, chỉ gửi phản hồi',
+  loiXemTruoc: 'Không tạo được bản xem trước đoạn hội thoại. Hãy thử lại.',
   dangGui: 'Đang gửi…',
   daGui: 'Đã gửi phản hồi. Cảm ơn bạn đã góp ý.',
   loiGui: 'Chưa gửi được phản hồi. Câu trả lời của bạn vẫn được giữ, hãy thử lại.',

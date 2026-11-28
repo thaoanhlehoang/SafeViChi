@@ -3,6 +3,7 @@ import { setupLanding } from './landing.js';
 import { setupChat } from './chat.js';
 import { drawClosing } from './about-art.js';
 import { datPhienBan } from './phan_hoi/api.js';
+import { setupAppTabs } from './quan_tri/tab_nhung.js';
 
 const $ = (id) => document.getElementById(id);
 let worker = null;
@@ -103,6 +104,9 @@ for (const [k, v] of Object.entries(VAR)) about.style.setProperty(v, LABELS[k].m
 
 // Vẽ nền trang đầu trước khi dựng các minh họa phía dưới để khung hình đầu hiện ngay.
 setupLanding({ onStart: startApp });
+
+// Tab kiểm duyệt và quản trị nằm cạnh tab nhắn tin, đổi tại chỗ.
+setupAppTabs();
 
 // Sơ đồ kiến trúc: đường cong nối các khối, tính theo vị trí thật trong khung sơ đồ.
 // Hiệu ứng: một luồng sáng chạy từ đầu vào tới đầu ra, khối nào được luồng chạm tới thì sáng lên, rồi lặp lại.

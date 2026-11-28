@@ -1,6 +1,10 @@
 import { ValidationError, isValidCode, sha256 } from '../../src/feedback/contract.js';
 
+// Quyết định 28/11/2026: bản demo chỉ có một người kiểm duyệt làm được mọi việc (duyệt, ngưỡng, nhật ký).
+// Ba vai trò cũ giữ lại để kiểm thử phân quyền qua API, nhưng không công bố cho giao diện.
+export const DEMO_REVIEWER = { id: 'kiem_duyet', vai_tro: 'kiem_duyet', ten: 'Người kiểm duyệt' };
 export const DEMO_ACTORS = {
+  kiem_duyet: DEMO_REVIEWER,
   duyet_a: { id: 'duyet_a', vai_tro: 'nguoi_duyet', ten: 'Người duyệt A' },
   duyet_b: { id: 'duyet_b', vai_tro: 'nguoi_duyet', ten: 'Người duyệt B' },
   quan_tri: { id: 'quan_tri', vai_tro: 'quan_tri', ten: 'Quản trị viên' },
@@ -87,6 +91,7 @@ export async function getInternalActor(request, env) {
 
 export async function requireRole(request, env, ...roles) {
   const actor = await getInternalActor(request, env);
-  if (!roles.includes(actor.vai_tro)) throw new ApiError(403, 'thieu_quyen');
+  // `kiem_duyet` chỉ có ở bản demo (đường token thật chỉ nhận nguoi_duyet / quan_tri).
+  if (actor.vai_tro !== 'kiem_duyet' && !roles.includes(actor.vai_tro)) throw new ApiError(403, 'thieu_quyen');
   return actor.id;
 }

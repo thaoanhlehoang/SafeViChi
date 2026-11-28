@@ -263,3 +263,42 @@
 @media (prefers-reduced-motion: reduce) { .loader-bar span, .model-loader { transition: none; } }
 
 .ctx-text + .ctx-text { margin-top: .2rem; }
+
+/* ---------- Tab chức năng: Nhắn tin & cảnh báo | Kiểm duyệt & quản trị ----------
+   Hai tab như hai mép sổ giấy nhô lên trên khung; tab đang chọn liền màu với trang bên dưới. */
+.app-frame {
+  --paper: #f4f1e8;
+  --rule: #dcd6c6;
+  --ink: #18261b;
+  --green: #24552c;
+  display: flex; flex-direction: column;
+  width: min(94rem, 100%); height: min(56rem, calc(100dvh - 3.2rem));
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+.app-tabs { display: flex; align-items: flex-end; gap: .3rem; flex: none; }
+.app-tab {
+  display: inline-flex; align-items: center; gap: .45rem;
+  min-block-size: 40px; padding: .55rem 1.1rem .6rem;
+  border: 0; border-radius: 10px 10px 0 0;
+  background: rgba(244, 241, 232, .55); color: #2b3a2e;
+  font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.app-tab svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.app-tab:hover { background: rgba(244, 241, 232, .8); }
+.app-tab[aria-selected="true"] { background: var(--paper); color: var(--green); }
+.app-tab:focus-visible { outline: 2px solid #f2c94c; outline-offset: -3px; }
+.app-frame > .chat-shell, .app-frame > .qt-panel {
+  flex: 1; min-height: 0; width: 100%; height: auto;
+  border-radius: 0 14px 14px 14px;
+}
+.app-frame > .chat-shell[hidden], .app-frame > .qt-panel[hidden] { display: none; }
+.qt-panel {
+  overflow: hidden; background: var(--paper); color: var(--ink);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 30px 80px -30px rgba(10, 40, 15, .55), 0 0 0 1px rgba(0, 0, 0, .12);
+}
+@container (max-width: 820px) {
+  .app-frame { height: calc(100dvh - 1.2rem); }
+  .app-tab { padding-inline: .8rem; font-size: .84rem; }
+}
+@media (prefers-reduced-motion: reduce) { .app-tab { transition: none; } }

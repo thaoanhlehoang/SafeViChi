@@ -1,68 +1,164 @@
 import { UUID_PATTERN } from '../feedback/contract.js';
-import { tenLuaChon } from '../phan_hoi/ma.js';
+import { LOAI_BAO_CAO, tenLuaChon } from '../phan_hoi/ma.js';
+import { LABELS } from '../labels.js';
 import { bang, dauThe, el, gioVietNam, input, ngayVietNam, nhac, nhan, nut, select, thongBao, truong } from './giao_dien.js';
 
-const groupLabels = {
-  nhan: ['Nhãn AI', 'Nhãn người dùng đề xuất'],
-  ly_do: ['Loại báo cáo', 'Lý do chính', 'Chi tiết'],
-  khoang_diem: ['Khoảng xác suất'],
-  phien_ban: ['Phiên bản mô hình', 'Phiên bản ngưỡng'],
-};
-
-function statsCells(row, group) {
-  switch (group) {
-    case 'nhan': return [nhan(row.nhan_mo_hinh), nhan(row.nhan_de_xuat)];
-    case 'ly_do': return [row.ma_bao_cao, row.ma_ly_do, row.ma_chi_tiet].map(tenLuaChon);
-    case 'khoang_diem': return [row.khoang_diem * 10 + '–' + (row.khoang_diem + 1) * 10 + '%'];
-    case 'phien_ban': return [row.phien_ban_mo_hinh, row.phien_ban_nguong];
-    default: return [];
-  }
+// Thống kê phản hồi: đếm chung mọi lần gửi, có hay không kèm đoạn hội thoại.
+function phanTram(n, tong) {
+  return tong ? Math.round((100 * n) / tong) + '%' : '0%';
 }
 
+function chipNhan(ma) {
+  const info = LABELS[ma];
+  const chip = el('span', 'badge tag', info?.ten ?? 'Chưa chắc');
+  if (info) chip.style.setProperty('--c', info.mau);
+  return chip;
+}
+
+function oSo(ten, so, phu) {
+  const tile = el('div', 'qt-o-so');
+  tile.append(el('span', 'qt-o-so-ten', ten), el('strong', 'metric', so));
+  if (phu) tile.append(el('span', 'qt-o-so-phu', phu));
+  return tile;
+}
+
+// Thanh ngang như thanh xác suất ở cột phân tích của màn chat.
+function thanh(nhanTrai, n, max, mau) {
+  const row = el('div', 'qt-thanh');
+  const bar = el('span', 'qt-thanh-ve');
+  const fill = el('span', 'qt-thanh-day');
+  fill.style.setProperty('--w', max ? String(n / max) : '0');
+  if (mau) fill.style.setProperty('--c', mau);
+  bar.append(fill);
+  const left = el('span', 'qt-thanh-ten');
+  left.append(nhanTrai);
+  row.append(left, bar, el('span', 'qt-thanh-so', n.toLocaleString('vi-VN')));
+  return row;
+}
+
+function theThongKe(tieuDe, phu, ...noiDung) {
+  const card = el('section', 'card qt-the-tk');
+  card.append(el('h3', null, tieuDe));
+  if (phu) card.append(el('p', 'muted', phu));
+  card.append(...noiDung);
+  return card;
+}
+
+const RANGES = [['7', '7 ngày'], ['30', '30 ngày'], ['tuy_chon', 'Tùy chọn']];
+
 export function hienThongKe(root, api) {
-  const card = el('section', 'card');
-  const controls = el('form', 'filters');
-  const by = select([['nhan', 'Nhãn'], ['ly_do', 'Lý do'], ['khoang_diem', 'Khoảng xác suất'], ['phien_ban', 'Phiên bản']]);
+  root.className = 'stack';
+  const filter = el('form', 'qt-loc');
+  const seg = el('div', 'qt-tabs');
+  let range = '7';
   const from = input({ type: 'date' });
   const to = input({ type: 'date' });
-  const submit = nut('Xem thống kê', 'primary');
-  submit.type = 'submit';
-  controls.append(truong('Nhóm theo', by), truong('Từ ngày', from), truong('Đến ngày', to), submit);
+  const custom = el('div', 'qt-loc-ngay');
+  custom.append(truong('Từ ngày', from), truong('Đến ngày', to));
+  const apply = nut('Xem', 'primary');
+  apply.type = 'submit';
+  custom.append(apply);
+  custom.hidden = true;
+  const segButtons = RANGES.map(([key, ten]) => {
+    const b = el('button', 'qt-tab', ten);
+    b.type = 'button';
+    b.onclick = () => {
+      range = key;
+      for (const other of segButtons) other.setAttribute('aria-pressed', String(other === b));
+      custom.hidden = key !== 'tuy_chon';
+      if (key !== 'tuy_chon') load();
+    };
+    b.setAttribute('aria-pressed', String(key === range));
+    seg.append(b);
+    return b;
+  });
+  filter.append(seg, custom);
+  filter.onsubmit = (event) => { event.preventDefault(); load(); };
   const status = nhac();
   const output = el('div', 'stack');
-  card.append(controls, status, output);
-  root.append(card);
+  root.append(filter, status, output);
 
+  function ngayCach(days) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' })
+      .format(new Date(Date.now() - days * 86400_000));
+  }
+
+  let busy = false;
   async function load() {
-    if (submit.disabled) return;
-    submit.disabled = true;
+    if (busy) return;
+    busy = true;
     thongBao(status, 'Đang tải thống kê…');
-    output.replaceChildren();
-    const params = new URLSearchParams({ theo: by.value });
-    if (from.value) params.set('tu', from.value);
-    if (to.value) params.set('den', to.value);
+    const params = new URLSearchParams({ theo: 'nhan' });
+    if (range === 'tuy_chon') {
+      if (from.value) params.set('tu', from.value);
+      if (to.value) params.set('den', to.value);
+    } else {
+      params.set('tu', ngayCach(Number(range) - 1));
+      params.set('den', ngayCach(0));
+    }
     try {
-      const stats = await api('thong-ke?' + params);
-      from.value = stats.tu;
-      to.value = stats.den;
-      const summary = el('div', 'stack');
-      summary.append(el('p', 'metric', stats.tong.toLocaleString('vi-VN') + ' lượt'),
-        el('p', 'muted', ngayVietNam(stats.tu) + ' – ' + ngayVietNam(stats.den)
-          + ' · Số lượt người dùng báo cáo.'));
-      const table = stats.nhom.length
-        ? bang([...groupLabels[stats.theo], 'Số lượt'],
-          stats.nhom.map((row) => [...statsCells(row, stats.theo), row.so_luot.toLocaleString('vi-VN')]))
-        : el('p', 'empty', 'Chưa có phản hồi trong khoảng ngày này.');
-      output.replaceChildren(summary, table);
-      if (stats.con_nhom) output.append(el('p', 'muted', 'Bảng hiển thị 250 nhóm có số lượt cao nhất.'));
+      const st = await api('thong-ke?' + params);
+      from.value = st.tu;
+      to.value = st.den;
+      veThongKe(st);
       thongBao(status, '');
     } catch (err) {
       thongBao(status, err.message, true);
     } finally {
-      submit.disabled = false;
+      busy = false;
     }
   }
-  controls.onsubmit = (event) => { event.preventDefault(); load(); };
+
+  function veThongKe(st) {
+    const kem = st.theo_loai.muc_2;
+    const tiles = el('div', 'qt-hang-o');
+    tiles.append(
+      oSo('Tổng phản hồi', st.tong.toLocaleString('vi-VN'), ngayVietNam(st.tu) + ' – ' + ngayVietNam(st.den)),
+      oSo('Có kèm đoạn hội thoại', kem.toLocaleString('vi-VN'), phanTram(kem, st.tong) + ' tổng phản hồi'),
+      oSo('Đã duyệt', st.kem_doan.da_duyet.toLocaleString('vi-VN'), 'trong số phản hồi kèm đoạn'),
+      oSo('Chờ duyệt', st.kem_doan.chua_duyet.toLocaleString('vi-VN'), 'trong số phản hồi kèm đoạn'),
+    );
+    if (!st.tong) {
+      output.replaceChildren(tiles, el('p', 'empty', 'Chưa có phản hồi trong khoảng ngày này.'));
+      return;
+    }
+
+    // (1) Theo loại báo cáo: đủ 5 nhánh, kể cả nhánh 0 lượt.
+    const reportMax = Math.max(1, ...st.theo_bao_cao.map((r) => r.n));
+    const reports = LOAI_BAO_CAO.map(({ ma, ten }) =>
+      thanh(ten, st.theo_bao_cao.find((r) => r.ma_bao_cao === ma)?.n ?? 0, reportMax, '#24552c'));
+
+    // (2) AI gắn → người dùng đề xuất.
+    const pairs = el('ol', 'qt-cap');
+    for (const row of st.cap_nhan) {
+      const item = el('li');
+      const left = el('span', 'qt-cap-nhan');
+      left.append(chipNhan(row.nhan_mo_hinh), el('span', 'qt-mui-ten', '→'), chipNhan(row.nhan_de_xuat));
+      item.append(left, el('span', 'qt-thanh-so', row.n.toLocaleString('vi-VN')));
+      pairs.append(item);
+    }
+
+    // (3) Lý do phổ biến theo từng nhánh báo cáo.
+    const reasons = el('div', 'qt-ly-do-nhom');
+    for (const { ma, ten } of LOAI_BAO_CAO) {
+      const rows = st.ly_do.filter((r) => r.ma_bao_cao === ma).slice(0, 4);
+      if (!rows.length) continue;
+      const block = el('div', 'qt-ly-do-khoi');
+      const max = Math.max(...rows.map((r) => r.n));
+      block.append(el('h4', null, ten), ...rows.map((r) => thanh(tenLuaChon(r.ma_ly_do), r.n, max, '#7d887d')));
+      reasons.append(block);
+    }
+    if (!reasons.children.length) reasons.append(el('p', 'muted', 'Chưa có lý do nào được chọn.'));
+
+    const grid = el('div', 'qt-luoi-tk');
+    grid.append(
+      theThongKe('Theo loại báo cáo', null, ...reports),
+      theThongKe('AI gắn → Người dùng đề xuất', 'Các cặp nhãn gặp nhiều nhất.', pairs),
+      theThongKe('Lý do phổ biến', 'Tối đa 4 lý do mỗi loại báo cáo.', reasons),
+    );
+    output.replaceChildren(tiles, grid);
+  }
+
   load();
 }
 

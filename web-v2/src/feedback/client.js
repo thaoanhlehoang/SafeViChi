@@ -3,7 +3,6 @@ import { assertValid, validateFeedback, UUID_PATTERN, CONSENT_VERSION, sha256 } 
 import { recordFalsePositive } from './warning-preferences.js';
 
 const DEVICE_ID_KEY = 'safevichi.ma_thiet_bi';
-const LEVEL_2_SETTING_KEY = 'safevichi.cho_phep_muc_2';
 const PREVIEW_SNAPSHOTS = new WeakSet();
 
 export function getDeviceId(storage = localStorage) {
@@ -13,15 +12,6 @@ export function getDeviceId(storage = localStorage) {
     storage.setItem(DEVICE_ID_KEY, deviceId);
   }
   return deviceId;
-}
-
-export function isLevel2Enabled(storage = localStorage) {
-  return storage.getItem(LEVEL_2_SETTING_KEY) !== 'tat';
-}
-
-export function setLevel2Enabled(enabled, storage = localStorage) {
-  assertValid(typeof enabled === 'boolean', 'cho_phep_muc_2');
-  storage.setItem(LEVEL_2_SETTING_KEY, enabled ? 'bat' : 'tat');
 }
 
 function makePreviewSnapshot(text) {
@@ -86,7 +76,8 @@ export function createLevel1Payload(data, { submissionId = crypto.randomUUID(), 
 export async function createLevel2Payload(data, preview, {
   consent = false, submissionId = crypto.randomUUID(), storage = localStorage,
 } = {}) {
-  assertValid(isLevel2Enabled(storage) && consent === true && PREVIEW_SNAPSHOTS.has(preview), 'dong_y');
+  // Không có công tắc trong Cài đặt: đồng ý được hỏi ở cuối mỗi lần phản hồi (quyết định 28/11/2026).
+  assertValid(consent === true && PREVIEW_SNAPSHOTS.has(preview), 'dong_y');
   return createFeedbackPayload(data, 'muc_2', submissionId, storage, {
     doan_da_che: preview.text,
     dong_y: Object.freeze({ phien_ban: CONSENT_VERSION, ban_xem_truoc_sha256: await sha256(preview.text) }),
@@ -94,7 +85,6 @@ export async function createLevel2Payload(data, preview, {
 }
 
 export async function submitFeedback(payload, { storage = localStorage, fetcher = fetch } = {}) {
-  assertValid(payload.loai !== 'muc_2' || isLevel2Enabled(storage), 'dong_y');
   await validateFeedback(payload);
   const response = await fetcher('/api/phan-hoi', {
     method: 'POST', credentials: 'omit',

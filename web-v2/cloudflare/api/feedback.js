@@ -65,16 +65,33 @@ export async function getFeedbackStats(db, url) {
   }
   const fields = GROUP_FIELDS[groupBy];
   const select = fields.map((field) => "json_extract(du_lieu, '$." + field + "') AS " + field).join(', ');
-  const [count, data] = await db.batch([
-    db.prepare("SELECT count(*) AS n FROM phan_hoi WHERE loai = 'muc_1' AND ngay BETWEEN ? AND ?").bind(startDate, endDate),
-    db.prepare(`
-      SELECT ${select}, count(*) AS so_luot FROM phan_hoi
-      WHERE loai = 'muc_1' AND ngay BETWEEN ? AND ?
-      GROUP BY ${fields.join(', ')} ORDER BY so_luot DESC, ${fields.join(', ')} LIMIT 251
-    `).bind(startDate, endDate),
+  const j = (field) => "json_extract(du_lieu, '$." + field + "')";
+  const range = 'WHERE ngay BETWEEN ?1 AND ?2';
+  const q = (sql) => db.prepare(sql).bind(startDate, endDate);
+  // Mọi lần gửi đều mang câu trả lời biểu mẫu (có hay không kèm đoạn hội thoại) nên mọi bảng dưới đây
+  // đếm chung cả hai loại. Đây là số người dùng tự báo, không dùng để ước lượng tỉ lệ lỗi của mô hình.
+  const [count, byLevel, byReport, pairs, reasons, data] = await db.batch([
+    q(`SELECT count(*) AS n FROM phan_hoi ${range}`),
+    q(`SELECT loai, coalesce(trang_thai, '') AS trang_thai, count(*) AS n FROM phan_hoi ${range} GROUP BY loai, trang_thai`),
+    q(`SELECT ${j('ma_bao_cao')} AS ma_bao_cao, count(*) AS n FROM phan_hoi ${range} GROUP BY 1 ORDER BY n DESC`),
+    q(`SELECT ${j('nhan_mo_hinh')} AS nhan_mo_hinh, ${j('nhan_de_xuat')} AS nhan_de_xuat, count(*) AS n
+       FROM phan_hoi ${range} GROUP BY 1, 2 ORDER BY n DESC LIMIT 30`),
+    q(`SELECT ${j('ma_bao_cao')} AS ma_bao_cao, ${j('ma_ly_do')} AS ma_ly_do, count(*) AS n
+       FROM phan_hoi ${range} AND ${j('ma_ly_do')} IS NOT NULL GROUP BY 1, 2 ORDER BY n DESC LIMIT 40`),
+    q(`SELECT ${select}, count(*) AS so_luot FROM phan_hoi ${range}
+       GROUP BY ${fields.join(', ')} ORDER BY so_luot DESC, ${fields.join(', ')} LIMIT 251`),
   ]);
+  const levelCount = (loai, status) => byLevel.results
+    .filter((row) => row.loai === loai && (status === undefined || row.trang_thai === status))
+    .reduce((sum, row) => sum + row.n, 0);
   return {
     theo: groupBy, tu: startDate, den: endDate, tong: count.results[0].n,
+    // muc_2 = kèm đoạn hội thoại đã che, muc_1 = chỉ câu trả lời.
+    theo_loai: { muc_1: levelCount('muc_1'), muc_2: levelCount('muc_2') },
+    kem_doan: { da_duyet: levelCount('muc_2', 'da_duyet'), chua_duyet: levelCount('muc_2') - levelCount('muc_2', 'da_duyet') },
+    theo_bao_cao: byReport.results,
+    cap_nhan: pairs.results,
+    ly_do: reasons.results,
     con_nhom: data.results.length > 250, nhom: data.results.slice(0, 250),
   };
 }

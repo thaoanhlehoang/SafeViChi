@@ -11,13 +11,13 @@ function request(env, path, headers = {}) {
   });
 }
 
-test('Bản demo dùng binding riêng và công bố ba vai trò có thể chọn', async () => {
+test('Bản demo dùng binding riêng và chỉ công bố một tài khoản kiểm duyệt', async () => {
   const env = { FEEDBACK_DEMO: '1', DEMO_FEEDBACK_DB: {} };
   const mode = await request(env, 'noi-bo/che-do');
   assert.equal(mode.headers.get('Cache-Control'), 'no-store');
   const config = await mode.json();
   assert.equal(config.demo, true);
-  assert.deepEqual(config.vai_tro.map(({ id }) => id), ['duyet_a', 'duyet_b', 'quan_tri']);
+  assert.deepEqual(config.vai_tro.map(({ id }) => id), ['kiem_duyet']);
   const actor = await request(env, 'noi-bo/phien', { 'X-SafeViChi-Demo-Role': 'duyet_b' });
   assert.deepEqual(await actor.json(), { id: 'duyet_b', vai_tro: 'nguoi_duyet' });
   const missing = await request({ FEEDBACK_DEMO: '1', FEEDBACK_DB: {} }, 'noi-bo/che-do');
