@@ -112,13 +112,13 @@ Người dùng có thể phản hồi ngay trên kết quả phân tích (mục~
 \addlinespace
 Cần cơ chế phản hồi, kháng nghị, hiệu chỉnh nhãn và giới hạn quyền quyết định cuối cùng của AI &
 Phản hồi có đính kèm đoạn hội thoại được đưa vào \textbf{hàng đợi kiểm duyệt}; \textbf{người kiểm duyệt}
-xác định nhãn đúng, trường hợp nhạy cảm cần \textbf{hai người} thống nhất (mục~\ref{sec:duyet}).
+xem xét từng mẫu và xác định nhãn đúng cùng bằng chứng (mục~\ref{sec:duyet}).
 Mô hình không tự thay đổi nhãn. Mọi thao tác đều được ghi nhật ký. \\
 \addlinespace
 Giảm lưu trữ thông tin nhạy cảm &
 Phản hồi chỉ gồm các lựa chọn định sẵn, \textbf{không chứa nội dung tin nhắn}. Đoạn hội thoại chỉ được đính
 kèm khi người dùng chủ động chọn và xác nhận đồng ý, sau khi \textbf{bộ lọc thông tin nhận dạng cá nhân}
-đã che thông tin trên thiết bị và người dùng đã xem trước (mục~\ref{sec:dinhkem}, \ref{sec:dulieu}). \\
+đã che thông tin trên thiết bị (mục~\ref{sec:dinhkem}, \ref{sec:dulieu}). \\
 \bottomrule
 \end{tabularx}
 \caption{Đối chiếu yêu cầu của đề bài với giải pháp của v3.}
@@ -147,26 +147,25 @@ thiết bị như ở v2. Dữ liệu chỉ được gửi lên máy chủ khi n
 \node[rong] (a) at (0,0) {Tin nhắn $\to$ mô hình v2 (ONNX, chạy trên thiết bị) $\to$ nhãn và cụm bằng chứng
   \\\textcolor{chuxam}{\footnotesize không phát sinh yêu cầu mạng khi phân tích}};
 \node[rong] (b) at (0,-1.35) {\textbf{Cảnh báo}: mô hình chỉ gợi ý, không chặn, không xóa; nút \textbf{Vẫn gửi} luôn hiển thị};
-\node[rong, fill=nenvang] (c) at (0,-2.6) {Người dùng chọn \textbf{Báo cáo/kháng cáo mô hình} hoặc \textbf{Báo AI hiểu sai}};
+\node[rong, fill=nenvang] (c) at (0,-2.6) {Người dùng chọn \textbf{Phản hồi kết quả} hoặc \textbf{Báo AI hiểu sai}};
 \node[rong] (fb) at (0,-3.85) {\textbf{Phản hồi}: chọn loại báo cáo và lý do từ các lựa chọn định sẵn
   \\\textcolor{chuxam}{\footnotesize không chứa nội dung tin nhắn}};
-\node[hop, text width=4.6cm, fill=white] (dec) at (0,-5.15) {Đính kèm đoạn hội thoại?\\
-  \textcolor{chuxam}{\footnotesize tùy chọn, mặc định: không}};
-\node[may] (m1) at (-3.65,-6.65) {Gửi phản hồi\\ \textcolor{chuxam}{\footnotesize chỉ gồm các lựa chọn}};
-\node[nguoi] (m2) at (3.65,-6.65) {\textbf{Đính kèm}: bộ lọc che thông tin cá nhân
-  $\to$ người dùng xem trước, che bổ sung $\to$ xác nhận đồng ý};
+\node[hop, text width=4.2cm, fill=white] (dec) at (0,-5.15) {Đính kèm đoạn hội thoại?\\
+  \textcolor{chuxam}{\footnotesize hỏi ở bước cuối\\ của mỗi lần phản hồi}};
+\node[may] (m1) at (-3.65,-6.65) {\textbf{Không, chỉ gửi phản hồi}\\ \textcolor{chuxam}{\footnotesize chỉ gồm các lựa chọn}};
+\node[nguoi] (m2) at (3.65,-6.65) {\textbf{Đồng ý gửi kèm đoạn hội thoại}\\ bộ lọc che thông tin cá nhân\\ trên thiết bị};
 % Máy chủ
-\node[rong, fill=nenxam] (api) at (0,-8.3) {\textbf{API tiếp nhận phản hồi} (cùng nguồn gốc với ứng dụng web):
+\node[rong, fill=nenxam] (api) at (0,-8.3) {\textbf{API tiếp nhận phản hồi} (cùng nguồn gốc với ứng dụng web):\\
   kiểm tra định dạng, chống gửi trùng, giới hạn số lượt mỗi ngày $\to$ lưu trữ};
-\node[may] (t1) at (-3.65,-9.8) {Thống kê phản hồi (chỉ đếm số lượt)};
-\node[nguoi, below=5mm of t1] (t2) {Người kiểm duyệt xác định các cặp nhãn\\ và lý do được phản hồi nhiều};
+\node[may] (t1) at (-3.65,-9.8) {Thống kê mọi phản hồi\\ (chỉ đếm số lượt)};
+\node[nguoi, below=5mm of t1] (t2) {Người kiểm duyệt xem các cặp nhãn\\ và lý do được phản hồi nhiều};
 \node[may] (r1) at (3.65,-9.8) {Hàng đợi kiểm duyệt (bản đã che)};
-\node[nguoi, below=5mm of r1] (r2) {\textbf{Người kiểm duyệt} xác định nhãn, bằng chứng;\\ trường hợp nhạy cảm: \textbf{hai người} thống nhất};
+\node[nguoi, below=5mm of r1] (r2) {\textbf{Người kiểm duyệt}\\ che thêm thông tin còn sót,\\ xác định nhãn và bằng chứng};
 \node[may, below=5mm of r2] (r3) {Nhãn do con người gán\\ \nhan{nguon=phan_hoi}, \nhan{cach_gan=nguoi}};
 \node[may, below=5mm of r3] (r4) {Chỉ đưa vào \textbf{tập huấn luyện},\\ không đưa vào tập kiểm thử};
 \path (r4.south) ++(0,-0.6) coordinate (nkpos);
-\node[rong, draw=chuxam, dashed, fill=white, anchor=north] (nk) at (nkpos -| a) {\textbf{Nhật ký}: mở mẫu,
-  lưu kết quả kiểm duyệt (người thực hiện, thời điểm, thao tác)};
+\node[rong, draw=chuxam, dashed, fill=white, anchor=north] (nk) at (nkpos -| a) {\textbf{Nhật ký}: mở mẫu, che thêm, lưu kết quả kiểm duyệt\\
+  (người thực hiện, thời điểm, thao tác)};
 \draw[mui] (a) -- (b);
 \draw[mui] (b) -- (c);
 \draw[mui] (c) -- (fb);
@@ -194,8 +193,8 @@ Quy trình gồm năm bước:
 \item \textbf{Phản hồi}: khi cho rằng kết quả chưa đúng, người dùng gửi phản hồi bằng các lựa chọn định sẵn.
   Nếu cần người kiểm duyệt xem xét ngữ cảnh, người dùng có thể đính kèm đoạn hội thoại đã che.
 \item \textbf{Tiếp nhận}: máy chủ kiểm tra từng trường dữ liệu và từ chối gói tin không hợp lệ trước khi lưu.
-\item \textbf{Xử lý theo hai nhánh}: phản hồi không đính kèm chỉ được dùng để \textbf{thống kê}; phản hồi có đính
-  kèm được đưa vào \textbf{hàng đợi kiểm duyệt}.
+\item \textbf{Xử lý theo hai nhánh}: mọi phản hồi được tổng hợp vào \textbf{thống kê}; phản hồi có đính
+  kèm được đưa thêm vào \textbf{hàng đợi kiểm duyệt}.
 \item \textbf{Không tự học}: nhãn do con người xác định chỉ được dùng cho lần huấn luyện tiếp theo;
   mô hình đang vận hành không tự thay đổi theo phản hồi.
 \end{enumerate}
@@ -209,10 +208,14 @@ Phản hồi là một thao tác duy nhất. Mọi phản hồi gồm các lựa
 hội thoại đã che} (mục~\ref{sec:dinhkem}); khi đó phản hồi được đưa vào hàng đợi kiểm duyệt. Phản hồi không
 đính kèm chỉ được dùng để thống kê.
 
+Biểu mẫu gồm hai bước. Bước thứ nhất hỏi các lựa chọn của phản hồi; bước cuối, \textbf{Chia sẻ đoạn hội thoại?},
+hỏi người dùng có đồng ý gửi kèm đoạn hội thoại hay không. Bước cuối được hỏi lại ở \textbf{mỗi lần phản hồi},
+hệ thống không ghi nhớ lựa chọn của lần trước.
+
 \subsection{Nội dung phản hồi}
 \label{sec:noidung}
 
-\textbf{Điểm truy cập.} Nút \textbf{Báo cáo/kháng cáo mô hình} nằm trên dải kết quả phân tích; nút
+\textbf{Điểm truy cập.} Nút \textbf{Phản hồi kết quả} nằm trên dải kết quả phân tích; nút
 \textbf{Báo AI hiểu sai} nằm trong cảnh báo trước khi gửi tin. Người dùng chọn một trong năm loại báo cáo
 (bảng~\ref{tab:loaibaocao}); mỗi loại có câu hỏi bổ sung riêng, đều ở dạng lựa chọn định sẵn.
 
@@ -252,8 +255,9 @@ tên liên hệ. Máy chủ \textbf{chỉ ghi ngày} tiếp nhận, không ghi g
 phản hồi}; mã này chỉ dùng để giới hạn tối đa 20 phản hồi không đính kèm và 5 phản hồi có đính kèm mỗi ngày,
 dữ liệu đếm của các ngày trước được xóa.
 
-\textbf{Thống kê phản hồi.} Phản hồi không đính kèm được tổng hợp theo cặp nhãn (nhãn của mô hình và nhãn người
-dùng đề xuất), theo lý do, theo khoảng điểm và theo phiên bản. Đây là dữ liệu do người dùng tự báo cáo, vì vậy chỉ
+\textbf{Thống kê phản hồi.} Mọi phản hồi, có hoặc không đính kèm, đều được tổng hợp trong mục
+\textbf{Thống kê phản hồi}: tổng số phản hồi, số phản hồi có đính kèm (đã duyệt và chờ duyệt), số lượt theo loại báo
+cáo, các cặp nhãn gặp nhiều nhất (nhãn của mô hình và nhãn người dùng đề xuất) và các lý do phổ biến. Đây là dữ liệu do người dùng tự báo cáo, vì vậy chỉ
 dùng để \textbf{xác định các trường hợp cần xem xét}, không dùng để ước lượng tỷ lệ lỗi của mô hình và không
 được đưa vào huấn luyện.
 
@@ -261,66 +265,152 @@ dùng để \textbf{xác định các trường hợp cần xem xét}, không d�
 \label{sec:dinhkem}
 
 Tùy chọn đính kèm dành cho trường hợp người dùng muốn \textbf{kháng nghị} và cần người kiểm duyệt xem xét ngữ cảnh.
-Phản hồi giữ nguyên các lựa chọn ở mục~\ref{sec:noidung} và bổ sung đoạn hội thoại đã che. Quy trình gồm năm bước,
-tất cả được thực hiện trên thiết bị trước khi dữ liệu được gửi đi:
+Phản hồi giữ nguyên các lựa chọn ở mục~\ref{sec:noidung} và bổ sung đoạn hội thoại đã che. Quy trình gồm bốn bước;
+việc che thông tin được thực hiện trên thiết bị trước khi dữ liệu được gửi đi:
 
 \begin{enumerate}[leftmargin=*]
-\item \textbf{Cho phép đính kèm.} Người dùng có thể tắt hoàn toàn tùy chọn này trong \textbf{Cài đặt phản hồi}.
-\item \textbf{Lọc tự động.} \textbf{Bộ lọc thông tin nhận dạng cá nhân} thay thông tin cá nhân bằng nhãn giữ chỗ:
-  \gc{[SĐT]}, \gc{[EMAIL]}, \gc{[STK]}, \gc{[MÃ]} (mã OTP), \gc{[GIẤY\_TỜ]},
-  \gc{[ĐỊA\_CHỈ]}, \gc{[TÊN\_1]}, \gc{[TÊN\_2]}\ldots{} Bộ lọc \textbf{giữ nguyên số tiền} và \textbf{tên miền
-  của đường link} (dạng \nhan{[LINK:ten-mien]}) vì đây là căn cứ để nhận diện lừa đảo.
-  Đây là phép \textbf{che, ẩn danh hóa một chiều}, không phải mã hóa: hệ thống không lưu bảng đối chiếu với tên
-  thật và không thể khôi phục bản gốc.
-\item \textbf{Xem trước và che bổ sung.} Người dùng xem đúng đoạn hội thoại sẽ được gửi (tối đa 8 lượt), chọn
-  phần văn bản còn lộ thông tin và bấm \textbf{Che phần đã chọn} để thay bằng \gc{[ĐÃ\_CHE]}. Người dùng chỉ có
-  thể che thêm, \textbf{không thể bỏ phần đã che}.
-\item \textbf{Xác nhận đồng ý.} Ô ``Tôi đã xem và đồng ý gửi bản đã che này'' \textbf{không được chọn sẵn}.
-  Mỗi lần che bổ sung, ô xác nhận được bỏ chọn để người dùng xác nhận lại trên bản mới.
-\item \textbf{Gửi phản hồi.} Gói tin gồm các trường của phản hồi, đúng bản đã che mà người dùng vừa xem và phiên
-  bản nội dung đồng ý. Máy chủ chạy lại bộ lọc để bảo đảm không còn thông tin nhận dạng được, kiểm tra đoạn hội
-  thoại không quá 8 lượt và giới hạn tối đa 5 phản hồi có đính kèm mỗi ngày.
+\item \textbf{Lọc tự động.} Khi người dùng chuyển sang bước cuối, \textbf{bộ lọc thông tin nhận dạng cá nhân}
+  thay thông tin cá nhân trong đoạn hội thoại (tối đa 8 lượt) bằng nhãn giữ chỗ; quy tắc chi tiết được trình bày
+  ở mục~\ref{sec:xuly}.
+\item \textbf{Thông báo và cam kết.} Bước \textbf{Chia sẻ đoạn hội thoại?} giải thích mục đích của việc gửi kèm,
+  nêu rõ việc chia sẻ là \textbf{hoàn toàn tự nguyện}, và trình bày cam kết bảo vệ quyền riêng tư: thông tin nhận
+  dạng được che trên thiết bị; không đính kèm mã tài khoản, số điện thoại hay địa chỉ IP; chỉ đội ngũ kiểm duyệt
+  được truy cập nội dung; dữ liệu không được mua bán, chia sẻ với bên thứ ba hoặc dùng cho mục đích thương mại.
+\item \textbf{Người dùng quyết định.} Người dùng chọn một trong hai nút: \textbf{Đồng ý gửi kèm đoạn hội thoại}
+  hoặc \textbf{Không, chỉ gửi phản hồi}; nút \textbf{Quay lại} cho phép sửa các lựa chọn trước đó. Không có lựa
+  chọn nào được chọn sẵn.
+\item \textbf{Gửi phản hồi.} Khi người dùng đồng ý, gói tin gồm các trường của phản hồi, bản đoạn hội thoại đã che
+  và phiên bản nội dung cam kết mà người dùng đã đồng ý. Máy chủ chạy lại bộ lọc để bảo đảm không còn thông tin
+  nhận dạng được, kiểm tra đoạn hội thoại không quá 8 lượt và giới hạn tối đa 5 phản hồi có đính kèm mỗi ngày.
+\end{enumerate}
+
+\newpage
+% =====================================================================
+\section{Quy trình xử lý dữ liệu khi gửi}
+\label{sec:xuly}
+
+Dữ liệu phản hồi đi qua hai giai đoạn: \textbf{xử lý trên thiết bị} trước khi rời khỏi trình duyệt và
+\textbf{kiểm tra trên máy chủ} trước khi được lưu (hình~\ref{fig:xuly}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[font=\small, node distance=4mm,
+  bk/.style={draw=navy, rounded corners=3pt, fill=nenxanh, align=center, inner sep=4pt, text width=2.55cm, minimum height=1.45cm},
+  sv/.style={bk, fill=nenxam},
+  mui/.style={-{Stealth[length=2mm]}, navy, thick}]
+\node[bk] (s1) {Lấy tối đa\\ 8 lượt gần nhất};
+\node[bk, right=of s1] (s2) {Chuẩn hóa\\ ký tự};
+\node[bk, right=of s2] (s3) {Bộ lọc thông tin\\ nhận dạng cá nhân};
+\node[bk, right=of s3] (s4) {Đóng gói\\ phản hồi};
+\node[sv, below=9mm of s4] (v1) {Kiểm tra\\ định dạng};
+\node[sv, left=of v1] (v2) {Chạy lại\\ bộ lọc};
+\node[sv, left=of v2] (v3) {Giới hạn\\ số lượt};
+\node[sv, left=of v3] (v4) {Lưu trữ\\ tối thiểu};
+\draw[mui] (s1) -- (s2); \draw[mui] (s2) -- (s3); \draw[mui] (s3) -- (s4);
+\draw[mui] (s4) -- (v1); \draw[mui] (v1) -- (v2); \draw[mui] (v2) -- (v3); \draw[mui] (v3) -- (v4);
+\node[font=\footnotesize\bfseries, text=chuxam, anchor=south west] at (s1.north west) {TRÊN THIẾT BỊ};
+\node[font=\footnotesize\bfseries, text=chuxam, anchor=north west] at (v4.south west) {TRÊN MÁY CHỦ};
+\end{tikzpicture}
+\caption{Các bước xử lý dữ liệu phản hồi.}
+\label{fig:xuly}
+\end{figure}
+
+\subsection{Xử lý trên thiết bị}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Lấy đoạn hội thoại.} Ứng dụng lấy đúng các lượt mô hình vừa phân tích (tối đa 8 lượt gần nhất).
+  Mỗi lượt là một dòng; ký tự xuống dòng bên trong một lượt được đổi thành dấu cách.
+\item \textbf{Chuẩn hóa ký tự.} Văn bản được chuẩn hóa Unicode (NFKC) và loại bỏ các ký tự vô hình (ký tự độ rộng
+  bằng không, ký tự điều khiển hướng chữ) để thông tin cá nhân không lọt qua bộ lọc nhờ các ký tự này.
+\item \textbf{Lọc thông tin nhận dạng cá nhân.} Bộ lọc nhận diện và thay thế thông tin theo bảng~\ref{tab:boloc}.
+  Việc nhận diện từ khóa được thực hiện trên bản đã bỏ dấu, nên các cách viết như ``sdt'', ``so tk'', ``tai khoan''
+  vẫn được nhận ra; chuỗi số viết tách bằng dấu cách, dấu chấm hoặc dấu gạch vẫn được xem là một số.
+\item \textbf{Đóng gói.} Gói tin gồm các lựa chọn của phản hồi, mô tả ngắn (nếu có, đã qua cùng bộ lọc) và, khi người
+  dùng đồng ý, bản đoạn hội thoại đã che. Yêu cầu được gửi \textbf{không kèm cookie hay thông tin đăng nhập}.
+\end{enumerate}
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}p{2.6cm}Yp{2.2cm}@{}}
+\toprule
+\textbf{Loại thông tin} & \textbf{Cách nhận diện} & \textbf{Thay bằng} \\
+\midrule
+Đường link & Chuỗi bắt đầu bằng \texttt{http://}, \texttt{https://}, \texttt{www.} hoặc tên miền có đường dẫn, tham số;
+  link chứa tên đăng nhập, mật khẩu cũng được che toàn bộ & \gc{[LINK]} \\
+Email & Chuỗi có dạng \texttt{tên@tên-miền} & \gc{[EMAIL]} \\
+Mã OTP & Chuỗi 4--8 chữ số đứng sau từ khóa ``OTP'', ``mã'', ``code'', ``PIN'', ``mã xác minh'' & \gc{[MÃ]} \\
+Giấy tờ tùy thân & Chuỗi 9 hoặc 12 chữ số sau ``CCCD'', ``CMND'', ``căn cước'', ``chứng minh''; hoặc chuỗi 9, 12 chữ
+  số không có từ khóa & \gc{[GIẤY\_TỜ]} \\
+Số tài khoản, số thẻ & Chuỗi 6--19 chữ số sau ``STK'', ``tài khoản'', ``ngân hàng'', ``ATM'' hoặc tên ngân hàng, ví
+  điện tử (Vietcombank, Techcombank, MoMo, ZaloPay\ldots); hoặc chuỗi 10--19 chữ số không có từ khóa & \gc{[STK]} \\
+Số điện thoại & Chuỗi 9--12 chữ số sau ``SĐT'', ``điện thoại'', ``Zalo'', ``hotline'', ``liên hệ'', ``gọi'';
+  hoặc số bắt đầu bằng 0 có 10--11 chữ số, số dạng \texttt{+84} & \gc{[SĐT]} \\
+Địa chỉ & Số nhà đi kèm các thành phần đường, phố, ngõ, ngách, hẻm, phường, xã, quận, huyện, tỉnh, thành phố,
+  thôn, ấp\ldots & \gc{[ĐỊA\_CHỈ]} \\
+Tên người & Tên liên hệ và tên người tham gia cuộc trò chuyện; tên được nhắc bằng \texttt{@}; cụm viết hoa đứng
+  sau từ xưng hô hoặc giới thiệu (anh, chị, em, cô, chú, ``tên là'', ``mình là''\ldots), trừ thán từ, từ ngữ
+  thông dụng và tên ngân hàng, dịch vụ; một tên đã nhận diện xuất hiện lại ở chỗ khác cũng được che &
+  \gc{[TÊN\_1]}, \gc{[TÊN\_2]}\ldots \\
+\midrule
+Số tiền & Số đi kèm đơn vị (k, tr, triệu, nghìn, đ, VND, đồng, USD, tỷ, \%\ldots) & \textbf{Giữ nguyên} \\
+\bottomrule
+\end{tabularx}
+\caption{Quy tắc của bộ lọc thông tin nhận dạng cá nhân. Chuỗi số được xét từ khóa trong phạm vi 30 ký tự đứng
+trước, trên cùng một dòng.}
+\label{tab:boloc}
+\end{table}
+
+Số tiền được giữ nguyên vì đây là căn cứ quan trọng để người kiểm duyệt nhận diện lừa đảo; vùng số tiền được đánh
+dấu trước nên không bị nhầm thành số tài khoản hay số điện thoại. Các tên giống nhau nhận cùng một số thứ tự
+(ví dụ ``Nguyễn Thị Lan'' và lần nhắc sau đó ``Lan'' cùng là \gc{[TÊN\_1]}) để người kiểm duyệt vẫn theo dõi được ai nói với ai.
+Bảng đánh số này chỉ tồn tại trong lúc bộ lọc chạy và không được lưu. Tên liên hệ chỉ dùng để nhận diện trên
+thiết bị, không được gửi đi. Đây là phép \textbf{che, ẩn danh hóa một chiều}, không phải mã hóa: không có bảng
+đối chiếu với thông tin thật và không thể khôi phục bản gốc.
+
+\subsection{Kiểm tra trên máy chủ}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Kiểm tra định dạng.} Máy chủ chỉ chấp nhận các trường trong danh sách cho phép; kiểm tra kiểu dữ
+  liệu, mã lựa chọn và tổ hợp lựa chọn hợp lệ. Gói tin không hợp lệ bị từ chối và không được lưu.
+\item \textbf{Chạy lại bộ lọc.} Máy chủ chạy lại cùng bộ lọc trên mô tả ngắn và đoạn hội thoại; nếu bộ lọc còn
+  phát hiện thông tin cần che, gói tin bị từ chối. Đoạn hội thoại phải có tối đa 8 lượt và không có lượt rỗng.
+\item \textbf{Giới hạn số lượt.} Mỗi thiết bị gửi tối đa 20 phản hồi không đính kèm và 5 phản hồi có đính kèm mỗi
+  ngày. Gửi lại cùng một phản hồi (cùng mã lần gửi) không tạo bản ghi mới.
+\item \textbf{Lưu trữ tối thiểu.} Máy chủ lưu nội dung phản hồi kèm \textbf{ngày} tiếp nhận (không lưu giờ phút).
+  Mã thiết bị không được lưu cùng phản hồi; dữ liệu đếm số lượt của các ngày trước được xóa.
+\item \textbf{Truy cập sau khi lưu.} Đoạn hội thoại chỉ được người kiểm duyệt mở theo từng mẫu, mỗi lần mở đều ghi
+  nhật ký; nếu phát hiện thông tin còn sót, người kiểm duyệt che thêm trước khi duyệt (mục~\ref{sec:duyet}).
 \end{enumerate}
 
 % =====================================================================
 \section{Kiểm duyệt và hiệu chỉnh nhãn}
 \label{sec:duyet}
 
-Màn hình kiểm duyệt dành riêng cho người kiểm duyệt; bản trình diễn có hai vai trò là Người duyệt A và
-Người duyệt B.
+Khu vực kiểm duyệt là tab \textbf{Kiểm duyệt \& quản trị} nằm cạnh tab \textbf{Nhắn tin \& cảnh báo} trong ứng
+dụng; bản trình diễn có một vai trò là \textbf{Người kiểm duyệt}.
 
 \begin{itemize}[leftmargin=*]
-\item \textbf{Hàng đợi kiểm duyệt} chỉ gồm phản hồi có đính kèm và chỉ hiển thị thông tin tóm tắt (ngày, nhãn
-  của mô hình, nhãn đề xuất). Nội dung chỉ được xem khi mở từng mẫu, và mỗi lần mở đều được \textbf{ghi nhật ký}.
-  Hệ thống không cung cấp chức năng xuất dữ liệu hàng loạt.
-\item Người kiểm duyệt gán nhãn theo hướng dẫn gán nhãn đã dùng ở v2: chọn nhãn và chọn \textbf{cụm bằng
-  chứng} trực tiếp trên bản đã che, nhờ đó bằng chứng luôn là trích dẫn nguyên văn.
-\item \textbf{Trường hợp nhạy cảm cần hai người kiểm duyệt}: khi nhãn \nhan{DE_DOA} xuất hiện (ở mô hình, người
-  dùng hoặc người kiểm duyệt), hoặc khi nội dung \nhan{XUC_PHAM} nhắm vào một nhóm người hay vùng miền.
-  Mỗi người chỉ kiểm duyệt một mẫu một lần.
+\item \textbf{Hàng đợi kiểm duyệt} chỉ gồm phản hồi có đính kèm, chia thành hai mục \textbf{Chờ duyệt} và
+  \textbf{Đã duyệt}. Danh sách chỉ hiển thị thông tin tóm tắt (ngày, nhãn của mô hình, nhãn đề xuất, loại báo
+  cáo, lý do). Đoạn hội thoại chỉ được xem khi mở từng mẫu, và mỗi lần mở đều được \textbf{ghi nhật ký}.
+  Hệ thống không cung cấp API xuất dữ liệu hàng loạt.
+\item Mỗi mẫu hiển thị ba phần: \textbf{Kết quả AI} (nhãn, khoảng độ tin cậy, có tô sáng bằng chứng hay không;
+  bản thân cụm bằng chứng của mô hình không được gửi lên máy chủ), \textbf{Người dùng báo} (nhãn đề xuất, loại báo
+  cáo, lý do, mô tả) và \textbf{Quyết định của bạn}.
+\item Nếu bản đã che còn sót thông tin cá nhân, người kiểm duyệt chọn phần văn bản và bấm \textbf{Che phần đã chọn}
+  để thay bằng \gc{[ĐÃ\_CHE]}. Thao tác này chỉ thực hiện được khi mẫu chưa có lượt duyệt nào và được ghi nhật ký.
+\item Người kiểm duyệt gán nhãn theo hướng dẫn gán nhãn đã dùng ở v2: chọn \textbf{nhãn sau khi xem xét}, đánh dấu
+  nếu nội dung nhắm vào một nhóm hoặc vùng miền, chọn \textbf{cụm bằng chứng} trực tiếp trên bản đã che (nhờ đó
+  bằng chứng luôn là trích dẫn nguyên văn) và có thể thêm ghi chú ngắn (tối đa 200 ký tự).
+\item Mỗi người chỉ kiểm duyệt một mẫu một lần; \textbf{một lượt duyệt} chuyển mẫu từ \nhan{cho_duyet} sang
+  \nhan{da_duyet}, và mẫu đã duyệt không thể duyệt lại.
 \end{itemize}
 
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[font=\small, node distance=8mm,
-  tt/.style={draw=navy, rounded corners=3pt, fill=nenxanh, inner sep=4pt, align=center},
-  mui/.style={-{Stealth[length=2mm]}, navy, thick}]
-\node[tt] (a) {\nhan{cho_duyet}};
-\node[tt, right=24mm of a] (b) {\nhan{cho_nguoi_thu_hai}};
-\node[tt, right=30mm of b, fill=nenvang] (c) {\nhan{da_duyet}};
-\node[tt, below=7mm of b] (d) {\nhan{bat_dong}};
-\draw[mui] (a) -- node[below, font=\footnotesize]{lượt thứ nhất} (b);
-\draw[mui] (b) -- node[below, font=\footnotesize]{lượt thứ hai khớp} (c);
-\draw[mui] (b) -- node[right, font=\footnotesize]{không khớp} (d);
-\draw[mui] (d) -| node[pos=0.25, below, font=\footnotesize]{lượt mới khớp} (c);
-\draw[mui] (a) to[bend left=20] node[above, font=\footnotesize]{trường hợp thông thường: một lượt} (c);
-\end{tikzpicture}
-\caption{Trạng thái của một mẫu trong hàng đợi kiểm duyệt.}
-\end{figure}
-
-Mẫu ở trạng thái \nhan{bat_dong} tiếp tục nằm trong hàng đợi để người kiểm duyệt khác xem xét. Khi đạt trạng thái
-\nhan{da_duyet}, mẫu được gắn \nhan{nguon="phan_hoi"}, \nhan{cach_gan="nguoi"} và \textbf{chỉ được đưa vào tập
-huấn luyện} của lần huấn luyện tiếp theo. Mẫu phản hồi không bao giờ được đưa vào tập kiểm thử đã cố định, và hệ
+Khi đạt trạng thái \nhan{da_duyet}, mẫu được gắn \nhan{nguon="phan_hoi"}, \nhan{cach_gan="nguoi"} và \textbf{chỉ
+được đưa vào tập huấn luyện} của lần huấn luyện tiếp theo. Việc xuất mẫu đã duyệt được thực hiện thủ công, ngoài
+ứng dụng, và tự động loại các câu trùng nguyên văn với tập kiểm thử. Mẫu phản hồi không bao giờ được đưa vào tập kiểm thử đã cố định, và hệ
 thống không có cơ chế tự học: mô hình v2 hiện tại giữ nguyên.
 
 % =====================================================================
@@ -335,8 +425,8 @@ thống không có cơ chế tự học: mô hình v2 hiện tại giữ nguyên
 \textbf{Chủ thể} & \textbf{Được phép} & \textbf{Không được phép} \\
 \midrule
 Mô hình (AI) & Gợi ý nhãn, tô sáng bằng chứng, hiển thị cảnh báo & Chặn gửi, xóa tin nhắn, tự thay đổi nhãn, tự học từ phản hồi \\
-Người dùng & Chọn \textbf{Vẫn gửi}; gửi phản hồi; quyết định có đính kèm đoạn hội thoại hay không; che bổ sung & Bỏ phần thông tin đã được bộ lọc che \\
-Người kiểm duyệt & Xác định nhãn đúng cho phản hồi có đính kèm; xem thống kê phản hồi & Tự quyết định một mình đối với trường hợp nhạy cảm \\
+Người dùng & Chọn \textbf{Vẫn gửi}; gửi phản hồi; quyết định ở mỗi lần phản hồi có đính kèm đoạn hội thoại hay không & Quyết định nhãn đưa vào dữ liệu huấn luyện \\
+Người kiểm duyệt & Xác định nhãn và bằng chứng cho phản hồi có đính kèm; che thêm thông tin còn sót; xem thống kê phản hồi & Duyệt lại mẫu đã chốt; che thêm sau khi mẫu đã có lượt duyệt \\
 \bottomrule
 \end{tabularx}
 \caption{Quyền quyết định của từng chủ thể.}
@@ -362,7 +452,7 @@ mô hình không thay đổi.
 Tin nhắn khi phân tích & Không & Như v2, không phát sinh yêu cầu mạng \\
 Phản hồi: mã lựa chọn, nhãn, khoảng điểm & Khi người dùng gửi & Chỉ lưu ngày, không lưu giờ phút \\
 Mô tả ``Khác'' & Khi người dùng gửi & Đã qua bộ lọc thông tin nhận dạng cá nhân, tối đa 200 ký tự \\
-Đoạn hội thoại đính kèm & Chỉ khi người dùng đồng ý & Đã che trên thiết bị, người dùng đã xem trước \\
+Đoạn hội thoại đính kèm & Chỉ khi người dùng đồng ý & Đã che trên thiết bị; hỏi lại ở mỗi lần phản hồi \\
 Mã thiết bị & Khi người dùng gửi & Chỉ dùng để giới hạn số lượt mỗi ngày; không lưu cùng phản hồi \\
 Tài khoản đăng nhập, số điện thoại, tên liên hệ & Không & Không có trong gói tin \\
 Dữ liệu đếm để điều chỉnh cảnh báo & Không & Chỉ lưu trong bộ nhớ cục bộ của trình duyệt \\
