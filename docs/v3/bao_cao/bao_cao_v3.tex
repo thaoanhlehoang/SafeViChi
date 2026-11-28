@@ -1,0 +1,378 @@
+\documentclass[11pt,a4paper]{article}
+
+% Biên dịch bằng pdfLaTeX (chạy 2 lần để có mục lục), từ gốc repo:
+%   cd docs/v3/bao_cao && pdflatex bao_cao_v3.tex && pdflatex bao_cao_v3.tex
+% Các hằng cấu hình (giới hạn lượt, số ký tự...) lấy nguyên từ mã nguồn web-v2.
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage[a4paper,left=25mm,right=22mm,top=22mm,bottom=22mm,headheight=16pt]{geometry}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\definecolor{navy}{HTML}{17365D}
+\definecolor{nenxanh}{HTML}{EAF2F8}
+\definecolor{nenxam}{HTML}{F3F4F6}
+\definecolor{nenvang}{HTML}{FFF4DC}
+\definecolor{chuxam}{HTML}{666666}
+
+\hypersetup{
+  colorlinks=true, linkcolor=navy, urlcolor=navy, citecolor=navy,
+  pdftitle={SafeViChi v3 - Báo cáo cải tiến - Vòng Chung kết - Chặng 2 (AI26C0007 - OneUET)},
+  pdfauthor={Đội thi OneUET (AI26C0007)}
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\setlist{itemsep=0.2em,topsep=0.2em}
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\arraystretch}{1.2}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\newcommand{\nhan}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\gc}[1]{\texttt{#1}}
+\newcommand{\tep}[1]{\nolinkurl{#1}}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\-\do/}
+\newcommand{\ghinho}[1]{\par\noindent\colorbox{nenxanh}{\parbox{\dimexpr\linewidth-2\fboxsep}{\small #1}}\par}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{chuxam}{SafeViChi v3}}
+\fancyhead[R]{\small\textcolor{chuxam}{Đội OneUET $\cdot$ Mã AI26C0007}}
+\fancyfoot[L]{\footnotesize\textcolor{chuxam}{Cuộc thi Sáng tạo trẻ Quốc gia trong lĩnh vực Trí tuệ nhân tạo năm 2026 $\cdot$ Vòng Chung kết -- Chặng 2}}
+\fancyfoot[R]{\small\textcolor{navy}{\textbf{\thepage}}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{{\color{navy!35}\hrule height \headrulewidth width \headwidth \vskip-\headrulewidth}}
+\renewcommand{\footrule}{\vskip-\footruleskip\vskip-\footrulewidth{\color{navy!25}\hrule height \footrulewidth width \headwidth}\vskip\footruleskip}
+
+\begin{document}
+
+% ---------- Trang bìa ----------
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\centering
+\vspace*{18mm}
+{\large\bfseries\color{navy} CUỘC THI SÁNG TẠO TRẺ QUỐC GIA\\[2pt] TRONG LĨNH VỰC TRÍ TUỆ NHÂN TẠO NĂM 2026\par}
+\vspace{4mm}
+{\normalsize\bfseries\color{chuxam} VÒNG CHUNG KẾT -- CHẶNG 2\par}
+
+\vspace{34mm}
+{\Large Báo cáo cải tiến\par}
+\vspace{6mm}
+{\fontsize{34}{40}\selectfont\bfseries\color{navy} SafeViChi v3\par}
+\vspace{6mm}
+{\Large Cơ chế phản hồi, kháng nghị và hiệu chỉnh nhãn\\[2pt] do con người quyết định, tối thiểu hóa dữ liệu cá nhân\par}
+
+\vspace{26mm}
+{\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l@{\hspace{14mm}}l@{}}
+\textbf{\color{chuxam}Đội thi} & \textbf{OneUET} \\
+\textbf{\color{chuxam}Mã đội thi} & \textbf{\texttt{AI26C0007}} \\
+\end{tabular}}
+\vfill
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+\tableofcontents
+\newpage
+
+% =====================================================================
+\section{Tổng quan}
+
+\ghinho{\textbf{Phiên bản v3 giữ nguyên mô hình của v2.} Bộ nhãn, mô hình \nhan{SafeVi-DualORC-CRF} và cơ chế
+phân tích tin nhắn trên thiết bị không thay đổi so với bản đã nộp ở Chặng 1. Báo cáo này chỉ trình bày
+các thành phần \textbf{bổ sung}: cơ chế để người dùng phản hồi khi kết quả của mô hình chưa đúng, và quy trình
+để người kiểm duyệt xem xét, hiệu chỉnh nhãn. Mọi quyết định cuối cùng đều do con người đưa ra.}
+
+Bảng~\ref{tab:debai} tóm tắt cách v3 đáp ứng từng yêu cầu của đề bài.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{4.6cm}Y@{}}
+\toprule
+\textbf{Yêu cầu của đề bài} & \textbf{Giải pháp của v3} \\
+\midrule
+Gán nhãn độc hại tự động có thể ảnh hưởng đến quyền tự do ngôn luận và phát sinh khiếu nại &
+Mô hình chỉ \textbf{cảnh báo}, không chặn và không xóa tin nhắn; nút \textbf{Vẫn gửi} luôn hiển thị.
+Người dùng có thể phản hồi ngay trên kết quả phân tích (mục~\ref{sec:phanhoi}). \\
+\addlinespace
+Cần cơ chế phản hồi, kháng nghị, hiệu chỉnh nhãn và giới hạn quyền quyết định cuối cùng của AI &
+Phản hồi có đính kèm đoạn hội thoại được đưa vào \textbf{hàng đợi kiểm duyệt}; \textbf{người kiểm duyệt}
+xác định nhãn đúng, trường hợp nhạy cảm cần \textbf{hai người} thống nhất (mục~\ref{sec:duyet}).
+Mô hình không tự thay đổi nhãn. Mọi thao tác đều được ghi nhật ký. \\
+\addlinespace
+Giảm lưu trữ thông tin nhạy cảm &
+Phản hồi chỉ gồm các lựa chọn định sẵn, \textbf{không chứa nội dung tin nhắn}. Đoạn hội thoại chỉ được đính
+kèm khi người dùng chủ động chọn và xác nhận đồng ý, sau khi \textbf{bộ lọc thông tin nhận dạng cá nhân}
+đã che thông tin trên thiết bị và người dùng đã xem trước (mục~\ref{sec:dinhkem}, \ref{sec:dulieu}). \\
+\bottomrule
+\end{tabularx}
+\caption{Đối chiếu yêu cầu của đề bài với giải pháp của v3.}
+\label{tab:debai}
+\end{table}
+
+\newpage
+% =====================================================================
+\section{Quy trình xử lý tổng thể}
+\label{sec:pipeline}
+
+Hình~\ref{fig:pipeline} mô tả toàn bộ quy trình của v3. Phần phân tích tin nhắn vẫn chạy hoàn toàn trên
+thiết bị như ở v2. Dữ liệu chỉ được gửi lên máy chủ khi người dùng \textbf{chủ động gửi phản hồi}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  hop/.style={draw=navy, rounded corners=3pt, fill=nenxanh, align=center, inner sep=4pt, text width=6.1cm},
+  rong/.style={hop, text width=13.4cm},
+  may/.style={hop, fill=white},
+  nguoi/.style={hop, fill=nenvang},
+  mui/.style={-{Stealth[length=2.2mm]}, navy, thick},
+  >=Stealth]
+% Trên thiết bị
+\node[rong] (a) at (0,0) {Tin nhắn $\to$ mô hình v2 (ONNX, chạy trên thiết bị) $\to$ nhãn và cụm bằng chứng
+  \\\textcolor{chuxam}{\footnotesize không phát sinh yêu cầu mạng khi phân tích}};
+\node[rong] (b) at (0,-1.35) {\textbf{Cảnh báo}: mô hình chỉ gợi ý, không chặn, không xóa; nút \textbf{Vẫn gửi} luôn hiển thị};
+\node[rong, fill=nenvang] (c) at (0,-2.6) {Người dùng chọn \textbf{Báo cáo/kháng cáo mô hình} hoặc \textbf{Báo AI hiểu sai}};
+\node[rong] (fb) at (0,-3.85) {\textbf{Phản hồi}: chọn loại báo cáo và lý do từ các lựa chọn định sẵn
+  \\\textcolor{chuxam}{\footnotesize không chứa nội dung tin nhắn}};
+\node[hop, text width=4.6cm, fill=white] (dec) at (0,-5.15) {Đính kèm đoạn hội thoại?\\
+  \textcolor{chuxam}{\footnotesize tùy chọn, mặc định: không}};
+\node[may] (m1) at (-3.65,-6.65) {Gửi phản hồi\\ \textcolor{chuxam}{\footnotesize chỉ gồm các lựa chọn}};
+\node[nguoi] (m2) at (3.65,-6.65) {\textbf{Đính kèm}: bộ lọc che thông tin cá nhân
+  $\to$ người dùng xem trước, che bổ sung $\to$ xác nhận đồng ý};
+% Máy chủ
+\node[rong, fill=nenxam] (api) at (0,-8.3) {\textbf{API tiếp nhận phản hồi} (cùng nguồn gốc với ứng dụng web):
+  kiểm tra định dạng, chống gửi trùng, giới hạn số lượt mỗi ngày $\to$ lưu trữ};
+\node[may] (t1) at (-3.65,-9.8) {Thống kê phản hồi (chỉ đếm số lượt)};
+\node[nguoi, below=5mm of t1] (t2) {Người kiểm duyệt xác định các cặp nhãn\\ và lý do được phản hồi nhiều};
+\node[may] (r1) at (3.65,-9.8) {Hàng đợi kiểm duyệt (bản đã che)};
+\node[nguoi, below=5mm of r1] (r2) {\textbf{Người kiểm duyệt} xác định nhãn, bằng chứng;\\ trường hợp nhạy cảm: \textbf{hai người} thống nhất};
+\node[may, below=5mm of r2] (r3) {Nhãn do con người gán\\ \nhan{nguon=phan_hoi}, \nhan{cach_gan=nguoi}};
+\node[may, below=5mm of r3] (r4) {Chỉ đưa vào \textbf{tập huấn luyện},\\ không đưa vào tập kiểm thử};
+\path (r4.south) ++(0,-0.6) coordinate (nkpos);
+\node[rong, draw=chuxam, dashed, fill=white, anchor=north] (nk) at (nkpos -| a) {\textbf{Nhật ký}: mở mẫu,
+  lưu kết quả kiểm duyệt (người thực hiện, thời điểm, thao tác)};
+\draw[mui] (a) -- (b);
+\draw[mui] (b) -- (c);
+\draw[mui] (c) -- (fb);
+\draw[mui] (fb) -- (dec);
+\draw[mui] (dec.west) -| node[pos=0.25, above, font=\footnotesize]{Không} (m1.north);
+\draw[mui] (dec.east) -| node[pos=0.25, above, font=\footnotesize]{Có} (m2.north);
+\draw[mui] (m1.south) -- (m1.south |- api.north);
+\draw[mui] (m2.south) -- (m2.south |- api.north);
+\draw[mui] (api.south -| t1.north) -- (t1.north);
+\draw[mui] (api.south -| r1.north) -- (r1.north);
+\draw[mui] (t1) -- (t2);
+\draw[mui] (r1) -- (r2); \draw[mui] (r2) -- (r3); \draw[mui] (r3) -- (r4);
+\node[font=\footnotesize\bfseries, text=chuxam, anchor=south west] at (-6.9,0.45) {TRÊN THIẾT BỊ NGƯỜI DÙNG};
+\node[font=\footnotesize\bfseries, text=chuxam, anchor=south west] at (-6.9,-7.8) {MÁY CHỦ};
+\end{tikzpicture}
+\caption{Quy trình xử lý của v3. Ô màu vàng là bước do \textbf{con người quyết định}; mô hình không có bước
+nào tự thay đổi nhãn.}
+\label{fig:pipeline}
+\end{figure}
+
+Quy trình gồm năm bước:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Phân tích và cảnh báo} (giữ nguyên v2): mô hình chạy trên thiết bị, trả về nhãn và cụm bằng chứng.
+  Người dùng luôn có thể chọn \textbf{Vẫn gửi}.
+\item \textbf{Phản hồi}: khi cho rằng kết quả chưa đúng, người dùng gửi phản hồi bằng các lựa chọn định sẵn.
+  Nếu cần người kiểm duyệt xem xét ngữ cảnh, người dùng có thể đính kèm đoạn hội thoại đã che.
+\item \textbf{Tiếp nhận}: máy chủ kiểm tra từng trường dữ liệu và từ chối gói tin không hợp lệ trước khi lưu.
+\item \textbf{Xử lý theo hai nhánh}: phản hồi không đính kèm chỉ được dùng để \textbf{thống kê}; phản hồi có đính
+  kèm được đưa vào \textbf{hàng đợi kiểm duyệt}.
+\item \textbf{Không tự học}: nhãn do con người xác định chỉ được dùng cho lần huấn luyện tiếp theo;
+  mô hình đang vận hành không tự thay đổi theo phản hồi.
+\end{enumerate}
+
+% =====================================================================
+\section{Cơ chế phản hồi kết quả}
+\label{sec:phanhoi}
+
+Phản hồi là một thao tác duy nhất. Mọi phản hồi gồm các lựa chọn định sẵn và không chứa nội dung tin nhắn
+(mục~\ref{sec:noidung}). Khi cần người kiểm duyệt xem xét ngữ cảnh, người dùng có thể \textbf{đính kèm đoạn
+hội thoại đã che} (mục~\ref{sec:dinhkem}); khi đó phản hồi được đưa vào hàng đợi kiểm duyệt. Phản hồi không
+đính kèm chỉ được dùng để thống kê.
+
+\subsection{Nội dung phản hồi}
+\label{sec:noidung}
+
+\textbf{Điểm truy cập.} Nút \textbf{Báo cáo/kháng cáo mô hình} nằm trên dải kết quả phân tích; nút
+\textbf{Báo AI hiểu sai} nằm trong cảnh báo trước khi gửi tin. Người dùng chọn một trong năm loại báo cáo
+(bảng~\ref{tab:loaibaocao}); mỗi loại có câu hỏi bổ sung riêng, đều ở dạng lựa chọn định sẵn.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{4.6cm}p{3.1cm}Y@{}}
+\toprule
+\textbf{Loại báo cáo} & \textbf{Điều kiện hiển thị} & \textbf{Câu hỏi bổ sung (ví dụ)} \\
+\midrule
+Tin nhắn này an toàn & Mô hình gắn nhãn nguy hại & Lý do: nói đùa, cách nói thân mật, từ lóng, phương ngữ, trích dẫn, ngữ cảnh thông thường \\
+Có vấn đề, nhưng AI chọn sai loại & Mô hình gắn nhãn nguy hại & Nhãn phù hợp hơn và dấu hiệu nhận biết \\
+AI bỏ sót nội dung nguy hại & Mô hình gắn nhãn An toàn & Loại nội dung; dấu hiệu trực tiếp, các lượt trước hoặc cách viết biến dạng \\
+Nhãn đúng, phần tô sáng có vấn đề & Mô hình gắn nhãn nguy hại & Tô sáng nhầm, tô sáng thiếu hoặc chưa tô sáng \\
+Vấn đề khác hoặc tôi chưa chắc & Luôn hiển thị & Điểm còn phân vân; cảnh báo khó hiểu hoặc xuất hiện quá thường xuyên \\
+\bottomrule
+\end{tabularx}
+\caption{Năm loại báo cáo trong biểu mẫu phản hồi.}
+\label{tab:loaibaocao}
+\end{table}
+
+\textbf{Thành phần gói tin.} Gói tin chỉ gồm các trường dưới đây; máy chủ từ chối mọi trường khác.
+\begin{itemize}[leftmargin=*]
+\item Mã loại báo cáo, mã lý do và mã chi tiết, đều là mã cố định (ví dụ \nhan{tin_nhan_an_toan},
+  \nhan{dua_noi_than_mat}).
+\item Nhãn của mô hình, nhãn do người dùng đề xuất (được để trống khi người dùng chưa chắc chắn) và trạng thái
+  có tô sáng bằng chứng hay không.
+\item \textbf{Khoảng điểm} từ 0 đến 9 (xác suất làm tròn xuống theo bước 0,1), phiên bản mô hình và phiên bản ngưỡng.
+\item Mã lần gửi để chống gửi trùng và mã thiết bị; cả hai là mã định danh ngẫu nhiên (UUID), mã thiết bị được
+  lưu trong bộ nhớ cục bộ của trình duyệt.
+\item \textbf{Mô tả ngắn}, chỉ có khi người dùng chọn ``Khác'': tối đa 200 ký tự, đã được bộ lọc thông tin nhận
+  dạng cá nhân xử lý trên thiết bị; máy chủ chạy lại bộ lọc để kiểm tra.
+\end{itemize}
+
+\textbf{Dữ liệu không được gửi:} nội dung tin nhắn, cụm bằng chứng, mã tài khoản đăng nhập, số điện thoại và
+tên liên hệ. Máy chủ \textbf{chỉ ghi ngày} tiếp nhận, không ghi giờ phút. Mã thiết bị \textbf{không được lưu cùng
+phản hồi}; mã này chỉ dùng để giới hạn tối đa 20 phản hồi không đính kèm và 5 phản hồi có đính kèm mỗi ngày,
+dữ liệu đếm của các ngày trước được xóa.
+
+\textbf{Thống kê phản hồi.} Phản hồi không đính kèm được tổng hợp theo cặp nhãn (nhãn của mô hình và nhãn người
+dùng đề xuất), theo lý do, theo khoảng điểm và theo phiên bản. Đây là dữ liệu do người dùng tự báo cáo, vì vậy chỉ
+dùng để \textbf{xác định các trường hợp cần xem xét}, không dùng để ước lượng tỷ lệ lỗi của mô hình và không
+được đưa vào huấn luyện.
+
+\subsection{Đính kèm đoạn hội thoại}
+\label{sec:dinhkem}
+
+Tùy chọn đính kèm dành cho trường hợp người dùng muốn \textbf{kháng nghị} và cần người kiểm duyệt xem xét ngữ cảnh.
+Phản hồi giữ nguyên các lựa chọn ở mục~\ref{sec:noidung} và bổ sung đoạn hội thoại đã che. Quy trình gồm năm bước,
+tất cả được thực hiện trên thiết bị trước khi dữ liệu được gửi đi:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Cho phép đính kèm.} Người dùng có thể tắt hoàn toàn tùy chọn này trong \textbf{Cài đặt phản hồi}.
+\item \textbf{Lọc tự động.} \textbf{Bộ lọc thông tin nhận dạng cá nhân} thay thông tin cá nhân bằng nhãn giữ chỗ:
+  \gc{[SĐT]}, \gc{[EMAIL]}, \gc{[STK]}, \gc{[MÃ]} (mã OTP), \gc{[GIẤY\_TỜ]},
+  \gc{[ĐỊA\_CHỈ]}, \gc{[TÊN\_1]}, \gc{[TÊN\_2]}\ldots{} Bộ lọc \textbf{giữ nguyên số tiền} và \textbf{tên miền
+  của đường link} (dạng \nhan{[LINK:ten-mien]}) vì đây là căn cứ để nhận diện lừa đảo.
+  Đây là phép \textbf{che, ẩn danh hóa một chiều}, không phải mã hóa: hệ thống không lưu bảng đối chiếu với tên
+  thật và không thể khôi phục bản gốc.
+\item \textbf{Xem trước và che bổ sung.} Người dùng xem đúng đoạn hội thoại sẽ được gửi (tối đa 8 lượt), chọn
+  phần văn bản còn lộ thông tin và bấm \textbf{Che phần đã chọn} để thay bằng \gc{[ĐÃ\_CHE]}. Người dùng chỉ có
+  thể che thêm, \textbf{không thể bỏ phần đã che}.
+\item \textbf{Xác nhận đồng ý.} Ô ``Tôi đã xem và đồng ý gửi bản đã che này'' \textbf{không được chọn sẵn}.
+  Mỗi lần che bổ sung, ô xác nhận được bỏ chọn để người dùng xác nhận lại trên bản mới.
+\item \textbf{Gửi phản hồi.} Gói tin gồm các trường của phản hồi, đúng bản đã che mà người dùng vừa xem và phiên
+  bản nội dung đồng ý. Máy chủ chạy lại bộ lọc để bảo đảm không còn thông tin nhận dạng được, kiểm tra đoạn hội
+  thoại không quá 8 lượt và giới hạn tối đa 5 phản hồi có đính kèm mỗi ngày.
+\end{enumerate}
+
+% =====================================================================
+\section{Kiểm duyệt và hiệu chỉnh nhãn}
+\label{sec:duyet}
+
+Màn hình kiểm duyệt dành riêng cho người kiểm duyệt; bản trình diễn có hai vai trò là Người duyệt A và
+Người duyệt B.
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Hàng đợi kiểm duyệt} chỉ gồm phản hồi có đính kèm và chỉ hiển thị thông tin tóm tắt (ngày, nhãn
+  của mô hình, nhãn đề xuất). Nội dung chỉ được xem khi mở từng mẫu, và mỗi lần mở đều được \textbf{ghi nhật ký}.
+  Hệ thống không cung cấp chức năng xuất dữ liệu hàng loạt.
+\item Người kiểm duyệt gán nhãn theo hướng dẫn gán nhãn đã dùng ở v2: chọn nhãn và chọn \textbf{cụm bằng
+  chứng} trực tiếp trên bản đã che, nhờ đó bằng chứng luôn là trích dẫn nguyên văn.
+\item \textbf{Trường hợp nhạy cảm cần hai người kiểm duyệt}: khi nhãn \nhan{DE_DOA} xuất hiện (ở mô hình, người
+  dùng hoặc người kiểm duyệt), hoặc khi nội dung \nhan{XUC_PHAM} nhắm vào một nhóm người hay vùng miền.
+  Mỗi người chỉ kiểm duyệt một mẫu một lần.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[font=\small, node distance=8mm,
+  tt/.style={draw=navy, rounded corners=3pt, fill=nenxanh, inner sep=4pt, align=center},
+  mui/.style={-{Stealth[length=2mm]}, navy, thick}]
+\node[tt] (a) {\nhan{cho_duyet}};
+\node[tt, right=24mm of a] (b) {\nhan{cho_nguoi_thu_hai}};
+\node[tt, right=30mm of b, fill=nenvang] (c) {\nhan{da_duyet}};
+\node[tt, below=7mm of b] (d) {\nhan{bat_dong}};
+\draw[mui] (a) -- node[below, font=\footnotesize]{lượt thứ nhất} (b);
+\draw[mui] (b) -- node[below, font=\footnotesize]{lượt thứ hai khớp} (c);
+\draw[mui] (b) -- node[right, font=\footnotesize]{không khớp} (d);
+\draw[mui] (d) -| node[pos=0.25, below, font=\footnotesize]{lượt mới khớp} (c);
+\draw[mui] (a) to[bend left=20] node[above, font=\footnotesize]{trường hợp thông thường: một lượt} (c);
+\end{tikzpicture}
+\caption{Trạng thái của một mẫu trong hàng đợi kiểm duyệt.}
+\end{figure}
+
+Mẫu ở trạng thái \nhan{bat_dong} tiếp tục nằm trong hàng đợi để người kiểm duyệt khác xem xét. Khi đạt trạng thái
+\nhan{da_duyet}, mẫu được gắn \nhan{nguon="phan_hoi"}, \nhan{cach_gan="nguoi"} và \textbf{chỉ được đưa vào tập
+huấn luyện} của lần huấn luyện tiếp theo. Mẫu phản hồi không bao giờ được đưa vào tập kiểm thử đã cố định, và hệ
+thống không có cơ chế tự học: mô hình v2 hiện tại giữ nguyên.
+
+% =====================================================================
+\section{Phân định quyền quyết định}
+\label{sec:quyen}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{3.3cm}YY@{}}
+\toprule
+\textbf{Chủ thể} & \textbf{Được phép} & \textbf{Không được phép} \\
+\midrule
+Mô hình (AI) & Gợi ý nhãn, tô sáng bằng chứng, hiển thị cảnh báo & Chặn gửi, xóa tin nhắn, tự thay đổi nhãn, tự học từ phản hồi \\
+Người dùng & Chọn \textbf{Vẫn gửi}; gửi phản hồi; quyết định có đính kèm đoạn hội thoại hay không; che bổ sung & Bỏ phần thông tin đã được bộ lọc che \\
+Người kiểm duyệt & Xác định nhãn đúng cho phản hồi có đính kèm; xem thống kê phản hồi & Tự quyết định một mình đối với trường hợp nhạy cảm \\
+\bottomrule
+\end{tabularx}
+\caption{Quyền quyết định của từng chủ thể.}
+\end{table}
+
+\textbf{Điều chỉnh mức cảnh báo theo người dùng.} Ứng dụng ghi nhận trên thiết bị số lần người dùng báo
+``Tin nhắn này an toàn'' cho từng nhãn. Khi đạt 3 lần trong 7 ngày, cách hiển thị cảnh báo được điều chỉnh:
+\nhan{XUC_PHAM} không còn làm mờ tin nhắn, \nhan{QUAY_ROI} không còn gợi ý chặn. Hai nhãn \nhan{DE_DOA} và
+\nhan{LUA_DAO} có \textbf{mức cảnh báo tối thiểu} và luôn giữ nguyên cảnh báo. Dữ liệu đếm chỉ lưu trên thiết bị;
+mô hình không thay đổi.
+
+% =====================================================================
+\section{Tối thiểu hóa dữ liệu cá nhân}
+\label{sec:dulieu}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{4.4cm}p{2.8cm}Y@{}}
+\toprule
+\textbf{Dữ liệu} & \textbf{Gửi lên máy chủ} & \textbf{Ghi chú} \\
+\midrule
+Tin nhắn khi phân tích & Không & Như v2, không phát sinh yêu cầu mạng \\
+Phản hồi: mã lựa chọn, nhãn, khoảng điểm & Khi người dùng gửi & Chỉ lưu ngày, không lưu giờ phút \\
+Mô tả ``Khác'' & Khi người dùng gửi & Đã qua bộ lọc thông tin nhận dạng cá nhân, tối đa 200 ký tự \\
+Đoạn hội thoại đính kèm & Chỉ khi người dùng đồng ý & Đã che trên thiết bị, người dùng đã xem trước \\
+Mã thiết bị & Khi người dùng gửi & Chỉ dùng để giới hạn số lượt mỗi ngày; không lưu cùng phản hồi \\
+Tài khoản đăng nhập, số điện thoại, tên liên hệ & Không & Không có trong gói tin \\
+Dữ liệu đếm để điều chỉnh cảnh báo & Không & Chỉ lưu trong bộ nhớ cục bộ của trình duyệt \\
+\bottomrule
+\end{tabularx}
+\caption{Dữ liệu được gửi và lưu trữ trong v3.}
+\end{table}
+
+Máy chủ của bản trình diễn hoạt động cùng nguồn gốc với ứng dụng web (Cloudflare Pages Functions và cơ sở dữ liệu
+Cloudflare D1), vì vậy không cần mở rộng chính sách bảo mật nội dung của trang. Cơ sở dữ liệu của bản trình diễn
+chỉ chứa dữ liệu giả lập.
+
+\end{document}
