@@ -176,18 +176,11 @@ if (demo) {
   assert.ok(Object.hasOwn(await call('duyet', { role: 'kiem_duyet' }), 'hang_doi'));
   assert.ok((await call('nhat-ky', { role: 'kiem_duyet' })).nhat_ky.length > 0);
 }
-// Che thêm chỉ làm được khi mẫu chưa có lượt duyệt.
-const extra = await submitNewLevel2();
-const masked = await call('duyet/' + extra.id + '/che-them', { body: { dong: 1, start: 0, end: 2 }, role: 'duyet_a' });
-assert.ok(masked.doan_da_che.split(String.fromCharCode(10))[1].startsWith('[ĐÃ_CHE]'));
-await call('duyet/' + extra.id + '/che-them', { body: { dong: 1, start: 0, end: 2 }, role: 'quan_tri', status: 403 });
-await call('duyet/' + extra.id, { body: { nhan: 'AN_TOAN' }, role: 'duyet_a', status: 201 });
-await call('duyet/' + extra.id + '/che-them', { body: { dong: 0, start: 0, end: 2 }, role: 'duyet_b', status: 409 });
-for (let i = 0; i < 2; i++) await submitNewLevel2();
+for (let i = 0; i < 3; i++) await submitNewLevel2();
 await call(rest, { body: { ...level2, ma_lan_gui: randomUUID() }, status: 429 });
 assert.equal((await call(rest, { body: level2 })).gui_lai, true);
 console.log('Mức 2 đạt: đồng ý, bản xem trước, giới hạn, phân quyền và nhật ký.');
-console.log('Kiểm duyệt đạt: một lượt là chốt, tab hàng đợi theo ngày, ghi chú, tài khoản kiểm duyệt duy nhất, che thêm khi chưa duyệt.');
+console.log('Kiểm duyệt đạt: một lượt là chốt, tab hàng đợi theo ngày, ghi chú, tài khoản kiểm duyệt duy nhất.');
 
 const model = formData.phien_ban_mo_hinh;
 const thresholds = { XUC_PHAM: 0.8, QUAY_ROI: 0.2, DE_DOA: 0.2, LUA_DAO: 0.2 };

@@ -742,7 +742,6 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     warn.hidden = true;
     $('warn-send').hidden = false;
     $('warn-report').hidden = false;
-    $('warn-report').onclick = () => moPhanHoi(res, draft.conv);
     $('warn-edit').textContent = 'Chỉnh sửa';
   }
 
@@ -800,6 +799,10 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
       desc.textContent = 'Bạn có muốn sửa trước khi gửi không?';
     }
     $('warn-send').hidden = false;
+    $('warn-report').hidden = false;
+    // Mở cùng biểu mẫu với nút "Phản hồi kết quả", dùng kết quả phân tích của bản nháp (lượt cuối là bản nháp).
+    // Không gửi tin nháp; đóng biểu mẫu xong dải cảnh báo và bản nháp vẫn giữ nguyên để chọn Vẫn gửi / Chỉnh sửa.
+    $('warn-report').onclick = () => moPhanHoi(res, draft?.conv ?? current);
     $('warn-edit').textContent = 'Chỉnh sửa';
     warn.hidden = false;
     renderSafetyBar();

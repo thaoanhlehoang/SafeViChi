@@ -198,7 +198,6 @@ export function hienHangDoi(root, api) {
     if (message) thongBao(notice, message);
 
     const daXong = Boolean(mau.quyet_dinh || mau.da_gui_luot_duyet);
-    const coTheChe = !daXong && mau.trang_thai === 'cho_duyet';
 
     // ----- Cột trái: đoạn hội thoại -----
     const left = el('section', 'qt-cot-trai');
@@ -212,11 +211,6 @@ export function hienHangDoi(root, api) {
         add.setAttribute('aria-label', 'Thêm bằng chứng từ lượt ' + (i + 1));
         addButtons.push(add);
         headRow.append(add);
-        if (coTheChe) {
-          const che = nut('Che phần đã chọn', 'quiet', () => cheThem(i, text));
-          che.setAttribute('aria-label', 'Che phần đã chọn ở lượt ' + (i + 1));
-          headRow.append(che);
-        }
       },
     });
     left.append(el('h3', null, 'Đoạn hội thoại'),
@@ -332,22 +326,6 @@ export function hienHangDoi(root, api) {
       spans.push({ dong: i, start, end });
       thongBao(leftStatus, '');
       veBangChung();
-    }
-
-    async function cheThem(i, text) {
-      const { selectionStart: start, selectionEnd: end } = text;
-      if (start === end) {
-        thongBao(leftStatus, 'Chọn phần cần che trong lượt ' + (i + 1) + '.', true);
-        text.focus();
-        return;
-      }
-      thongBao(leftStatus, 'Đang che…');
-      try {
-        await api('duyet/' + mau.id + '/che-them', { dong: i, start, end });
-        await moMau(mau.id, 'Đã che thêm ở lượt ' + (i + 1) + '. Thao tác đã được ghi nhật ký.');
-      } catch (err) {
-        thongBao(leftStatus, err.message, true);
-      }
     }
 
     async function luu() {

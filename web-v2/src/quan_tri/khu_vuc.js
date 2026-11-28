@@ -25,7 +25,6 @@ const errors = {
   khong_the_duyet_lai: 'Mẫu đã được duyệt hoặc bạn đã gửi lượt duyệt cho mẫu này.',
   de_xuat_khong_con_hop_le: 'Đề xuất đã được duyệt hoặc phiên bản ngưỡng gốc đã thay đổi.',
   trung_phien_ban: 'Phiên bản ngưỡng đã được dùng cho mô hình này.',
-  khong_the_che_them: 'Chỉ che thêm được khi mẫu chưa có lượt duyệt nào.',
   bo_loc_khong_hop_le: 'Hãy kiểm tra ngày bắt đầu, ngày kết thúc và giới hạn 90 ngày.',
 };
 const fields = {

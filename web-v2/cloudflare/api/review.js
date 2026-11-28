@@ -126,30 +126,3 @@ export async function getAuditLog(db, subjectId) {
   const { results } = await (subjectId ? query.bind(subjectId) : query).all();
   return { nhat_ky: results };
 }
-
-// Người duyệt che thêm thông tin cá nhân còn sót trong bản đã che. Chỉ làm được khi mẫu chưa có lượt duyệt nào,
-// để vị trí bằng chứng của các lượt duyệt không bị lệch. Ghi nhật ký "che_them".
-export async function maskMore(db, actor, id, data) {
-  assertAllowedFields(data, ['dong', 'start', 'end']);
-  const sample = await db.prepare("SELECT du_lieu FROM phan_hoi WHERE id = ? AND loai = 'muc_2'").bind(id).first();
-  if (!sample) throw new ApiError(404, 'khong_tim_thay_mau');
-  const feedback = JSON.parse(sample.du_lieu);
-  const [span] = extractEvidence(feedback.doan_da_che, [data]);
-  const lines = feedback.doan_da_che.split('\n');
-  const line = lines[span.dong];
-  lines[span.dong] = line.slice(0, span.start) + '[ĐÃ_CHE]' + line.slice(span.end);
-  const updated = JSON.stringify({ ...feedback, doan_da_che: lines.join('\n') });
-  const [changed] = await db.batch([
-    db.prepare(`
-      UPDATE phan_hoi SET du_lieu = ? WHERE id = ? AND du_lieu = ? AND trang_thai = 'cho_duyet'
-        AND NOT EXISTS (SELECT 1 FROM luot_duyet WHERE mau_id = phan_hoi.id)
-      RETURNING id
-    `).bind(updated, id, sample.du_lieu),
-    db.prepare(`
-      INSERT INTO nhat_ky (nguoi, hanh_dong, doi_tuong, chi_tiet)
-      SELECT ?, 'che_them', ?, ? WHERE changes() = 1
-    `).bind(actor, id, 'lượt ' + (span.dong + 1)),
-  ]);
-  if (!changed.results.length) throw new ApiError(409, 'khong_the_che_them');
-  return { id, doan_da_che: lines.join('\n') };
-}
