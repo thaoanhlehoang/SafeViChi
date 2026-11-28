@@ -7,7 +7,9 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "verify:parity": "node scripts/verify_onnx_parity.mjs"
+    "verify:parity": "node scripts/verify_onnx_parity.mjs",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "do:che": "node scripts/do_che_thong_tin.mjs"
   },
   "devDependencies": {
     "vite": "^6.0.0"
