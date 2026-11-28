@@ -2,7 +2,7 @@
 
 Trong phiên làm việc 8 giờ của hai người, ưu tiên nối biểu mẫu mức 1 với API và SQLite để đo được người dùng đang báo sai ở đâu. Sau đó hoàn thành luồng mức 2 từ đồng ý, che thông tin và xem trước đến sửa nhãn có nhật ký. Quản trị viên phê duyệt thay đổi ngưỡng dựa trên kết quả validation. Người dùng vẫn có quyền **Vẫn gửi** và **Vẫn xem**.
 
-Hiện `web-v2/serve.py` phục vụ bản build và gói mô hình cục bộ. Việc đầu tiên ngoài giao diện là chốt hợp đồng phản hồi để hai người có thể làm song song. Phạm vi demo và mốc 8 giờ lấy từ [Kế hoạch Chặng 2](KE_HOACH_CHANG_2.md).
+Hiện `web-v2/serve.py` phục vụ bản build và gói mô hình cục bộ. Việc đầu tiên ngoài giao diện là chốt hợp đồng phản hồi để hai người có thể làm song song. Tài liệu này là nguồn sự thật cho Chặng 2, gồm cả phạm vi và mốc 8 giờ ở Mục 3.
 
 ## 1. Nội dung chính thức đề xuất cho biểu mẫu mức 1
 

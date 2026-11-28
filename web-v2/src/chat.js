@@ -8,6 +8,7 @@ import { LABELS, MAX_LINES } from './labels.js';
 import { SHIRTS, HAIR, SKIN } from './landing.js';
 import { stripInvisibles } from './engine/dualorc.js';
 import { buildTurnWindow, analyzeWindow } from './engine/flow.js';
+import { moBieuMauMuc1 } from './phan_hoi/bieu_mau_muc1.js';
 
 // Hội thoại mẫu để thử nghiệm trực tiếp với mô hình thật (không lấy từ tập dữ liệu).
 const CONVERSATIONS = [
@@ -552,14 +553,35 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     if (keep) box.scrollTop = box.scrollHeight;
   }
 
-  // Chỉ hiện dải cảnh báo gọn khi hội thoại có dấu hiệu nguy hại (chưa thực thi hành động bảo vệ).
+  // Dải trạng thái ngay trên ô nhập: cảnh báo gọn khi hội thoại có dấu hiệu nguy hại, báo An toàn khi không có.
+  // Bên phải luôn có nút mở biểu mẫu phản hồi mức 1 (src/phan_hoi/), cạnh nút ẩn dải.
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function icon(paths, extra) {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    for (const [tag, attrs] of paths) {
+      const n = document.createElementNS(SVG_NS, tag);
+      for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+      svg.append(n);
+    }
+    return svg;
+  }
+  const iconInfo = () => icon([['circle', { cx: 12, cy: 12, r: 9.5 }], ['path', { d: 'M12 11v5.5' }], ['path', { d: 'M12 7.6v.01', 'stroke-width': '2.6' }]]);
+  const iconTick = () => icon([['path', { d: 'M5 12.5l4.5 4.5L19 7.5', 'stroke-width': '2.4' }]]);
+
   function renderSafetyBar() {
     const last = current.messages.at(-1);
     const analysis = last?.analysis;
     const nhan = analysis?.nhan;
     const dismissedAt = current.dismissedSafetyAt ?? -1;
 
-    if (draft || !analysis || !nhan || nhan === 'AN_TOAN' || dismissedAt === current.messages.length) {
+    if (draft || !analysis || !nhan || !LABELS[nhan] || dismissedAt === current.messages.length) {
       safetyBar.hidden = true;
       safetyBar.replaceChildren();
       return;
@@ -571,6 +593,7 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     safetyBar.style.setProperty('--c', info.mau);
 
     const warnCopy = {
+      AN_TOAN: 'Chưa phát hiện dấu hiệu nguy hại trong hội thoại.',
       XUC_PHAM: 'Phát hiện nội dung có dấu hiệu xúc phạm trong hội thoại.',
       QUAY_ROI: 'Phát hiện nội dung có dấu hiệu quấy rối trong hội thoại.',
       DE_DOA: 'Phát hiện nội dung có dấu hiệu đe dọa / tống tiền trong hội thoại.',
@@ -582,15 +605,37 @@ export function setupChat({ classify, onEngineStatus, retryLoad }) {
     title.append(el('strong', 'safety-label', info.ten), ` · ${warnCopy[nhan]}`);
     body.append(title);
 
-    const closeBtn = el('button', 'safety-close', '×');
-    closeBtn.type = 'button';
-    closeBtn.setAttribute('aria-label', 'Ẩn cảnh báo');
-    closeBtn.onclick = () => {
+    const reportBtn = el('button', 'safety-report');
+    reportBtn.type = 'button';
+    reportBtn.setAttribute('aria-haspopup', 'dialog');
+    reportBtn.append(el('span', null, 'Báo cáo/kháng cáo mô hình'), iconInfo());
+    reportBtn.onclick = () => moBieuMauMuc1({
+      nhanMoHinh: nhan,
+      xacSuat: analysis.xac_suat?.[nhan],
+      coToSang: (analysis.rows || []).some((r) => r.spans?.length),
+      host: shell,
+    });
+
+    const hide = () => {
       current.dismissedSafetyAt = current.messages.length;
       renderSafetyBar();
     };
+    let closeBtn;
+    if (nhan === 'AN_TOAN') {
+      closeBtn = el('button', 'safety-ok');
+      closeBtn.append(iconTick());
+      closeBtn.setAttribute('aria-label', 'Đã xem, ẩn dải');
+      closeBtn.title = 'Đã xem';
+    } else {
+      closeBtn = el('button', 'safety-close', '×');
+      closeBtn.setAttribute('aria-label', 'Ẩn cảnh báo');
+    }
+    closeBtn.type = 'button';
+    closeBtn.onclick = hide;
 
-    safetyBar.replaceChildren(body, closeBtn);
+    const actions = el('div', 'safety-actions');
+    actions.append(reportBtn, closeBtn);
+    safetyBar.replaceChildren(body, actions);
   }
 
   function renderView() {
